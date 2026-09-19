@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.DocumentListRepository
-import com.mifos.core.model.objects.noncoreobjects.Document
+import kpt.core.model.objects.noncoreobjects.Document
 import kotlinx.coroutines.flow.Flow
 
 class GetDocumentsListUseCase(

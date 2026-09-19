@@ -12,8 +12,8 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.GroupLoanAccountRepository
-import com.mifos.core.model.objects.payloads.GroupLoanPayload
-import com.mifos.core.model.objects.template.loan.GroupLoanTemplate
+import kpt.core.model.objects.payloads.GroupLoanPayload
+import kpt.core.model.objects.template.loan.GroupLoanTemplate
 import kpt.core.network.DataManager
 import kpt.core.database.loan.entity.Loan
 import kotlinx.coroutines.flow.Flow

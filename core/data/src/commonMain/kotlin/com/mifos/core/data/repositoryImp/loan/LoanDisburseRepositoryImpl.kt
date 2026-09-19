@@ -15,8 +15,8 @@ import com.mifos.core.data.mappers.loan.toModel
 import com.mifos.core.data.repository.loan.LoanDisburseRepository
 import com.mifos.core.data.util.NetworkMonitor
 import com.mifos.core.data.util.runAsDataState
-import com.mifos.core.model.objects.account.loan.loanDisburse.LoanDisburseInput
-import com.mifos.core.model.objects.account.loan.loanDisburse.LoanDisburseTemplate
+import kpt.core.model.objects.account.loan.loanDisburse.LoanDisburseInput
+import kpt.core.model.objects.account.loan.loanDisburse.LoanDisburseTemplate
 import kpt.core.network.loan.datamanager.DataManagerLoan
 import template.core.base.common.manager.DispatcherManager
 

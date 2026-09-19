@@ -16,7 +16,6 @@ import kpt.core.network.mifos.note.dto.DeleteNoteResponseDto
 import kpt.core.network.mifos.note.dto.NoteDto
 import kpt.core.network.mifos.note.dto.NoteRequestDto
 import kpt.core.network.mifos.note.dto.UpdateNoteResponseDto
-import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET
@@ -38,7 +37,7 @@ interface NoteApi {
      * @param noteRequestDto
      * @return [CreateNoteResponseDto]
      */
-    @POST("{resourceType}/{resourceId}/" + APIEndPoint.NOTES)
+    @POST("{resourceType}/{resourceId}/notes")
     suspend fun addNewNote(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Long,
@@ -56,7 +55,7 @@ interface NoteApi {
      * @param noteId noteId
      * @return [DeleteNoteResponseDto]
      */
-    @DELETE("{resourceType}/{resourceId}/" + APIEndPoint.NOTES + "/{noteId}")
+    @DELETE("{resourceType}/{resourceId}/notes/{noteId}")
     suspend fun deleteNote(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Long,
@@ -73,7 +72,7 @@ interface NoteApi {
      * @param noteId noteId
      * @return [NoteDto]
      */
-    @GET("{resourceType}/{resourceId}/" + APIEndPoint.NOTES + "/{noteId}")
+    @GET("{resourceType}/{resourceId}/notes/{noteId}")
     suspend fun retrieveNote(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Long,
@@ -90,7 +89,7 @@ interface NoteApi {
      * @param resourceId resourceId, eg : ClientId, LoanId, GroupId, Savings AccountId
      * @return [List<NoteDto>]
      */
-    @GET("{resourceType}/{resourceId}/" + APIEndPoint.NOTES)
+    @GET("{resourceType}/{resourceId}/notes")
     suspend fun retrieveListNotes(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Long,
@@ -107,7 +106,7 @@ interface NoteApi {
      * @param noteRequestDto
      * @return UpdateNoteResponseDto
      */
-    @PUT("{resourceType}/{resourceId}/" + APIEndPoint.NOTES + "/{noteId}")
+    @PUT("{resourceType}/{resourceId}/notes/{noteId}")
     suspend fun updateNote(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Long,

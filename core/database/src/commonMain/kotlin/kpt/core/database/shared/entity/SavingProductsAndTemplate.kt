@@ -9,7 +9,7 @@
  */
 package kpt.core.database.shared.entity
 
-import com.mifos.core.model.objects.organisations.ProductSavings
+import kpt.core.model.objects.organisations.ProductSavings
 import kpt.core.database.savings.entity.SavingProductsTemplate
 
 /**

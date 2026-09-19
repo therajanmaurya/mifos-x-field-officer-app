@@ -10,8 +10,8 @@
 package com.mifos.core.data.repository.loan
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.account.loan.loanDisburse.LoanDisburseInput
-import com.mifos.core.model.objects.account.loan.loanDisburse.LoanDisburseTemplate
+import kpt.core.model.objects.account.loan.loanDisburse.LoanDisburseInput
+import kpt.core.model.objects.account.loan.loanDisburse.LoanDisburseTemplate
 
 interface LoanDisburseRepository {
 

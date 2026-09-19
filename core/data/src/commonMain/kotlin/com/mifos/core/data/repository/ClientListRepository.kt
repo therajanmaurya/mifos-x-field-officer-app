@@ -11,7 +11,7 @@ package com.mifos.core.data.repository
 
 import androidx.paging.PagingData
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.common.utils.Page
+import kpt.core.common.utils.Page
 import kpt.core.database.client.entity.ClientEntity
 import kotlinx.coroutines.flow.Flow
 

@@ -9,7 +9,7 @@
  */
 package kpt.core.model.shared
 
-import com.mifos.core.model.utils.ApiDateFormatter
+import kpt.core.model.utils.ApiDateFormatter
 
 /**
  * Created by ADMIN on 16-Jun-15.

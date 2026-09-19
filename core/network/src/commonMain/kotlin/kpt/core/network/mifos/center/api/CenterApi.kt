@@ -11,11 +11,11 @@ package kpt.core.network.mifos.center.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.common.utils.Page
-import com.mifos.core.model.objects.clients.ActivatePayload
-import com.mifos.core.model.objects.databaseobjects.CollectionSheet
-import com.mifos.core.model.objects.databaseobjects.OfflineCenter
-import com.mifos.core.model.objects.responses.SaveResponse
+import kpt.core.common.utils.Page
+import kpt.core.model.objects.clients.ActivatePayload
+import kpt.core.model.objects.databaseobjects.CollectionSheet
+import kpt.core.model.objects.databaseobjects.OfflineCenter
+import kpt.core.model.objects.responses.SaveResponse
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.collectionsheet.dto.CollectionSheetPayload
 import kpt.core.network.mifos.center.dto.GetCentersResponse
@@ -28,7 +28,6 @@ import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
-import kpt.core.common.APIEndPoint
 import kpt.core.database.center.entity.CenterAccounts
 import kpt.core.database.center.entity.CenterEntity
 import kpt.core.database.center.entity.CenterPayloadEntity
@@ -94,54 +93,54 @@ interface CenterApi {
         @Query("command") command: String? = null,
     ): PostCentersCenterIdResponse
 
-    @GET(APIEndPoint.CENTERS)
+    @GET("centers")
     suspend fun getCenters(
         @Query("paged") b: Boolean,
         @Query("offset") offset: Int,
         @Query("limit") limit: Int,
     ): Page<CenterEntity>
 
-    @GET(APIEndPoint.CENTERS + "/{centerId}/accounts")
+    @GET("centers/{centerId}/accounts")
     suspend fun getCenterAccounts(@Path("centerId") centerId: Int): CenterAccounts
 
-    @GET(APIEndPoint.CENTERS + "/{centerId}?associations=groupMembers,collectionMeetingCalendar")
+    @GET("centers/{centerId}?associations=groupMembers,collectionMeetingCalendar")
     suspend fun getCenterWithGroupMembersAndCollectionMeetingCalendar(
         @Path("centerId") centerId: Int,
     ): CenterWithAssociations
 
-    @GET(APIEndPoint.CENTERS)
+    @GET("centers")
     suspend fun getAllCentersInOffice(
         @Query("officeId") officeId: Int,
         @QueryMap additionalParams: Map<String, String>,
     ): List<CenterEntity>
 
-    @GET(APIEndPoint.CENTERS + "/{centerId}?associations=groupMembers")
+    @GET("centers/{centerId}?associations=groupMembers")
     suspend fun getAllGroupsForCenter(@Path("centerId") centerId: Int): CenterWithAssociations
 
-    @POST(APIEndPoint.CENTERS + "/{centerId}?command=generateCollectionSheet")
+    @POST("centers/{centerId}?command=generateCollectionSheet")
     suspend fun getCollectionSheet(
         @Path("centerId") centerId: Long,
         @Body payload: Payload?,
     ): CollectionSheet
 
-    @POST(APIEndPoint.CENTERS + "/{centerId}?command=saveCollectionSheet")
+    @POST("centers/{centerId}?command=saveCollectionSheet")
     suspend fun saveCollectionSheet(
         @Path("centerId") centerId: Int,
         @Body collectionSheetPayload: CollectionSheetPayload?,
     ): SaveResponse
 
-    @POST(APIEndPoint.CENTERS + "/{centerId}?command=saveCollectionSheet")
+    @POST("centers/{centerId}?command=saveCollectionSheet")
     suspend fun saveCollectionSheetAsync(
         @Path("centerId") centerId: Int,
         @Body collectionSheetPayload: CollectionSheetPayload?,
     ): SaveResponse
 
-    /*@POST(APIEndPoint.CLIENTS + "")
+    /*@POST("clients")
     void uploadNewClientDetails();*/
-    @POST(APIEndPoint.CENTERS)
+    @POST("centers")
     suspend fun createCenter(@Body centerPayload: CenterPayloadEntity?): SaveResponse
 
-    @GET(APIEndPoint.CENTERS)
+    @GET("centers")
     suspend fun getCenterList(
         @Query("dateFormat") dateFormat: String?,
         @Query("locale") locale: String?,
@@ -158,7 +157,7 @@ interface CenterApi {
      * @param centerId
      * @return GenericResponse
      */
-    @POST(APIEndPoint.CENTERS + "/{centerId}?command=activate")
+    @POST("centers/{centerId}?command=activate")
     suspend fun activateCenter(
         @Path("centerId") centerId: Int,
         @Body activatePayload: ActivatePayload?,

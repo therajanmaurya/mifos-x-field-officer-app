@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases.createGuarantor
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.loan.LoanCreateGuarantorRepository
-import com.mifos.core.model.objects.account.loan.guarantor.GuarantorAccountTemplate
+import kpt.core.model.objects.account.loan.guarantor.GuarantorAccountTemplate
 
 class GetGuarantorAccountTemplateUseCase(
     private val repository: LoanCreateGuarantorRepository,

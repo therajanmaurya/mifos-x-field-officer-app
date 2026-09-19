@@ -9,9 +9,9 @@
  */
 package kpt.core.database.charge.helper
 
-import com.mifos.core.common.network.Dispatcher
-import com.mifos.core.common.network.MifosDispatchers
-import com.mifos.core.model.objects.clients.Page
+import kpt.core.common.network.Dispatcher
+import kpt.core.common.network.MifosDispatchers
+import kpt.core.model.objects.clients.Page
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

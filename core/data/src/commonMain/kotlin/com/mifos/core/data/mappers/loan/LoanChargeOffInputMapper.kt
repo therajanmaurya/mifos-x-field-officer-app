@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.mappers.loan
 
-import com.mifos.core.model.objects.account.loan.LoanChargeOffInput
+import kpt.core.model.objects.account.loan.LoanChargeOffInput
 import kpt.core.network.mifos.loan.dto.LoanChargeOffRequestDto
 
 fun LoanChargeOffInput.toDto(): LoanChargeOffRequestDto = LoanChargeOffRequestDto(

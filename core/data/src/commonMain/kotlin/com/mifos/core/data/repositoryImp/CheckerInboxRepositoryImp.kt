@@ -12,8 +12,8 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.CheckerInboxRepository
-import com.mifos.core.model.objects.checkerinboxtask.CheckerInboxSearchTemplate
-import com.mifos.core.model.objects.checkerinboxtask.CheckerTask
+import kpt.core.model.objects.checkerinboxtask.CheckerInboxSearchTemplate
+import kpt.core.model.objects.checkerinboxtask.CheckerTask
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.checkerinbox.datamanager.DataManagerCheckerInbox
 import kotlinx.coroutines.flow.Flow

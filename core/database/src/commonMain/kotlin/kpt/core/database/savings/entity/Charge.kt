@@ -9,9 +9,9 @@
  */
 package kpt.core.database.savings.entity
 
-import com.mifos.core.model.utils.IgnoredOnParcel
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.utils.IgnoredOnParcel
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kpt.core.database.charge.entity.ChargeCalculationTypeEntity
 import kpt.core.database.charge.entity.ChargeTimeTypeEntity
 import kotlinx.serialization.Serializable

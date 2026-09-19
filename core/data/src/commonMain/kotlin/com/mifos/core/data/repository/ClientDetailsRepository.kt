@@ -10,7 +10,7 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.account.share.ShareAccounts
+import kpt.core.model.objects.account.share.ShareAccounts
 import kpt.core.network.mifos.client.dto.ClientCloseTemplateResponse
 import kpt.core.model.shared.CollateralItem
 import kpt.core.model.shared.CollateralItemResult

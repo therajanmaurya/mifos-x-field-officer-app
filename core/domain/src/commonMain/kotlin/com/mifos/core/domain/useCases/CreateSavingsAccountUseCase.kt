@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.SavingsAccountRepository
-import com.mifos.core.model.objects.payloads.SavingsPayload
+import kpt.core.model.objects.payloads.SavingsPayload
 import kpt.core.model.client.Savings
 import kotlinx.coroutines.flow.Flow
 

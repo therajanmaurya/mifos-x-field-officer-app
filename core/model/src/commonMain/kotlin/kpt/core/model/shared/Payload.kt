@@ -9,7 +9,7 @@
  */
 package kpt.core.model.shared
 
-import com.mifos.core.model.utils.ApiDateFormatter
+import kpt.core.model.utils.ApiDateFormatter
 import kotlinx.serialization.Serializable
 
 // TODO Remove calendarId and TransactionDate from this Payload class;

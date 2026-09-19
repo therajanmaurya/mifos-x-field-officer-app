@@ -10,7 +10,7 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.noncoreobjects.Document
+import kpt.core.model.objects.noncoreobjects.Document
 import kpt.core.model.shared.GenericResponse
 import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.flow.Flow

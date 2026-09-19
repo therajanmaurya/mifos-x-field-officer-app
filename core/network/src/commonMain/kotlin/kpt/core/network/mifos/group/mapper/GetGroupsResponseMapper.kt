@@ -9,7 +9,7 @@
  */
 package kpt.core.network.mifos.group.mapper
 
-import com.mifos.core.common.utils.Page
+import kpt.core.common.utils.Page
 import kpt.core.network.data.AbstractMapper
 import kpt.core.network.mifos.group.dto.GetGroupsResponse
 import kpt.core.database.group.entity.GroupEntity

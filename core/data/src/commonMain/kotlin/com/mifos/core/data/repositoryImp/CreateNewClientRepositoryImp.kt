@@ -14,7 +14,7 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.mappers.client.ClientAddressMapper
 import com.mifos.core.data.repository.CreateNewClientRepository
-import com.mifos.core.model.objects.clients.ClientAddressEntity
+import kpt.core.model.objects.clients.ClientAddressEntity
 import kpt.core.network.client.datamanager.DataManagerClient
 import kpt.core.network.office.datamanager.DataManagerOffices
 import kpt.core.network.staff.datamanager.DataManagerStaff

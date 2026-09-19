@@ -10,7 +10,7 @@
 package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.data.repository.ReportDetailRepository
-import com.mifos.core.model.objects.runreport.FullParameterListResponse
+import kpt.core.model.objects.runreport.FullParameterListResponse
 import kpt.core.network.report.datamanager.DataManagerRunReport
 
 /**

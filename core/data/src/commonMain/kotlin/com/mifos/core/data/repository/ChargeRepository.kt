@@ -11,10 +11,10 @@ package com.mifos.core.data.repository
 
 import androidx.paging.PagingData
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.clients.ChargeCreationResponse
-import com.mifos.core.model.objects.clients.Page
-import com.mifos.core.model.objects.payloads.ChargesPayload
-import com.mifos.core.model.objects.template.client.ChargeTemplate
+import kpt.core.model.objects.clients.ChargeCreationResponse
+import kpt.core.model.objects.clients.Page
+import kpt.core.model.objects.payloads.ChargesPayload
+import kpt.core.model.objects.template.client.ChargeTemplate
 import kpt.core.database.charge.entity.ChargesEntity
 import kotlinx.coroutines.flow.Flow
 

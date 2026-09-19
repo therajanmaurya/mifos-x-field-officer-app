@@ -13,7 +13,6 @@ import kpt.core.base.network.annotation.ApiBinding
 
 import kpt.core.network.mifos.savings.dto.FixedDepositPayload
 import kpt.core.network.mifos.savings.dto.FixedDepositTemplate
-import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
@@ -23,13 +22,13 @@ import io.ktor.client.statement.HttpResponse
 @ApiBinding("mifos")
 interface FixedDepositApi {
 
-    @GET(APIEndPoint.FIXED_DEPOSIT + "/template")
+    @GET("fixeddepositaccounts/template")
     suspend fun fixedDepositProductTemplate(
         @Query("clientId") clientId: Int,
         @Query("productId") productId: Int?,
     ): FixedDepositTemplate
 
-    @POST(APIEndPoint.FIXED_DEPOSIT)
+    @POST("fixeddepositaccounts")
     suspend fun createFixedDepositAccount(
         @Body fixedDepositPayload: FixedDepositPayload,
     ): HttpResponse

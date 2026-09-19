@@ -1,0 +1,27 @@
+/*
+ * Copyright 2024 Mifos Initiative
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ */
+package kpt.core.model.objects.surveys
+
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
+import kotlinx.serialization.Serializable
+
+/**
+ * Created by Nasim Banu on 28,January,2016.
+ */
+@Parcelize
+@Serializable
+data class ScorecardValues(
+    var questionId: Int? = null,
+
+    var responseId: Int? = null,
+
+    var value: Int? = null,
+) : Parcelable

@@ -9,9 +9,9 @@
  */
 package com.mifos.core.data.datasource
 
-import com.mifos.core.common.utils.Constants
-import com.mifos.core.model.objects.searchrecord.GenericSearchRecord
-import com.mifos.core.model.objects.searchrecord.RecordType
+import kpt.core.common.utils.Constants
+import kpt.core.model.objects.searchrecord.GenericSearchRecord
+import kpt.core.model.objects.searchrecord.RecordType
 import kpt.core.database.client.entity.ClientAddressEntity
 import kpt.core.database.client.helper.ClientDaoHelper
 import kotlinx.coroutines.flow.Flow

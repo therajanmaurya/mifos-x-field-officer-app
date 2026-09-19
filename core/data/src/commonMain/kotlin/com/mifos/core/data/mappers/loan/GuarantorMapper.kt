@@ -9,12 +9,12 @@
  */
 package com.mifos.core.data.mappers.loan
 
-import com.mifos.core.model.objects.account.loan.guarantor.CreateGuarantor
-import com.mifos.core.model.objects.account.loan.guarantor.CreateGuarantorInput
-import com.mifos.core.model.objects.account.loan.guarantor.GuarantorAccountTemplate
-import com.mifos.core.model.objects.account.loan.guarantor.GuarantorRelationshipOption
-import com.mifos.core.model.objects.account.loan.guarantor.GuarantorTemplate
-import com.mifos.core.model.objects.account.loan.guarantor.GuarantorType
+import kpt.core.model.objects.account.loan.guarantor.CreateGuarantor
+import kpt.core.model.objects.account.loan.guarantor.CreateGuarantorInput
+import kpt.core.model.objects.account.loan.guarantor.GuarantorAccountTemplate
+import kpt.core.model.objects.account.loan.guarantor.GuarantorRelationshipOption
+import kpt.core.model.objects.account.loan.guarantor.GuarantorTemplate
+import kpt.core.model.objects.account.loan.guarantor.GuarantorType
 import kpt.core.network.mifos.loan.dto.CreateGuarantorResponseDto
 import kpt.core.network.mifos.loan.dto.GuarantorRequestDto
 import kpt.core.network.mifos.loan.dto.GuarantorAccountTemplateDto

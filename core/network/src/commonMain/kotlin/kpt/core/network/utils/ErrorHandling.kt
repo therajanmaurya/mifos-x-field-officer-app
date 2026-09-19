@@ -9,7 +9,7 @@
  */
 package kpt.core.network.utils
 
-import com.mifos.core.model.objects.error.MifosError
+import kpt.core.model.objects.error.MifosError
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json

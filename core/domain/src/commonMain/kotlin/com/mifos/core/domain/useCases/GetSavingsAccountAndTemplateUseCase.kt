@@ -9,7 +9,7 @@
  */
 package com.mifos.core.domain.useCases
 
-import com.mifos.core.common.utils.Constants
+import kpt.core.common.utils.Constants
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.SyncGroupsDialogRepository
 import kpt.core.database.shared.entity.SavingsAccountAndTransactionTemplate

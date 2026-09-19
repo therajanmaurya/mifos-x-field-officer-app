@@ -10,7 +10,7 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.users.UserLocation
+import kpt.core.model.objects.users.UserLocation
 import kotlinx.coroutines.flow.Flow
 
 /**

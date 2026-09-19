@@ -10,7 +10,7 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
 interface LoanAccountGeneralRepository {
 
     suspend fun getLoanById(loanId: Int): DataState<LoanWithAssociations?>

@@ -12,8 +12,8 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.PinPointClientRepository
-import com.mifos.core.model.objects.clients.ClientAddressRequest
-import com.mifos.core.model.objects.clients.ClientAddressResponse
+import kpt.core.model.objects.clients.ClientAddressRequest
+import kpt.core.model.objects.clients.ClientAddressResponse
 import kpt.core.network.client.datamanager.DataManagerClient
 import kpt.core.model.shared.PinpointLocationActionResponse
 import kotlinx.coroutines.flow.Flow

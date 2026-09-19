@@ -9,7 +9,7 @@
  */
 package kpt.core.database.di
 
-import com.mifos.core.common.network.MifosDispatchers
+import kpt.core.common.network.MifosDispatchers
 import kpt.core.database.center.helper.CenterDaoHelper
 import kpt.core.database.charge.helper.ChargeDaoHelper
 import kpt.core.database.client.helper.ClientDaoHelper

@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.ReportCategoryRepository
-import com.mifos.core.model.objects.runreport.client.ClientReportTypeItem
+import kpt.core.model.objects.runreport.client.ClientReportTypeItem
 import kotlinx.coroutines.flow.Flow
 
 class GetReportCategoryUseCase(

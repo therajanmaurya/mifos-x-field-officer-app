@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.mappers
 
-import com.mifos.core.model.objects.account.loan.Currency
+import kpt.core.model.objects.account.loan.Currency
 import kpt.core.model.shared.CurrencyDto
 
 fun CurrencyDto.toModel(): Currency = Currency(

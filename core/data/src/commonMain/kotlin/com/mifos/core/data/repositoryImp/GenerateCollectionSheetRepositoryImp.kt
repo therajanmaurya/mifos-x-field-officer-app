@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.GenerateCollectionSheetRepository
-import com.mifos.core.model.objects.collectionsheets.CollectionSheetRequestPayload
+import kpt.core.model.objects.collectionsheets.CollectionSheetRequestPayload
 import kpt.core.network.DataManager
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.collectionsheet.datamanager.DataManagerCollectionSheet

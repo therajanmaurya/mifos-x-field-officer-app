@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.DocumentListRepository
-import com.mifos.core.model.objects.noncoreobjects.Document
+import kpt.core.model.objects.noncoreobjects.Document
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.document.datamanager.DataManagerDocument
 import io.ktor.client.statement.HttpResponse

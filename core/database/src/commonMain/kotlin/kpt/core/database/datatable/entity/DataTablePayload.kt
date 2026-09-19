@@ -11,10 +11,10 @@ package kpt.core.database.datatable.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import com.mifos.core.common.utils.MapDeserializer
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
-import com.mifos.core.model.utils.RawValue
+import kpt.core.common.utils.MapDeserializer
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
+import kpt.core.model.utils.RawValue
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity

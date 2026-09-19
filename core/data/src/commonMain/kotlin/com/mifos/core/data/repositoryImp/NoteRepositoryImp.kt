@@ -11,15 +11,15 @@ package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
-import com.mifos.core.data.mappers.client.note.toDomain
+import kpt.core.data.mappers.client.note.toDomain
 import com.mifos.core.data.mappers.client.note.toDto
 import com.mifos.core.data.repository.NoteRepository
 import com.mifos.core.data.util.NetworkMonitor
 import com.mifos.core.data.util.runAsDataState
 import com.mifos.core.data.util.withNetworkCheck
-import com.mifos.core.model.objects.note.CreateNoteInput
-import com.mifos.core.model.objects.note.Note
-import com.mifos.core.model.objects.note.UpdateNoteInput
+import kpt.core.model.objects.note.CreateNoteInput
+import kpt.core.model.objects.note.Note
+import kpt.core.model.objects.note.UpdateNoteInput
 import kpt.core.network.note.datamanager.DataManagerNote
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

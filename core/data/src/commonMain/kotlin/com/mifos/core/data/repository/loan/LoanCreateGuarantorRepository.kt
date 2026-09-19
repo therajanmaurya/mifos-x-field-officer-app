@@ -10,10 +10,10 @@
 package com.mifos.core.data.repository.loan
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.account.loan.guarantor.CreateGuarantor
-import com.mifos.core.model.objects.account.loan.guarantor.CreateGuarantorInput
-import com.mifos.core.model.objects.account.loan.guarantor.GuarantorAccountTemplate
-import com.mifos.core.model.objects.account.loan.guarantor.GuarantorTemplate
+import kpt.core.model.objects.account.loan.guarantor.CreateGuarantor
+import kpt.core.model.objects.account.loan.guarantor.CreateGuarantorInput
+import kpt.core.model.objects.account.loan.guarantor.GuarantorAccountTemplate
+import kpt.core.model.objects.account.loan.guarantor.GuarantorTemplate
 
 interface LoanCreateGuarantorRepository {
 

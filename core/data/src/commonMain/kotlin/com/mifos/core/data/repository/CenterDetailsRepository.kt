@@ -10,7 +10,7 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.groups.CenterInfo
+import kpt.core.model.objects.groups.CenterInfo
 import kpt.core.database.center.entity.CenterWithAssociations
 import kotlinx.coroutines.flow.Flow
 

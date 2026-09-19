@@ -14,7 +14,6 @@ import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.model.shared.RetrieveOneResponse
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
-import kpt.core.common.APIEndPoint
 import kpt.core.database.staff.entity.StaffEntity
 
 @ApiBinding("mifos")
@@ -40,12 +39,12 @@ interface StaffApi {
         @Query("status") status: String? = "active",
     ): List<RetrieveOneResponse>
 
-    @GET(APIEndPoint.STAFF + "?status=all")
+    @GET("staff?status=all")
     suspend fun getStaffForOffice(@Query("officeId") officeId: Int): List<StaffEntity>
 
-    @GET(APIEndPoint.STAFF)
+    @GET("staff")
     suspend fun allStaff(): List<StaffEntity>
 
-    @GET(APIEndPoint.STAFF + "?isLoanOfficer=true")
+    @GET("staff?isLoanOfficer=true")
     suspend fun fieldStaffForOffice(): List<StaffEntity>
 }

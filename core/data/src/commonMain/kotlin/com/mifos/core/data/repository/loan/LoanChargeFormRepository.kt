@@ -9,9 +9,9 @@
  */
 package com.mifos.core.data.repository.loan
 
-import com.mifos.core.model.objects.clients.ChargeCreationResponse
-import com.mifos.core.model.objects.payloads.ChargesPayload
-import com.mifos.core.model.objects.template.client.ChargeTemplate
+import kpt.core.model.objects.clients.ChargeCreationResponse
+import kpt.core.model.objects.payloads.ChargesPayload
+import kpt.core.model.objects.template.client.ChargeTemplate
 
 /**
  * Created by Aditya Gupta on 16/08/23.

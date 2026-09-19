@@ -11,8 +11,8 @@ package kpt.core.database.center.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kpt.core.database.loan.entity.LoanTimelineEntity
 import kpt.core.database.client.entity.ClientStatusEntity
 import androidx.room3.Entity

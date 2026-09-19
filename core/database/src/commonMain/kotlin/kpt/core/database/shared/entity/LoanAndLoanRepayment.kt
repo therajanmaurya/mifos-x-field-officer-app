@@ -9,7 +9,7 @@
  */
 package kpt.core.database.shared.entity
 
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
 import kpt.core.database.loan.entity.LoanRepaymentTemplateEntity
 
 /**

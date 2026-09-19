@@ -9,8 +9,8 @@
  */
 package com.mifos.core.data.repository
 
-import com.mifos.core.model.objects.searchrecord.GenericSearchRecord
-import com.mifos.core.model.objects.searchrecord.RecordType
+import kpt.core.model.objects.searchrecord.GenericSearchRecord
+import kpt.core.model.objects.searchrecord.RecordType
 import kotlinx.coroutines.flow.Flow
 
 interface SearchRecordRepository {

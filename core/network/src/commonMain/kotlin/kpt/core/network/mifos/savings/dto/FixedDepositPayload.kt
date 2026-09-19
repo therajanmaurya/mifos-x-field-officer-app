@@ -9,7 +9,7 @@
  */
 package kpt.core.network.mifos.savings.dto
 
-import com.mifos.core.model.objects.payloads.ChargeItem
+import kpt.core.model.objects.payloads.ChargeItem
 import kotlinx.serialization.Serializable
 
 @Serializable

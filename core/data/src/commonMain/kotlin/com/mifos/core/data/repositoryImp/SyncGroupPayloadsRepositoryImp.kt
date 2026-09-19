@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SyncGroupPayloadsRepository
-import com.mifos.core.model.objects.responses.SaveResponse
+import kpt.core.model.objects.responses.SaveResponse
 import kpt.core.network.group.datamanager.DataManagerGroups
 import kpt.core.database.group.entity.GroupPayloadEntity
 import kotlinx.coroutines.flow.Flow

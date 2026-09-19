@@ -9,11 +9,11 @@
  */
 package kpt.core.network.mifos.savings.dto
 
-import com.mifos.core.model.objects.template.client.ChargeAppliesTo
-import com.mifos.core.model.objects.template.client.ChargeCalculationType
-import com.mifos.core.model.objects.template.client.ChargePaymentMode
-import com.mifos.core.model.objects.template.client.ChargeTimeType
-import com.mifos.core.model.objects.template.client.Currency
+import kpt.core.model.objects.template.client.ChargeAppliesTo
+import kpt.core.model.objects.template.client.ChargeCalculationType
+import kpt.core.model.objects.template.client.ChargePaymentMode
+import kpt.core.model.objects.template.client.ChargeTimeType
+import kpt.core.model.objects.template.client.Currency
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kpt.core.model.shared.ProductOption

@@ -12,7 +12,7 @@ package com.mifos.core.domain.useCases
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.GenerateCollectionSheetRepository
-import com.mifos.core.model.objects.collectionsheets.CollectionSheetRequestPayload
+import kpt.core.model.objects.collectionsheets.CollectionSheetRequestPayload
 import kpt.core.database.collectionsheet.entity.CollectionSheetResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

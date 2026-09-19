@@ -10,7 +10,7 @@
 package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.common.utils.Page
+import kpt.core.common.utils.Page
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.GroupsListRepository
 import kpt.core.network.group.datamanager.DataManagerGroups

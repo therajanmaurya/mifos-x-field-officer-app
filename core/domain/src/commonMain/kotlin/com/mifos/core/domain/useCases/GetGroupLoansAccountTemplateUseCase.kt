@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.GroupLoanAccountRepository
-import com.mifos.core.model.objects.template.loan.GroupLoanTemplate
+import kpt.core.model.objects.template.loan.GroupLoanTemplate
 import kotlinx.coroutines.flow.Flow
 
 class GetGroupLoansAccountTemplateUseCase(

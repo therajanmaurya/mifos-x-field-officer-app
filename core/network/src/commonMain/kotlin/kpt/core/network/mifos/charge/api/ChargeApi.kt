@@ -11,11 +11,10 @@ package kpt.core.network.mifos.charge.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.model.objects.clients.ChargeCreationResponse
-import com.mifos.core.model.objects.clients.Page
-import com.mifos.core.model.objects.payloads.ChargesPayload
-import com.mifos.core.model.objects.template.client.ChargeTemplate
-import kpt.core.common.APIEndPoint
+import kpt.core.model.objects.clients.ChargeCreationResponse
+import kpt.core.model.objects.clients.Page
+import kpt.core.model.objects.payloads.ChargesPayload
+import kpt.core.model.objects.template.client.ChargeTemplate
 import kpt.core.database.charge.entity.ChargesEntity
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
@@ -47,7 +46,7 @@ interface ChargeApi {
      *
      * @return [Flow] emitting an [HttpResponse] containing the list of charges.
      */
-    @GET(APIEndPoint.CHARGES)
+    @GET("charges")
     suspend fun listAllCharges(): HttpResponse
 
     /**

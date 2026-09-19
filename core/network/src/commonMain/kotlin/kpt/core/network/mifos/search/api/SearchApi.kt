@@ -11,8 +11,7 @@ package kpt.core.network.mifos.search.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.model.objects.SearchedEntity
-import kpt.core.common.APIEndPoint
+import kpt.core.model.objects.SearchedEntity
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
 
@@ -22,7 +21,7 @@ import de.jensklingenberg.ktorfit.http.Query
 @ApiBinding("mifos")
 interface SearchApi {
 
-    @GET(APIEndPoint.SEARCH)
+    @GET("search")
     suspend fun searchResources(
         @Query("query") query: String,
         @Query("resource") resource: String?,

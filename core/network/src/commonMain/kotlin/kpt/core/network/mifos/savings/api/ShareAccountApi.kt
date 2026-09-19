@@ -13,7 +13,6 @@ import kpt.core.base.network.annotation.ApiBinding
 
 import kpt.core.network.mifos.savings.dto.ShareAccountPayload
 import kpt.core.network.mifos.savings.dto.ShareTemplate
-import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
@@ -22,13 +21,13 @@ import io.ktor.client.statement.HttpResponse
 
 @ApiBinding("mifos")
 interface ShareAccountApi {
-    @GET("accounts/" + APIEndPoint.SHARE + "/template")
+    @GET("accounts/share/template")
     suspend fun shareProductTemplate(
         @Query("clientId") clientId: Int,
         @Query("productId") productId: Int?,
     ): ShareTemplate
 
-    @POST("accounts/" + APIEndPoint.SHARE)
+    @POST("accounts/share")
     suspend fun createShareAccount(
         @Body shareAccountPayload: ShareAccountPayload,
     ): HttpResponse

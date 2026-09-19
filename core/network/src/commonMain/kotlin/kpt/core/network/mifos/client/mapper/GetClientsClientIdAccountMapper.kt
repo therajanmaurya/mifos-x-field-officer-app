@@ -9,8 +9,8 @@
  */
 package kpt.core.network.mifos.client.mapper
 
-import com.mifos.core.model.objects.account.share.ShareAccounts
-import com.mifos.core.model.objects.account.share.ShareAccountsStatus
+import kpt.core.model.objects.account.share.ShareAccounts
+import kpt.core.model.objects.account.share.ShareAccountsStatus
 import kpt.core.network.data.AbstractMapper
 import kpt.core.network.mifos.client.dto.GetClientsClientIdAccountsResponse
 import kpt.core.network.mifos.client.dto.GetClientsLoanAccounts

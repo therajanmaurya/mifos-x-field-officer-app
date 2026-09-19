@@ -9,10 +9,10 @@
  */
 package kpt.core.database.group.helper
 
-import com.mifos.core.common.network.Dispatcher
-import com.mifos.core.common.network.MifosDispatchers
-import com.mifos.core.common.utils.Page
-import com.mifos.core.model.objects.responses.SaveResponse
+import kpt.core.common.network.Dispatcher
+import kpt.core.common.network.MifosDispatchers
+import kpt.core.common.utils.Page
+import kpt.core.model.objects.responses.SaveResponse
 import kpt.core.database.group.dao.GroupsDao
 import kpt.core.database.group.entity.GroupAccounts
 import kpt.core.database.loan.entity.LoanAccountEntity

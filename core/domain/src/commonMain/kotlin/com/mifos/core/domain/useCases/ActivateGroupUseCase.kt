@@ -10,9 +10,9 @@
 package com.mifos.core.domain.useCases
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.common.utils.extractErrorMessage
+import kpt.core.common.utils.extractErrorMessage
 import com.mifos.core.data.repository.ActivateRepository
-import com.mifos.core.model.objects.clients.ActivatePayload
+import kpt.core.model.objects.clients.ActivatePayload
 
 class ActivateGroupUseCase(
     private val activateRepository: ActivateRepository,

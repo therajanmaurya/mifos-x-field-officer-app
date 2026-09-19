@@ -12,8 +12,8 @@ package com.mifos.core.data.repositoryImp.loan
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.loan.LoanAccountRepository
-import com.mifos.core.model.objects.account.loan.RepaymentSchedule
-import com.mifos.core.model.objects.organisations.LoanProducts
+import kpt.core.model.objects.account.loan.RepaymentSchedule
+import kpt.core.model.objects.organisations.LoanProducts
 import kpt.core.network.loan.datamanager.DataManagerLoan
 import kpt.core.network.mifos.loan.dto.LoansPayload
 import kpt.core.database.loan.entity.LoanTemplate

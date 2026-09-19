@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.mappers.loan
 
-import com.mifos.core.model.objects.account.loan.ChargeOffReasonOption
+import kpt.core.model.objects.account.loan.ChargeOffReasonOption
 import kpt.core.network.mifos.loan.dto.ChargeOffReasonOptionDto
 
 fun ChargeOffReasonOptionDto.toModel(): ChargeOffReasonOption = ChargeOffReasonOption(

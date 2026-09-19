@@ -11,11 +11,10 @@ package kpt.core.network.mifos.collectionsheet.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.model.objects.collectionsheets.CollectionSheetRequestPayload
+import kpt.core.model.objects.collectionsheets.CollectionSheetRequestPayload
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.collectionsheet.dto.IndividualCollectionSheetPayload
 import kpt.core.network.mifos.collectionsheet.dto.RequestCollectionSheetPayload
-import kpt.core.common.APIEndPoint
 import kpt.core.database.collectionsheet.entity.CenterDetail
 import kpt.core.model.collectionsheet.CollectionSheetPayload
 import kpt.core.database.collectionsheet.entity.CollectionSheetResponse
@@ -33,12 +32,12 @@ import de.jensklingenberg.ktorfit.http.Query
  */
 @ApiBinding("mifos")
 interface CollectionSheetApi {
-    @POST(APIEndPoint.COLLECTION_SHEET + "?command=generateCollectionSheet")
+    @POST("collectionsheet?command=generateCollectionSheet")
     suspend fun getIndividualCollectionSheet(
         @Body payload: RequestCollectionSheetPayload?,
     ): IndividualCollectionSheet
 
-    @POST(APIEndPoint.COLLECTION_SHEET + "?command=saveCollectionSheet")
+    @POST("collectionsheet?command=saveCollectionSheet")
     suspend fun saveIndividualCollectionSheet(
         @Body payload: IndividualCollectionSheetPayload?,
     ): GenericResponse
@@ -53,7 +52,7 @@ interface CollectionSheetApi {
      * @param staffId Staff Id
      * @return List of CenterDetail
      */
-    @GET(APIEndPoint.CENTERS)
+    @GET("centers")
     suspend fun fetchCenterDetails(
         @Query("dateFormat") format: String?,
         @Query("locale") locale: String?,
@@ -68,31 +67,31 @@ interface CollectionSheetApi {
      * @param payload CollectionSheetRequestPayload
      * @return CollectionSheetResponse
      */
-    @POST(APIEndPoint.CENTERS + "/{centerId}" + "?command=generateCollectionSheet")
+    @POST("centers/{centerId}?command=generateCollectionSheet")
     suspend fun fetchProductiveSheet(
         @Path("centerId") centerId: Int,
         @Body payload: CollectionSheetRequestPayload?,
     ): CollectionSheetResponse
 
-    @POST(APIEndPoint.CENTERS + "/{centerId}" + "?command=saveCollectionSheet")
+    @POST("centers/{centerId}?command=saveCollectionSheet")
     suspend fun submitProductiveSheet(
         @Path("centerId") centerId: Int,
         @Body payload: ProductiveCollectionSheetPayload?,
     ): GenericResponse
 
-    @POST(APIEndPoint.GROUPS + "/{groupId}" + "?command=generateCollectionSheet")
+    @POST("groups/{groupId}?command=generateCollectionSheet")
     suspend fun fetchCollectionSheet(
         @Path("groupId") groupId: Int,
         @Body payload: CollectionSheetRequestPayload?,
     ): CollectionSheetResponse
 
-    @POST(APIEndPoint.GROUPS + "/{groupId}" + "?command=saveCollectionSheet")
+    @POST("groups/{groupId}?command=saveCollectionSheet")
     suspend fun submitCollectionSheet(
         @Path("groupId") groupId: Int,
         @Body payload: CollectionSheetPayload?,
     ): GenericResponse
 
-    @GET(APIEndPoint.CENTERS + "/{centerId}?associations=groupMembers,collectionMeetingCalendar")
+    @GET("centers/{centerId}?associations=groupMembers,collectionMeetingCalendar")
     suspend fun fetchGroupsAssociatedWithCenter(
         @Path("centerId") centerId: Int,
     ): CenterWithAssociations

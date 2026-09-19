@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.di
 
-import com.mifos.core.common.network.MifosDispatchers
+import kpt.core.common.network.MifosDispatchers
 import com.mifos.core.data.util.ConnectivityManagerNetworkMonitor
 import com.mifos.core.data.util.NetworkMonitor
 import org.koin.android.ext.koin.androidContext

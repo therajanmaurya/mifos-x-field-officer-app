@@ -9,8 +9,8 @@
  */
 package kpt.core.database.shared.entity
 
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kpt.core.database.client.entity.ClientEntity
 /*
  * Created by Aditya Gupta on 22/7/23.

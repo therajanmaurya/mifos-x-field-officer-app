@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.PathTrackingRepository
-import com.mifos.core.model.objects.users.UserLocation
+import kpt.core.model.objects.users.UserLocation
 import kotlinx.coroutines.flow.Flow
 
 class GetUserPathTrackingUseCase(

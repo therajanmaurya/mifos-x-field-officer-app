@@ -13,7 +13,7 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.LoanRejectRepository
 import com.mifos.core.data.util.NetworkMonitor
 import com.mifos.core.data.util.runAsDataState
-import com.mifos.core.model.objects.account.loan.RejectLoanInput
+import kpt.core.model.objects.account.loan.RejectLoanInput
 import kpt.core.network.loan.datamanager.DataManagerLoan
 import kpt.core.network.mifos.loan.dto.RejectLoanRequestDto
 import template.core.base.common.manager.DispatcherManager

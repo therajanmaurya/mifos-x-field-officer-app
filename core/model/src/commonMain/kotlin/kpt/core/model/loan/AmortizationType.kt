@@ -9,8 +9,8 @@
  */
 package kpt.core.model.loan
 
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 @Parcelize

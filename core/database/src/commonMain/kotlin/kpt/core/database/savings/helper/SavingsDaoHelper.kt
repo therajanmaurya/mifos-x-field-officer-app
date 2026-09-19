@@ -9,9 +9,9 @@
  */
 package kpt.core.database.savings.helper
 
-import com.mifos.core.common.network.Dispatcher
-import com.mifos.core.common.network.MifosDispatchers
-import com.mifos.core.model.objects.account.saving.SavingsAccountTransactionResponse
+import kpt.core.common.network.Dispatcher
+import kpt.core.common.network.MifosDispatchers
+import kpt.core.model.objects.account.saving.SavingsAccountTransactionResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll

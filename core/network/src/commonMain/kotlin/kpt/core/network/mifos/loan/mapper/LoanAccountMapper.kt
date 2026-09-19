@@ -9,20 +9,20 @@
  */
 package kpt.core.network.mifos.loan.mapper
 
-import com.mifos.core.model.objects.account.loan.AmortizationType
-import com.mifos.core.model.objects.account.loan.InterestCalculationPeriodType
-import com.mifos.core.model.objects.account.loan.InterestRateFrequencyType
-import com.mifos.core.model.objects.account.loan.InterestType
-import com.mifos.core.model.objects.account.loan.RepaymentFrequencyType
-import com.mifos.core.model.objects.account.loan.RepaymentSchedule
-import com.mifos.core.model.objects.account.loan.TermPeriodFrequencyType
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.ActualDisbursementDate
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanAccountSummary
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanStatus
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanTimeline
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanType
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.SavingAccountCurrency
+import kpt.core.model.objects.account.loan.AmortizationType
+import kpt.core.model.objects.account.loan.InterestCalculationPeriodType
+import kpt.core.model.objects.account.loan.InterestRateFrequencyType
+import kpt.core.model.objects.account.loan.InterestType
+import kpt.core.model.objects.account.loan.RepaymentFrequencyType
+import kpt.core.model.objects.account.loan.RepaymentSchedule
+import kpt.core.model.objects.account.loan.TermPeriodFrequencyType
+import kpt.core.model.objects.account.loan.loanWithAssociations.ActualDisbursementDate
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanAccountSummary
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanStatus
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanTimeline
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanType
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
+import kpt.core.model.objects.account.loan.loanWithAssociations.SavingAccountCurrency
 import kpt.core.network.data.AbstractMapper
 import kpt.core.database.loan.entity.ActualDisbursementDateEntity
 import kpt.core.database.loan.entity.LoanAccountSummaryEntity

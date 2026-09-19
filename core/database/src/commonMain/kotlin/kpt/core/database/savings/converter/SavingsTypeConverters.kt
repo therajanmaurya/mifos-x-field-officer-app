@@ -10,11 +10,11 @@
 package kpt.core.database.savings.converter
 
 import androidx.room3.ColumnTypeConverter
-import com.mifos.core.model.objects.account.saving.InterestCalculationDaysInYearType
-import com.mifos.core.model.objects.account.saving.InterestCalculationType
-import com.mifos.core.model.objects.account.saving.InterestCompoundingPeriodType
-import com.mifos.core.model.objects.account.saving.InterestPostingPeriodType
-import com.mifos.core.model.objects.account.saving.LockinPeriodFrequencyType
+import kpt.core.model.objects.account.saving.InterestCalculationDaysInYearType
+import kpt.core.model.objects.account.saving.InterestCalculationType
+import kpt.core.model.objects.account.saving.InterestCompoundingPeriodType
+import kpt.core.model.objects.account.saving.InterestPostingPeriodType
+import kpt.core.model.objects.account.saving.LockinPeriodFrequencyType
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kpt.core.base.database.annotation.DbConverters

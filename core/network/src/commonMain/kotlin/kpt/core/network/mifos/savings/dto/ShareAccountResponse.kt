@@ -9,9 +9,9 @@
  */
 package kpt.core.network.mifos.savings.dto
 
-import com.mifos.core.model.objects.organisations.Currency
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.objects.organisations.Currency
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kpt.core.model.shared.Timeline
 import kotlinx.serialization.Serializable
 

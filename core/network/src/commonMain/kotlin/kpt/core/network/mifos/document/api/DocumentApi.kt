@@ -11,9 +11,8 @@ package kpt.core.network.mifos.document.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.model.objects.noncoreobjects.Document
+import kpt.core.model.objects.noncoreobjects.Document
 import kpt.core.model.shared.GenericResponse
-import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET
@@ -26,7 +25,7 @@ import io.ktor.client.statement.HttpResponse
 
 @ApiBinding("mifos")
 interface DocumentApi {
-    @GET("{entityType}/{entityId}/" + APIEndPoint.DOCUMENTS)
+    @GET("{entityType}/{entityId}/documents")
     suspend fun getDocuments(
         @Path("entityType") entityType: String,
         @Path("entityId") entityId: Int,
@@ -40,7 +39,7 @@ interface DocumentApi {
      * @param description             - Mandatory - Document Description
      * @param typedFile               - Mandatory
      */
-    @POST("{entityType}/{entityId}/" + APIEndPoint.DOCUMENTS)
+    @POST("{entityType}/{entityId}/documents")
     suspend fun createDocument(
         @Path("entityType") entityType: String,
         @Path("entityId") entityId: Int,
@@ -61,7 +60,7 @@ interface DocumentApi {
      */
 
     @Headers("Accept: text/plain, application/json, */*")
-    @GET("{entityType}/{entityId}/" + APIEndPoint.DOCUMENTS + "/{documentId}/attachment")
+    @GET("{entityType}/{entityId}/documents/{documentId}/attachment")
     suspend fun downloadDocument(
         @Path("entityType") entityType: String,
         @Path("entityId") entityId: Int,
@@ -80,7 +79,7 @@ interface DocumentApi {
      * @param documentId    - Document Id
      * @return
      */
-    @DELETE("{entityType}/{entityId}/" + APIEndPoint.DOCUMENTS + "/{documentId}")
+    @DELETE("{entityType}/{entityId}/documents/{documentId}")
     suspend fun removeDocument(
         @Path("entityType") entityType: String,
         @Path("entityId") entityId: Int,
@@ -102,7 +101,7 @@ interface DocumentApi {
      * @param description             - Mandatory - Document Description
      * @param typedFile               - Mandatory
      */
-    @PUT("{entityType}/{entityId}/" + APIEndPoint.DOCUMENTS + "/{documentId}")
+    @PUT("{entityType}/{entityId}/documents/{documentId}")
     suspend fun updateDocument(
         @Path("entityType") entityType: String,
         @Path("entityId") entityId: Int,

@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.NoteRepository
-import com.mifos.core.model.objects.note.UpdateNoteInput
+import kpt.core.model.objects.note.UpdateNoteInput
 
 class UpdateNoteUseCase(
     val repository: NoteRepository,

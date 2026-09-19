@@ -10,7 +10,7 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.responses.SaveResponse
+import kpt.core.model.objects.responses.SaveResponse
 import kpt.core.database.group.entity.GroupPayloadEntity
 import kpt.core.database.office.entity.OfficeEntity
 import kotlinx.coroutines.flow.Flow

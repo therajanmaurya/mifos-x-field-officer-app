@@ -10,7 +10,7 @@
 package kpt.core.database.client.converter
 
 import androidx.room3.ColumnTypeConverter
-import com.mifos.core.model.objects.account.loan.Currency
+import kpt.core.model.objects.account.loan.Currency
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kpt.core.base.database.annotation.DbConverters

@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SavingsAccountTransactionRepository
-import com.mifos.core.model.objects.account.saving.SavingsAccountTransactionResponse
+import kpt.core.model.objects.account.saving.SavingsAccountTransactionResponse
 import kpt.core.network.savings.datamanager.DataManagerSavings
 import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
 import kpt.core.database.savings.entity.SavingsAccountTransactionTemplateEntity

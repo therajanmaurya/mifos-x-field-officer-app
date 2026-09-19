@@ -10,9 +10,9 @@
 package kpt.core.database.client.helper
 
 import co.touchlab.kermit.Logger
-import com.mifos.core.common.utils.Constants.DATA_TABLE_NAME_CLIENT
-import com.mifos.core.common.utils.MapDeserializer
-import com.mifos.core.common.utils.Page
+import kpt.core.common.utils.Constants.DATA_TABLE_NAME_CLIENT
+import kpt.core.common.utils.MapDeserializer
+import kpt.core.common.utils.Page
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

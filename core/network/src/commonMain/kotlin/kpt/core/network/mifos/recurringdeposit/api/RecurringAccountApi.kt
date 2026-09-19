@@ -11,8 +11,7 @@ package kpt.core.network.mifos.recurringdeposit.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.model.objects.payloads.RecurringDepositAccountPayload
-import kpt.core.common.APIEndPoint
+import kpt.core.model.objects.payloads.RecurringDepositAccountPayload
 import kpt.core.model.recurringdeposit.RecurringDepositAccountTemplate
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
@@ -23,12 +22,12 @@ import io.ktor.client.statement.HttpResponse
 @ApiBinding("mifos")
 interface RecurringAccountApi {
 
-    @POST(APIEndPoint.CREATE_RECURRING_DEPOSIT_ACCOUNTS)
+    @POST("recurringdepositaccounts")
     suspend fun createRecurringDepositAccount(
         @Body recurringDepositAccountPayload: RecurringDepositAccountPayload?,
     ): HttpResponse
 
-    @GET(APIEndPoint.CREATE_RECURRING_DEPOSIT_ACCOUNTS + "/template")
+    @GET("recurringdepositaccounts/template")
     suspend fun getRecurringDepositAccountTemplate(
         @Query("clientId") clientId: Int,
         @Query("productId") productId: Int?,

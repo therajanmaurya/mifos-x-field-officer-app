@@ -1,0 +1,22 @@
+/*
+ * Copyright 2025 Mifos Initiative
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ */
+package kpt.core.model.objects.template.recurring.interest
+
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
+import kotlinx.serialization.Serializable
+
+@Parcelize
+@Serializable
+data class InterestPostingPeriodTypeOption(
+    val code: String? = null,
+    val id: Int? = null,
+    val value: String? = null,
+) : Parcelable

@@ -13,11 +13,11 @@ import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.PrimaryKey
-import com.mifos.core.model.objects.account.saving.InterestCalculationDaysInYearType
-import com.mifos.core.model.objects.account.saving.InterestCalculationType
-import com.mifos.core.model.objects.account.saving.InterestCompoundingPeriodType
-import com.mifos.core.model.objects.account.saving.InterestPostingPeriodType
-import com.mifos.core.model.objects.account.saving.LockinPeriodFrequencyType
+import kpt.core.model.objects.account.saving.InterestCalculationDaysInYearType
+import kpt.core.model.objects.account.saving.InterestCalculationType
+import kpt.core.model.objects.account.saving.InterestCompoundingPeriodType
+import kpt.core.model.objects.account.saving.InterestPostingPeriodType
+import kpt.core.model.objects.account.saving.LockinPeriodFrequencyType
 import kotlinx.serialization.Serializable
 import kpt.core.base.database.annotation.DbEntity
 import kpt.core.database.loan.entity.LoanTimelineEntity

@@ -12,11 +12,11 @@ package com.mifos.core.data.repositoryImp.loan
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.loan.LoanReschedulesRepository
-import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleApprovalRequest
-import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleRejectionRequest
-import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleRequest
-import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleResponse
-import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleTemplate
+import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleApprovalRequest
+import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRejectionRequest
+import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRequest
+import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleResponse
+import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleTemplate
 import kpt.core.network.loan.datamanager.DataManagerLoan
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow

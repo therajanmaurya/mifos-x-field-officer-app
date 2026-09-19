@@ -11,11 +11,10 @@ package kpt.core.network.mifos.client.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.model.objects.noncoreobjects.Identifier
-import com.mifos.core.model.objects.noncoreobjects.IdentifierPayload
-import com.mifos.core.model.objects.noncoreobjects.IdentifierTemplate
+import kpt.core.model.objects.noncoreobjects.Identifier
+import kpt.core.model.objects.noncoreobjects.IdentifierPayload
+import kpt.core.model.objects.noncoreobjects.IdentifierTemplate
 import kpt.core.model.shared.GenericResponse
-import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET
@@ -36,7 +35,7 @@ interface ClientIdentifierApi {
      * @param clientId The unique ID of the client.
      * @return [Flow] emitting a list of [Identifier]s for the specified client.
      */
-    @GET(APIEndPoint.CLIENTS + "/{clientId}/" + APIEndPoint.IDENTIFIERS)
+    @GET("clients/{clientId}/identifiers")
     suspend fun getClientListIdentifiers(@Path("clientId") clientId: Long): List<Identifier>
 
     /**
@@ -49,7 +48,7 @@ interface ClientIdentifierApi {
      * @param identifierId The unique ID of the identifier.
      * @return [Flow] emitting the [Identifier] object.
      */
-    @GET(APIEndPoint.CLIENTS + "/{clientId}/" + APIEndPoint.IDENTIFIERS + "/{identifierId}")
+    @GET("clients/{clientId}/identifiers/{identifierId}")
     suspend fun getClientIdentifiers(
         @Path("clientId") clientId: Long,
         @Path("identifierId") identifierId: Long,
@@ -64,7 +63,7 @@ interface ClientIdentifierApi {
      * @param clientId The unique ID of the client.
      * @return [Flow] emitting the [IdentifierTemplate] for the specified client.
      */
-    @GET(APIEndPoint.CLIENTS + "/{clientId}/identifiers/template")
+    @GET("clients/{clientId}/identifiers/template")
     suspend fun getClientIdentifierTemplate(@Path("clientId") clientId: Long): IdentifierTemplate
 
     /**
@@ -77,7 +76,7 @@ interface ClientIdentifierApi {
      * @param identifierId The unique ID of the identifier to be deleted.
      * @return [GenericResponse] indicating the result of the delete operation.
      */
-    @DELETE(APIEndPoint.CLIENTS + "/{clientId}/" + APIEndPoint.IDENTIFIERS + "/{identifierId}")
+    @DELETE("clients/{clientId}/identifiers/{identifierId}")
     suspend fun deleteClientIdentifier(
         @Path("clientId") clientId: Long,
         @Path("identifierId") identifierId: Long,
@@ -93,7 +92,7 @@ interface ClientIdentifierApi {
      * @param identifierPayload The payload containing identifier details.
      * @return [GenericResponse] indicating the result of the create operation.
      */
-    @POST(APIEndPoint.CLIENTS + "/{clientId}/" + APIEndPoint.IDENTIFIERS)
+    @POST("clients/{clientId}/identifiers")
     suspend fun createClientIdentifier(
         @Path("clientId") clientId: Long,
         @Body identifierPayload: IdentifierPayload,
@@ -110,7 +109,7 @@ interface ClientIdentifierApi {
      * @param identifierPayload The updated payload for the identifier.
      * @return [GenericResponse] indicating the result of the update operation.
      */
-    @PUT(APIEndPoint.CLIENTS + "/{clientId}/" + APIEndPoint.IDENTIFIERS + "/{identifierId}")
+    @PUT("clients/{clientId}/identifiers/{identifierId}")
     suspend fun updateClientIdentifier(
         @Path("clientId") clientId: Long,
         @Path("identifierId") identifierId: Long,

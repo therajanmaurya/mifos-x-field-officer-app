@@ -9,10 +9,10 @@
  */
 package kpt.core.database.loan.entity
 
-import com.mifos.core.model.objects.template.loan.Type
-import com.mifos.core.model.utils.IgnoredOnParcel
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.objects.template.loan.Type
+import kpt.core.model.utils.IgnoredOnParcel
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 import kotlinx.serialization.Serializable
 

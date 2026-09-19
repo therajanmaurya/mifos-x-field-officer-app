@@ -10,8 +10,8 @@
 package com.mifos.core.data.repository.loan
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.account.loan.ChargeOffReasonOption
-import com.mifos.core.model.objects.account.loan.LoanChargeOffInput
+import kpt.core.model.objects.account.loan.ChargeOffReasonOption
+import kpt.core.model.objects.account.loan.LoanChargeOffInput
 
 interface LoanChargeOffRepository {
 

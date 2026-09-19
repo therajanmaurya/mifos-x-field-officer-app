@@ -9,9 +9,9 @@
  */
 package com.mifos.core.data.mappers.loan
 
-import com.mifos.core.model.objects.account.loan.assignLoanOfficer.AssignLoanOfficerInput
-import com.mifos.core.model.objects.account.loan.assignLoanOfficer.AssignLoanOfficerResponse
-import com.mifos.core.model.objects.template.loan.LoanOfficerOption
+import kpt.core.model.objects.account.loan.assignLoanOfficer.AssignLoanOfficerInput
+import kpt.core.model.objects.account.loan.assignLoanOfficer.AssignLoanOfficerResponse
+import kpt.core.model.objects.template.loan.LoanOfficerOption
 import kpt.core.network.mifos.loan.dto.AssignLoanOfficerRequestDto
 import kpt.core.network.mifos.loan.dto.AssignLoanOfficerResponseDto
 import kpt.core.network.mifos.loan.dto.LoanOfficerOptionDto

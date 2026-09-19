@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.repositoryImp
 
-import com.mifos.core.datastore.UserPreferencesRepository
+import kpt.core.datastore.UserPreferencesRepository
 import com.russhwolf.settings.Settings
 import org.mifos.authenticator.passcode.PasscodeStorageAdapter
 

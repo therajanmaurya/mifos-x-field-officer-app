@@ -9,8 +9,8 @@
  */
 package kpt.core.database.center.entity
 
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kpt.core.database.loan.entity.LoanAccountEntity
 import kpt.core.database.savings.entity.SavingsAccountEntity
 import kotlinx.serialization.Serializable

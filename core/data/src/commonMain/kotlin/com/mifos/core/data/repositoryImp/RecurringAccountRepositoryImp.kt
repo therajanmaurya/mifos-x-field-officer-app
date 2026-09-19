@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.RecurringAccountRepository
-import com.mifos.core.model.objects.payloads.RecurringDepositAccountPayload
+import kpt.core.model.objects.payloads.RecurringDepositAccountPayload
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.recurringdeposit.datamanager.DataManagerRecurringAccount
 import kpt.core.model.recurringdeposit.RecurringDepositAccountTemplate

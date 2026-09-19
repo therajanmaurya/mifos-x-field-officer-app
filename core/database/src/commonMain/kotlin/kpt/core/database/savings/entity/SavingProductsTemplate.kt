@@ -9,14 +9,14 @@
  */
 package kpt.core.database.savings.entity
 
-import com.mifos.core.model.objects.account.loan.Currency
-import com.mifos.core.model.objects.account.saving.FieldOfficerOptions
-import com.mifos.core.model.objects.commonfiles.InterestType
-import com.mifos.core.model.objects.template.client.ChargeOptions
-import com.mifos.core.model.objects.template.saving.AccountOptions
-import com.mifos.core.model.utils.IgnoredOnParcel
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.objects.account.loan.Currency
+import kpt.core.model.objects.account.saving.FieldOfficerOptions
+import kpt.core.model.objects.commonfiles.InterestType
+import kpt.core.model.objects.template.client.ChargeOptions
+import kpt.core.model.objects.template.saving.AccountOptions
+import kpt.core.model.utils.IgnoredOnParcel
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 

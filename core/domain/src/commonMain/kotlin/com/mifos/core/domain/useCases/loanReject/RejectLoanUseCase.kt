@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases.loanReject
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.LoanRejectRepository
-import com.mifos.core.model.objects.account.loan.RejectLoanInput
+import kpt.core.model.objects.account.loan.RejectLoanInput
 
 class RejectLoanUseCase(
     private val repository: LoanRejectRepository,

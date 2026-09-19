@@ -10,7 +10,7 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.clients.ClientAddressEntity
+import kpt.core.model.objects.clients.ClientAddressEntity
 import kpt.core.network.mifos.client.dto.PostClientAddressRequest
 import kpt.core.network.mifos.client.dto.PostClientAddressResponse
 import kpt.core.database.client.entity.AddressConfiguration

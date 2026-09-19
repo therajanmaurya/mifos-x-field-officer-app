@@ -9,9 +9,9 @@
  */
 package kpt.core.network.mifos.group.api
 
-import com.mifos.core.common.utils.Page
-import com.mifos.core.model.objects.clients.ActivatePayload
-import com.mifos.core.model.objects.responses.SaveResponse
+import kpt.core.common.utils.Page
+import kpt.core.model.objects.clients.ActivatePayload
+import kpt.core.model.objects.responses.SaveResponse
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
@@ -20,7 +20,6 @@ import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
 import io.ktor.client.statement.HttpResponse
 import kpt.core.base.network.annotation.ApiBinding
-import kpt.core.common.APIEndPoint
 import kpt.core.database.group.entity.GroupAccounts
 import kpt.core.database.group.entity.GroupEntity
 import kpt.core.database.group.entity.GroupPayloadEntity
@@ -68,29 +67,29 @@ interface GroupApi {
         @Query("orphansOnly") orphansOnly: Boolean? = null,
     ): GetGroupsResponse
 
-    @GET(APIEndPoint.GROUPS)
+    @GET("groups")
     suspend fun getGroups(
         @Query("paged") b: Boolean,
         @Query("offset") offset: Int,
         @Query("limit") limit: Int,
     ): Page<GroupEntity>
 
-    @GET(APIEndPoint.GROUPS + "/{groupId}?associations=all")
+    @GET("groups/{groupId}?associations=all")
     suspend fun getGroupWithAssociations(@Path("groupId") groupId: Int): GroupWithAssociations
 
-    @GET(APIEndPoint.GROUPS)
+    @GET("groups")
     suspend fun getAllGroupsInOffice(
         @Query("officeId") officeId: Int,
         @QueryMap params: Map<String, String>,
     ): List<GroupEntity>
 
-    @POST(APIEndPoint.GROUPS)
+    @POST("groups")
     suspend fun createGroup(@Body groupPayload: GroupPayloadEntity?): SaveResponse
 
-    @GET(APIEndPoint.GROUPS + "/{groupId}")
+    @GET("groups/{groupId}")
     suspend fun getGroup(@Path("groupId") groupId: Int): GroupEntity
 
-    @GET(APIEndPoint.GROUPS + "/{groupId}/accounts")
+    @GET("groups/{groupId}/accounts")
     suspend fun getGroupAccounts(@Path("groupId") groupId: Int): GroupAccounts
 
     /**
@@ -101,7 +100,7 @@ interface GroupApi {
      * @param groupId
      * @return GenericResponse
      */
-    @POST(APIEndPoint.GROUPS + "/{groupId}?command=activate")
+    @POST("groups/{groupId}?command=activate")
     suspend fun activateGroup(
         @Path("groupId") groupId: Int,
         @Body activatePayload: ActivatePayload,

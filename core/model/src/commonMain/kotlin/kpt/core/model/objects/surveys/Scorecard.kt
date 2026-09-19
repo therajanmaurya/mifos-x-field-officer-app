@@ -1,0 +1,30 @@
+/*
+ * Copyright 2024 Mifos Initiative
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ */
+package kpt.core.model.objects.surveys
+
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
+import kotlinx.serialization.Serializable
+
+/**
+ * Created by Nasim Banu on 28,January,2016.
+ */
+// TODO migrate to KMP date
+@Serializable
+@Parcelize
+data class Scorecard(
+    var userId: Int = 0,
+
+    var clientId: Int = 0,
+
+//    var createdOn: Date? = null,
+    var createdOn: List<Int> = emptyList(),
+    var scorecardValues: List<ScorecardValues>? = null,
+) : Parcelable

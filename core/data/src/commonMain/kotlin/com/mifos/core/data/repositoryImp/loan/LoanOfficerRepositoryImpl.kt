@@ -10,14 +10,14 @@
 package com.mifos.core.data.repositoryImp.loan
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.data.mappers.loan.toDomain
+import kpt.core.data.mappers.loan.toDomain
 import com.mifos.core.data.mappers.loan.toDto
 import com.mifos.core.data.repository.loan.LoanOfficerRepository
 import com.mifos.core.data.util.NetworkMonitor
 import com.mifos.core.data.util.runAsDataState
-import com.mifos.core.model.objects.account.loan.assignLoanOfficer.AssignLoanOfficerInput
-import com.mifos.core.model.objects.account.loan.assignLoanOfficer.AssignLoanOfficerResponse
-import com.mifos.core.model.objects.template.loan.LoanOfficerOption
+import kpt.core.model.objects.account.loan.assignLoanOfficer.AssignLoanOfficerInput
+import kpt.core.model.objects.account.loan.assignLoanOfficer.AssignLoanOfficerResponse
+import kpt.core.model.objects.template.loan.LoanOfficerOption
 import kpt.core.network.loan.datamanager.DataManagerLoan
 import kotlinx.coroutines.CoroutineDispatcher
 

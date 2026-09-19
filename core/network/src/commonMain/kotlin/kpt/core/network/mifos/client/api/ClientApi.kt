@@ -11,16 +11,16 @@ package kpt.core.network.mifos.client.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.common.utils.Page
-import com.mifos.core.model.objects.clients.ActivatePayload
-import com.mifos.core.model.objects.clients.AssignStaffRequest
-import com.mifos.core.model.objects.clients.ClientAddressEntity
-import com.mifos.core.model.objects.clients.ClientAddressRequest
-import com.mifos.core.model.objects.clients.ClientAddressResponse
-import com.mifos.core.model.objects.clients.ClientCloseRequest
-import com.mifos.core.model.objects.clients.CollateralPayload
-import com.mifos.core.model.objects.clients.ProposeTransferRequest
-import com.mifos.core.model.objects.clients.UpdateSavingsAccountRequest
+import kpt.core.common.utils.Page
+import kpt.core.model.objects.clients.ActivatePayload
+import kpt.core.model.objects.clients.AssignStaffRequest
+import kpt.core.model.objects.clients.ClientAddressEntity
+import kpt.core.model.objects.clients.ClientAddressRequest
+import kpt.core.model.objects.clients.ClientAddressResponse
+import kpt.core.model.objects.clients.ClientCloseRequest
+import kpt.core.model.objects.clients.CollateralPayload
+import kpt.core.model.objects.clients.ProposeTransferRequest
+import kpt.core.model.objects.clients.UpdateSavingsAccountRequest
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.client.dto.ClientCloseTemplateResponse
 import kpt.core.model.shared.CollateralItem
@@ -42,7 +42,6 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.statement.HttpResponse
-import kpt.core.common.APIEndPoint
 import kpt.core.database.client.entity.AddressConfiguration
 import kpt.core.database.client.entity.AddressTemplate
 import kpt.core.database.client.entity.ClientAccounts
@@ -126,41 +125,41 @@ interface ClientApi {
      * @param limit  Maximum size of the Client
      * @return List of Clients
      */
-    @GET(APIEndPoint.CLIENTS)
+    @GET("clients")
     suspend fun getAllClients(
         @Query("paged") b: Boolean,
         @Query("offset") offset: Int,
         @Query("limit") limit: Int,
     ): Page<ClientEntity>
 
-    @GET(APIEndPoint.CLIENTS + "/{clientId}")
+    @GET("clients/{clientId}")
     suspend fun getClient(@Path("clientId") clientId: Int): ClientEntity
 
-    @POST(APIEndPoint.CLIENTS + "/{clientId}/images")
+    @POST("clients/{clientId}/images")
     suspend fun uploadClientImage(
         @Path("clientId") clientId: Int,
         @Body body: MultiPartFormDataContent,
     ): Unit
 
-    @DELETE(APIEndPoint.CLIENTS + "/{clientId}/images")
+    @DELETE("clients/{clientId}/images")
     suspend fun deleteClientImage(@Path("clientId") clientId: Int)
 
-    @GET(APIEndPoint.CLIENTS + "/{clientId}/images")
+    @GET("clients/{clientId}/images")
     suspend fun getClientImage(@Path("clientId") clientId: Int): HttpResponse
 
-    @POST(APIEndPoint.CLIENTS)
+    @POST("clients")
     suspend fun createClient(@Body clientPayload: ClientPayloadEntity?): ClientEntity?
 
-    @PUT(APIEndPoint.CLIENTS + "/{clientId}")
+    @PUT("clients/{clientId}")
     suspend fun updateClient(
         @Path("clientId") clientId: Int,
         @Body clientPayload: ClientPayloadEntity?,
     ): ClientEntity?
 
-    @GET(APIEndPoint.CLIENTS + "/template")
+    @GET("clients/template")
     suspend fun getClientTemplate(): ClientsTemplateEntity
 
-    @GET(APIEndPoint.CLIENTS + "/{clientId}/accounts")
+    @GET("clients/{clientId}/accounts")
     suspend fun getClientAccounts(@Path("clientId") clientId: Int): ClientAccounts
 
     /**
@@ -177,7 +176,7 @@ interface ClientApi {
      * @param clientId Client Id
      * @return ClientAddressResponse
      */
-    @GET(APIEndPoint.DATATABLES + "/client_pinpoint_location/{clientId}")
+    @GET("datatables/client_pinpoint_location/{clientId}")
     suspend fun getClientPinpointLocations(
         @Path("clientId") clientId: Int,
     ): List<ClientAddressResponse>
@@ -193,7 +192,7 @@ interface ClientApi {
      * @param clientAddressRequest ClientAddress
      * @return GenericResponse
      */
-    @POST(APIEndPoint.DATATABLES + "/client_pinpoint_location/{clientId}")
+    @POST("datatables/client_pinpoint_location/{clientId}")
     suspend fun addClientPinpointLocation(
         @Path("clientId") clientId: Int,
         @Body clientAddressRequest: ClientAddressRequest?,
@@ -210,7 +209,7 @@ interface ClientApi {
      * @param datatableId
      * @return GenericResponse
      */
-    @DELETE(APIEndPoint.DATATABLES + "/client_pinpoint_location/{apptableId}/{datatableId}")
+    @DELETE("datatables/client_pinpoint_location/{apptableId}/{datatableId}")
     suspend fun deleteClientPinpointLocation(
         @Path("apptableId") apptableId: Int,
         @Path("datatableId") datatableId: Int,
@@ -228,7 +227,7 @@ interface ClientApi {
      * @param address     Client Address
      * @return GenericResponse
      */
-    @PUT(APIEndPoint.DATATABLES + "/client_pinpoint_location/{apptableId}/{datatableId}")
+    @PUT("datatables/client_pinpoint_location/{apptableId}/{datatableId}")
     suspend fun updateClientPinpointLocation(
         @Path("apptableId") apptableId: Int,
         @Path("datatableId") datatableId: Int,
@@ -243,7 +242,7 @@ interface ClientApi {
      * @param clientId
      * @return GenericResponse
      */
-    @POST(APIEndPoint.CLIENTS + "/{clientId}?command=activate")
+    @POST("clients/{clientId}?command=activate")
     suspend fun activateClient(
         @Path("clientId") clientId: Int,
         @Body clientActivate: ActivatePayload?,

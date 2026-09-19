@@ -11,9 +11,8 @@ package kpt.core.database.savings.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
-import kpt.core.common.APIEndPoint
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
@@ -46,9 +45,9 @@ data class SavingAccountDepositTypeEntity(
         get() = ServerTypes.fromId(id)
 
     enum class ServerTypes(val id: Int, val code: String, val endpoint: String) {
-        SAVINGS(100, "depositAccountType.savingsDeposit", APIEndPoint.SAVINGS_ACCOUNTS),
-        FIXED(200, "depositAccountType.fixedDeposit", APIEndPoint.FIXED_DEPOSIT),
-        RECURRING(300, "depositAccountType.recurringDeposit", APIEndPoint.RECURRING_ACCOUNTS),
+        SAVINGS(100, "depositAccountType.savingsDeposit", "savingsaccounts"),
+        FIXED(200, "depositAccountType.fixedDeposit", "fixeddepositaccounts"),
+        RECURRING(300, "depositAccountType.recurringDeposit", "recurringdepositaccounts"),
         ;
 
         companion object {

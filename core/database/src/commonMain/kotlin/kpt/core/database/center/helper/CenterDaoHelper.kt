@@ -9,9 +9,9 @@
  */
 package kpt.core.database.center.helper
 
-import com.mifos.core.common.network.Dispatcher
-import com.mifos.core.common.network.MifosDispatchers
-import com.mifos.core.common.utils.Page
+import kpt.core.common.network.Dispatcher
+import kpt.core.common.network.MifosDispatchers
+import kpt.core.common.utils.Page
 import kpt.core.database.center.dao.CenterDao
 import kpt.core.database.center.entity.CenterAccounts
 import kpt.core.database.center.entity.CenterPayloadEntity

@@ -10,15 +10,15 @@
 package com.mifos.core.data.repositoryImp.loan
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.data.mappers.loan.toDomain
+import kpt.core.data.mappers.loan.toDomain
 import com.mifos.core.data.mappers.loan.toDto
 import com.mifos.core.data.repository.loan.LoanCreateGuarantorRepository
 import com.mifos.core.data.util.NetworkMonitor
 import com.mifos.core.data.util.runAsDataState
-import com.mifos.core.model.objects.account.loan.guarantor.CreateGuarantor
-import com.mifos.core.model.objects.account.loan.guarantor.CreateGuarantorInput
-import com.mifos.core.model.objects.account.loan.guarantor.GuarantorAccountTemplate
-import com.mifos.core.model.objects.account.loan.guarantor.GuarantorTemplate
+import kpt.core.model.objects.account.loan.guarantor.CreateGuarantor
+import kpt.core.model.objects.account.loan.guarantor.CreateGuarantorInput
+import kpt.core.model.objects.account.loan.guarantor.GuarantorAccountTemplate
+import kpt.core.model.objects.account.loan.guarantor.GuarantorTemplate
 import kpt.core.network.loan.datamanager.DataManagerLoan
 import kotlinx.coroutines.CoroutineDispatcher
 

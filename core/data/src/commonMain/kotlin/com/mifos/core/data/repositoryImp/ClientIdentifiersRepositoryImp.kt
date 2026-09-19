@@ -14,9 +14,9 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.mappers.client.ClientIdentifierMapper
 import com.mifos.core.data.repository.ClientIdentifiersRepository
-import com.mifos.core.model.objects.noncoreobjects.Identifier
-import com.mifos.core.model.objects.noncoreobjects.IdentifierPayload
-import com.mifos.core.model.objects.noncoreobjects.IdentifierTemplate
+import kpt.core.model.objects.noncoreobjects.Identifier
+import kpt.core.model.objects.noncoreobjects.IdentifierPayload
+import kpt.core.model.objects.noncoreobjects.IdentifierTemplate
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.client.datamanager.DataManagerIdentifiers
 import kpt.core.database.client.helper.ClientDaoHelper

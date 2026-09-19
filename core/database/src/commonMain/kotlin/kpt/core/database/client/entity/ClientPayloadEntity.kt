@@ -11,9 +11,9 @@ package kpt.core.database.client.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import com.mifos.core.model.objects.clients.Address
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.objects.clients.Address
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kpt.core.database.datatable.entity.DataTablePayload
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity

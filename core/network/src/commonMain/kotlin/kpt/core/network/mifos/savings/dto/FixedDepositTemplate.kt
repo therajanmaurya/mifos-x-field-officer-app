@@ -9,17 +9,17 @@
  */
 package kpt.core.network.mifos.savings.dto
 
-import com.mifos.core.model.objects.account.saving.FieldOfficerOptions
-import com.mifos.core.model.objects.template.recurring.AccountChart
-import com.mifos.core.model.objects.template.recurring.Currency
-import com.mifos.core.model.objects.template.recurring.MaturityInstructionOption
-import com.mifos.core.model.objects.template.recurring.charge.ChargeOption
-import com.mifos.core.model.objects.template.recurring.interest.InterestCalculationDaysInYearTypeOption
-import com.mifos.core.model.objects.template.recurring.interest.InterestCalculationTypeOption
-import com.mifos.core.model.objects.template.recurring.interest.InterestCompoundingPeriodTypeOption
-import com.mifos.core.model.objects.template.recurring.interest.InterestPostingPeriodTypeOption
-import com.mifos.core.model.objects.template.recurring.period.LockinPeriodFrequencyTypeOption
-import com.mifos.core.model.objects.template.recurring.period.PeriodFrequencyTypeOption
+import kpt.core.model.objects.account.saving.FieldOfficerOptions
+import kpt.core.model.objects.template.recurring.AccountChart
+import kpt.core.model.objects.template.recurring.Currency
+import kpt.core.model.objects.template.recurring.MaturityInstructionOption
+import kpt.core.model.objects.template.recurring.charge.ChargeOption
+import kpt.core.model.objects.template.recurring.interest.InterestCalculationDaysInYearTypeOption
+import kpt.core.model.objects.template.recurring.interest.InterestCalculationTypeOption
+import kpt.core.model.objects.template.recurring.interest.InterestCompoundingPeriodTypeOption
+import kpt.core.model.objects.template.recurring.interest.InterestPostingPeriodTypeOption
+import kpt.core.model.objects.template.recurring.period.LockinPeriodFrequencyTypeOption
+import kpt.core.model.objects.template.recurring.period.PeriodFrequencyTypeOption
 import kpt.core.network.mifos.savings.dto.SavingsAccountOption
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

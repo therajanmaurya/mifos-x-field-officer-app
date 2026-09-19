@@ -11,10 +11,9 @@ package kpt.core.network.mifos.report.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.model.objects.groups.CenterInfo
-import com.mifos.core.model.objects.runreport.FullParameterListResponse
-import com.mifos.core.model.objects.runreport.client.ClientReportTypeItem
-import kpt.core.common.APIEndPoint
+import kpt.core.model.objects.groups.CenterInfo
+import kpt.core.model.objects.runreport.FullParameterListResponse
+import kpt.core.model.objects.runreport.client.ClientReportTypeItem
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
@@ -32,7 +31,7 @@ interface RunReportsApi {
      * @param parameterType parameterType - true/false
      * @return List of ClientReportTypeItem
      */
-    @GET(APIEndPoint.RUN_REPORTS + "/reportCategoryList")
+    @GET("runreports/reportCategoryList")
     suspend fun getReportCategories(
         @Query("R_reportCategory") category: String?,
         @Query("genericResultSet") genericResultSet: Boolean,
@@ -45,7 +44,7 @@ interface RunReportsApi {
      * @param parameterType parameterType - true/false
      * @return FullParameterListResponse
      */
-    @GET(APIEndPoint.RUN_REPORTS + "/FullParameterList")
+    @GET("runreports/FullParameterList")
     suspend fun getReportFullParameterList(
         @Query("R_reportListing") reportName: String,
         @Query("parameterType") parameterType: Boolean,
@@ -57,20 +56,20 @@ interface RunReportsApi {
      * @param parameterType parameterType - true/false
      * @return
      */
-    @GET(APIEndPoint.RUN_REPORTS + "/{path}")
+    @GET("runreports/{path}")
     suspend fun getReportParameterDetails(
         @Path("path") parameterName: String,
         @Query("parameterType") parameterType: Boolean,
     ): FullParameterListResponse
 
-    @GET(APIEndPoint.RUN_REPORTS + "/{path}")
+    @GET("runreports/{path}")
     suspend fun getReportOffice(
         @Path("path") parameterName: String,
         @Query("R_officeId") office: Int,
         @Query("parameterType") parameterType: Boolean,
     ): FullParameterListResponse
 
-    @GET(APIEndPoint.RUN_REPORTS + "/{path}")
+    @GET("runreports/{path}")
     suspend fun getReportProduct(
         @Path("path") parameterName: String,
         @Query("R_currencyId") currency: String,
@@ -83,13 +82,13 @@ interface RunReportsApi {
      * @param options Map of the queries with their corresponding value.
      * @return
      */
-    @GET(APIEndPoint.RUN_REPORTS + "/{path}")
+    @GET("runreports/{path}")
     suspend fun getRunReportWithQuery(
         @Path("path") reportName: String,
         @QueryMap options: Map<String, String>,
     ): FullParameterListResponse
 
-    @GET(APIEndPoint.RUN_REPORTS + "/GroupSummaryCounts")
+    @GET("runreports/GroupSummaryCounts")
     suspend fun getCenterSummaryInfo(
         @Query("R_groupId") centerId: Int,
         @Query("genericResultSet") genericResultSet: Boolean,
@@ -107,7 +106,7 @@ interface RunReportsApi {
      *
      * @return A [Flow] emitting the raw bytes of the receipt file (e.g., PDF).
      */
-    @GET(APIEndPoint.RUN_REPORTS + "/Savings Transaction Receipt")
+    @GET("runreports/Savings Transaction Receipt")
     suspend fun getSavingsAccountTransactionReceipt(
         @Query("R_transactionId") transactionId: Int,
         @Query("dateFormat") dateFormat: String = "dd MMMM yyyy",

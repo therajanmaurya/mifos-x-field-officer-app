@@ -9,7 +9,7 @@
  */
 package kpt.core.network.mifos.survey.dto
 
-import com.mifos.core.model.objects.surveys.ScorecardValues
+import kpt.core.model.objects.surveys.ScorecardValues
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 

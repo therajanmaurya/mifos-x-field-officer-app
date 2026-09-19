@@ -9,7 +9,7 @@
  */
 package kpt.core.model.loan
 
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
 
 data class LoanApprovalData(
     val loanID: Int,

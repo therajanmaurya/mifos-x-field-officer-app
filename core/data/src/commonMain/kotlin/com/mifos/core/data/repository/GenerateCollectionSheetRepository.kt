@@ -10,7 +10,7 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.collectionsheets.CollectionSheetRequestPayload
+import kpt.core.model.objects.collectionsheets.CollectionSheetRequestPayload
 import kpt.core.model.shared.GenericResponse
 import kpt.core.database.collectionsheet.entity.CenterDetail
 import kpt.core.model.collectionsheet.CollectionSheetPayload

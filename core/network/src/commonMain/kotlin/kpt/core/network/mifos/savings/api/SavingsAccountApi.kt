@@ -11,12 +11,11 @@ package kpt.core.network.mifos.savings.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.model.objects.account.loan.SavingsApproval
-import com.mifos.core.model.objects.account.saving.SavingsAccountTransactionResponse
-import com.mifos.core.model.objects.organisations.ProductSavings
-import com.mifos.core.model.objects.payloads.SavingsPayload
+import kpt.core.model.objects.account.loan.SavingsApproval
+import kpt.core.model.objects.account.saving.SavingsAccountTransactionResponse
+import kpt.core.model.objects.organisations.ProductSavings
+import kpt.core.model.objects.payloads.SavingsPayload
 import kpt.core.model.shared.GenericResponse
-import kpt.core.common.APIEndPoint
 import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
 import kpt.core.database.savings.entity.SavingsAccountWithAssociationsEntity
 import kpt.core.database.savings.entity.SavingProductsTemplate
@@ -92,34 +91,34 @@ interface SavingsAccountApi {
         @Body savingsAccountTransactionRequest: SavingsAccountTransactionRequestEntity?,
     ): SavingsAccountTransactionResponse
 
-    @POST(APIEndPoint.CREATE_SAVINGS_ACCOUNTS + "/{savingsAccountId}/?command=activate")
+    @POST("savingsaccounts/{savingsAccountId}/?command=activate")
     suspend fun activateSavings(
         @Path("savingsAccountId") savingsAccountId: Int,
         @Body genericRequest: HashMap<String, String>,
     ): GenericResponse
 
-    @POST(APIEndPoint.CREATE_SAVINGS_ACCOUNTS + "/{savingsAccountId}?command=approve")
+    @POST("savingsaccounts/{savingsAccountId}?command=approve")
     suspend fun approveSavingsApplication(
         @Path("savingsAccountId") savingsAccountId: Int,
         @Body savingsApproval: SavingsApproval?,
     ): GenericResponse
 
-    @GET(APIEndPoint.CREATE_SAVINGS_PRODUCTS)
+    @GET("savingsproducts")
     suspend fun allSavingsAccounts(): List<ProductSavings>
 
-    @POST(APIEndPoint.CREATE_SAVINGS_ACCOUNTS)
+    @POST("savingsaccounts")
     suspend fun createSavingsAccount(@Body savingsPayload: SavingsPayload?): HttpResponse
 
-    @GET(APIEndPoint.CREATE_SAVINGS_PRODUCTS + "/template")
+    @GET("savingsproducts/template")
     suspend fun savingsAccountTemplate(): SavingProductsTemplate
 
-    @GET(APIEndPoint.CREATE_SAVINGS_ACCOUNTS + "/template")
+    @GET("savingsaccounts/template")
     suspend fun getClientSavingsAccountTemplateByProduct(
         @Query("clientId") clientId: Int,
         @Query("productId") productId: Int,
     ): SavingProductsTemplate
 
-    @GET(APIEndPoint.CREATE_SAVINGS_ACCOUNTS + "/template")
+    @GET("savingsaccounts/template")
     suspend fun getGroupSavingsAccountTemplateByProduct(
         @Query("groupId") groupId: Int,
         @Query("productId") productId: Int,

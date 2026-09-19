@@ -10,9 +10,9 @@
 package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.common.utils.extractErrorMessage
+import kpt.core.common.utils.extractErrorMessage
 import com.mifos.core.data.repository.ClientDetailsRepository
-import com.mifos.core.model.objects.account.share.ShareAccounts
+import kpt.core.model.objects.account.share.ShareAccounts
 import kpt.core.network.client.datamanager.DataManagerClient
 import kpt.core.network.mifos.client.dto.ClientCloseTemplateResponse
 import kpt.core.model.shared.CollateralItem

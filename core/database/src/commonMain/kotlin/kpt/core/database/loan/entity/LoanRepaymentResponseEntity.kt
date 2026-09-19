@@ -11,10 +11,10 @@ package kpt.core.database.loan.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import com.mifos.core.model.objects.Changes
-import com.mifos.core.model.utils.IgnoredOnParcel
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.objects.Changes
+import kpt.core.model.utils.IgnoredOnParcel
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey

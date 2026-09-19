@@ -11,18 +11,18 @@ package kpt.core.network.mifos.loan.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import com.mifos.core.model.objects.account.loan.LoanApproval
-import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleApprovalRequest
-import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleRejectionRequest
-import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleRequest
-import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleResponse
-import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleTemplate
-import com.mifos.core.model.objects.account.loan.transfer.AccountTransferRequest
-import com.mifos.core.model.objects.account.loan.transfer.AccountTransferTemplate
-import com.mifos.core.model.objects.clients.Page
-import com.mifos.core.model.objects.organisations.LoanProducts
-import com.mifos.core.model.objects.payloads.GroupLoanPayload
-import com.mifos.core.model.objects.template.loan.GroupLoanTemplate
+import kpt.core.model.objects.account.loan.LoanApproval
+import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleApprovalRequest
+import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRejectionRequest
+import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRequest
+import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleResponse
+import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleTemplate
+import kpt.core.model.objects.account.loan.transfer.AccountTransferRequest
+import kpt.core.model.objects.account.loan.transfer.AccountTransferTemplate
+import kpt.core.model.objects.clients.Page
+import kpt.core.model.objects.organisations.LoanProducts
+import kpt.core.model.objects.payloads.GroupLoanPayload
+import kpt.core.model.objects.template.loan.GroupLoanTemplate
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.loan.dto.LoanWithAssociationsDto
 import kpt.core.network.mifos.loan.dto.CreateGuarantorResponseDto
@@ -41,7 +41,6 @@ import kpt.core.network.mifos.loan.dto.LoanChargeOffTemplateDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseTemplateDto
 import kpt.core.network.mifos.loan.dto.LoanOfficerOptionsTemplateDto
 import kpt.core.network.mifos.loan.dto.LoansPayload
-import kpt.core.common.APIEndPoint
 import kpt.core.database.loan.entity.Loan
 import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
 import kpt.core.database.loan.entity.LoanRepaymentResponseEntity
@@ -61,78 +60,78 @@ import io.ktor.client.statement.HttpResponse
  */
 @ApiBinding("mifos")
 interface LoanApi {
-    @GET(APIEndPoint.LOANS + "/{loanId}?associations=all&exclude=guarantors,futureSchedule")
+    @GET("loans/{loanId}?associations=all&exclude=guarantors,futureSchedule")
     suspend fun getLoanByIdWithAllAssociations(@Path("loanId") loanId: Int): LoanWithAssociationsDto
 
-    @GET(APIEndPoint.LOANS + "/{loanId}/transactions/template?command=repayment")
+    @GET("loans/{loanId}/transactions/template?command=repayment")
     suspend fun getLoanRepaymentTemplate(@Path("loanId") loanId: Int): LoanRepaymentTemplateEntity
 
     //  Mandatory Fields
     //  1. String approvedOnDate
-    @POST(APIEndPoint.LOANS + "/{loanId}?command=approve")
+    @POST("loans/{loanId}?command=approve")
     suspend fun approveLoanApplication(
         @Path("loanId") loanId: Int,
         @Body loanApproval: LoanApproval?,
     ): GenericResponse
 
-    @POST(APIEndPoint.LOANS + "/{loanId}/transactions?command=repayment")
+    @POST("loans/{loanId}/transactions?command=repayment")
     suspend fun submitPayment(
         @Path("loanId") loanId: Int,
         @Body loanRepaymentRequest: LoanRepaymentRequestEntity?,
     ): LoanRepaymentResponseEntity
 
-    @GET(APIEndPoint.LOANS + "/{loanId}/transactions/template?command=charge-off")
+    @GET("loans/{loanId}/transactions/template?command=charge-off")
     suspend fun getChargeOffTemplate(
         @Path("loanId") loanId: Int,
     ): LoanChargeOffTemplateDto
 
-    @POST(APIEndPoint.LOANS + "/{loanId}/transactions?command=charge-off")
+    @POST("loans/{loanId}/transactions?command=charge-off")
     suspend fun chargeOff(
         @Path("loanId") loanId: Int,
         @Body loanChargeOffRequest: LoanChargeOffRequestDto,
     ): LoanChargeOffResponseDto
 
-    @POST(APIEndPoint.LOANS + "/{loanId}?command=reject")
+    @POST("loans/{loanId}?command=reject")
     suspend fun rejectLoan(
         @Path("loanId") loanId: Int,
         @Body request: RejectLoanRequestDto,
     ): RejectLoanResponseDto
 
-    @GET(APIEndPoint.LOANS + "/{loanId}?associations=repaymentSchedule")
+    @GET("loans/{loanId}?associations=repaymentSchedule")
     suspend fun getLoanRepaymentSchedule(@Path("loanId") loanId: Int): LoanWithAssociationsDto
 
-    @GET(APIEndPoint.LOANS + "/{loanId}?associations=transactions")
+    @GET("loans/{loanId}?associations=transactions")
     suspend fun getLoanWithTransactions(@Path("loanId") loanId: Int): LoanWithAssociationsDto
 
-    @GET(APIEndPoint.LOANS + "/{loanId}/guarantors/template")
+    @GET("loans/{loanId}/guarantors/template")
     suspend fun getGuarantorTemplate(@Path("loanId") loanId: Int): GuarantorTemplateDto
 
-    @POST(APIEndPoint.LOANS + "/{loanId}/guarantors")
+    @POST("loans/{loanId}/guarantors")
     suspend fun createGuarantor(
         @Path("loanId") loanId: Int,
         @Body request: GuarantorRequestDto,
     ): CreateGuarantorResponseDto
 
-    @GET(APIEndPoint.LOANS + "/{loanId}/guarantors/accounts/template")
+    @GET("loans/{loanId}/guarantors/accounts/template")
     suspend fun getGuarantorAccountTemplate(
         @Path("loanId") loanId: Int,
         @Query("clientId") clientId: Int,
     ): GuarantorAccountTemplateDto
 
-    @GET(APIEndPoint.CREATE_LOANS_PRODUCTS)
+    @GET("loanproducts")
     suspend fun getAllLoans(): List<LoanProducts>
 
-    @POST(APIEndPoint.CREATE_LOANS_ACCOUNTS)
+    @POST("loans")
     suspend fun createLoansAccount(@Body loansPayload: LoansPayload?): HttpResponse
 
     /**
      * Calculate loan repayment schedule without creating the loan.
      * Used to preview the schedule before submitting the loan application.
      */
-    @POST(APIEndPoint.CREATE_LOANS_ACCOUNTS + "?command=calculateLoanSchedule")
+    @POST("loans?command=calculateLoanSchedule")
     suspend fun calculateLoanSchedule(@Body loansPayload: LoansPayload?): HttpResponse
 
-    @GET(APIEndPoint.CREATE_LOANS_ACCOUNTS + "/template?templateType=individual")
+    @GET("loans/template?templateType=individual")
     suspend fun getLoansAccountTemplate(
         @Query("clientId") clientId: Int,
         @Query("productId") productId: Int,
@@ -151,25 +150,25 @@ interface LoanApi {
      * @param command Template Type
      * @return
      */
-    @GET(APIEndPoint.LOANS + "/{loanId}/transactions/template")
+    @GET("loans/{loanId}/transactions/template")
     suspend fun getLoanTransactionTemplate(
         @Path("loanId") loanId: Int,
         @Query("command") command: String?,
     ): LoanTransactionTemplate
 
-    @POST(APIEndPoint.CREATE_LOANS_ACCOUNTS)
+    @POST("loans")
     suspend fun createGroupLoansAccount(@Body loansPayload: GroupLoanPayload?): Loan
 
-    @GET(APIEndPoint.CREATE_LOANS_ACCOUNTS + "/template?templateType=group")
+    @GET("loans/template?templateType=group")
     suspend fun getGroupLoansAccountTemplate(
         @Query("groupId") groupId: Int,
         @Query("productId") productId: Int,
     ): GroupLoanTemplate
 
-    @GET(APIEndPoint.LOANS + "/{loanId}/" + APIEndPoint.CHARGES)
+    @GET("loans/{loanId}/charges")
     suspend fun getListOfLoanCharges(@Path("loanId") loanId: Int): List<ChargesEntity>
 
-    @GET(APIEndPoint.CLIENTS + "/{clientId}/" + APIEndPoint.CHARGES)
+    @GET("clients/{clientId}/charges")
     suspend fun getListOfCharges(@Path("clientId") clientId: Int): Page<ChargesEntity>
 
     /**
@@ -185,7 +184,7 @@ interface LoanApi {
      * @param fromAccountId Source account ID
      * @return AccountTransferTemplate with available options
      */
-    @GET(APIEndPoint.ACCOUNT_TRANSFERS + "/template")
+    @GET("accounttransfers/template")
     suspend fun getAccountTransferTemplate(
         @Query("fromClientId") fromClientId: Int,
         @Query("fromAccountType") fromAccountType: Int,
@@ -203,7 +202,7 @@ interface LoanApi {
      * @param request Account transfer request payload
      * @return HttpResponse to check status and handle error/success appropriately
      */
-    @POST(APIEndPoint.ACCOUNT_TRANSFERS)
+    @POST("accounttransfers")
     suspend fun submitAccountTransfer(
         @Body request: AccountTransferRequest,
     ): HttpResponse
@@ -212,32 +211,32 @@ interface LoanApi {
      * Loan Reschedule API Endpoints
      */
 
-    @GET(APIEndPoint.RESCHEDULE_LOANS)
+    @GET("rescheduleloans")
     suspend fun getLoanReschedules(
         @Query("loanId") loanId: Int,
     ): List<LoanRescheduleResponse>
 
-    @GET(APIEndPoint.RESCHEDULE_LOANS + "/template")
+    @GET("rescheduleloans/template")
     suspend fun getLoanRescheduleTemplate(): LoanRescheduleTemplate
 
-    @POST(APIEndPoint.RESCHEDULE_LOANS)
+    @POST("rescheduleloans")
     suspend fun submitLoanReschedule(
         @Body request: LoanRescheduleRequest,
     ): HttpResponse
 
-    @POST(APIEndPoint.RESCHEDULE_LOANS + "/{scheduleId}?command=approve")
+    @POST("rescheduleloans/{scheduleId}?command=approve")
     suspend fun approveLoanReschedule(
         @Path("scheduleId") scheduleId: Int,
         @Body request: LoanRescheduleApprovalRequest,
     ): HttpResponse
 
-    @POST(APIEndPoint.RESCHEDULE_LOANS + "/{scheduleId}?command=reject")
+    @POST("rescheduleloans/{scheduleId}?command=reject")
     suspend fun rejectLoanReschedule(
         @Path("scheduleId") scheduleId: Int,
         @Body request: LoanRescheduleRejectionRequest,
     ): HttpResponse
 
-    @GET(APIEndPoint.LOANS + "/{loanId}")
+    @GET("loans/{loanId}")
     suspend fun getLoanOfficerTemplate(
         @Path("loanId") loanId: Int,
         @Query("fields") fields: String = "id,loanOfficerId,loanOfficerOptions",
@@ -245,19 +244,19 @@ interface LoanApi {
         @Query("template") template: Boolean = true,
     ): LoanOfficerOptionsTemplateDto
 
-    @POST(APIEndPoint.LOANS + "/{loanId}")
+    @POST("loans/{loanId}")
     suspend fun assignLoanOfficer(
         @Path("loanId") loanId: Int,
         @Query("command") command: String = "assignLoanOfficer",
         @Body request: AssignLoanOfficerRequestDto,
     ): AssignLoanOfficerResponseDto
 
-    @GET(APIEndPoint.LOANS + "/{loanId}/transactions/template?command=disburse")
+    @GET("loans/{loanId}/transactions/template?command=disburse")
     suspend fun getDisburseTemplate(
         @Path("loanId") loanId: Int,
     ): LoanDisburseTemplateDto
 
-    @POST(APIEndPoint.LOANS + "/{loanId}?command=disburse")
+    @POST("loans/{loanId}?command=disburse")
     suspend fun disburse(
         @Path("loanId") loanId: Int,
         @Body loanDisburseRequest: LoanDisburseRequestDto,

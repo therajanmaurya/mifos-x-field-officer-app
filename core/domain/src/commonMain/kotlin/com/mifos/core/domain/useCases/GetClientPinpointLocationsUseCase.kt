@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.PinPointClientRepository
-import com.mifos.core.model.objects.clients.ClientAddressResponse
+import kpt.core.model.objects.clients.ClientAddressResponse
 import kotlinx.coroutines.flow.Flow
 
 class GetClientPinpointLocationsUseCase(

@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SearchRepository
-import com.mifos.core.model.objects.SearchedEntity
+import kpt.core.model.objects.SearchedEntity
 import kpt.core.network.search.datamanager.DataManagerSearch
 import kotlinx.coroutines.flow.Flow
 

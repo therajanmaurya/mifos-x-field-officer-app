@@ -9,10 +9,10 @@
  */
 package kpt.core.database.collectionsheet.entity
 
-import com.mifos.core.model.objects.collectionsheets.AttendanceTypeOption
-import com.mifos.core.model.objects.collectionsheets.SavingsProduct
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.objects.collectionsheets.AttendanceTypeOption
+import kpt.core.model.objects.collectionsheets.SavingsProduct
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 
 /**
@@ -26,7 +26,7 @@ data class CollectionSheetResponse(
 
     var groups: List<GroupCollectionSheet> = ArrayList(),
 
-    var loanProducts: List<com.mifos.core.model.objects.organisations.LoanProducts> = ArrayList(),
+    var loanProducts: List<kpt.core.model.objects.organisations.LoanProducts> = ArrayList(),
 
     var paymentTypeOptions: List<PaymentTypeOptionEntity> = ArrayList(),
 

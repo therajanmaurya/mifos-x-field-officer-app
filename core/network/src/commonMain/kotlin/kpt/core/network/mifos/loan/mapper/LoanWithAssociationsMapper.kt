@@ -9,19 +9,19 @@
  */
 package kpt.core.network.mifos.loan.mapper
 
-import com.mifos.core.model.objects.account.loan.Currency
-import com.mifos.core.model.objects.account.loan.PaymentDetailData
-import com.mifos.core.model.objects.account.loan.PaymentType
-import com.mifos.core.model.objects.account.loan.Period
-import com.mifos.core.model.objects.account.loan.RepaymentSchedule
-import com.mifos.core.model.objects.account.loan.Transaction
-import com.mifos.core.model.objects.account.loan.Type
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanAccountSummary
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanStatus
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanTimeline
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanType
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.SavingAccountCurrency
+import kpt.core.model.objects.account.loan.Currency
+import kpt.core.model.objects.account.loan.PaymentDetailData
+import kpt.core.model.objects.account.loan.PaymentType
+import kpt.core.model.objects.account.loan.Period
+import kpt.core.model.objects.account.loan.RepaymentSchedule
+import kpt.core.model.objects.account.loan.Transaction
+import kpt.core.model.objects.account.loan.Type
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanAccountSummary
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanStatus
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanTimeline
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanType
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
+import kpt.core.model.objects.account.loan.loanWithAssociations.SavingAccountCurrency
 import kpt.core.network.mifos.loan.dto.LoanCurrencyDto
 import kpt.core.network.mifos.loan.dto.LoanRepaymentScheduleDto
 import kpt.core.network.mifos.loan.dto.LoanStatusDto

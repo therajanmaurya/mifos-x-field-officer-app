@@ -9,8 +9,8 @@
  */
 package com.mifos.core.data.mappers.client
 
-import com.mifos.core.model.objects.noncoreobjects.DocumentType
-import com.mifos.core.model.objects.noncoreobjects.Identifier
+import kpt.core.model.objects.noncoreobjects.DocumentType
+import kpt.core.model.objects.noncoreobjects.Identifier
 import kpt.core.network.data.AbstractMapper
 import kpt.core.database.client.entity.ClientIdentifierEntity
 

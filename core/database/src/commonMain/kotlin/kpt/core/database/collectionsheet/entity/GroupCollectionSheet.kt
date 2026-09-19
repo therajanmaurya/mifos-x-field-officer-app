@@ -9,8 +9,8 @@
  */
 package kpt.core.database.collectionsheet.entity
 
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
+import kpt.core.model.utils.Parcelable
+import kpt.core.model.utils.Parcelize
 
 /**
  * Created by Tarun on 25-07-2017.

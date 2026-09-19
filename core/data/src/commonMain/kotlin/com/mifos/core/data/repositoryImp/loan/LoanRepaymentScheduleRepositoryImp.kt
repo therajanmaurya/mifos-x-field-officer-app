@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp.loan
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.loan.LoanRepaymentScheduleRepository
-import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
 import kpt.core.network.DataManager
 import kpt.core.network.mifos.loan.mapper.toDomain
 import kotlinx.coroutines.flow.Flow

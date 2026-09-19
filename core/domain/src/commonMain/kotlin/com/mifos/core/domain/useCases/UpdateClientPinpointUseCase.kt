@@ -23,7 +23,7 @@ class UpdateClientPinpointUseCase(
     operator fun invoke(
         clientId: Int,
         datatableId: Int,
-        address: com.mifos.core.model.objects.clients.ClientAddressRequest,
+        address: kpt.core.model.objects.clients.ClientAddressRequest,
     ): Flow<DataState<PinpointLocationActionResponse>> = flow {
         emit(
             pinPointClientRepository.updateClientPinpointLocation(

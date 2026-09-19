@@ -11,7 +11,6 @@ package kpt.core.network.mifos.client.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import kpt.core.common.APIEndPoint
 import kpt.core.database.client.entity.ClientAccounts
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Path
@@ -21,6 +20,6 @@ import de.jensklingenberg.ktorfit.http.Path
  */
 @ApiBinding("mifos")
 interface ClientAccountsApi {
-    @GET(APIEndPoint.CLIENTS + "/{clientId}/accounts")
+    @GET("clients/{clientId}/accounts")
     suspend fun getAllAccountsOfClient(@Path("clientId") clientId: Int): ClientAccounts
 }

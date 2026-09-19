@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.mappers.client
 
-import com.mifos.core.model.objects.clients.ClientAddressEntity
+import kpt.core.model.objects.clients.ClientAddressEntity
 import kpt.core.network.data.AbstractMapper
 import kpt.core.database.client.entity.ClientAddressEntity as RoomAddressEntity
 

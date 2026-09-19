@@ -10,9 +10,9 @@
 package com.mifos.core.data.mappers.loan
 
 import com.mifos.core.data.mappers.toModel
-import com.mifos.core.model.objects.account.loan.Currency
-import com.mifos.core.model.objects.account.loan.loanDisburse.LoanDisburseInput
-import com.mifos.core.model.objects.account.loan.loanDisburse.LoanDisburseTemplate
+import kpt.core.model.objects.account.loan.Currency
+import kpt.core.model.objects.account.loan.loanDisburse.LoanDisburseInput
+import kpt.core.model.objects.account.loan.loanDisburse.LoanDisburseTemplate
 import kpt.core.network.mifos.loan.dto.LoanDisburseRequestDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseTemplateDto
 

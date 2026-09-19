@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.PathTrackingRepository
-import com.mifos.core.model.objects.users.UserLocation
+import kpt.core.model.objects.users.UserLocation
 import kpt.core.network.datatable.datamanager.DataManagerDataTable
 import kotlinx.coroutines.flow.Flow
 

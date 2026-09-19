@@ -9,12 +9,12 @@
  */
 package kpt.core.database.loan.entity
 
-import com.mifos.core.model.objects.account.loan.Currency
-import com.mifos.core.model.objects.account.loan.InterestCalculationPeriodType
-import com.mifos.core.model.objects.account.loan.InterestRateFrequencyType
-import com.mifos.core.model.objects.account.loan.InterestType
-import com.mifos.core.model.objects.account.loan.RepaymentFrequencyType
-import com.mifos.core.model.objects.account.loan.TermPeriodFrequencyType
+import kpt.core.model.objects.account.loan.Currency
+import kpt.core.model.objects.account.loan.InterestCalculationPeriodType
+import kpt.core.model.objects.account.loan.InterestRateFrequencyType
+import kpt.core.model.objects.account.loan.InterestType
+import kpt.core.model.objects.account.loan.RepaymentFrequencyType
+import kpt.core.model.objects.account.loan.TermPeriodFrequencyType
 import kotlinx.serialization.Serializable
 import kpt.core.model.loan.AmortizationType
 

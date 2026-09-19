@@ -9,7 +9,7 @@
  */
 package kpt.core.network.mifos.client.dto
 
-import com.mifos.core.model.objects.account.share.ShareAccounts
+import kpt.core.model.objects.account.share.ShareAccounts
 import kotlinx.serialization.Serializable
 import kpt.core.network.mifos.savings.dto.SavingAccountOption
 import kpt.core.network.mifos.staff.dto.StaffOption

@@ -10,9 +10,9 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.model.objects.account.loan.transfer.AccountTransferRequest
-import com.mifos.core.model.objects.account.loan.transfer.AccountTransferResponse
-import com.mifos.core.model.objects.account.loan.transfer.AccountTransferTemplate
+import kpt.core.model.objects.account.loan.transfer.AccountTransferRequest
+import kpt.core.model.objects.account.loan.transfer.AccountTransferResponse
+import kpt.core.model.objects.account.loan.transfer.AccountTransferTemplate
 import kotlinx.coroutines.flow.Flow
 
 /**

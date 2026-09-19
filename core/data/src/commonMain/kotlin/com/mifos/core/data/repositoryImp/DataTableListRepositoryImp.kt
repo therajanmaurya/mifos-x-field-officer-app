@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.DataTableListRepository
-import com.mifos.core.model.objects.payloads.GroupLoanPayload
+import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.network.DataManager
 import kpt.core.network.client.datamanager.DataManagerClient
 import kpt.core.network.loan.datamanager.DataManagerLoan

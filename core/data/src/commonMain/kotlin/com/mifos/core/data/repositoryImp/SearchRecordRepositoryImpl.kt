@@ -11,8 +11,8 @@ package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.data.datasource.SearchRecordLocalDataSource
 import com.mifos.core.data.repository.SearchRecordRepository
-import com.mifos.core.model.objects.searchrecord.GenericSearchRecord
-import com.mifos.core.model.objects.searchrecord.RecordType
+import kpt.core.model.objects.searchrecord.GenericSearchRecord
+import kpt.core.model.objects.searchrecord.RecordType
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

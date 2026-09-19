@@ -10,9 +10,9 @@
 package com.mifos.core.data.repositoryImp.loan
 
 import com.mifos.core.data.repository.loan.LoanChargeFormRepository
-import com.mifos.core.model.objects.clients.ChargeCreationResponse
-import com.mifos.core.model.objects.payloads.ChargesPayload
-import com.mifos.core.model.objects.template.client.ChargeTemplate
+import kpt.core.model.objects.clients.ChargeCreationResponse
+import kpt.core.model.objects.payloads.ChargesPayload
+import kpt.core.model.objects.template.client.ChargeTemplate
 import kpt.core.network.charge.datamanager.DataManagerCharge
 
 /**
