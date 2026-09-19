@@ -13,12 +13,12 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.model.objects.clients.ClientAddressEntity
 import com.mifos.core.network.model.PostClientAddressRequest
 import com.mifos.core.network.model.PostClientAddressResponse
-import com.mifos.room.entities.client.AddressConfiguration
-import com.mifos.room.entities.client.AddressTemplate
-import com.mifos.room.entities.client.ClientPayloadEntity
-import com.mifos.room.entities.organisation.OfficeEntity
-import com.mifos.room.entities.organisation.StaffEntity
-import com.mifos.room.entities.templates.clients.ClientsTemplateEntity
+import kpt.core.database.client.entity.AddressConfiguration
+import kpt.core.database.client.entity.AddressTemplate
+import kpt.core.database.client.entity.ClientPayloadEntity
+import kpt.core.database.office.entity.OfficeEntity
+import kpt.core.database.staff.entity.StaffEntity
+import kpt.core.database.client.entity.ClientsTemplateEntity
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import kotlinx.coroutines.flow.Flow
 

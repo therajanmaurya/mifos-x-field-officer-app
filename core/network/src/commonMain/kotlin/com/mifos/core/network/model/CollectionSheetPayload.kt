@@ -9,7 +9,7 @@
  */
 package com.mifos.core.network.model
 
-import com.mifos.room.entities.noncore.BulkRepaymentTransactions
+import kpt.core.database.shared.entity.BulkRepaymentTransactions
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

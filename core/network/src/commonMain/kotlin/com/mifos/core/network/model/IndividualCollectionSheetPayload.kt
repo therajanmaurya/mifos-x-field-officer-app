@@ -12,7 +12,7 @@ package com.mifos.core.network.model
 import com.mifos.core.model.utils.ApiDateFormatter
 import com.mifos.core.model.utils.Parcelable
 import com.mifos.core.model.utils.Parcelize
-import com.mifos.room.entities.noncore.BulkRepaymentTransactions
+import kpt.core.database.shared.entity.BulkRepaymentTransactions
 import kotlinx.serialization.Serializable
 
 /**

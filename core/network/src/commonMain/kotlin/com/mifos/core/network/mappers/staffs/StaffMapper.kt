@@ -11,7 +11,7 @@ package com.mifos.core.network.mappers.staffs
 
 import com.mifos.core.network.data.AbstractMapper
 import com.mifos.core.network.model.RetrieveOneResponse
-import com.mifos.room.entities.organisation.StaffEntity
+import kpt.core.database.staff.entity.StaffEntity
 
 object StaffMapper : AbstractMapper<RetrieveOneResponse, StaffEntity>() {
     override fun mapFromEntity(entity: RetrieveOneResponse): StaffEntity {

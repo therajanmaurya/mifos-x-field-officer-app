@@ -14,7 +14,7 @@ import com.mifos.core.network.dto.note.DeleteNoteResponseDto
 import com.mifos.core.network.dto.note.NoteDto
 import com.mifos.core.network.dto.note.NoteRequestDto
 import com.mifos.core.network.dto.note.UpdateNoteResponseDto
-import com.mifos.room.basemodel.APIEndPoint
+import kpt.core.database.basemodel.APIEndPoint
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET

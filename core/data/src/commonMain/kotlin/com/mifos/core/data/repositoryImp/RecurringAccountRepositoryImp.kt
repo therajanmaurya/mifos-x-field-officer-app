@@ -15,7 +15,7 @@ import com.mifos.core.data.repository.RecurringAccountRepository
 import com.mifos.core.model.objects.payloads.RecurringDepositAccountPayload
 import com.mifos.core.network.GenericResponse
 import com.mifos.core.network.datamanager.DataManagerRecurringAccount
-import com.mifos.room.entities.templates.recurringDeposit.RecurringDepositAccountTemplate
+import kpt.core.database.recurringdeposit.entity.RecurringDepositAccountTemplate
 import kotlinx.coroutines.flow.Flow
 
 class RecurringAccountRepositoryImp(

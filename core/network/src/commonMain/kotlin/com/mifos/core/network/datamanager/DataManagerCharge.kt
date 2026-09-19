@@ -17,8 +17,8 @@ import com.mifos.core.model.objects.clients.Page
 import com.mifos.core.model.objects.payloads.ChargesPayload
 import com.mifos.core.model.objects.template.client.ChargeTemplate
 import com.mifos.core.network.BaseApiManager
-import com.mifos.room.entities.client.ChargesEntity
-import com.mifos.room.helper.ChargeDaoHelper
+import kpt.core.database.charge.entity.ChargesEntity
+import kpt.core.database.charge.helper.ChargeDaoHelper
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.ExperimentalCoroutinesApi

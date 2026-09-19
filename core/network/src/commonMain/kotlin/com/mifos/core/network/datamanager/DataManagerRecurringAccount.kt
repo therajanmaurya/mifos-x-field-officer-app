@@ -14,7 +14,7 @@ import com.mifos.core.network.utils.extractErrorMessage
 import com.mifos.core.model.objects.payloads.RecurringDepositAccountPayload
 import com.mifos.core.network.BaseApiManager
 import com.mifos.core.network.GenericResponse
-import com.mifos.room.entities.templates.recurringDeposit.RecurringDepositAccountTemplate
+import kpt.core.database.recurringdeposit.entity.RecurringDepositAccountTemplate
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.flow.Flow

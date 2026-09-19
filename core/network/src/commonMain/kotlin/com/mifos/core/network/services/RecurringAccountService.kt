@@ -10,8 +10,8 @@
 package com.mifos.core.network.services
 
 import com.mifos.core.model.objects.payloads.RecurringDepositAccountPayload
-import com.mifos.room.basemodel.APIEndPoint
-import com.mifos.room.entities.templates.recurringDeposit.RecurringDepositAccountTemplate
+import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.database.recurringdeposit.entity.RecurringDepositAccountTemplate
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST

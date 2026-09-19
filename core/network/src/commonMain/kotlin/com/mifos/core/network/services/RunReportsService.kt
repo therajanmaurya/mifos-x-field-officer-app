@@ -12,7 +12,7 @@ package com.mifos.core.network.services
 import com.mifos.core.model.objects.groups.CenterInfo
 import com.mifos.core.model.objects.runreport.FullParameterListResponse
 import com.mifos.core.model.objects.runreport.client.ClientReportTypeItem
-import com.mifos.room.basemodel.APIEndPoint
+import kpt.core.database.basemodel.APIEndPoint
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query

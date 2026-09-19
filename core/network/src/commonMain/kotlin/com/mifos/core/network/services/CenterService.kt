@@ -17,11 +17,11 @@ import com.mifos.core.model.objects.responses.SaveResponse
 import com.mifos.core.network.GenericResponse
 import com.mifos.core.network.model.CollectionSheetPayload
 import com.mifos.core.network.model.Payload
-import com.mifos.room.basemodel.APIEndPoint
-import com.mifos.room.entities.accounts.CenterAccounts
-import com.mifos.room.entities.center.CenterPayloadEntity
-import com.mifos.room.entities.group.CenterEntity
-import com.mifos.room.entities.group.CenterWithAssociations
+import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.database.center.entity.CenterAccounts
+import kpt.core.database.center.entity.CenterPayloadEntity
+import kpt.core.database.center.entity.CenterEntity
+import kpt.core.database.center.entity.CenterWithAssociations
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST

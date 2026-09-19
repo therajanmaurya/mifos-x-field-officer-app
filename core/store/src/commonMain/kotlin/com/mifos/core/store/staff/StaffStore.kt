@@ -10,8 +10,8 @@
 package com.mifos.core.store.staff
 
 import com.mifos.core.network.services.StaffService
-import com.mifos.room.dao.StaffDao
-import com.mifos.room.entities.organisation.StaffEntity
+import kpt.core.database.staff.dao.StaffDao
+import kpt.core.database.staff.entity.StaffEntity
 import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider

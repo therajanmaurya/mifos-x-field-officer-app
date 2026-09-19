@@ -12,8 +12,8 @@ package com.mifos.core.network.mappers.groups
 import com.mifos.core.network.data.AbstractMapper
 import com.mifos.core.network.model.GetGroupsPageItems
 import com.mifos.core.network.model.GetGroupsStatus
-import com.mifos.room.entities.client.ClientStatusEntity
-import com.mifos.room.entities.group.GroupEntity
+import kpt.core.database.client.entity.ClientStatusEntity
+import kpt.core.database.group.entity.GroupEntity
 
 object GroupMapper : AbstractMapper<GetGroupsPageItems, GroupEntity>() {
 

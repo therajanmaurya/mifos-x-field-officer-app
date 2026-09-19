@@ -13,9 +13,9 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SurveyListRepository
 import com.mifos.core.network.datamanager.DataManagerSurveys
-import com.mifos.room.entities.survey.QuestionDatasEntity
-import com.mifos.room.entities.survey.ResponseDatasEntity
-import com.mifos.room.entities.survey.SurveyEntity
+import kpt.core.database.survey.entity.QuestionDatasEntity
+import kpt.core.database.survey.entity.ResponseDatasEntity
+import kpt.core.database.survey.entity.SurveyEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

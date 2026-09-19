@@ -9,8 +9,8 @@
  */
 package com.mifos.core.network.services
 
-import com.mifos.room.basemodel.APIEndPoint
-import com.mifos.room.entities.accounts.ClientAccounts
+import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.database.client.entity.ClientAccounts
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Path
 import kotlinx.coroutines.flow.Flow

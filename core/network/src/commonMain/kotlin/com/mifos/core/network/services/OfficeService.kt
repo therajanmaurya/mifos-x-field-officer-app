@@ -9,8 +9,8 @@
  */
 package com.mifos.core.network.services
 
-import com.mifos.room.basemodel.APIEndPoint
-import com.mifos.room.entities.organisation.OfficeEntity
+import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.database.office.entity.OfficeEntity
 import de.jensklingenberg.ktorfit.http.GET
 import kotlinx.coroutines.flow.Flow
 

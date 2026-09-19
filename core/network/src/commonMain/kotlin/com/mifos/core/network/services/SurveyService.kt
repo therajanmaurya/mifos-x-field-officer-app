@@ -10,8 +10,8 @@
 package com.mifos.core.network.services
 
 import com.mifos.core.model.objects.surveys.Scorecard
-import com.mifos.room.basemodel.APIEndPoint
-import com.mifos.room.entities.survey.SurveyEntity
+import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.database.survey.entity.SurveyEntity
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST

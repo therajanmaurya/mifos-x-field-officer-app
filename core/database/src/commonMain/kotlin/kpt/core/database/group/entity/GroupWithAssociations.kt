@@ -1,0 +1,54 @@
+/*
+ * Copyright 2024 Mifos Initiative
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ */
+package kpt.core.database.group.entity
+
+import kpt.core.database.shared.entity.Timeline
+
+import com.mifos.core.model.utils.Parcelable
+import com.mifos.core.model.utils.Parcelize
+import kotlinx.serialization.Serializable
+import kpt.core.database.client.entity.ClientEntity
+import kpt.core.database.client.entity.ClientStatusEntity
+
+
+/**
+ * Created by ishankhanna on 29/06/14.
+ */
+@Serializable
+@Parcelize
+data class GroupWithAssociations(
+    val id: Int? = null,
+
+    val accountNo: String? = null,
+
+    val name: String? = null,
+
+    val status: ClientStatusEntity? = null,
+
+    val active: Boolean? = null,
+
+    val activationDate: List<Int?> = emptyList(),
+
+    val officeId: Int? = null,
+
+    val officeName: String? = null,
+
+    val staffId: Int? = null,
+
+    val staffName: String? = null,
+
+    val hierarchy: String? = null,
+
+    val groupLevel: Int? = null,
+
+    val clientMembers: List<ClientEntity> = emptyList(),
+
+    val timeline: Timeline? = null,
+) : Parcelable

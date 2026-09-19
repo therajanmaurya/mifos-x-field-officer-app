@@ -10,8 +10,8 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.room.entities.group.CenterWithAssociations
-import com.mifos.room.entities.group.GroupWithAssociations
+import kpt.core.database.center.entity.CenterWithAssociations
+import kpt.core.database.group.entity.GroupWithAssociations
 import kotlinx.coroutines.flow.Flow
 
 /**

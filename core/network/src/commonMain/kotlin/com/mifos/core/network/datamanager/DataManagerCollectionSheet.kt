@@ -14,12 +14,12 @@ import com.mifos.core.network.BaseApiManager
 import com.mifos.core.network.GenericResponse
 import com.mifos.core.network.model.IndividualCollectionSheetPayload
 import com.mifos.core.network.model.RequestCollectionSheetPayload
-import com.mifos.room.entities.collectionsheet.CenterDetail
-import com.mifos.room.entities.collectionsheet.CollectionSheetPayload
-import com.mifos.room.entities.collectionsheet.CollectionSheetResponse
-import com.mifos.room.entities.collectionsheet.IndividualCollectionSheet
-import com.mifos.room.entities.collectionsheet.ProductiveCollectionSheetPayload
-import com.mifos.room.entities.group.CenterWithAssociations
+import kpt.core.database.collectionsheet.entity.CenterDetail
+import kpt.core.database.collectionsheet.entity.CollectionSheetPayload
+import kpt.core.database.collectionsheet.entity.CollectionSheetResponse
+import kpt.core.database.collectionsheet.entity.IndividualCollectionSheet
+import kpt.core.database.collectionsheet.entity.ProductiveCollectionSheetPayload
+import kpt.core.database.center.entity.CenterWithAssociations
 import kotlinx.coroutines.flow.Flow
 
 /**

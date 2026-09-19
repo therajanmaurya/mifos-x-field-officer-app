@@ -10,8 +10,8 @@
 package com.mifos.core.store.office
 
 import com.mifos.core.network.services.OfficeService
-import com.mifos.room.dao.OfficeDao
-import com.mifos.room.entities.organisation.OfficeEntity
+import kpt.core.database.office.dao.OfficeDao
+import kpt.core.database.office.entity.OfficeEntity
 import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider

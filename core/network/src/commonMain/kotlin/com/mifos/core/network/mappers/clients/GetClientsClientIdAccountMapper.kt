@@ -20,13 +20,13 @@ import com.mifos.core.network.model.GetClientsSavingsAccounts
 import com.mifos.core.network.model.GetClientsSavingsAccountsCurrency
 import com.mifos.core.network.model.GetClientsSavingsAccountsDepositType
 import com.mifos.core.network.model.GetClientsSavingsAccountsStatus
-import com.mifos.room.entities.accounts.ClientAccounts
-import com.mifos.room.entities.accounts.loans.LoanAccountEntity
-import com.mifos.room.entities.accounts.loans.LoanTypeEntity
-import com.mifos.room.entities.accounts.savings.SavingAccountCurrencyEntity
-import com.mifos.room.entities.accounts.savings.SavingAccountDepositTypeEntity
-import com.mifos.room.entities.accounts.savings.SavingsAccountEntity
-import com.mifos.room.entities.accounts.savings.SavingsAccountStatusEntity
+import kpt.core.database.client.entity.ClientAccounts
+import kpt.core.database.loan.entity.LoanAccountEntity
+import kpt.core.database.loan.entity.LoanTypeEntity
+import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
+import kpt.core.database.savings.entity.SavingAccountDepositTypeEntity
+import kpt.core.database.savings.entity.SavingsAccountEntity
+import kpt.core.database.savings.entity.SavingsAccountStatusEntity
 
 /**
  * Created by Aditya Gupta on 30/08/23.
@@ -86,7 +86,7 @@ object GetClientsClientIdAccountMapper :
                     productId = it.productId?.toInt(),
                     productName = it.productName,
                     status = it.status?.let { status ->
-                        com.mifos.room.entities.accounts.loans.LoanStatusEntity(
+                        kpt.core.database.loan.entity.LoanStatusEntity(
                             id = status.id?.toInt(),
                             code = status.code,
                             value = status.value,

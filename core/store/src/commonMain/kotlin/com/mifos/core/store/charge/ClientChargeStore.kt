@@ -10,8 +10,8 @@
 package com.mifos.core.store.charge
 
 import com.mifos.core.network.services.ChargeService
-import com.mifos.room.dao.ChargeDao
-import com.mifos.room.entities.client.ChargesEntity
+import kpt.core.database.charge.dao.ChargeDao
+import kpt.core.database.charge.entity.ChargesEntity
 import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider

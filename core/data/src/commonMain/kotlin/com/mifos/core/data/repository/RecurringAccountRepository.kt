@@ -12,7 +12,7 @@ package com.mifos.core.data.repository
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.model.objects.payloads.RecurringDepositAccountPayload
 import com.mifos.core.network.GenericResponse
-import com.mifos.room.entities.templates.recurringDeposit.RecurringDepositAccountTemplate
+import kpt.core.database.recurringdeposit.entity.RecurringDepositAccountTemplate
 import kotlinx.coroutines.flow.Flow
 
 interface RecurringAccountRepository {

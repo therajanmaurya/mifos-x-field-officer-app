@@ -12,7 +12,7 @@ package com.mifos.core.network.mappers.centers
 import com.mifos.core.common.utils.Page
 import com.mifos.core.network.data.AbstractMapper
 import com.mifos.core.network.model.GetCentersResponse
-import com.mifos.room.entities.group.CenterEntity
+import kpt.core.database.center.entity.CenterEntity
 
 object GetCentersResponseMapper : AbstractMapper<GetCentersResponse, Page<CenterEntity>>() {
 

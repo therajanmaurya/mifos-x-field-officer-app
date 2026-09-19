@@ -10,8 +10,8 @@
 package com.mifos.core.store.center
 
 import com.mifos.core.network.services.CenterService
-import com.mifos.room.dao.CenterDao
-import com.mifos.room.entities.group.CenterEntity
+import kpt.core.database.center.dao.CenterDao
+import kpt.core.database.center.entity.CenterEntity
 import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider

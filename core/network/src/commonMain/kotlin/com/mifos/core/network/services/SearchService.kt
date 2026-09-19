@@ -10,7 +10,7 @@
 package com.mifos.core.network.services
 
 import com.mifos.core.model.objects.SearchedEntity
-import com.mifos.room.basemodel.APIEndPoint
+import kpt.core.database.basemodel.APIEndPoint
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
 import kotlinx.coroutines.flow.Flow

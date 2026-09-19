@@ -12,7 +12,7 @@ package com.mifos.core.network.model.share
 import com.mifos.core.model.objects.organisations.Currency
 import com.mifos.core.model.utils.Parcelable
 import com.mifos.core.model.utils.Parcelize
-import com.mifos.room.entities.Timeline
+import kpt.core.database.shared.entity.Timeline
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -17,11 +17,11 @@ import com.mifos.core.network.datamanager.DataManagerClient
 import com.mifos.core.network.datamanager.DataManagerGroups
 import com.mifos.core.network.datamanager.DataManagerLoan
 import com.mifos.core.network.datamanager.DataManagerSavings
-import com.mifos.room.entities.accounts.loans.LoanRepaymentRequestEntity
-import com.mifos.room.entities.accounts.savings.SavingsAccountTransactionRequestEntity
-import com.mifos.room.entities.center.CenterPayloadEntity
-import com.mifos.room.entities.client.ClientPayloadEntity
-import com.mifos.room.entities.group.GroupPayloadEntity
+import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
+import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
+import kpt.core.database.center.entity.CenterPayloadEntity
+import kpt.core.database.client.entity.ClientPayloadEntity
+import kpt.core.database.group.entity.GroupPayloadEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

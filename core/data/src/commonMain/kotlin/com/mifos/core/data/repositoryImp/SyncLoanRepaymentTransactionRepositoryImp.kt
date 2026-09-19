@@ -13,9 +13,9 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SyncLoanRepaymentTransactionRepository
 import com.mifos.core.network.datamanager.DataManagerLoan
-import com.mifos.room.entities.PaymentTypeOptionEntity
-import com.mifos.room.entities.accounts.loans.LoanRepaymentRequestEntity
-import com.mifos.room.entities.accounts.loans.LoanRepaymentResponseEntity
+import kpt.core.database.payment.entity.PaymentTypeOptionEntity
+import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
+import kpt.core.database.loan.entity.LoanRepaymentResponseEntity
 import kotlinx.coroutines.flow.Flow
 
 class SyncLoanRepaymentTransactionRepositoryImp(

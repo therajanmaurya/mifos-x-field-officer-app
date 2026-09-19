@@ -14,7 +14,7 @@ import com.mifos.core.network.BaseApiManager
 import com.mifos.core.network.GenericResponse
 import com.mifos.core.network.mappers.dataTable.GetDataTablesResponseMapper
 import com.mifos.core.network.model.DeleteDataTablesDatatableAppTableIdDatatableIdResponse
-import com.mifos.room.entities.noncore.DataTableEntity
+import kpt.core.database.datatable.entity.DataTableEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonArray

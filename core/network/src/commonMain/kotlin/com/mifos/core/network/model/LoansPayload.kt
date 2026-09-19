@@ -9,7 +9,7 @@
  */
 package com.mifos.core.network.model
 
-import com.mifos.room.entities.noncore.DataTablePayload
+import kpt.core.database.datatable.entity.DataTablePayload
 import kotlinx.serialization.Serializable
 
 /**

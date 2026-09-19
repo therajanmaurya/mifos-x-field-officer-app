@@ -12,10 +12,10 @@ package com.mifos.core.network.datamanager
 import com.mifos.core.datastore.UserPreferencesRepository
 import com.mifos.core.model.objects.surveys.Scorecard
 import com.mifos.core.network.BaseApiManager
-import com.mifos.room.entities.survey.QuestionDatasEntity
-import com.mifos.room.entities.survey.ResponseDatasEntity
-import com.mifos.room.entities.survey.SurveyEntity
-import com.mifos.room.helper.SurveyDaoHelper
+import kpt.core.database.survey.entity.QuestionDatasEntity
+import kpt.core.database.survey.entity.ResponseDatasEntity
+import kpt.core.database.survey.entity.SurveyEntity
+import kpt.core.database.survey.helper.SurveyDaoHelper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

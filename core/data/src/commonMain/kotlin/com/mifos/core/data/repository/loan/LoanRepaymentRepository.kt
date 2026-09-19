@@ -10,9 +10,9 @@
 package com.mifos.core.data.repository.loan
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.room.entities.accounts.loans.LoanRepaymentRequestEntity
-import com.mifos.room.entities.accounts.loans.LoanRepaymentResponseEntity
-import com.mifos.room.entities.templates.loans.LoanRepaymentTemplateEntity
+import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
+import kpt.core.database.loan.entity.LoanRepaymentResponseEntity
+import kpt.core.database.loan.entity.LoanRepaymentTemplateEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

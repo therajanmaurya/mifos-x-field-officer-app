@@ -10,8 +10,8 @@
 package com.mifos.core.store.client
 
 import com.mifos.core.network.services.ClientService
-import com.mifos.room.dao.ClientDao
-import com.mifos.room.entities.client.ClientEntity
+import kpt.core.database.client.dao.ClientDao
+import kpt.core.database.client.entity.ClientEntity
 import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider

@@ -16,13 +16,13 @@ import com.mifos.core.model.objects.collectionsheets.CollectionSheetRequestPaylo
 import com.mifos.core.network.DataManager
 import com.mifos.core.network.GenericResponse
 import com.mifos.core.network.datamanager.DataManagerCollectionSheet
-import com.mifos.room.entities.collectionsheet.CenterDetail
-import com.mifos.room.entities.collectionsheet.CollectionSheetPayload
-import com.mifos.room.entities.collectionsheet.CollectionSheetResponse
-import com.mifos.room.entities.collectionsheet.ProductiveCollectionSheetPayload
-import com.mifos.room.entities.group.CenterEntity
-import com.mifos.room.entities.group.CenterWithAssociations
-import com.mifos.room.entities.group.GroupEntity
+import kpt.core.database.collectionsheet.entity.CenterDetail
+import kpt.core.database.collectionsheet.entity.CollectionSheetPayload
+import kpt.core.database.collectionsheet.entity.CollectionSheetResponse
+import kpt.core.database.collectionsheet.entity.ProductiveCollectionSheetPayload
+import kpt.core.database.center.entity.CenterEntity
+import kpt.core.database.center.entity.CenterWithAssociations
+import kpt.core.database.group.entity.GroupEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

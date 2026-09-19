@@ -11,7 +11,7 @@ package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.Page
-import com.mifos.room.entities.group.GroupEntity
+import kpt.core.database.group.entity.GroupEntity
 import kotlinx.coroutines.flow.Flow
 
 interface GroupsListRepository {

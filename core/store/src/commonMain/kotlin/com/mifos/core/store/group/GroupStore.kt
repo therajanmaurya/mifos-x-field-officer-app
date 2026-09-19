@@ -10,8 +10,8 @@
 package com.mifos.core.store.group
 
 import com.mifos.core.network.services.GroupService
-import com.mifos.room.dao.GroupsDao
-import com.mifos.room.entities.group.GroupEntity
+import kpt.core.database.group.dao.GroupsDao
+import kpt.core.database.group.entity.GroupEntity
 import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider

@@ -1,0 +1,67 @@
+/*
+ * Copyright 2025 Mifos Initiative
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ */
+package kpt.core.database.group.dao
+
+import kpt.core.base.database.annotation.DbDao
+
+import kpt.core.database.loan.entity.LoanAccountEntity
+import kpt.core.database.savings.entity.SavingsAccountEntity
+import kpt.core.database.group.entity.GroupEntity
+import kpt.core.database.group.entity.GroupPayloadEntity
+import kotlinx.coroutines.flow.Flow
+import androidx.room3.Dao
+import androidx.room3.Insert
+import androidx.room3.OnConflictStrategy
+import androidx.room3.Query
+import androidx.room3.Update
+
+/**
+ * Created by Pronay Sarker on 15/02/2025 (1:07 PM)
+ */
+@DbDao
+@Dao
+interface GroupsDao {
+
+    @Insert(entity = GroupEntity::class, onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGroup(group: GroupEntity)
+
+    @Insert(entity = LoanAccountEntity::class, onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLoanAccount(loanAccount: LoanAccountEntity)
+
+    @Insert(entity = SavingsAccountEntity::class, onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSavingsAccount(savingsAccount: SavingsAccountEntity)
+
+    @Insert(entity = GroupPayloadEntity::class, onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGroupPayload(groupPayload: GroupPayloadEntity)
+
+    @Update(entity = GroupPayloadEntity::class, onConflict = OnConflictStrategy.NONE)
+    suspend fun updateGroupPayload(payload: GroupPayloadEntity)
+
+    @Query("DELETE FROM GroupPayload where id = :groupId")
+    suspend fun deleteGroupPayloadById(groupId: Int)
+
+    @Query("SELECT * FROM GroupTable")
+    fun getAllGroups(): Flow<List<GroupEntity>>
+
+    @Query("SELECT * FROM GroupTable LIMIT :limit OFFSET :offset")
+    suspend fun getAllGroups(offset: Int, limit: Int): List<GroupEntity>
+
+    @Query("SELECT * FROM GroupTable WHERE id = :groupId")
+    fun getGroupById(groupId: Int): Flow<GroupEntity>
+
+    @Query("SELECT * FROM LoanAccountEntity WHERE groupId = :groupId")
+    fun getLoanAccountsByGroupId(groupId: Int): Flow<List<LoanAccountEntity>>
+
+    @Query("SELECT * FROM GroupPayload")
+    fun getAllGroupPayloads(): Flow<List<GroupPayloadEntity>>
+
+    @Query("SELECT * FROM SavingsAccount WHERE groupId = :groupId")
+    fun getSavingsAccountsByGroupId(groupId: Int): Flow<List<SavingsAccountEntity>>
+}

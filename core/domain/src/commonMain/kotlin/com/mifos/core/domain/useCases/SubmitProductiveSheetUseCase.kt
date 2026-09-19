@@ -13,7 +13,7 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.GenerateCollectionSheetRepository
 import com.mifos.core.network.GenericResponse
-import com.mifos.room.entities.collectionsheet.ProductiveCollectionSheetPayload
+import kpt.core.database.collectionsheet.entity.ProductiveCollectionSheetPayload
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

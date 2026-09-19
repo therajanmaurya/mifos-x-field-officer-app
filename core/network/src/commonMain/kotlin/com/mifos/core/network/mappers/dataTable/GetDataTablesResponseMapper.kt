@@ -12,8 +12,8 @@ package com.mifos.core.network.mappers.dataTable
 import com.mifos.core.network.data.AbstractMapper
 import com.mifos.core.network.model.GetDataTablesResponse
 import com.mifos.core.network.model.ResultsetColumnHeaderData
-import com.mifos.room.entities.noncore.ColumnHeader
-import com.mifos.room.entities.noncore.DataTableEntity
+import kpt.core.database.datatable.entity.ColumnHeader
+import kpt.core.database.datatable.entity.DataTableEntity
 
 /**
  * Created by Aditya Gupta on 31/08/23.

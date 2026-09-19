@@ -12,11 +12,11 @@ package com.mifos.core.network.services
 import com.mifos.core.common.utils.Page
 import com.mifos.core.model.objects.clients.ActivatePayload
 import com.mifos.core.model.objects.responses.SaveResponse
-import com.mifos.room.basemodel.APIEndPoint
-import com.mifos.room.entities.accounts.GroupAccounts
-import com.mifos.room.entities.group.GroupEntity
-import com.mifos.room.entities.group.GroupPayloadEntity
-import com.mifos.room.entities.group.GroupWithAssociations
+import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.database.group.entity.GroupAccounts
+import kpt.core.database.group.entity.GroupEntity
+import kpt.core.database.group.entity.GroupPayloadEntity
+import kpt.core.database.group.entity.GroupWithAssociations
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST

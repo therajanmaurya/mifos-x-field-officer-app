@@ -15,11 +15,11 @@ import com.mifos.core.network.model.GetClientStatus
 import com.mifos.core.network.model.GetClientTypeOptions
 import com.mifos.core.network.model.GetClientsPageItemsResponse
 import com.mifos.core.network.model.GetGenderOptions
-import com.mifos.room.entities.client.ClientClassificationEntity
-import com.mifos.room.entities.client.ClientEntity
-import com.mifos.room.entities.client.ClientGenderEntity
-import com.mifos.room.entities.client.ClientStatusEntity
-import com.mifos.room.entities.client.ClientTypeEntity
+import kpt.core.database.client.entity.ClientClassificationEntity
+import kpt.core.database.client.entity.ClientEntity
+import kpt.core.database.client.entity.ClientGenderEntity
+import kpt.core.database.client.entity.ClientStatusEntity
+import kpt.core.database.client.entity.ClientTypeEntity
 
 object ClientMapper : AbstractMapper<GetClientsPageItemsResponse, ClientEntity>() {
 

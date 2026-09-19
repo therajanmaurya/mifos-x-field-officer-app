@@ -24,13 +24,13 @@ import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanType
 import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
 import com.mifos.core.model.objects.account.loan.loanWithAssociations.SavingAccountCurrency
 import com.mifos.core.network.data.AbstractMapper
-import com.mifos.room.entities.accounts.loans.ActualDisbursementDateEntity
-import com.mifos.room.entities.accounts.loans.LoanAccountSummaryEntity
-import com.mifos.room.entities.accounts.loans.LoanStatusEntity
-import com.mifos.room.entities.accounts.loans.LoanTimelineEntity
-import com.mifos.room.entities.accounts.loans.LoanTypeEntity
-import com.mifos.room.entities.accounts.loans.LoanWithAssociationsEntity
-import com.mifos.room.entities.accounts.savings.SavingAccountCurrencyEntity
+import kpt.core.database.loan.entity.ActualDisbursementDateEntity
+import kpt.core.database.loan.entity.LoanAccountSummaryEntity
+import kpt.core.database.loan.entity.LoanStatusEntity
+import kpt.core.database.loan.entity.LoanTimelineEntity
+import kpt.core.database.loan.entity.LoanTypeEntity
+import kpt.core.database.loan.entity.LoanWithAssociationsEntity
+import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
 
 object LoanAccountMapper : AbstractMapper<LoanWithAssociationsEntity, LoanWithAssociations>() {
 

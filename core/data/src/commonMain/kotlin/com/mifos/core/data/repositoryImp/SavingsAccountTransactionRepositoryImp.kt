@@ -14,8 +14,8 @@ import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SavingsAccountTransactionRepository
 import com.mifos.core.model.objects.account.saving.SavingsAccountTransactionResponse
 import com.mifos.core.network.datamanager.DataManagerSavings
-import com.mifos.room.entities.accounts.savings.SavingsAccountTransactionRequestEntity
-import com.mifos.room.entities.templates.savings.SavingsAccountTransactionTemplateEntity
+import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
+import kpt.core.database.savings.entity.SavingsAccountTransactionTemplateEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -14,11 +14,11 @@ import com.mifos.core.model.objects.account.saving.SavingsAccountTransactionResp
 import com.mifos.core.model.objects.organisations.ProductSavings
 import com.mifos.core.model.objects.payloads.SavingsPayload
 import com.mifos.core.network.GenericResponse
-import com.mifos.room.basemodel.APIEndPoint
-import com.mifos.room.entities.accounts.savings.SavingsAccountTransactionRequestEntity
-import com.mifos.room.entities.accounts.savings.SavingsAccountWithAssociationsEntity
-import com.mifos.room.entities.templates.savings.SavingProductsTemplate
-import com.mifos.room.entities.templates.savings.SavingsAccountTransactionTemplateEntity
+import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
+import kpt.core.database.savings.entity.SavingsAccountWithAssociationsEntity
+import kpt.core.database.savings.entity.SavingProductsTemplate
+import kpt.core.database.savings.entity.SavingsAccountTransactionTemplateEntity
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST

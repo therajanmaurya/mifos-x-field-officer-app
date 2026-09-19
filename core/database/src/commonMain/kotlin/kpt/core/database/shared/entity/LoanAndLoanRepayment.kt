@@ -1,0 +1,38 @@
+/*
+ * Copyright 2024 Mifos Initiative
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ */
+package kpt.core.database.shared.entity
+
+import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
+import kpt.core.database.loan.entity.LoanRepaymentTemplateEntity
+
+/**
+ *
+ * Created by Rajan Maurya on 08/08/16.
+ */
+class LoanAndLoanRepayment {
+    var loanWithAssociations: LoanWithAssociations? = null
+    var loanRepaymentTemplate: LoanRepaymentTemplateEntity? = null
+
+    constructor()
+    constructor(
+        loanWithAssociations: LoanWithAssociations?,
+        loanRepaymentTemplate: LoanRepaymentTemplateEntity?,
+    ) {
+        this.loanWithAssociations = loanWithAssociations
+        this.loanRepaymentTemplate = loanRepaymentTemplate
+    }
+
+    override fun toString(): String {
+        return "LoanAndLoanRepayment{" +
+            "loanWithAssociations=" + loanWithAssociations +
+            ", loanRepaymentTemplate=" + loanRepaymentTemplate +
+            '}'
+    }
+}

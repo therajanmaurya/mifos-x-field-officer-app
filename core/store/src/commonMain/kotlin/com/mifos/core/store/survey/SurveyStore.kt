@@ -10,8 +10,8 @@
 package com.mifos.core.store.survey
 
 import com.mifos.core.network.services.SurveyService
-import com.mifos.room.dao.SurveyDao
-import com.mifos.room.entities.survey.SurveyEntity
+import kpt.core.database.survey.dao.SurveyDao
+import kpt.core.database.survey.entity.SurveyEntity
 import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider

@@ -11,7 +11,7 @@ package com.mifos.core.network.mappers.offices
 
 import com.mifos.core.network.data.AbstractMapper
 import com.mifos.core.network.model.GetOfficesResponse
-import com.mifos.room.entities.organisation.OfficeEntity
+import kpt.core.database.office.entity.OfficeEntity
 
 object GetOfficeResponseMapper : AbstractMapper<GetOfficesResponse, OfficeEntity>() {
 

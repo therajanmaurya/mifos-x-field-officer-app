@@ -11,7 +11,7 @@ package com.mifos.core.network.services
 
 import com.mifos.core.network.model.fixedDeposit.FixedDepositPayload
 import com.mifos.core.network.model.fixedDeposit.FixedDepositTemplate
-import com.mifos.room.basemodel.APIEndPoint
+import kpt.core.database.basemodel.APIEndPoint
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST

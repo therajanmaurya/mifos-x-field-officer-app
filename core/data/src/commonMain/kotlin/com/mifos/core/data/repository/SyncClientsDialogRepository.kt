@@ -11,11 +11,11 @@ package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
-import com.mifos.room.entities.accounts.ClientAccounts
-import com.mifos.room.entities.accounts.savings.SavingsAccountWithAssociationsEntity
-import com.mifos.room.entities.client.ClientEntity
-import com.mifos.room.entities.templates.loans.LoanRepaymentTemplateEntity
-import com.mifos.room.entities.templates.savings.SavingsAccountTransactionTemplateEntity
+import kpt.core.database.client.entity.ClientAccounts
+import kpt.core.database.savings.entity.SavingsAccountWithAssociationsEntity
+import kpt.core.database.client.entity.ClientEntity
+import kpt.core.database.loan.entity.LoanRepaymentTemplateEntity
+import kpt.core.database.savings.entity.SavingsAccountTransactionTemplateEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

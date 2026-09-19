@@ -15,9 +15,9 @@ import com.mifos.core.data.repository.NewIndividualCollectionSheetRepository
 import com.mifos.core.network.DataManager
 import com.mifos.core.network.datamanager.DataManagerCollectionSheet
 import com.mifos.core.network.model.RequestCollectionSheetPayload
-import com.mifos.room.entities.collectionsheet.IndividualCollectionSheet
-import com.mifos.room.entities.organisation.OfficeEntity
-import com.mifos.room.entities.organisation.StaffEntity
+import kpt.core.database.collectionsheet.entity.IndividualCollectionSheet
+import kpt.core.database.office.entity.OfficeEntity
+import kpt.core.database.staff.entity.StaffEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

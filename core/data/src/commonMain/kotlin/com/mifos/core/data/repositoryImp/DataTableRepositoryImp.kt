@@ -13,7 +13,7 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.DataTableRepository
 import com.mifos.core.network.datamanager.DataManagerDataTable
-import com.mifos.room.entities.noncore.DataTableEntity
+import kpt.core.database.datatable.entity.DataTableEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

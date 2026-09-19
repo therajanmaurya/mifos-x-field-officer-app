@@ -12,7 +12,7 @@ package com.mifos.core.network.mappers.clients
 import com.mifos.core.common.utils.Page
 import com.mifos.core.network.data.AbstractMapper
 import com.mifos.core.network.model.GetClientsResponse
-import com.mifos.room.entities.client.ClientEntity
+import kpt.core.database.client.entity.ClientEntity
 
 object GetClientResponseMapper : AbstractMapper<GetClientsResponse, Page<ClientEntity>>() {
 

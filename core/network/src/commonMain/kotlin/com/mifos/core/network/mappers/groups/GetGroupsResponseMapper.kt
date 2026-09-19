@@ -12,7 +12,7 @@ package com.mifos.core.network.mappers.groups
 import com.mifos.core.common.utils.Page
 import com.mifos.core.network.data.AbstractMapper
 import com.mifos.core.network.model.GetGroupsResponse
-import com.mifos.room.entities.group.GroupEntity
+import kpt.core.database.group.entity.GroupEntity
 
 object GetGroupsResponseMapper : AbstractMapper<GetGroupsResponse, Page<GroupEntity>>() {
 

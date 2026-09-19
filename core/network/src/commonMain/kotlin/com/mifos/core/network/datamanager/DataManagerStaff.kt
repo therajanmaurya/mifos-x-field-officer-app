@@ -11,8 +11,8 @@ package com.mifos.core.network.datamanager
 
 import com.mifos.core.datastore.UserPreferencesRepository
 import com.mifos.core.network.BaseApiManager
-import com.mifos.room.entities.organisation.StaffEntity
-import com.mifos.room.helper.StaffDaoHelper
+import kpt.core.database.staff.entity.StaffEntity
+import kpt.core.database.staff.helper.StaffDaoHelper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

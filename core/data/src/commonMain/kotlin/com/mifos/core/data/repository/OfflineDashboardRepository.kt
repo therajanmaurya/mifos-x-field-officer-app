@@ -10,11 +10,11 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.room.entities.accounts.loans.LoanRepaymentRequestEntity
-import com.mifos.room.entities.accounts.savings.SavingsAccountTransactionRequestEntity
-import com.mifos.room.entities.center.CenterPayloadEntity
-import com.mifos.room.entities.client.ClientPayloadEntity
-import com.mifos.room.entities.group.GroupPayloadEntity
+import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
+import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
+import kpt.core.database.center.entity.CenterPayloadEntity
+import kpt.core.database.client.entity.ClientPayloadEntity
+import kpt.core.database.group.entity.GroupPayloadEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

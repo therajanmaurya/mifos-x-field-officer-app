@@ -11,8 +11,8 @@ package com.mifos.core.network.services
 
 import com.mifos.core.model.objects.users.UserLocation
 import com.mifos.core.network.GenericResponse
-import com.mifos.room.basemodel.APIEndPoint
-import com.mifos.room.entities.noncore.DataTableEntity
+import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.database.datatable.entity.DataTableEntity
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET

@@ -12,8 +12,8 @@ package com.mifos.core.network.datamanager
 import com.mifos.core.datastore.UserPreferencesRepository
 import com.mifos.core.network.BaseApiManager
 import com.mifos.core.network.mappers.offices.GetOfficeResponseMapper
-import com.mifos.room.entities.organisation.OfficeEntity
-import com.mifos.room.helper.OfficeDaoHelper
+import kpt.core.database.office.entity.OfficeEntity
+import kpt.core.database.office.helper.OfficeDaoHelper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

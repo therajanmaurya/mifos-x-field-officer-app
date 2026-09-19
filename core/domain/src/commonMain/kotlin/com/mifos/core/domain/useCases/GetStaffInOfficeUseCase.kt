@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.NewIndividualCollectionSheetRepository
-import com.mifos.room.entities.organisation.StaffEntity
+import kpt.core.database.staff.entity.StaffEntity
 import kotlinx.coroutines.flow.Flow
 
 class GetStaffInOfficeUseCase(
