@@ -14,7 +14,7 @@ import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.model.shared.RetrieveOneResponse
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.staff.entity.StaffEntity
 
 @ApiBinding("mifos")

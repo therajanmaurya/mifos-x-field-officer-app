@@ -12,6 +12,8 @@ package kpt.core.database.collectionsheet.entity
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 import kpt.core.base.database.annotation.DbEntity
+import kpt.core.database.collectionsheet.entity.MeetingFallCalendar
+
 
 /**
  * A staff member's centre-meeting roster — the ONE cacheable read on the collection-sheet API.

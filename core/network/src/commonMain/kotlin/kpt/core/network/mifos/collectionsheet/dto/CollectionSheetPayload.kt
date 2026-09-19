@@ -12,7 +12,7 @@ package kpt.core.network.mifos.collectionsheet.dto
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kpt.core.database.shared.entity.BulkRepaymentTransactions
+import kpt.core.model.shared.BulkRepaymentTransactions
 import kpt.core.model.shared.Payload
 
 

@@ -15,12 +15,12 @@ import com.mifos.core.model.objects.collectionsheets.CollectionSheetRequestPaylo
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.collectionsheet.dto.IndividualCollectionSheetPayload
 import kpt.core.network.mifos.collectionsheet.dto.RequestCollectionSheetPayload
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.collectionsheet.entity.CenterDetail
-import kpt.core.database.collectionsheet.entity.CollectionSheetPayload
+import kpt.core.model.collectionsheet.CollectionSheetPayload
 import kpt.core.database.collectionsheet.entity.CollectionSheetResponse
 import kpt.core.database.collectionsheet.entity.IndividualCollectionSheet
-import kpt.core.database.collectionsheet.entity.ProductiveCollectionSheetPayload
+import kpt.core.model.collectionsheet.ProductiveCollectionSheetPayload
 import kpt.core.database.center.entity.CenterWithAssociations
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET

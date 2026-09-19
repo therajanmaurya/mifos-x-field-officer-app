@@ -9,7 +9,7 @@
  */
 package kpt.core.database.group.converter
 
-import kpt.core.database.shared.entity.Timeline
+import kpt.core.model.shared.Timeline
 
 import androidx.room3.ColumnTypeConverter
 import kotlinx.serialization.encodeToString

@@ -13,7 +13,7 @@ import kpt.core.base.network.annotation.ApiBinding
 
 import com.mifos.core.model.objects.noncoreobjects.Document
 import kpt.core.model.shared.GenericResponse
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET

@@ -42,7 +42,7 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.statement.HttpResponse
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.client.entity.AddressConfiguration
 import kpt.core.database.client.entity.AddressTemplate
 import kpt.core.database.client.entity.ClientAccounts

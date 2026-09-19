@@ -9,7 +9,7 @@
  */
 package kpt.core.database.converter
 
-import kpt.core.database.shared.entity.Timeline
+import kpt.core.model.shared.Timeline
 
 import androidx.room3.ColumnTypeConverter
 import com.mifos.core.model.objects.Changes
@@ -57,7 +57,7 @@ import kpt.core.database.loan.entity.ActualDisbursementDateEntity
 import kpt.core.database.loan.entity.LoanAccountSummaryEntity
 import kpt.core.database.loan.entity.LoanStatusEntity
 import kpt.core.database.loan.entity.LoanTimelineEntity
-import kpt.core.database.loan.entity.LoanType
+import kpt.core.model.loan.LoanType
 import kpt.core.database.loan.entity.LoanTypeEntity
 import kpt.core.database.office.entity.OfficeOpeningDateEntity
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity

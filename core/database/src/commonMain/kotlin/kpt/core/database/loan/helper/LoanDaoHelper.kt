@@ -22,7 +22,7 @@ import kpt.core.database.loan.entity.LoanRepaymentTemplateEntity
 import kpt.core.database.loan.entity.LoanTemplate
 import kpt.core.database.loan.entity.LoanWithAssociationsEntity
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
-import kpt.core.database.recurringdeposit.entity.Summary
+import kpt.core.model.recurringdeposit.Summary
 import kpt.core.database.utils.getCurrentTimeInMillis
 
 

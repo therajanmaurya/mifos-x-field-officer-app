@@ -15,7 +15,7 @@ import com.mifos.core.model.objects.checkerinboxtask.CheckerInboxSearchTemplate
 import com.mifos.core.model.objects.checkerinboxtask.CheckerTask
 import com.mifos.core.model.objects.checkerinboxtask.RescheduleLoansTask
 import kpt.core.model.shared.GenericResponse
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST

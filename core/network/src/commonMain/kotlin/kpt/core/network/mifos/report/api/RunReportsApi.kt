@@ -14,7 +14,7 @@ import kpt.core.base.network.annotation.ApiBinding
 import com.mifos.core.model.objects.groups.CenterInfo
 import com.mifos.core.model.objects.runreport.FullParameterListResponse
 import com.mifos.core.model.objects.runreport.client.ClientReportTypeItem
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query

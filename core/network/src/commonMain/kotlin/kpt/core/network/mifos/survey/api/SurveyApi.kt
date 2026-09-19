@@ -12,7 +12,7 @@ package kpt.core.network.mifos.survey.api
 import kpt.core.base.network.annotation.ApiBinding
 
 import com.mifos.core.model.objects.surveys.Scorecard
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.survey.entity.SurveyEntity
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET

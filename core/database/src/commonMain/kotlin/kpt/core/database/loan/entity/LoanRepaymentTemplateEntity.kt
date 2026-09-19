@@ -9,16 +9,18 @@
  */
 package kpt.core.database.loan.entity
 
-import kpt.core.base.database.annotation.DbEntity
-
-import com.mifos.core.model.utils.Parcelable
-import com.mifos.core.model.utils.Parcelize
-import kpt.core.database.payment.entity.PaymentTypeOptionEntity
-import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
-import kotlinx.serialization.Serializable
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
+import com.mifos.core.model.utils.Parcelable
+import com.mifos.core.model.utils.Parcelize
+import kotlinx.serialization.Serializable
+import kpt.core.base.database.annotation.DbEntity
+import kpt.core.database.payment.entity.PaymentTypeOptionEntity
+import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
+import kpt.core.model.loan.LoanType
+
+
 
 @Serializable
 @Parcelize

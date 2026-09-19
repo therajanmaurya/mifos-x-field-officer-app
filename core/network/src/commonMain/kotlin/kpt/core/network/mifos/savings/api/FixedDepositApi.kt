@@ -13,7 +13,7 @@ import kpt.core.base.network.annotation.ApiBinding
 
 import kpt.core.network.mifos.savings.dto.FixedDepositPayload
 import kpt.core.network.mifos.savings.dto.FixedDepositTemplate
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST

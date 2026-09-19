@@ -12,7 +12,7 @@ package kpt.core.network.mifos.search.api
 import kpt.core.base.network.annotation.ApiBinding
 
 import com.mifos.core.model.objects.SearchedEntity
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
 

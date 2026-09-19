@@ -14,7 +14,7 @@ import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.network.mifos.office.dto.GetOfficesResponse
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.office.entity.OfficeEntity
 
 @ApiBinding("mifos")

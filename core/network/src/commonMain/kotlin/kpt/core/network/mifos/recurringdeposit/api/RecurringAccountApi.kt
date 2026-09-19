@@ -12,8 +12,8 @@ package kpt.core.network.mifos.recurringdeposit.api
 import kpt.core.base.network.annotation.ApiBinding
 
 import com.mifos.core.model.objects.payloads.RecurringDepositAccountPayload
-import kpt.core.database.basemodel.APIEndPoint
-import kpt.core.database.recurringdeposit.entity.RecurringDepositAccountTemplate
+import kpt.core.common.APIEndPoint
+import kpt.core.model.recurringdeposit.RecurringDepositAccountTemplate
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST

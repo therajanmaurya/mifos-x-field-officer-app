@@ -17,9 +17,9 @@ import kpt.core.network.DataManager
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.collectionsheet.datamanager.DataManagerCollectionSheet
 import kpt.core.database.collectionsheet.entity.CenterDetail
-import kpt.core.database.collectionsheet.entity.CollectionSheetPayload
+import kpt.core.model.collectionsheet.CollectionSheetPayload
 import kpt.core.database.collectionsheet.entity.CollectionSheetResponse
-import kpt.core.database.collectionsheet.entity.ProductiveCollectionSheetPayload
+import kpt.core.model.collectionsheet.ProductiveCollectionSheetPayload
 import kpt.core.database.center.entity.CenterEntity
 import kpt.core.database.center.entity.CenterWithAssociations
 import kpt.core.database.group.entity.GroupEntity

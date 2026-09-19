@@ -41,7 +41,7 @@ import kpt.core.network.mifos.loan.dto.LoanChargeOffTemplateDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseTemplateDto
 import kpt.core.network.mifos.loan.dto.LoanOfficerOptionsTemplateDto
 import kpt.core.network.mifos.loan.dto.LoansPayload
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.loan.entity.Loan
 import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
 import kpt.core.database.loan.entity.LoanRepaymentResponseEntity

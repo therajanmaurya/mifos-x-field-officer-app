@@ -16,7 +16,7 @@ import com.mifos.core.model.objects.account.saving.SavingsAccountTransactionResp
 import com.mifos.core.model.objects.organisations.ProductSavings
 import com.mifos.core.model.objects.payloads.SavingsPayload
 import kpt.core.model.shared.GenericResponse
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
 import kpt.core.database.savings.entity.SavingsAccountWithAssociationsEntity
 import kpt.core.database.savings.entity.SavingProductsTemplate

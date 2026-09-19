@@ -18,7 +18,7 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import kotlinx.serialization.json.JsonArray
 import kpt.core.base.network.annotation.ApiBinding
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.datatable.entity.DataTableEntity
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.datatable.dto.DeleteDataTablesDatatableAppTableIdDatatableIdResponse

@@ -28,7 +28,7 @@ import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.center.entity.CenterAccounts
 import kpt.core.database.center.entity.CenterEntity
 import kpt.core.database.center.entity.CenterPayloadEntity

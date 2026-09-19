@@ -9,7 +9,7 @@
  */
 package kpt.core.database.center.entity
 
-import kpt.core.database.shared.entity.Timeline
+import kpt.core.model.shared.Timeline
 
 import com.mifos.core.model.objects.collectionsheets.CollectionMeetingCalendar
 import com.mifos.core.model.utils.IgnoredOnParcel

@@ -16,7 +16,7 @@ import kpt.core.network.mifos.note.dto.DeleteNoteResponseDto
 import kpt.core.network.mifos.note.dto.NoteDto
 import kpt.core.network.mifos.note.dto.NoteRequestDto
 import kpt.core.network.mifos.note.dto.UpdateNoteResponseDto
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET

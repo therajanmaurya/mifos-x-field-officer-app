@@ -9,7 +9,7 @@
  */
 package kpt.core.database.group.entity
 
-import kpt.core.database.shared.entity.Timeline
+import kpt.core.model.shared.Timeline
 
 import com.mifos.core.model.utils.Parcelable
 import com.mifos.core.model.utils.Parcelize

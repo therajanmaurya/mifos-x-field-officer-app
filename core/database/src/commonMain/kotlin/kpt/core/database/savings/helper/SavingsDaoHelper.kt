@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kpt.core.database.client.entity.Savings
+import kpt.core.model.client.Savings
 import kpt.core.database.savings.dao.SavingsDao
 import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
 import kpt.core.database.savings.entity.SavingsAccountTransactionTemplateEntity

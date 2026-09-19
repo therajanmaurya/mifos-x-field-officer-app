@@ -16,6 +16,8 @@ import com.mifos.core.model.objects.account.loan.InterestType
 import com.mifos.core.model.objects.account.loan.RepaymentFrequencyType
 import com.mifos.core.model.objects.account.loan.TermPeriodFrequencyType
 import kotlinx.serialization.Serializable
+import kpt.core.model.loan.AmortizationType
+
 
 
 @Serializable

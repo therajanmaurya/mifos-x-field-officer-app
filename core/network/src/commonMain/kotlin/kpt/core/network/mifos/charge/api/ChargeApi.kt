@@ -15,7 +15,7 @@ import com.mifos.core.model.objects.clients.ChargeCreationResponse
 import com.mifos.core.model.objects.clients.Page
 import com.mifos.core.model.objects.payloads.ChargesPayload
 import com.mifos.core.model.objects.template.client.ChargeTemplate
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.charge.entity.ChargesEntity
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE

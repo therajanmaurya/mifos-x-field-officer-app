@@ -11,7 +11,7 @@ package kpt.core.network.mifos.client.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.client.entity.ClientAccounts
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Path

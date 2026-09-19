@@ -13,9 +13,9 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.model.objects.collectionsheets.CollectionSheetRequestPayload
 import kpt.core.model.shared.GenericResponse
 import kpt.core.database.collectionsheet.entity.CenterDetail
-import kpt.core.database.collectionsheet.entity.CollectionSheetPayload
+import kpt.core.model.collectionsheet.CollectionSheetPayload
 import kpt.core.database.collectionsheet.entity.CollectionSheetResponse
-import kpt.core.database.collectionsheet.entity.ProductiveCollectionSheetPayload
+import kpt.core.model.collectionsheet.ProductiveCollectionSheetPayload
 import kpt.core.database.center.entity.CenterEntity
 import kpt.core.database.center.entity.CenterWithAssociations
 import kpt.core.database.group.entity.GroupEntity

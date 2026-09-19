@@ -20,7 +20,7 @@ import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
 import io.ktor.client.statement.HttpResponse
 import kpt.core.base.network.annotation.ApiBinding
-import kpt.core.database.basemodel.APIEndPoint
+import kpt.core.common.APIEndPoint
 import kpt.core.database.group.entity.GroupAccounts
 import kpt.core.database.group.entity.GroupEntity
 import kpt.core.database.group.entity.GroupPayloadEntity

@@ -12,6 +12,8 @@ package kpt.core.database.recurringdeposit.entity
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 import kpt.core.base.database.annotation.DbEntity
+import kpt.core.model.recurringdeposit.RecurringDepositAccountTemplate
+
 
 /**
  * The recurring-deposit account-opening TEMPLATE, cached per client.
@@ -31,7 +33,7 @@ import kpt.core.base.database.annotation.DbEntity
 data class RecurringDepositTemplateEntity(
     @PrimaryKey
     val clientId: Int,
-    /** Serialized [kpt.core.database.recurringdeposit.entity.RecurringDepositAccountTemplate]. */
+    /** Serialized [kpt.core.model.recurringdeposit.RecurringDepositAccountTemplate]. */
     val payload: String,
     val fetchedAtMs: Long,
 )

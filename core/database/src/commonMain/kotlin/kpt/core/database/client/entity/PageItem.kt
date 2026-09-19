@@ -9,7 +9,7 @@
  */
 package kpt.core.database.client.entity
 
-import kpt.core.database.shared.entity.Timeline
+import kpt.core.model.shared.Timeline
 
 
 
