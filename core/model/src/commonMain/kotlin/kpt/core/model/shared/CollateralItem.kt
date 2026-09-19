@@ -7,7 +7,7 @@
  *
  * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
  */
-package kpt.core.network.mifos.shared.dto
+package kpt.core.model.shared
 
 import kotlinx.serialization.Serializable
 

@@ -10,7 +10,7 @@
 package kpt.core.network.mifos.datatable.dto
 
 import kotlinx.serialization.Serializable
-import kpt.core.network.mifos.shared.dto.ResultsetColumnHeaderData
+import kpt.core.model.shared.ResultsetColumnHeaderData
 
 
 /**

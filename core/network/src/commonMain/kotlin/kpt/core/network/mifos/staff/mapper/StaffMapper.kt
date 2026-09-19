@@ -10,7 +10,7 @@
 package kpt.core.network.mifos.staff.mapper
 
 import kpt.core.network.data.AbstractMapper
-import kpt.core.network.mifos.shared.dto.RetrieveOneResponse
+import kpt.core.model.shared.RetrieveOneResponse
 import kpt.core.database.staff.entity.StaffEntity
 
 object StaffMapper : AbstractMapper<RetrieveOneResponse, StaffEntity>() {

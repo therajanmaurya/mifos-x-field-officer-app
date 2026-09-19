@@ -7,22 +7,16 @@
  *
  * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
  */
-package kpt.core.network.mifos.shared.dto
+package kpt.core.model.shared
 
+import com.mifos.core.model.objects.clients.ClientAddressResponse
+import com.mifos.core.model.utils.Parcelable
+import com.mifos.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
-/**
- *
- *
- * @param id
- * @param name
- */
-
 @Serializable
-data class RoleData(
-
-    val id: Long? = null,
-
-    val name: String? = null,
-
-)
+@Parcelize
+data class PinpointLocationActionResponse(
+    val resourceId: Int? = null,
+    val changes: ClientAddressResponse? = null,
+) : Parcelable

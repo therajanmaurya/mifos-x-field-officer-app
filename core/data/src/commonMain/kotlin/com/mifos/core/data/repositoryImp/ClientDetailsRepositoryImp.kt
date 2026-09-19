@@ -15,8 +15,8 @@ import com.mifos.core.data.repository.ClientDetailsRepository
 import com.mifos.core.model.objects.account.share.ShareAccounts
 import kpt.core.network.client.datamanager.DataManagerClient
 import kpt.core.network.mifos.client.dto.ClientCloseTemplateResponse
-import kpt.core.network.mifos.shared.dto.CollateralItem
-import kpt.core.network.mifos.shared.dto.CollateralItemResult
+import kpt.core.model.shared.CollateralItem
+import kpt.core.model.shared.CollateralItemResult
 import kpt.core.network.mifos.savings.dto.SavingAccountOption
 import kpt.core.network.mifos.staff.dto.StaffOption
 import kpt.core.database.client.entity.ClientAccounts

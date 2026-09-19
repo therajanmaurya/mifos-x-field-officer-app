@@ -19,7 +19,7 @@ import com.mifos.core.model.objects.responses.SaveResponse
 import kpt.core.network.GenericResponse
 import kpt.core.network.mifos.collectionsheet.dto.CollectionSheetPayload
 import kpt.core.network.mifos.center.dto.GetCentersResponse
-import kpt.core.network.mifos.shared.dto.Payload
+import kpt.core.model.shared.Payload
 import kpt.core.network.mifos.center.dto.PostCentersCenterIdRequest
 import kpt.core.network.mifos.center.dto.PostCentersCenterIdResponse
 import de.jensklingenberg.ktorfit.http.Body

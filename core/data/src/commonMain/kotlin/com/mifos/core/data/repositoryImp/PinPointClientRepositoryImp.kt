@@ -15,7 +15,7 @@ import com.mifos.core.data.repository.PinPointClientRepository
 import com.mifos.core.model.objects.clients.ClientAddressRequest
 import com.mifos.core.model.objects.clients.ClientAddressResponse
 import kpt.core.network.client.datamanager.DataManagerClient
-import kpt.core.network.mifos.shared.dto.PinpointLocationActionResponse
+import kpt.core.model.shared.PinpointLocationActionResponse
 import kotlinx.coroutines.flow.Flow
 
 /**

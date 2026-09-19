@@ -13,7 +13,7 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.PinPointClientRepository
 import com.mifos.core.model.objects.clients.ClientAddressRequest
-import kpt.core.network.mifos.shared.dto.PinpointLocationActionResponse
+import kpt.core.model.shared.PinpointLocationActionResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

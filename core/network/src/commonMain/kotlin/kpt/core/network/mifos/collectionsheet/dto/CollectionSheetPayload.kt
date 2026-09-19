@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kpt.core.database.shared.entity.BulkRepaymentTransactions
-import kpt.core.network.mifos.shared.dto.Payload
+import kpt.core.model.shared.Payload
 
 
 @Serializable

@@ -16,7 +16,7 @@ import com.mifos.core.model.objects.template.client.ChargeTimeType
 import com.mifos.core.model.objects.template.client.Currency
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kpt.core.network.mifos.shared.dto.ProductOption
+import kpt.core.model.shared.ProductOption
 
 
 @Serializable

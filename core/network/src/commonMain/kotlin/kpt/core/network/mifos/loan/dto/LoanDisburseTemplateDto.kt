@@ -9,8 +9,8 @@
  */
 package kpt.core.network.mifos.loan.dto
 
-import kpt.core.network.mifos.shared.dto.CurrencyDto
-import kpt.core.network.mifos.shared.dto.PaymentTypeOptionDto
+import kpt.core.model.shared.CurrencyDto
+import kpt.core.model.shared.PaymentTypeOptionDto
 import kotlinx.serialization.Serializable
 
 @Serializable

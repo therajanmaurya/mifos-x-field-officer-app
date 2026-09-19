@@ -11,7 +11,7 @@ package kpt.core.network.mifos.staff.api
 
 import kpt.core.base.network.annotation.ApiBinding
 
-import kpt.core.network.mifos.shared.dto.RetrieveOneResponse
+import kpt.core.model.shared.RetrieveOneResponse
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
 import kotlinx.coroutines.flow.Flow

@@ -7,24 +7,22 @@
  *
  * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
  */
-package kpt.core.network.mifos.shared.dto
+package kpt.core.model.shared
 
 import kotlinx.serialization.Serializable
 
 /**
  *
  *
- * @param code
  * @param id
- * @param `value`
+ * @param name
  */
 
 @Serializable
-data class EnumOptionData(
-
-    val code: String? = null,
+data class RoleData(
 
     val id: Long? = null,
 
-    val value: String? = null,
+    val name: String? = null,
+
 )

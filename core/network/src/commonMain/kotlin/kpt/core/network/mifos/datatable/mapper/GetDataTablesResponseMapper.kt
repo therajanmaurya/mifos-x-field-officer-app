@@ -11,7 +11,7 @@ package kpt.core.network.mifos.datatable.mapper
 
 import kpt.core.network.data.AbstractMapper
 import kpt.core.network.mifos.datatable.dto.GetDataTablesResponse
-import kpt.core.network.mifos.shared.dto.ResultsetColumnHeaderData
+import kpt.core.model.shared.ResultsetColumnHeaderData
 import kpt.core.database.datatable.entity.ColumnHeader
 import kpt.core.database.datatable.entity.DataTableEntity
 

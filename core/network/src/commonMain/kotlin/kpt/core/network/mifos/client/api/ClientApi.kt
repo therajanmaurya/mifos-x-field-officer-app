@@ -23,14 +23,12 @@ import com.mifos.core.model.objects.clients.ProposeTransferRequest
 import com.mifos.core.model.objects.clients.UpdateSavingsAccountRequest
 import kpt.core.network.GenericResponse
 import kpt.core.network.mifos.client.dto.ClientCloseTemplateResponse
-import kpt.core.network.mifos.shared.dto.CollateralItem
-import kpt.core.network.mifos.shared.dto.CollateralItemResult
+import kpt.core.model.shared.CollateralItem
+import kpt.core.model.shared.CollateralItemResult
 import kpt.core.network.mifos.client.dto.GetClientsClientIdAccountsResponse
 import kpt.core.network.mifos.client.dto.GetClientsPageItemsResponse
 import kpt.core.network.mifos.client.dto.GetClientsResponse
-import kpt.core.network.mifos.shared.dto.PinpointLocationActionResponse
-import kpt.core.network.mifos.auth.dto.PostAuthenticationRequest
-import kpt.core.network.mifos.auth.dto.PostAuthenticationResponse
+import kpt.core.model.shared.PinpointLocationActionResponse
 import kpt.core.network.mifos.client.dto.PostClientAddressRequest
 import kpt.core.network.mifos.client.dto.PostClientAddressResponse
 import kpt.core.network.mifos.client.dto.PostClientsClientIdRequest
@@ -122,12 +120,6 @@ interface ClientApi {
      */
     @GET("clients/{clientId}/accounts")
     suspend fun retrieveAssociatedAccounts(@Path("clientId") clientId: Long): GetClientsClientIdAccountsResponse
-
-
-    @POST("authentication")
-    suspend fun authenticate(
-        @Body postAuthenticationRequest: PostAuthenticationRequest,
-    ): PostAuthenticationResponse
 
     /**
      * @param b      True Enabling the Pagination of the API

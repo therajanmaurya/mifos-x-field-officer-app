@@ -10,8 +10,8 @@
 package kpt.core.network.mifos.auth.dto
 
 import kotlinx.serialization.Serializable
-import kpt.core.network.mifos.shared.dto.EnumOptionData
-import kpt.core.network.mifos.shared.dto.RoleData
+import kpt.core.model.shared.EnumOptionData
+import kpt.core.model.shared.RoleData
 
 
 /**

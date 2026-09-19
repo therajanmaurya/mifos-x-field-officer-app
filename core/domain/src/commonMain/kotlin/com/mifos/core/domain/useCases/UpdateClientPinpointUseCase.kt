@@ -12,7 +12,7 @@ package com.mifos.core.domain.useCases
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.PinPointClientRepository
-import kpt.core.network.mifos.shared.dto.PinpointLocationActionResponse
+import kpt.core.model.shared.PinpointLocationActionResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

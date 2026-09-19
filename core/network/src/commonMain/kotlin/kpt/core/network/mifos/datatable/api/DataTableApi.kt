@@ -24,7 +24,7 @@ import kpt.core.database.datatable.entity.DataTableEntity
 import kpt.core.network.GenericResponse
 import kpt.core.network.mifos.datatable.dto.DeleteDataTablesDatatableAppTableIdDatatableIdResponse
 import kpt.core.network.mifos.datatable.dto.GetDataTablesResponse
-import kpt.core.network.mifos.shared.dto.Payload
+import kpt.core.model.shared.Payload
 
 
 
