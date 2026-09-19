@@ -1,0 +1,42 @@
+/*
+ * Copyright 2026 Mifos Initiative
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ */
+package com.mifos.core.store.survey
+
+import com.mifos.core.network.services.SurveyService
+import com.mifos.room.dao.SurveyDao
+import com.mifos.room.entities.survey.SurveyEntity
+import kotlinx.coroutines.flow.first
+import kpt.core.base.store.annotation.CacheKey
+import kpt.core.base.store.annotation.StoreProvider
+import kpt.core.base.store.infra.StoreFactory
+import org.mobilenativefoundation.store.store5.Fetcher
+import org.mobilenativefoundation.store.store5.SourceOfTruth
+import org.mobilenativefoundation.store.store5.Store
+
+/**
+ * Surveys — READ-CACHE (`createStore`).
+ *
+ * Survey definitions are server-authoritative reference data that a field officer must be able to
+ * OPEN offline, since surveys are administered in the field where connectivity is the exception.
+ * Caching the definitions is what makes that possible; the RESPONSES are a write path and are not
+ * part of this store (D1 keeps submissions online-only / on the `feature:offline` queue).
+ */
+@StoreProvider(id = "surveys")
+@CacheKey(name = "LIST", key = "surveys")
+fun provideSurveyStore(
+    service: SurveyService,
+    dao: SurveyDao,
+): Store<Unit, List<SurveyEntity>> = StoreFactory.createStore(
+    fetcher = Fetcher.of { _: Unit -> service.allSurveys().first() },
+    sourceOfTruth = SourceOfTruth.of(
+        reader = { _: Unit -> dao.getAllSurveys() },
+        writer = { _: Unit, surveys: List<SurveyEntity> -> surveys.forEach { dao.insertSurvey(it) } },
+    ),
+)
