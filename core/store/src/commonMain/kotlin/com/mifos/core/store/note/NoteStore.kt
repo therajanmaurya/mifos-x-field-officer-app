@@ -13,7 +13,6 @@ import kpt.core.network.mifos.note.mapper.toEntity
 import kpt.core.network.mifos.note.api.NoteApi
 import kpt.core.database.note.dao.NoteDao
 import kpt.core.database.note.entity.NoteEntity
-import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
@@ -37,7 +36,6 @@ fun provideNoteStore(
 ): Store<Long, List<NoteEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { clientId: Long ->
         service.retrieveListNotes(resourceType = CLIENT_RESOURCE, resourceId = clientId)
-            .first()
             .map { it.toEntity() }
     },
     sourceOfTruth = SourceOfTruth.of(

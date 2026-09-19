@@ -19,7 +19,6 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
-import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by Rajan Maurya on 05/02/17.
@@ -34,11 +33,11 @@ interface RunReportsApi {
      * @return List of ClientReportTypeItem
      */
     @GET(APIEndPoint.RUN_REPORTS + "/reportCategoryList")
-    fun getReportCategories(
+    suspend fun getReportCategories(
         @Query("R_reportCategory") category: String?,
         @Query("genericResultSet") genericResultSet: Boolean,
         @Query("parameterType") parameterType: Boolean,
-    ): Flow<List<ClientReportTypeItem>>
+    ): List<ClientReportTypeItem>
 
     /**
      * Endpoint to fetch FullParameter list after fetching the categories.
@@ -91,10 +90,10 @@ interface RunReportsApi {
     ): FullParameterListResponse
 
     @GET(APIEndPoint.RUN_REPORTS + "/GroupSummaryCounts")
-    fun getCenterSummaryInfo(
+    suspend fun getCenterSummaryInfo(
         @Query("R_groupId") centerId: Int,
         @Query("genericResultSet") genericResultSet: Boolean,
-    ): Flow<List<CenterInfo>>
+    ): List<CenterInfo>
 
     /**
      * Fetches the savings account transaction receipt from the server.
@@ -109,10 +108,10 @@ interface RunReportsApi {
      * @return A [Flow] emitting the raw bytes of the receipt file (e.g., PDF).
      */
     @GET(APIEndPoint.RUN_REPORTS + "/Savings Transaction Receipt")
-    fun getSavingsAccountTransactionReceipt(
+    suspend fun getSavingsAccountTransactionReceipt(
         @Query("R_transactionId") transactionId: Int,
         @Query("dateFormat") dateFormat: String = "dd MMMM yyyy",
         @Query("output-type") outputType: String = "PDF",
         @Query("locale") locale: String = "en",
-    ): Flow<ByteArray>
+    ): ByteArray
 }

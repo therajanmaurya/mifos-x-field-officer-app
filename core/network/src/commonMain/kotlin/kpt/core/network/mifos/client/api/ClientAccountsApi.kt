@@ -15,7 +15,6 @@ import kpt.core.database.basemodel.APIEndPoint
 import kpt.core.database.client.entity.ClientAccounts
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Path
-import kotlinx.coroutines.flow.Flow
 
 /**
  * @author fomenkoo
@@ -23,5 +22,5 @@ import kotlinx.coroutines.flow.Flow
 @ApiBinding("mifos")
 interface ClientAccountsApi {
     @GET(APIEndPoint.CLIENTS + "/{clientId}/accounts")
-    fun getAllAccountsOfClient(@Path("clientId") clientId: Int): Flow<ClientAccounts>
+    suspend fun getAllAccountsOfClient(@Path("clientId") clientId: Int): ClientAccounts
 }

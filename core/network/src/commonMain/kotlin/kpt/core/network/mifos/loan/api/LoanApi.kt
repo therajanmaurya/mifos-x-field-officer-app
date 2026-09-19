@@ -55,7 +55,6 @@ import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.flow.Flow
 
 /**
  * @author fomenkoo
@@ -71,10 +70,10 @@ interface LoanApi {
     //  Mandatory Fields
     //  1. String approvedOnDate
     @POST(APIEndPoint.LOANS + "/{loanId}?command=approve")
-    fun approveLoanApplication(
+    suspend fun approveLoanApplication(
         @Path("loanId") loanId: Int,
         @Body loanApproval: LoanApproval?,
-    ): Flow<GenericResponse>
+    ): GenericResponse
 
     @POST(APIEndPoint.LOANS + "/{loanId}/transactions?command=repayment")
     suspend fun submitPayment(
@@ -100,10 +99,10 @@ interface LoanApi {
     ): RejectLoanResponseDto
 
     @GET(APIEndPoint.LOANS + "/{loanId}?associations=repaymentSchedule")
-    fun getLoanRepaymentSchedule(@Path("loanId") loanId: Int): Flow<LoanWithAssociationsDto>
+    suspend fun getLoanRepaymentSchedule(@Path("loanId") loanId: Int): LoanWithAssociationsDto
 
     @GET(APIEndPoint.LOANS + "/{loanId}?associations=transactions")
-    fun getLoanWithTransactions(@Path("loanId") loanId: Int): Flow<LoanWithAssociationsDto>
+    suspend fun getLoanWithTransactions(@Path("loanId") loanId: Int): LoanWithAssociationsDto
 
     @GET(APIEndPoint.LOANS + "/{loanId}/guarantors/template")
     suspend fun getGuarantorTemplate(@Path("loanId") loanId: Int): GuarantorTemplateDto
@@ -121,23 +120,23 @@ interface LoanApi {
     ): GuarantorAccountTemplateDto
 
     @GET(APIEndPoint.CREATE_LOANS_PRODUCTS)
-    fun getAllLoans(): Flow<List<LoanProducts>>
+    suspend fun getAllLoans(): List<LoanProducts>
 
     @POST(APIEndPoint.CREATE_LOANS_ACCOUNTS)
-    fun createLoansAccount(@Body loansPayload: LoansPayload?): Flow<HttpResponse>
+    suspend fun createLoansAccount(@Body loansPayload: LoansPayload?): HttpResponse
 
     /**
      * Calculate loan repayment schedule without creating the loan.
      * Used to preview the schedule before submitting the loan application.
      */
     @POST(APIEndPoint.CREATE_LOANS_ACCOUNTS + "?command=calculateLoanSchedule")
-    fun calculateLoanSchedule(@Body loansPayload: LoansPayload?): Flow<HttpResponse>
+    suspend fun calculateLoanSchedule(@Body loansPayload: LoansPayload?): HttpResponse
 
     @GET(APIEndPoint.CREATE_LOANS_ACCOUNTS + "/template?templateType=individual")
-    fun getLoansAccountTemplate(
+    suspend fun getLoansAccountTemplate(
         @Query("clientId") clientId: Int,
         @Query("productId") productId: Int,
-    ): Flow<LoanTemplate>
+    ): LoanTemplate
 
     /**
      * For fetching any type of loan template.
@@ -153,25 +152,25 @@ interface LoanApi {
      * @return
      */
     @GET(APIEndPoint.LOANS + "/{loanId}/transactions/template")
-    fun getLoanTransactionTemplate(
+    suspend fun getLoanTransactionTemplate(
         @Path("loanId") loanId: Int,
         @Query("command") command: String?,
-    ): Flow<LoanTransactionTemplate>
+    ): LoanTransactionTemplate
 
     @POST(APIEndPoint.CREATE_LOANS_ACCOUNTS)
-    fun createGroupLoansAccount(@Body loansPayload: GroupLoanPayload?): Flow<Loan>
+    suspend fun createGroupLoansAccount(@Body loansPayload: GroupLoanPayload?): Loan
 
     @GET(APIEndPoint.CREATE_LOANS_ACCOUNTS + "/template?templateType=group")
-    fun getGroupLoansAccountTemplate(
+    suspend fun getGroupLoansAccountTemplate(
         @Query("groupId") groupId: Int,
         @Query("productId") productId: Int,
-    ): Flow<GroupLoanTemplate>
+    ): GroupLoanTemplate
 
     @GET(APIEndPoint.LOANS + "/{loanId}/" + APIEndPoint.CHARGES)
-    fun getListOfLoanCharges(@Path("loanId") loanId: Int): Flow<List<ChargesEntity>>
+    suspend fun getListOfLoanCharges(@Path("loanId") loanId: Int): List<ChargesEntity>
 
     @GET(APIEndPoint.CLIENTS + "/{clientId}/" + APIEndPoint.CHARGES)
-    fun getListOfCharges(@Path("clientId") clientId: Int): Flow<Page<ChargesEntity>>
+    suspend fun getListOfCharges(@Path("clientId") clientId: Int): Page<ChargesEntity>
 
     /**
      * Account Transfer API Endpoints
@@ -187,7 +186,7 @@ interface LoanApi {
      * @return AccountTransferTemplate with available options
      */
     @GET(APIEndPoint.ACCOUNT_TRANSFERS + "/template")
-    fun getAccountTransferTemplate(
+    suspend fun getAccountTransferTemplate(
         @Query("fromClientId") fromClientId: Int,
         @Query("fromAccountType") fromAccountType: Int,
         @Query("fromAccountId") fromAccountId: Int,
@@ -196,7 +195,7 @@ interface LoanApi {
         @Query("toClientId") toClientId: Int? = null,
         @Query("toAccountType") toAccountType: Int? = null,
         @Query("toAccountId") toAccountId: Int? = null,
-    ): Flow<AccountTransferTemplate>
+    ): AccountTransferTemplate
 
     /**
      * Submit an account transfer
@@ -214,12 +213,12 @@ interface LoanApi {
      */
 
     @GET(APIEndPoint.RESCHEDULE_LOANS)
-    fun getLoanReschedules(
+    suspend fun getLoanReschedules(
         @Query("loanId") loanId: Int,
-    ): Flow<List<LoanRescheduleResponse>>
+    ): List<LoanRescheduleResponse>
 
     @GET(APIEndPoint.RESCHEDULE_LOANS + "/template")
-    fun getLoanRescheduleTemplate(): Flow<LoanRescheduleTemplate>
+    suspend fun getLoanRescheduleTemplate(): LoanRescheduleTemplate
 
     @POST(APIEndPoint.RESCHEDULE_LOANS)
     suspend fun submitLoanReschedule(

@@ -19,7 +19,6 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.flow.Flow
 import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.database.basemodel.APIEndPoint
 import kpt.core.database.group.entity.GroupAccounts
@@ -70,20 +69,20 @@ interface GroupApi {
     ): GetGroupsResponse
 
     @GET(APIEndPoint.GROUPS)
-    fun getGroups(
+    suspend fun getGroups(
         @Query("paged") b: Boolean,
         @Query("offset") offset: Int,
         @Query("limit") limit: Int,
-    ): Flow<Page<GroupEntity>>
+    ): Page<GroupEntity>
 
     @GET(APIEndPoint.GROUPS + "/{groupId}?associations=all")
-    fun getGroupWithAssociations(@Path("groupId") groupId: Int): Flow<GroupWithAssociations>
+    suspend fun getGroupWithAssociations(@Path("groupId") groupId: Int): GroupWithAssociations
 
     @GET(APIEndPoint.GROUPS)
-    fun getAllGroupsInOffice(
+    suspend fun getAllGroupsInOffice(
         @Query("officeId") officeId: Int,
         @QueryMap params: Map<String, String>,
-    ): Flow<List<GroupEntity>>
+    ): List<GroupEntity>
 
     @POST(APIEndPoint.GROUPS)
     suspend fun createGroup(@Body groupPayload: GroupPayloadEntity?): SaveResponse

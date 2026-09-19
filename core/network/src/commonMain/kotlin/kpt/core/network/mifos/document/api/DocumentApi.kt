@@ -23,15 +23,14 @@ import de.jensklingenberg.ktorfit.http.PUT
 import de.jensklingenberg.ktorfit.http.Path
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.flow.Flow
 
 @ApiBinding("mifos")
 interface DocumentApi {
     @GET("{entityType}/{entityId}/" + APIEndPoint.DOCUMENTS)
-    fun getDocuments(
+    suspend fun getDocuments(
         @Path("entityType") entityType: String,
         @Path("entityId") entityId: Int,
-    ): Flow<List<Document>>
+    ): List<Document>
 
     /**
      * @param entityType              - Type for which document is being uploaded (Client, Loan
@@ -63,11 +62,11 @@ interface DocumentApi {
 
     @Headers("Accept: text/plain, application/json, */*")
     @GET("{entityType}/{entityId}/" + APIEndPoint.DOCUMENTS + "/{documentId}/attachment")
-    fun downloadDocument(
+    suspend fun downloadDocument(
         @Path("entityType") entityType: String,
         @Path("entityId") entityId: Int,
         @Path("documentId") documentId: Int,
-    ): Flow<HttpResponse>
+    ): HttpResponse
 
     /**
      * This Service is for Deleting the Document with EntityType and EntityId and Document Id.

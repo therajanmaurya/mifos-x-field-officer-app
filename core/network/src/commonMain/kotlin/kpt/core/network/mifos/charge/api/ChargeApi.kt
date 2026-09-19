@@ -25,7 +25,6 @@ import de.jensklingenberg.ktorfit.http.PUT
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.flow.Flow
 
 /**
  * Service interface that defines all API endpoints related to charges.
@@ -49,7 +48,7 @@ interface ChargeApi {
      * @return [Flow] emitting an [HttpResponse] containing the list of charges.
      */
     @GET(APIEndPoint.CHARGES)
-    fun listAllCharges(): Flow<HttpResponse>
+    suspend fun listAllCharges(): HttpResponse
 
     /**
      * Retrieves a charge template for a specific resource type and ID.
@@ -78,12 +77,12 @@ interface ChargeApi {
      * @return [Flow] emitting a [Page] of [ChargesEntity] objects.
      */
     @GET("{resourceType}/{resourceId}/charges")
-    fun getListOfPagingCharges(
+    suspend fun getListOfPagingCharges(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Int,
         @Query("offset") offset: Int,
         @Query("limit") limit: Int,
-    ): Flow<Page<ChargesEntity>>
+    ): Page<ChargesEntity>
 
     /**
      * Retrieves all client-specific charges.
@@ -95,10 +94,10 @@ interface ChargeApi {
      * @return [Flow] emitting a [Page] of [ChargesEntity] objects.
      */
     @GET("{resourceType}/{resourceId}/charges?offset=0&limit=0")
-    fun getListOfClientCharges(
+    suspend fun getListOfClientCharges(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Int,
-    ): Flow<Page<ChargesEntity>>
+    ): Page<ChargesEntity>
 
     /**
      * Retrieves charges for other account types (e.g. loans, savings).
@@ -110,10 +109,10 @@ interface ChargeApi {
      * @return [Flow] emitting a [List] of [ChargesEntity].
      */
     @GET("{resourceType}/{resourceId}/charges")
-    fun getListOfOtherAccountCharge(
+    suspend fun getListOfOtherAccountCharge(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Int,
-    ): Flow<List<ChargesEntity>>
+    ): List<ChargesEntity>
 
     /**
      * Retrieves a single charge by its ID.
@@ -126,11 +125,11 @@ interface ChargeApi {
      * @return [Flow] emitting a [ChargesEntity] representing the charge.
      */
     @GET("{resourceType}/{resourceId}/charges/{chargeId}")
-    fun getCharge(
+    suspend fun getCharge(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Int,
         @Path("chargeId") chargeId: Int,
-    ): Flow<ChargesEntity>
+    ): ChargesEntity
 
     /**
      * Creates a new charge for the given resource type and ID.

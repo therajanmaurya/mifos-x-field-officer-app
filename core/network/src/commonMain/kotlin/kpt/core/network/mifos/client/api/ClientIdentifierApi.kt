@@ -23,7 +23,6 @@ import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.PUT
 import de.jensklingenberg.ktorfit.http.Path
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.flow.Flow
 
 @ApiBinding("mifos")
 interface ClientIdentifierApi {
@@ -38,7 +37,7 @@ interface ClientIdentifierApi {
      * @return [Flow] emitting a list of [Identifier]s for the specified client.
      */
     @GET(APIEndPoint.CLIENTS + "/{clientId}/" + APIEndPoint.IDENTIFIERS)
-    fun getClientListIdentifiers(@Path("clientId") clientId: Long): Flow<List<Identifier>>
+    suspend fun getClientListIdentifiers(@Path("clientId") clientId: Long): List<Identifier>
 
     /**
      * Retrieves a specific client identifier.
@@ -51,10 +50,10 @@ interface ClientIdentifierApi {
      * @return [Flow] emitting the [Identifier] object.
      */
     @GET(APIEndPoint.CLIENTS + "/{clientId}/" + APIEndPoint.IDENTIFIERS + "/{identifierId}")
-    fun getClientIdentifiers(
+    suspend fun getClientIdentifiers(
         @Path("clientId") clientId: Long,
         @Path("identifierId") identifierId: Long,
-    ): Flow<Identifier>
+    ): Identifier
 
     /**
      * Fetches the client identifier template for a given client.
@@ -66,7 +65,7 @@ interface ClientIdentifierApi {
      * @return [Flow] emitting the [IdentifierTemplate] for the specified client.
      */
     @GET(APIEndPoint.CLIENTS + "/{clientId}/identifiers/template")
-    fun getClientIdentifierTemplate(@Path("clientId") clientId: Long): Flow<IdentifierTemplate>
+    suspend fun getClientIdentifierTemplate(@Path("clientId") clientId: Long): IdentifierTemplate
 
     /**
      * Deletes a client identifier for a given client.

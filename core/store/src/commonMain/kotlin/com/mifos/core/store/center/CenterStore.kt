@@ -12,7 +12,6 @@ package com.mifos.core.store.center
 import kpt.core.network.mifos.center.api.CenterApi
 import kpt.core.database.center.dao.CenterDao
 import kpt.core.database.center.entity.CenterEntity
-import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
@@ -35,7 +34,7 @@ fun provideCenterStore(
     dao: CenterDao,
 ): Store<Unit, List<CenterEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { _: Unit ->
-        service.getCenters(b = true, offset = 0, limit = CENTER_PAGE_LIMIT).first().pageItems
+        service.getCenters(b = true, offset = 0, limit = CENTER_PAGE_LIMIT).pageItems
     },
     sourceOfTruth = SourceOfTruth.of(
         reader = { _: Unit -> dao.readAllCenters() },

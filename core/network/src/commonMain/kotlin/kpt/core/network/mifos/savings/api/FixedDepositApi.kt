@@ -19,19 +19,18 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.flow.Flow
 
 @ApiBinding("mifos")
 interface FixedDepositApi {
 
     @GET(APIEndPoint.FIXED_DEPOSIT + "/template")
-    fun fixedDepositProductTemplate(
+    suspend fun fixedDepositProductTemplate(
         @Query("clientId") clientId: Int,
         @Query("productId") productId: Int?,
-    ): Flow<FixedDepositTemplate>
+    ): FixedDepositTemplate
 
     @POST(APIEndPoint.FIXED_DEPOSIT)
-    fun createFixedDepositAccount(
+    suspend fun createFixedDepositAccount(
         @Body fixedDepositPayload: FixedDepositPayload,
-    ): Flow<HttpResponse>
+    ): HttpResponse
 }

@@ -19,15 +19,14 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.flow.Flow
 
 @ApiBinding("mifos")
 interface ShareAccountApi {
     @GET("accounts/" + APIEndPoint.SHARE + "/template")
-    fun shareProductTemplate(
+    suspend fun shareProductTemplate(
         @Query("clientId") clientId: Int,
         @Query("productId") productId: Int?,
-    ): Flow<ShareTemplate>
+    ): ShareTemplate
 
     @POST("accounts/" + APIEndPoint.SHARE)
     suspend fun createShareAccount(

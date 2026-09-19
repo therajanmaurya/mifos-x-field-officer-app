@@ -12,7 +12,6 @@ package com.mifos.core.store.group
 import kpt.core.network.mifos.group.api.GroupApi
 import kpt.core.database.group.dao.GroupsDao
 import kpt.core.database.group.entity.GroupEntity
-import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
@@ -31,7 +30,7 @@ fun provideGroupStore(
     dao: GroupsDao,
 ): Store<Unit, List<GroupEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { _: Unit ->
-        service.getGroups(b = true, offset = 0, limit = GROUP_PAGE_LIMIT).first().pageItems
+        service.getGroups(b = true, offset = 0, limit = GROUP_PAGE_LIMIT).pageItems
     },
     sourceOfTruth = SourceOfTruth.of(
         reader = { _: Unit -> dao.getAllGroups() },

@@ -15,7 +15,6 @@ import com.mifos.core.model.objects.SearchedEntity
 import kpt.core.database.basemodel.APIEndPoint
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
-import kotlinx.coroutines.flow.Flow
 
 /**
  * @author fomenkoo
@@ -24,9 +23,9 @@ import kotlinx.coroutines.flow.Flow
 interface SearchApi {
 
     @GET(APIEndPoint.SEARCH)
-    fun searchResources(
+    suspend fun searchResources(
         @Query("query") query: String,
         @Query("resource") resource: String?,
         @Query("exactMatch") exactMatch: Boolean?,
-    ): Flow<List<SearchedEntity>>
+    ): List<SearchedEntity>
 }

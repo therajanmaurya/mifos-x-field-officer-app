@@ -12,7 +12,6 @@ package com.mifos.core.store.office
 import kpt.core.network.mifos.office.api.OfficeApi
 import kpt.core.database.office.dao.OfficeDao
 import kpt.core.database.office.entity.OfficeEntity
-import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
@@ -39,7 +38,7 @@ fun provideOfficeStore(
     service: OfficeApi,
     dao: OfficeDao,
 ): Store<Unit, List<OfficeEntity>> = StoreFactory.createStore(
-    fetcher = Fetcher.of { _: Unit -> service.allOffices().first() },
+    fetcher = Fetcher.of { _: Unit -> service.allOffices() },
     sourceOfTruth = SourceOfTruth.of(
         reader = { _: Unit -> dao.getAllOffices() },
         writer = { _: Unit, offices: List<OfficeEntity> -> dao.insertOffices(offices) },

@@ -14,7 +14,6 @@ import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.network.mifos.office.dto.GetOfficesResponse
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
-import kotlinx.coroutines.flow.Flow
 import kpt.core.database.basemodel.APIEndPoint
 import kpt.core.database.office.entity.OfficeEntity
 
@@ -34,11 +33,11 @@ interface OfficeApi {
      * @return [kotlin.collections.List<GetOfficesResponse]
      */
     @GET("offices")
-    fun retrieveOffices(
+    suspend fun retrieveOffices(
         @Query("includeAllOffices") includeAllOffices: Boolean? = false,
         @Query("orderBy") orderBy: String? = null,
         @Query("sortOrder") sortOrder: String? = null,
-    ): Flow<List<GetOfficesResponse>>
+    ): List<GetOfficesResponse>
 
     /**
      * Fetches List of All the Offices
@@ -46,5 +45,5 @@ interface OfficeApi {
      * @param listOfOfficesCallback
      */
     @GET(APIEndPoint.OFFICES)
-    fun allOffices(): Flow<List<OfficeEntity>>
+    suspend fun allOffices(): List<OfficeEntity>
 }

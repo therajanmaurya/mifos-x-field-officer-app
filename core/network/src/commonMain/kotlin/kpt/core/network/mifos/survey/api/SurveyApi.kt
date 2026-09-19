@@ -18,7 +18,6 @@ import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
-import kotlinx.coroutines.flow.Flow
 
 /**
  * @author
@@ -26,14 +25,14 @@ import kotlinx.coroutines.flow.Flow
 @ApiBinding("mifos")
 interface SurveyApi {
     @GET(APIEndPoint.SURVEYS)
-    fun allSurveys(): Flow<List<SurveyEntity>>
+    suspend fun allSurveys(): List<SurveyEntity>
 
     @GET(APIEndPoint.SURVEYS + "/{surveyId}")
-    fun getSurvey(@Path("surveyId") surveyId: Int): Flow<SurveyEntity>
+    suspend fun getSurvey(@Path("surveyId") surveyId: Int): SurveyEntity
 
     @POST(APIEndPoint.SURVEYS + "/{surveyId}/scorecards")
-    fun submitScore(
+    suspend fun submitScore(
         @Path("surveyId") surveyId: Int,
         @Body scorecardPayload: Scorecard?,
-    ): Flow<Scorecard>
+    ): Scorecard
 }

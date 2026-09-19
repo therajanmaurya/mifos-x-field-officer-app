@@ -75,11 +75,11 @@ interface NoteApi {
      * @return [Flow<NoteDto>]
      */
     @GET("{resourceType}/{resourceId}/" + APIEndPoint.NOTES + "/{noteId}")
-    fun retrieveNote(
+    suspend fun retrieveNote(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Long,
         @Path("noteId") noteId: Long,
-    ): Flow<NoteDto>
+    ): NoteDto
 
     /**
      * Retrieve List of notes
@@ -92,10 +92,10 @@ interface NoteApi {
      * @return [Flow<List<NoteDto>>]
      */
     @GET("{resourceType}/{resourceId}/" + APIEndPoint.NOTES)
-    fun retrieveListNotes(
+    suspend fun retrieveListNotes(
         @Path("resourceType") resourceType: String,
         @Path("resourceId") resourceId: Long,
-    ): Flow<List<NoteDto>>
+    ): List<NoteDto>
 
     /**
      * Update a Note

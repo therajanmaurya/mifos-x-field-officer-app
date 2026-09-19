@@ -27,7 +27,6 @@ import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.flow.Flow
 
 /**
  * @author fomenkoo
@@ -51,11 +50,11 @@ interface SavingsAccountApi {
      * @return SavingsAccountWithAssociations
      */
     @GET("{savingsAccountType}/{savingsAccountId}")
-    fun getSavingsAccountWithAssociations(
+    suspend fun getSavingsAccountWithAssociations(
         @Path("savingsAccountType") savingsAccountType: String,
         @Path("savingsAccountId") savingsAccountId: Int,
         @Query("associations") association: String?,
-    ): Flow<SavingsAccountWithAssociationsEntity>
+    ): SavingsAccountWithAssociationsEntity
 
     /**
      * This Method for Retrieving Savings Account Transaction Template from REST API
@@ -68,11 +67,11 @@ interface SavingsAccountApi {
      * @return SavingsAccountTransactionTemplate
      */
     @GET("{savingsAccountType}/{savingsAccountId}/transactions/template")
-    fun getSavingsAccountTransactionTemplate(
+    suspend fun getSavingsAccountTransactionTemplate(
         @Path("savingsAccountType") savingsAccountType: String,
         @Path("savingsAccountId") savingsAccountId: Int,
         @Query("command") transactionType: String?,
-    ): Flow<SavingsAccountTransactionTemplateEntity>
+    ): SavingsAccountTransactionTemplateEntity
 
     /**
      * This Service making POST Request to the REST API :
@@ -94,35 +93,35 @@ interface SavingsAccountApi {
     ): SavingsAccountTransactionResponse
 
     @POST(APIEndPoint.CREATE_SAVINGS_ACCOUNTS + "/{savingsAccountId}/?command=activate")
-    fun activateSavings(
+    suspend fun activateSavings(
         @Path("savingsAccountId") savingsAccountId: Int,
         @Body genericRequest: HashMap<String, String>,
-    ): Flow<GenericResponse>
+    ): GenericResponse
 
     @POST(APIEndPoint.CREATE_SAVINGS_ACCOUNTS + "/{savingsAccountId}?command=approve")
-    fun approveSavingsApplication(
+    suspend fun approveSavingsApplication(
         @Path("savingsAccountId") savingsAccountId: Int,
         @Body savingsApproval: SavingsApproval?,
-    ): Flow<GenericResponse>
+    ): GenericResponse
 
     @GET(APIEndPoint.CREATE_SAVINGS_PRODUCTS)
-    fun allSavingsAccounts(): Flow<List<ProductSavings>>
+    suspend fun allSavingsAccounts(): List<ProductSavings>
 
     @POST(APIEndPoint.CREATE_SAVINGS_ACCOUNTS)
-    fun createSavingsAccount(@Body savingsPayload: SavingsPayload?): Flow<HttpResponse>
+    suspend fun createSavingsAccount(@Body savingsPayload: SavingsPayload?): HttpResponse
 
     @GET(APIEndPoint.CREATE_SAVINGS_PRODUCTS + "/template")
-    fun savingsAccountTemplate(): Flow<SavingProductsTemplate>
+    suspend fun savingsAccountTemplate(): SavingProductsTemplate
 
     @GET(APIEndPoint.CREATE_SAVINGS_ACCOUNTS + "/template")
-    fun getClientSavingsAccountTemplateByProduct(
+    suspend fun getClientSavingsAccountTemplateByProduct(
         @Query("clientId") clientId: Int,
         @Query("productId") productId: Int,
-    ): Flow<SavingProductsTemplate>
+    ): SavingProductsTemplate
 
     @GET(APIEndPoint.CREATE_SAVINGS_ACCOUNTS + "/template")
-    fun getGroupSavingsAccountTemplateByProduct(
+    suspend fun getGroupSavingsAccountTemplateByProduct(
         @Query("groupId") groupId: Int,
         @Query("productId") productId: Int,
-    ): Flow<SavingProductsTemplate>
+    ): SavingProductsTemplate
 }

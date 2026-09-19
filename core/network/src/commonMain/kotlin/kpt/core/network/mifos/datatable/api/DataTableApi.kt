@@ -16,7 +16,6 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
-import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonArray
 import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.database.basemodel.APIEndPoint
@@ -42,7 +41,7 @@ interface DataTableApi {
      * @return [kotlin.collections.List<GetDataTablesResponse>]
      */
     @GET("datatables")
-    fun getDatatables(@Query("apptable") apptable: String? = null): Flow<List<GetDataTablesResponse>>
+    suspend fun getDatatables(@Query("apptable") apptable: String? = null): List<GetDataTablesResponse>
 
     /**
      * Delete Entry in Datatable (One to Many)
@@ -63,7 +62,7 @@ interface DataTableApi {
     ): DeleteDataTablesDatatableAppTableIdDatatableIdResponse
 
     @GET(APIEndPoint.DATATABLES)
-    fun getTableOf(@Query("apptable") table: String?): Flow<List<DataTableEntity>>
+    suspend fun getTableOf(@Query("apptable") table: String?): List<DataTableEntity>
 
     @GET(APIEndPoint.DATATABLES + "/{dataTableName}/{entityId}/")
     suspend fun getDataOfDataTable(
@@ -80,18 +79,18 @@ interface DataTableApi {
     ): GenericResponse
 
     @DELETE(APIEndPoint.DATATABLES + "/{dataTableName}/{entityId}/{dataTableRowId}")
-    fun deleteEntryOfDataTableManyToMany(
+    suspend fun deleteEntryOfDataTableManyToMany(
         @Path("dataTableName") dataTableName: String,
         @Path("entityId") entityId: Int,
         @Path("dataTableRowId") dataTableRowId: Int,
-    ): Flow<GenericResponse>
+    ): GenericResponse
 
     @POST(APIEndPoint.DATATABLES + "/m_staff_path_tracking/{userId}")
-    fun addUserPathTracking(
+    suspend fun addUserPathTracking(
         @Path("userId") userId: Int,
         @Body userLocation: UserLocation?,
-    ): Flow<GenericResponse>
+    ): GenericResponse
 
     @GET(APIEndPoint.DATATABLES + "/m_staff_path_tracking/{userId}")
-    fun getUserPathTracking(@Path("userId") userId: Int): Flow<List<UserLocation>>
+    suspend fun getUserPathTracking(@Path("userId") userId: Int): List<UserLocation>
 }

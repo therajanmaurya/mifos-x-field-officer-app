@@ -42,7 +42,6 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.flow.Flow
 import kpt.core.database.basemodel.APIEndPoint
 import kpt.core.database.client.entity.AddressConfiguration
 import kpt.core.database.client.entity.AddressTemplate
@@ -128,11 +127,11 @@ interface ClientApi {
      * @return List of Clients
      */
     @GET(APIEndPoint.CLIENTS)
-    fun getAllClients(
+    suspend fun getAllClients(
         @Query("paged") b: Boolean,
         @Query("offset") offset: Int,
         @Query("limit") limit: Int,
-    ): Flow<Page<ClientEntity>>
+    ): Page<ClientEntity>
 
     @GET(APIEndPoint.CLIENTS + "/{clientId}")
     suspend fun getClient(@Path("clientId") clientId: Int): ClientEntity
@@ -147,7 +146,7 @@ interface ClientApi {
     suspend fun deleteClientImage(@Path("clientId") clientId: Int)
 
     @GET(APIEndPoint.CLIENTS + "/{clientId}/images")
-    fun getClientImage(@Path("clientId") clientId: Int): Flow<HttpResponse>
+    suspend fun getClientImage(@Path("clientId") clientId: Int): HttpResponse
 
     @POST(APIEndPoint.CLIENTS)
     suspend fun createClient(@Body clientPayload: ClientPayloadEntity?): ClientEntity?
@@ -162,7 +161,7 @@ interface ClientApi {
     suspend fun getClientTemplate(): ClientsTemplateEntity
 
     @GET(APIEndPoint.CLIENTS + "/{clientId}/accounts")
-    fun getClientAccounts(@Path("clientId") clientId: Int): Flow<ClientAccounts>
+    suspend fun getClientAccounts(@Path("clientId") clientId: Int): ClientAccounts
 
     /**
      * This is the service for fetching the client pinpoint locations from the dataTable
@@ -179,9 +178,9 @@ interface ClientApi {
      * @return ClientAddressResponse
      */
     @GET(APIEndPoint.DATATABLES + "/client_pinpoint_location/{clientId}")
-    fun getClientPinpointLocations(
+    suspend fun getClientPinpointLocations(
         @Path("clientId") clientId: Int,
-    ): Flow<List<ClientAddressResponse>>
+    ): List<ClientAddressResponse>
 
     /**
      * This is the service for adding the new Client Pinpoint Location in dataTable
@@ -245,10 +244,10 @@ interface ClientApi {
      * @return GenericResponse
      */
     @POST(APIEndPoint.CLIENTS + "/{clientId}?command=activate")
-    fun activateClient(
+    suspend fun activateClient(
         @Path("clientId") clientId: Int,
         @Body clientActivate: ActivatePayload?,
-    ): Flow<GenericResponse>
+    ): GenericResponse
 
     /**Add commentMore actions
      * Retrieves address configuration from Global Configuration.

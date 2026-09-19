@@ -12,7 +12,6 @@ package com.mifos.core.store.staff
 import kpt.core.network.mifos.staff.api.StaffApi
 import kpt.core.database.staff.dao.StaffDao
 import kpt.core.database.staff.entity.StaffEntity
-import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
@@ -34,7 +33,7 @@ fun provideStaffStore(
     service: StaffApi,
     dao: StaffDao,
 ): Store<Int, List<StaffEntity>> = StoreFactory.createStore(
-    fetcher = Fetcher.of { officeId: Int -> service.getStaffForOffice(officeId).first() },
+    fetcher = Fetcher.of { officeId: Int -> service.getStaffForOffice(officeId) },
     sourceOfTruth = SourceOfTruth.of(
         reader = { officeId: Int -> dao.getAllStaff(officeId) },
         writer = { _: Int, staff: List<StaffEntity> -> dao.insertStaffs(staff) },

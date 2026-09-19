@@ -28,7 +28,6 @@ import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
-import kotlinx.coroutines.flow.Flow
 import kpt.core.database.basemodel.APIEndPoint
 import kpt.core.database.center.entity.CenterAccounts
 import kpt.core.database.center.entity.CenterEntity
@@ -96,11 +95,11 @@ interface CenterApi {
     ): PostCentersCenterIdResponse
 
     @GET(APIEndPoint.CENTERS)
-    fun getCenters(
+    suspend fun getCenters(
         @Query("paged") b: Boolean,
         @Query("offset") offset: Int,
         @Query("limit") limit: Int,
-    ): Flow<Page<CenterEntity>>
+    ): Page<CenterEntity>
 
     @GET(APIEndPoint.CENTERS + "/{centerId}/accounts")
     suspend fun getCenterAccounts(@Path("centerId") centerId: Int): CenterAccounts
@@ -111,31 +110,31 @@ interface CenterApi {
     ): CenterWithAssociations
 
     @GET(APIEndPoint.CENTERS)
-    fun getAllCentersInOffice(
+    suspend fun getAllCentersInOffice(
         @Query("officeId") officeId: Int,
         @QueryMap additionalParams: Map<String, String>,
-    ): Flow<List<CenterEntity>>
+    ): List<CenterEntity>
 
     @GET(APIEndPoint.CENTERS + "/{centerId}?associations=groupMembers")
-    fun getAllGroupsForCenter(@Path("centerId") centerId: Int): Flow<CenterWithAssociations>
+    suspend fun getAllGroupsForCenter(@Path("centerId") centerId: Int): CenterWithAssociations
 
     @POST(APIEndPoint.CENTERS + "/{centerId}?command=generateCollectionSheet")
-    fun getCollectionSheet(
+    suspend fun getCollectionSheet(
         @Path("centerId") centerId: Long,
         @Body payload: Payload?,
-    ): Flow<CollectionSheet>
+    ): CollectionSheet
 
     @POST(APIEndPoint.CENTERS + "/{centerId}?command=saveCollectionSheet")
-    fun saveCollectionSheet(
+    suspend fun saveCollectionSheet(
         @Path("centerId") centerId: Int,
         @Body collectionSheetPayload: CollectionSheetPayload?,
-    ): Flow<SaveResponse>
+    ): SaveResponse
 
     @POST(APIEndPoint.CENTERS + "/{centerId}?command=saveCollectionSheet")
-    fun saveCollectionSheetAsync(
+    suspend fun saveCollectionSheetAsync(
         @Path("centerId") centerId: Int,
         @Body collectionSheetPayload: CollectionSheetPayload?,
-    ): Flow<SaveResponse>
+    ): SaveResponse
 
     /*@POST(APIEndPoint.CLIENTS + "")
     void uploadNewClientDetails();*/
@@ -143,13 +142,13 @@ interface CenterApi {
     suspend fun createCenter(@Body centerPayload: CenterPayloadEntity?): SaveResponse
 
     @GET(APIEndPoint.CENTERS)
-    fun getCenterList(
+    suspend fun getCenterList(
         @Query("dateFormat") dateFormat: String?,
         @Query("locale") locale: String?,
         @Query("meetingDate") meetingDate: String?,
         @Query("officeId") officeId: Int,
         @Query("staffId") staffId: Int,
-    ): Flow<List<OfflineCenter>>
+    ): List<OfflineCenter>
 
     /**
      * This is the service to activate the center
@@ -160,8 +159,8 @@ interface CenterApi {
      * @return GenericResponse
      */
     @POST(APIEndPoint.CENTERS + "/{centerId}?command=activate")
-    fun activateCenter(
+    suspend fun activateCenter(
         @Path("centerId") centerId: Int,
         @Body activatePayload: ActivatePayload?,
-    ): Flow<GenericResponse>
+    ): GenericResponse
 }

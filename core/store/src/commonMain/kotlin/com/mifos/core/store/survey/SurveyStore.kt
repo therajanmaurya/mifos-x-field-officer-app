@@ -12,7 +12,6 @@ package com.mifos.core.store.survey
 import kpt.core.network.mifos.survey.api.SurveyApi
 import kpt.core.database.survey.dao.SurveyDao
 import kpt.core.database.survey.entity.SurveyEntity
-import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
@@ -34,7 +33,7 @@ fun provideSurveyStore(
     service: SurveyApi,
     dao: SurveyDao,
 ): Store<Unit, List<SurveyEntity>> = StoreFactory.createStore(
-    fetcher = Fetcher.of { _: Unit -> service.allSurveys().first() },
+    fetcher = Fetcher.of { _: Unit -> service.allSurveys() },
     sourceOfTruth = SourceOfTruth.of(
         reader = { _: Unit -> dao.getAllSurveys() },
         writer = { _: Unit, surveys: List<SurveyEntity> -> surveys.forEach { dao.insertSurvey(it) } },

@@ -12,7 +12,6 @@ package com.mifos.core.store.charge
 import kpt.core.network.mifos.charge.api.ChargeApi
 import kpt.core.database.charge.dao.ChargeDao
 import kpt.core.database.charge.entity.ChargesEntity
-import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
@@ -38,8 +37,7 @@ fun provideClientChargeStore(
     dao: ChargeDao,
 ): Store<Int, List<ChargesEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { clientId: Int ->
-        service.getListOfClientCharges(resourceType = CLIENT_RESOURCE, resourceId = clientId)
-            .first().pageItems
+        service.getListOfClientCharges(resourceType = CLIENT_RESOURCE, resourceId = clientId).pageItems
     },
     sourceOfTruth = SourceOfTruth.of(
         reader = { clientId: Int -> dao.getClientCharges(clientId) },

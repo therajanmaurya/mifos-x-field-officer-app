@@ -14,7 +14,6 @@ import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.model.shared.RetrieveOneResponse
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
-import kotlinx.coroutines.flow.Flow
 import kpt.core.database.basemodel.APIEndPoint
 import kpt.core.database.staff.entity.StaffEntity
 
@@ -42,11 +41,11 @@ interface StaffApi {
     ): List<RetrieveOneResponse>
 
     @GET(APIEndPoint.STAFF + "?status=all")
-    fun getStaffForOffice(@Query("officeId") officeId: Int): Flow<List<StaffEntity>>
+    suspend fun getStaffForOffice(@Query("officeId") officeId: Int): List<StaffEntity>
 
     @GET(APIEndPoint.STAFF)
-    fun allStaff(): Flow<List<StaffEntity>>
+    suspend fun allStaff(): List<StaffEntity>
 
     @GET(APIEndPoint.STAFF + "?isLoanOfficer=true")
-    fun fieldStaffForOffice(): Flow<List<StaffEntity>>
+    suspend fun fieldStaffForOffice(): List<StaffEntity>
 }

@@ -12,7 +12,6 @@ package com.mifos.core.store.client
 import kpt.core.network.mifos.client.api.ClientApi
 import kpt.core.database.client.dao.ClientDao
 import kpt.core.database.client.entity.ClientEntity
-import kotlinx.coroutines.flow.first
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
@@ -34,7 +33,7 @@ fun provideClientStore(
     dao: ClientDao,
 ): Store<Unit, List<ClientEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { _: Unit ->
-        service.getAllClients(b = true, offset = 0, limit = CLIENT_PAGE_LIMIT).first().pageItems
+        service.getAllClients(b = true, offset = 0, limit = CLIENT_PAGE_LIMIT).pageItems
     },
     sourceOfTruth = SourceOfTruth.of(
         reader = { _: Unit -> dao.getAllClients() },

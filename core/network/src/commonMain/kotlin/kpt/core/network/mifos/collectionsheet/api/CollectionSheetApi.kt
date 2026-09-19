@@ -27,7 +27,6 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
-import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by Tarun on 06-07-2017.
@@ -55,13 +54,13 @@ interface CollectionSheetApi {
      * @return List of CenterDetail
      */
     @GET(APIEndPoint.CENTERS)
-    fun fetchCenterDetails(
+    suspend fun fetchCenterDetails(
         @Query("dateFormat") format: String?,
         @Query("locale") locale: String?,
         @Query("meetingDate") meetingDate: String?,
         @Query("officeId") officeId: Int,
         @Query("staffId") staffId: Int,
-    ): Flow<List<CenterDetail>>
+    ): List<CenterDetail>
 
     /**
      * Request Endpoint to fetch Productive CollectionSheet

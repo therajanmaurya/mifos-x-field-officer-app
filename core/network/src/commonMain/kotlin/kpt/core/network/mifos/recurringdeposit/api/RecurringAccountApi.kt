@@ -19,19 +19,18 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.flow.Flow
 
 @ApiBinding("mifos")
 interface RecurringAccountApi {
 
     @POST(APIEndPoint.CREATE_RECURRING_DEPOSIT_ACCOUNTS)
-    fun createRecurringDepositAccount(
+    suspend fun createRecurringDepositAccount(
         @Body recurringDepositAccountPayload: RecurringDepositAccountPayload?,
-    ): Flow<HttpResponse>
+    ): HttpResponse
 
     @GET(APIEndPoint.CREATE_RECURRING_DEPOSIT_ACCOUNTS + "/template")
-    fun getRecurringDepositAccountTemplate(
+    suspend fun getRecurringDepositAccountTemplate(
         @Query("clientId") clientId: Int,
         @Query("productId") productId: Int?,
-    ): Flow<RecurringDepositAccountTemplate>
+    ): RecurringDepositAccountTemplate
 }
