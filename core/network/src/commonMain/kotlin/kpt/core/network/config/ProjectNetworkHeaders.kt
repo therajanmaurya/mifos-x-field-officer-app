@@ -9,7 +9,6 @@
  */
 package kpt.core.network.config
 
-
 import kpt.core.base.network.DefaultHeaderProvider
 
 /**
