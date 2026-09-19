@@ -9,6 +9,8 @@
  */
 package kpt.core.database.office.converter
 
+import kpt.core.database.office.entity.OfficeOpeningDateEntity
+
 import kpt.core.base.database.annotation.DbConverters
 
 import kotlinx.serialization.encodeToString
@@ -23,7 +25,12 @@ class OfficeTypeConverters {
     }
 
     @ColumnTypeConverter
-    fun toOpeningDateList(json: String?): List<Int?>? {
+    fun fromOfficeOpeningDate(status: OfficeOpeningDateEntity?): String? {
+        return status?.let { Json.encodeToString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun toOfficeOpeningDate(json: String?): OfficeOpeningDateEntity? {
         return json?.let { Json.decodeFromString(it) }
     }
 }

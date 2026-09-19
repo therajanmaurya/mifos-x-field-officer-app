@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.account.saving
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class InterestCalculationType(
     var id: Int? = null,
@@ -21,4 +17,4 @@ data class InterestCalculationType(
     var code: String? = null,
 
     var value: String? = null,
-) : Parcelable
+)

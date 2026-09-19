@@ -9,17 +9,14 @@
  */
 package kpt.core.model.objects.template.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 
 /**
  * Created by Rajan Maurya on 16/07/16.
  */
-@Parcelize
 data class InterestCalculationPeriodTypeOptions(
     var id: Int? = null,
 
     var code: String? = null,
 
     var value: String? = null,
-) : Parcelable
+)

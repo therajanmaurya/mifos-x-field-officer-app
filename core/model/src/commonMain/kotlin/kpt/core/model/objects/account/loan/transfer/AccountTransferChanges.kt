@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.account.loan.transfer
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class AccountTransferChanges(
     val fromOfficeId: Int? = null,
@@ -30,4 +26,4 @@ data class AccountTransferChanges(
     val currencyCode: String? = null,
     val locale: String? = null,
     val dateFormat: String? = null,
-) : Parcelable
+)

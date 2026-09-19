@@ -9,13 +9,9 @@
  */
 package kpt.core.model.client
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class ClientsAttendance(
     val attendanceType: Int,
     val clientId: Int,
-) : Parcelable
+)

@@ -10,15 +10,12 @@
 package kpt.core.model.objects.account.saving
 
 import kpt.core.model.objects.Changes
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by ishankhanna on 12/06/14.
  */
 @Serializable
-@Parcelize
 data class SavingsAccountTransactionResponse(
     var officeId: Int? = null,
 
@@ -29,4 +26,4 @@ data class SavingsAccountTransactionResponse(
     var resourceId: Int? = null,
 
     var changes: Changes? = null,
-) : Parcelable
+)

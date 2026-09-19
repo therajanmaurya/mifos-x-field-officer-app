@@ -9,17 +9,14 @@
  */
 package kpt.core.model.objects.account.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 
 /**
  * Created by nellyk on 2/27/2016.
  */
-@Parcelize
 data class TermFrequencyTypeOptions(
     var id: Int? = null,
 
     var code: String? = null,
 
     var value: String? = null,
-) : Parcelable
+)

@@ -10,9 +10,6 @@
 package kpt.core.database.loan.entity
 
 import kpt.core.model.objects.template.loan.Type
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 import kotlinx.serialization.Serializable
 
@@ -20,9 +17,7 @@ import kotlinx.serialization.Serializable
  * Created by Rajan Maurya on 14/02/17.
  */
 @Serializable
-@Parcelize
 data class LoanTransactionTemplate(
-    @IgnoredOnParcel
     val type: Type? = null,
 
     val date: List<Int> = emptyList(),
@@ -34,4 +29,4 @@ data class LoanTransactionTemplate(
     val possibleNextRepaymentDate: List<Int> = emptyList(),
 
     val paymentTypeOptions: List<PaymentTypeOptionEntity> = emptyList(),
-) : Parcelable
+)

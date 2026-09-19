@@ -11,8 +11,6 @@ package kpt.core.database.loan.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
@@ -25,11 +23,10 @@ import androidx.room3.PrimaryKey
     foreignKeys = [],
     ignoredColumns = [],
 )
-@Parcelize
 data class ActualDisbursementDateEntity(
     @PrimaryKey(autoGenerate = true)
     val loanId: Int? = null,
     val year: Int? = null,
     val month: Int? = null,
     val date: Int? = null,
-) : Parcelable
+)

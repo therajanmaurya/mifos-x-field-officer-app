@@ -11,12 +11,7 @@ package kpt.core.model.objects.template.recurring
 
 import kpt.core.model.objects.template.recurring.incentive.Incentive
 import kpt.core.model.objects.template.recurring.period.PeriodType
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class ChartSlab(
     val amountRangeFrom: Double? = null,
@@ -24,6 +19,6 @@ data class ChartSlab(
     val currency: Currency? = null,
     val description: String? = null,
     val fromPeriod: Int? = null,
-    @IgnoredOnParcel val incentives: List<Incentive>? = null,
-    @IgnoredOnParcel val periodType: PeriodType? = null,
-) : Parcelable
+    val incentives: List<Incentive>? = null,
+    val periodType: PeriodType? = null,
+)

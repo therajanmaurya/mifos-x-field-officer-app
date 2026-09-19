@@ -10,10 +10,6 @@
 package kpt.core.model.objects.account.loan
 
 import kpt.core.model.utils.DateConstants
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
-
-@Parcelize
 class LoanApproval(
     var approvedOnDate: String? = null,
 
@@ -26,4 +22,4 @@ class LoanApproval(
     var locale: String = DateConstants.LOCALE,
 
     var dateFormat: String = DateConstants.DATE_FORMAT,
-) : Parcelable
+)

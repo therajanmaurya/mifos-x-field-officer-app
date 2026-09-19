@@ -10,15 +10,11 @@
 package kpt.core.database.collectionsheet.entity
 
 import kpt.core.model.objects.collectionsheets.CollectionMeetingCalendar
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.loan.entity.LoanStatusEntity
 
 /**
  * Created by Tarun on 25-07-2017.
  */
-@Parcelize
 data class MeetingFallCalendar(
     // It's not a mistake. This AccountNo field DOES expect a String.
     val accountNo: String? = null,
@@ -26,8 +22,6 @@ data class MeetingFallCalendar(
     val activationDate: List<Int>,
 
     val isActive: Boolean = false,
-
-    @IgnoredOnParcel
     val collectionMeetingCalendar: CollectionMeetingCalendar? = null,
 
     val hierarchy: String? = null,
@@ -51,4 +45,4 @@ data class MeetingFallCalendar(
     val totalOverdue: Int = 0,
 
     val totaldue: Int = 0,
-) : Parcelable
+)

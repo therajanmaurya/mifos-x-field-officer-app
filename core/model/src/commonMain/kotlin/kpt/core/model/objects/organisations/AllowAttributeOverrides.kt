@@ -9,14 +9,11 @@
  */
 package kpt.core.model.objects.organisations
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Rajan Maurya on 15/07/16.
  */
-@Parcelize
 @Serializable
 data class AllowAttributeOverrides(
     var amortizationType: Boolean? = null,
@@ -34,4 +31,4 @@ data class AllowAttributeOverrides(
     var graceOnPrincipalAndInterestPayment: Boolean? = null,
 
     var graceOnArrearsAgeing: Boolean? = null,
-) : Parcelable
+)

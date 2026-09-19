@@ -10,11 +10,7 @@
 package kpt.core.model.objects.account.loan
 
 import kpt.core.model.utils.DateConstants
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class SavingsApproval(
     var locale: String = DateConstants.LOCALE,
@@ -24,4 +20,4 @@ data class SavingsApproval(
     var approvedOnDate: String? = null,
 
     var note: String? = null,
-) : Parcelable
+)

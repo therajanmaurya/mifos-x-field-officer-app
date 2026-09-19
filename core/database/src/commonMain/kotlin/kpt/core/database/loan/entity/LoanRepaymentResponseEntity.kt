@@ -12,9 +12,6 @@ package kpt.core.database.loan.entity
 import kpt.core.base.database.annotation.DbEntity
 
 import kpt.core.model.objects.Changes
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
@@ -29,7 +26,6 @@ import androidx.room3.PrimaryKey
     foreignKeys = [],
     ignoredColumns = [],
 )
-@Parcelize
 data class LoanRepaymentResponseEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -37,6 +33,5 @@ data class LoanRepaymentResponseEntity(
     val clientId: Int? = null,
     val loanId: Int? = null,
     val resourceId: Int? = null,
-    @IgnoredOnParcel
     val changes: Changes? = null,
-) : Parcelable
+)

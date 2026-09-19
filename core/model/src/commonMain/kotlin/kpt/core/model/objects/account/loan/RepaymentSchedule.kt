@@ -9,14 +9,11 @@
  */
 package kpt.core.model.objects.account.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by ishankhanna on 19/06/14.
  */
-@Parcelize
 @Serializable
 data class RepaymentSchedule(
     var currency: Currency? = null,
@@ -50,7 +47,7 @@ data class RepaymentSchedule(
     var totalWaived: Double? = null,
 
     var totalWrittenOff: Double? = null,
-) : Parcelable {
+) {
 
     fun getListOfActualPeriods(): List<Period> {
         val list = periods ?: return emptyList()

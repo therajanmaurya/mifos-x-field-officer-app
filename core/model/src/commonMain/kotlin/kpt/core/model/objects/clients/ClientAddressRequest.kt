@@ -9,13 +9,10 @@
  */
 package kpt.core.model.objects.clients
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Parcelize
 data class ClientAddressRequest(
     var placeId: String? = null,
 
@@ -30,4 +27,4 @@ data class ClientAddressRequest(
     var dateFormat: String? = null,
 
     var locale: String? = null,
-) : Parcelable
+)

@@ -11,26 +11,21 @@ package kpt.core.model.objects.template.recurring
 
 import kpt.core.model.objects.template.recurring.incentive.IncentiveTypeOption
 import kpt.core.model.objects.template.recurring.period.PeriodType
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class AccountChart(
-    @IgnoredOnParcel val attributeNameOptions: List<AttributeNameOption>? = null,
-    @IgnoredOnParcel val chartSlabs: List<ChartSlab>? = null,
+    val attributeNameOptions: List<AttributeNameOption>? = null,
+    val chartSlabs: List<ChartSlab>? = null,
 //    val clientClassificationOptions: List<Any?>? = null,
-    @IgnoredOnParcel val clientTypeOptions: List<ClientTypeOption>? = null,
-    @IgnoredOnParcel val conditionTypeOptions: List<ConditionTypeOption>? = null,
+    val clientTypeOptions: List<ClientTypeOption>? = null,
+    val conditionTypeOptions: List<ConditionTypeOption>? = null,
     val endDate: List<Int>? = null,
-    @IgnoredOnParcel val entityTypeOptions: List<EntityTypeOption>? = null,
+    val entityTypeOptions: List<EntityTypeOption>? = null,
     val fromDate: List<Int>? = null,
 //    val genderOptions: List<Any?>? = null,
-    @IgnoredOnParcel val incentiveTypeOptions: List<IncentiveTypeOption>? = null,
+    val incentiveTypeOptions: List<IncentiveTypeOption>? = null,
     val isPrimaryGroupingByAmount: Boolean? = null,
     val name: String? = null,
     val description: String? = null,
-    @IgnoredOnParcel val periodTypes: List<PeriodType>? = null,
-) : Parcelable
+    val periodTypes: List<PeriodType>? = null,
+)

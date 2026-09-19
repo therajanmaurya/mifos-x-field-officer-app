@@ -37,4 +37,6 @@ data class ReportTypeEntity(
     val reportCategory: String? = null,
     val parameterName: String? = null,
     val reportParameterName: String? = null,
+    val reportSubtype: String? = null,
+    val reportType: String? = null,
 )

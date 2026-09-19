@@ -9,14 +9,9 @@
  */
 package kpt.core.database.savings.entity
 
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.charge.entity.ChargeCalculationTypeEntity
 import kpt.core.database.charge.entity.ChargeTimeTypeEntity
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class Charge(
     val id: Int? = null,
@@ -26,11 +21,7 @@ data class Charge(
     val accountId: Int? = null,
 
     val name: String? = null,
-
-    @IgnoredOnParcel
     val chargeTimeType: ChargeTimeTypeEntity? = null,
-
-    @IgnoredOnParcel
     val chargeCalculationType: ChargeCalculationTypeEntity? = null,
 
     val percentage: Int? = null,
@@ -54,7 +45,7 @@ data class Charge(
     val penalty: Boolean? = null,
 
     val additionalProperties: MutableMap<String, String> = HashMap(),
-) : Parcelable {
+) {
 
     fun setAdditionalProperty(name: String, value: String) {
         additionalProperties[name] = value

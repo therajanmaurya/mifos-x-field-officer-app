@@ -9,14 +9,10 @@
  */
 package kpt.core.model.objects.template.recurring.deposit
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class InMultiplesOfDepositTermType(
     val code: String? = null,
     val id: Int? = null,
     val value: String? = null,
-) : Parcelable
+)

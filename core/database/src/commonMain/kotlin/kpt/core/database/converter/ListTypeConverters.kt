@@ -9,6 +9,11 @@
  */
 package kpt.core.database.converter
 
+import kotlinx.serialization.json.JsonObject
+import kpt.core.database.payment.entity.PaymentTypeOptionEntity
+import kpt.core.model.loan.LoanType
+import kpt.core.model.objects.clients.Address
+
 import kpt.core.base.database.annotation.DbConverters
 
 import kpt.core.database.savings.entity.Charge
@@ -65,4 +70,55 @@ class ListTypeConverters {
     fun toListOfCharges(json: String?): List<Charge?>? {
         return json?.let { Json.decodeFromString(it) }
     }
+
+    @ColumnTypeConverter
+    fun fromGroupActivationDateListInt(date: List<Int>?): String? {
+        return date?.let { Json.encodeToString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun toGroupActivationDateListInt(json: String?): List<Int>? {
+        return json?.let { Json.decodeFromString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun fromMap(map: Map<String, Any>?): String? {
+        return map?.let { Json.encodeToString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun toMap(json: String?): Map<String, Any>? {
+        return json?.let {
+            Json.decodeFromString<JsonObject>(it)
+                .mapValues { entry -> entry.value }
+        }
+    }
+
+    @ColumnTypeConverter
+    fun fromType(type: LoanType?): String? {
+        return type?.let { Json.encodeToString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun toType(json: String?): LoanType? {
+        return json?.let { Json.decodeFromString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun fromListPaymentTypeOptions(type: List<PaymentTypeOptionEntity>): String {
+        return type.let { Json.encodeToString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun toListPaymentTypeOptions(json: String): List<PaymentTypeOptionEntity> {
+        return json.let { Json.decodeFromString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun fromAddressList(addressList: List<Address>?): String? =
+        addressList?.let { Json.encodeToString(it) }
+
+    @ColumnTypeConverter
+    fun toAddressList(json: String?): List<Address>? =
+        json?.let { Json.decodeFromString(it) }
 }

@@ -9,10 +9,6 @@
  */
 package kpt.core.model.objects.databaseobjects
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
-
-@Parcelize
 data class CollectionMeetingCalendar(
     var calendarInstanceId: Int = 0,
 
@@ -35,4 +31,4 @@ data class CollectionMeetingCalendar(
     var recurrence: String? = null,
 
     var startDate: List<Int> = ArrayList(),
-) : Parcelable
+)

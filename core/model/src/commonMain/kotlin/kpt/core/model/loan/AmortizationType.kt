@@ -9,11 +9,7 @@
  */
 package kpt.core.model.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 class AmortizationType(
     var id: Int? = null,
@@ -21,4 +17,4 @@ class AmortizationType(
     var code: String? = null,
 
     var value: String? = null,
-) : Parcelable
+)

@@ -11,8 +11,6 @@ package kpt.core.database.payment.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
@@ -27,7 +25,6 @@ import androidx.room3.PrimaryKey
     ignoredColumns = [],
 )
 @Serializable
-@Parcelize
 data class PaymentTypeOptionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -35,7 +32,7 @@ data class PaymentTypeOptionEntity(
     val description: String? = null,
     val isCashPayment: Boolean? = null,
     val position: Int? = null,
-) : Parcelable
+)
 //    : Comparable<PaymentTypeOptionEntity> {
 //
 //    override fun compareTo(other: PaymentTypeOptionEntity): Int {

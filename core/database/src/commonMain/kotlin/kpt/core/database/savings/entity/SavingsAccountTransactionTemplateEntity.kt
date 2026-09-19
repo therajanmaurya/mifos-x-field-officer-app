@@ -11,15 +11,12 @@ package kpt.core.database.savings.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
 @Serializable
-@Parcelize
 @DbEntity
 @Entity(
     indices = [],
@@ -40,7 +37,7 @@ data class SavingsAccountTransactionTemplateEntity(
     val reversed: Boolean? = null,
 
     val paymentTypeOptions: List<PaymentTypeOptionEntity> = emptyList(),
-) : Parcelable {
+) {
 
     fun isReversed(): Boolean? {
         return reversed

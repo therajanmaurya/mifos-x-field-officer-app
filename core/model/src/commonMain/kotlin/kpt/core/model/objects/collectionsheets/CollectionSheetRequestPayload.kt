@@ -10,13 +10,10 @@
 package kpt.core.model.objects.collectionsheets
 
 import kpt.core.model.utils.DateConstants
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 
 /**
  * Created by Tarun on 25-07-2017.
  */
-@Parcelize
 data class CollectionSheetRequestPayload(
     var calendarId: Int? = null,
 
@@ -25,4 +22,4 @@ data class CollectionSheetRequestPayload(
     var locale: String = DateConstants.LOCALE,
 
     var transactionDate: String? = null,
-) : Parcelable
+)

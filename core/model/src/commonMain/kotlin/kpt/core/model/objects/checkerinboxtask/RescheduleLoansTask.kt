@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.checkerinboxtask
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class RescheduleLoansTask(
     var id: Int,
@@ -22,4 +18,4 @@ data class RescheduleLoansTask(
     var rescheduleFromDate: List<Int>,
     var actionName: String,
     var rescheduleReasonCodeValue: RescheduleReasonCodeValue,
-) : Parcelable
+)

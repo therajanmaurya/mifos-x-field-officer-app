@@ -11,26 +11,18 @@ package kpt.core.database.collectionsheet.entity
 
 import kpt.core.model.objects.collectionsheets.AttendanceTypeOption
 import kpt.core.model.objects.collectionsheets.LoanCollectionSheet
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Tarun on 06-07-2017.
  */
-@Parcelize
 @Serializable
 data class ClientCollectionSheet(
     var clientId: Int = 0,
 
     var clientName: String? = null,
-
-    @IgnoredOnParcel
     var loans: ArrayList<LoanCollectionSheet>? = null,
-
-    @IgnoredOnParcel
     var attendanceType: AttendanceTypeOption? = null,
 
     var savings: ArrayList<SavingsCollectionSheet> = ArrayList(),
-) : Parcelable
+)

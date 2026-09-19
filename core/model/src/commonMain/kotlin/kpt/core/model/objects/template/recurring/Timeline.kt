@@ -9,15 +9,11 @@
  */
 package kpt.core.model.objects.template.recurring
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 class Timeline(
     val submittedByFirstname: String? = null,
     val submittedByLastname: String? = null,
     val submittedByUsername: String? = null,
     val submittedOnDate: List<Int>? = null,
-) : Parcelable
+)

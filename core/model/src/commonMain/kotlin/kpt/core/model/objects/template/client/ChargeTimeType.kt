@@ -9,8 +9,6 @@
  */
 package kpt.core.model.objects.template.client
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
@@ -18,12 +16,11 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-@Parcelize
 data class ChargeTimeType(
     val id: Int? = null,
     val code: String? = null,
     val value: String? = null,
-) : Parcelable {
+) {
     override fun toString(): String {
         return "ChargeTimeType(id=$id, code='$code', value='$value')"
     }

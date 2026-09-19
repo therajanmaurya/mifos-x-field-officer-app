@@ -9,17 +9,14 @@
  */
 package kpt.core.model.objects.template.client
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by mayankjindal on 13/12/16.
  */
 @Serializable
-@Parcelize
 data class IncomeOrLiabilityAccount(
     val id: Int,
     val name: String,
     val glCode: String,
-) : Parcelable
+)

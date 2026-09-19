@@ -9,14 +9,10 @@
  */
 package kpt.core.model.objects.account.loan.transfer
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class OfficeOption(
     val id: Int? = null,
     val name: String? = null,
     val nameDecorated: String? = null,
-) : Parcelable
+)

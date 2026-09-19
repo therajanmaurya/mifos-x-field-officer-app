@@ -9,14 +9,11 @@
  */
 package kpt.core.model.objects.template.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Rajan Maurya on 16/07/16.
  */
-@Parcelize
 @Serializable
 data class ChargePaymentMode(
     var id: Int? = null,
@@ -24,4 +21,4 @@ data class ChargePaymentMode(
     var code: String? = null,
 
     var value: String? = null,
-) : Parcelable
+)

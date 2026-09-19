@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.template.recurring
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class Currency(
     val code: String? = null,
@@ -22,4 +18,4 @@ data class Currency(
     val displaySymbol: String? = null,
     val name: String? = null,
     val nameCode: String? = null,
-) : Parcelable
+)

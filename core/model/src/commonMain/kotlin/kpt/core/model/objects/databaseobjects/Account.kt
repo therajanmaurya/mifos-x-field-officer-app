@@ -9,14 +9,10 @@
  */
 package kpt.core.model.objects.databaseobjects
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
-
-@Parcelize
 data class Account(
     var accountId: String? = null,
 
     var accountStatusId: Int = 0,
 
     var loanId: Int = 0,
-) : Parcelable
+)

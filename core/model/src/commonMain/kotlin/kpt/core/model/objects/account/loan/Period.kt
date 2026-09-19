@@ -9,14 +9,11 @@
  */
 package kpt.core.model.objects.account.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by ishankhanna on 19/06/14.
  */
-@Parcelize
 @Serializable
 data class Period(
     var complete: Boolean? = null,
@@ -94,4 +91,4 @@ data class Period(
     var totalWaivedForPeriod: Double? = null,
 
     var totalWrittenOffForPeriod: Double? = null,
-) : Parcelable
+)

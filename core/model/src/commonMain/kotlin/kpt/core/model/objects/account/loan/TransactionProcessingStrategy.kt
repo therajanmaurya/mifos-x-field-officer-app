@@ -9,14 +9,10 @@
  */
 package kpt.core.model.objects.account.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
-
-@Parcelize
 data class TransactionProcessingStrategy(
     var id: Int? = null,
 
     var code: String? = null,
 
     var name: String? = null,
-) : Parcelable
+)

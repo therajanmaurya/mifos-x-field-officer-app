@@ -9,6 +9,9 @@
  */
 package kpt.core.database.savings.converter
 
+import kpt.core.database.savings.entity.SavingsAccountStatusEntity
+import kpt.core.database.savings.entity.SavingsAccountSummaryEntity
+
 import androidx.room3.ColumnTypeConverter
 import kpt.core.model.objects.account.saving.InterestCalculationDaysInYearType
 import kpt.core.model.objects.account.saving.InterestCalculationType
@@ -116,5 +119,25 @@ class SavingsTypeConverters {
     @ColumnTypeConverter
     fun toPaymentTypeOption(json: String?): PaymentTypeOptionEntity? {
         return json?.let { Json.decodeFromString<PaymentTypeOptionEntity>(it) }
+    }
+
+    @ColumnTypeConverter
+    fun fromSavingAccountStatus(type: SavingsAccountStatusEntity?): String? {
+        return type?.let { Json.encodeToString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun toSavingAccountStatus(json: String?): SavingsAccountStatusEntity? {
+        return json?.let { Json.decodeFromString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun fromSavingAccountSummary(type: SavingsAccountSummaryEntity?): String? {
+        return type?.let { Json.encodeToString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun toSavingAccountSummary(json: String?): SavingsAccountSummaryEntity? {
+        return json?.let { Json.decodeFromString(it) }
     }
 }

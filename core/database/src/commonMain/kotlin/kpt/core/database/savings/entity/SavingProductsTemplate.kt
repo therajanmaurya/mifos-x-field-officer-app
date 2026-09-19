@@ -14,9 +14,6 @@ import kpt.core.model.objects.account.saving.FieldOfficerOptions
 import kpt.core.model.objects.commonfiles.InterestType
 import kpt.core.model.objects.template.client.ChargeOptions
 import kpt.core.model.objects.template.saving.AccountOptions
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 
@@ -24,66 +21,29 @@ import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 /**
  * Created by rajan on 13/3/16.
  */
-@Parcelize
 @Serializable
 class SavingProductsTemplate(
     val currency: Currency? = null,
-
-    @IgnoredOnParcel
     val interestCompoundingPeriodType: InterestType? = null,
-
-    @IgnoredOnParcel
     val interestPostingPeriodType: InterestType? = null,
-
-    @IgnoredOnParcel
     val interestCalculationType: InterestType? = null,
-
-    @IgnoredOnParcel
     val interestCalculationDaysInYearType: InterestType? = null,
-
-    @IgnoredOnParcel
     val accountingRule: InterestType? = null,
-
-    @IgnoredOnParcel
     val currencyOptions: List<Currency>? = null,
-
-    @IgnoredOnParcel
     val interestCompoundingPeriodTypeOptions: List<InterestType>? = null,
-
-    @IgnoredOnParcel
     val interestPostingPeriodTypeOptions: List<InterestType>? = null,
-
-    @IgnoredOnParcel
     val interestCalculationTypeOptions: List<InterestType>? = null,
-
-    @IgnoredOnParcel
     val interestCalculationDaysInYearTypeOptions: List<InterestType>? = null,
-
-    @IgnoredOnParcel
     val lockinPeriodFrequencyTypeOptions: List<InterestType>? = null,
-
-    @IgnoredOnParcel
     val withdrawalFeeTypeOptions: List<InterestType>? = null,
 
     val paymentTypeOptions: List<PaymentTypeOptionEntity>? = null,
-
-    @IgnoredOnParcel
     val accountingRuleOptions: List<InterestType>? = null,
-
-    @IgnoredOnParcel
     val liabilityAccountOptions: AccountOptions? = null,
-
-    @IgnoredOnParcel
     val assetAccountOptions: List<AccountOptions>? = null,
-
-    @IgnoredOnParcel
     val expenseAccountOptions: List<AccountOptions>? = null,
-
-    @IgnoredOnParcel
     val incomeAccountOptions: List<AccountOptions>? = null,
-
-    @IgnoredOnParcel
     val fieldOfficerOptions: List<FieldOfficerOptions>? = null,
 
     val chargeOptions: List<ChargeOptions>? = null,
-) : Parcelable
+)

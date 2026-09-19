@@ -11,13 +11,9 @@ package kpt.core.database.group.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
-
-@Parcelize
 @DbEntity
 @Entity(
     indices = [],
@@ -49,4 +45,4 @@ data class GroupPayloadEntity(
     val locale: String? = null,
 
     val dateFormat: String? = null,
-) : Parcelable
+)

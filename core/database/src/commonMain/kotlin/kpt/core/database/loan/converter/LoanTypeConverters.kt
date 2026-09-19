@@ -31,8 +31,6 @@ import kpt.core.database.loan.entity.LoanTypeEntity
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
 
-
-
 /**
  * Created by Pronay Sarker on 24/01/2025 (3:07 PM)
  */
@@ -183,11 +181,6 @@ class LoanTypeConverters {
     @ColumnTypeConverter
     fun fromListInt(date: List<Int?>?): String? {
         return date?.let { Json.encodeToString(it) }
-    }
-
-    @ColumnTypeConverter
-    fun toListInt(json: String?): List<Int?>? {
-        return json?.let { Json.decodeFromString(it) }
     }
 
     @ColumnTypeConverter

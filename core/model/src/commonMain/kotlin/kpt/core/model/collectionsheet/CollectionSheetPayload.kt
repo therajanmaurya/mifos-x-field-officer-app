@@ -11,9 +11,6 @@ package kpt.core.model.collectionsheet
 
 import kpt.core.model.utils.ApiDateFormatter
 import kpt.core.model.objects.collectionsheets.BulkSavingsDueTransaction
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.model.client.ClientsAttendance
 import kpt.core.model.shared.BulkRepaymentTransactions
 import kotlinx.serialization.Serializable
@@ -21,14 +18,11 @@ import kotlinx.serialization.Serializable
 /**
  * Created by Tarun on 31-07-17.
  */
-@Parcelize
 @Serializable
 data class CollectionSheetPayload(
     var actualDisbursementDate: String? = null,
 
     var bulkRepaymentTransactions: MutableList<BulkRepaymentTransactions> = ArrayList(),
-
-    @IgnoredOnParcel
     var bulkSavingsDueTransactions: MutableList<BulkSavingsDueTransaction> = ArrayList(),
 
     var calendarId: Int? = 0,
@@ -52,4 +46,4 @@ data class CollectionSheetPayload(
     var receiptNumber: String? = null,
 
     var routingCode: String? = null,
-) : Parcelable
+)

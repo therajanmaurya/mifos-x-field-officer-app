@@ -9,8 +9,6 @@
  */
 package kpt.core.database.shared.entity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.group.entity.GroupAccounts
 import kpt.core.database.group.entity.GroupEntity
 import kotlinx.serialization.Serializable
@@ -18,9 +16,8 @@ import kotlinx.serialization.Serializable
 /**
  * Created by Rajan Maurya on 11/09/16.
  */
-@Parcelize
 @Serializable
 data class GroupAndGroupAccounts(
     var group: GroupEntity? = null,
     var groupAccounts: GroupAccounts? = null,
-) : Parcelable
+)

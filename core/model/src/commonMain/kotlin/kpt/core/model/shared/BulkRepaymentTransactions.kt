@@ -9,11 +9,7 @@
  */
 package kpt.core.model.shared
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class BulkRepaymentTransactions(
 
@@ -33,4 +29,4 @@ data class BulkRepaymentTransactions(
     var receiptNumber: String? = null,
 
     var routingCode: String? = null,
-) : Parcelable
+)

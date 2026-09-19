@@ -9,8 +9,6 @@
  */
 package kpt.core.database.center.entity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.loan.entity.LoanAccountEntity
 import kpt.core.database.savings.entity.SavingsAccountEntity
 import kotlinx.serialization.Serializable
@@ -18,7 +16,6 @@ import kotlinx.serialization.Serializable
 /**
  * Created by mayankjindal on 11/07/17.
  */
-@Parcelize
 @Serializable
 data class CenterAccounts(
     val loanAccounts: List<LoanAccountEntity> = emptyList(),
@@ -26,4 +23,4 @@ data class CenterAccounts(
     val savingsAccounts: List<SavingsAccountEntity> = emptyList(),
 
     val memberLoanAccounts: List<LoanAccountEntity> = emptyList(),
-) : Parcelable
+)

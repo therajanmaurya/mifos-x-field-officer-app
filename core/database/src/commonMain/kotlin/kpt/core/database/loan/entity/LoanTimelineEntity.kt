@@ -15,8 +15,6 @@ import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.PrimaryKey
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kpt.core.base.database.annotation.DbEntity
@@ -42,7 +40,6 @@ import kpt.core.base.database.annotation.DbEntity
     ignoredColumns = [],
 )
 @Serializable
-@Parcelize
 data class LoanTimelineEntity(
     @PrimaryKey(autoGenerate = true)
     @Transient
@@ -84,4 +81,4 @@ data class LoanTimelineEntity(
     val expectedMaturityDate: List<Int>? = null,
 
     val withdrawnOnDate: List<Int>? = null,
-) : Parcelable
+)

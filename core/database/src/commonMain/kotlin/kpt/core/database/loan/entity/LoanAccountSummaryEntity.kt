@@ -11,9 +11,6 @@ package kpt.core.database.loan.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
@@ -29,12 +26,9 @@ import androidx.room3.PrimaryKey
     tableName = "LoansAccountSummary",
 )
 @Serializable
-@Parcelize
 data class LoanAccountSummaryEntity(
     @PrimaryKey(autoGenerate = true)
     val loanId: Int? = null,
-
-    @IgnoredOnParcel
     val currency: SavingAccountCurrencyEntity? = null,
 
     val principalDisbursed: Double? = null,
@@ -104,4 +98,4 @@ data class LoanAccountSummaryEntity(
     val totalOverdue: Double? = null,
 
     val overdueSinceDate: List<Int>? = null,
-) : Parcelable
+)

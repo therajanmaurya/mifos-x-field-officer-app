@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.template.recurring
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class FieldOfficerOption(
     val displayName: String? = null,
@@ -27,4 +23,4 @@ data class FieldOfficerOption(
     val mobileNo: String? = null,
     val officeId: Int? = null,
     val officeName: String? = null,
-) : Parcelable
+)

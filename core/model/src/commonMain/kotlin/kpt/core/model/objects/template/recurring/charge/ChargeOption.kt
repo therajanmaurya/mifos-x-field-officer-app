@@ -10,21 +10,16 @@
 package kpt.core.model.objects.template.recurring.charge
 
 import kpt.core.model.objects.template.recurring.Currency
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class ChargeOption(
     val active: Boolean? = null,
     val amount: Double? = null,
-    @IgnoredOnParcel val chargeAppliesTo: ChargeAppliesTo? = null,
-    @IgnoredOnParcel val chargeCalculationType: ChargeCalculationType? = null,
-    @IgnoredOnParcel val chargePaymentMode: ChargePaymentMode? = null,
-    @IgnoredOnParcel val chargeTimeType: ChargeTimeType? = null,
-    @IgnoredOnParcel val currency: Currency? = null,
+    val chargeAppliesTo: ChargeAppliesTo? = null,
+    val chargeCalculationType: ChargeCalculationType? = null,
+    val chargePaymentMode: ChargePaymentMode? = null,
+    val chargeTimeType: ChargeTimeType? = null,
+    val currency: Currency? = null,
     val freeWithdrawal: Boolean? = null,
     val freeWithdrawalChargeFrequency: Int? = null,
     val id: Int? = null,
@@ -33,4 +28,4 @@ data class ChargeOption(
     val penalty: Boolean? = null,
     val restartFrequency: Int? = null,
     val restartFrequencyEnum: Int? = null,
-) : Parcelable
+)

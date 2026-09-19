@@ -10,12 +10,8 @@
 package kpt.core.database.client.entity
 
 import kpt.core.model.objects.account.share.ShareAccounts
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.loan.entity.LoanAccountEntity
 import kpt.core.database.savings.entity.SavingsAccountEntity
-
-@Parcelize
 data class ClientAccounts(
     var loanAccounts: List<LoanAccountEntity> = emptyList(),
 
@@ -23,7 +19,7 @@ data class ClientAccounts(
 
     var shareAccounts: List<ShareAccounts> = emptyList(),
 
-) : Parcelable {
+) {
     private fun getSavingsAccounts(wantRecurring: Boolean): List<SavingsAccountEntity> {
         val result: MutableList<SavingsAccountEntity> = ArrayList()
         for (account in savingsAccounts) {

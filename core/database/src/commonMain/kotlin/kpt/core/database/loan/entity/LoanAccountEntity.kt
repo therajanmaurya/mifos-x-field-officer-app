@@ -14,8 +14,6 @@ import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.PrimaryKey
 import kpt.core.model.objects.account.loan.Currency
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import kpt.core.base.database.annotation.DbEntity
 
@@ -47,7 +45,6 @@ import kpt.core.base.database.annotation.DbEntity
     primaryKeys = [],
     ignoredColumns = [],
 )
-@Parcelize
 @Serializable
 data class LoanAccountEntity(
     @PrimaryKey(autoGenerate = true)
@@ -84,4 +81,4 @@ data class LoanAccountEntity(
     val loanBalance: Double? = null,
 
     val amountPaid: Double? = null,
-) : Parcelable
+)

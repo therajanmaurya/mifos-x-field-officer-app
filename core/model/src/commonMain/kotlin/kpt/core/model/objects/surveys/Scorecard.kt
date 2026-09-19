@@ -9,8 +9,6 @@
  */
 package kpt.core.model.objects.surveys
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
@@ -18,7 +16,6 @@ import kotlinx.serialization.Serializable
  */
 // TODO migrate to KMP date
 @Serializable
-@Parcelize
 data class Scorecard(
     var userId: Int = 0,
 
@@ -27,4 +24,4 @@ data class Scorecard(
 //    var createdOn: Date? = null,
     var createdOn: List<Int> = emptyList(),
     var scorecardValues: List<ScorecardValues>? = null,
-) : Parcelable
+)

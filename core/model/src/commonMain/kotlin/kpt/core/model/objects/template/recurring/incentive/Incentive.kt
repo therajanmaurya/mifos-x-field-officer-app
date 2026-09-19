@@ -12,19 +12,14 @@ package kpt.core.model.objects.template.recurring.incentive
 import kpt.core.model.objects.template.recurring.AttributeName
 import kpt.core.model.objects.template.recurring.ConditionType
 import kpt.core.model.objects.template.recurring.EntityType
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class Incentive(
     val amount: Double? = null,
-    @IgnoredOnParcel val attributeName: AttributeName? = null,
+    val attributeName: AttributeName? = null,
     val attributeValue: String? = null,
     val attributeValueDesc: String? = null,
-    @IgnoredOnParcel val conditionType: ConditionType? = null,
-    @IgnoredOnParcel val entityType: EntityType? = null,
-    @IgnoredOnParcel val incentiveType: IncentiveType? = null,
-) : Parcelable
+    val conditionType: ConditionType? = null,
+    val entityType: EntityType? = null,
+    val incentiveType: IncentiveType? = null,
+)

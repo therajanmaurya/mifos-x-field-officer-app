@@ -11,15 +11,9 @@ package kpt.core.database.client.entity
 
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import kpt.core.base.database.annotation.DbEntity
 import kpt.core.model.recurringdeposit.Status
-
-
-
-@Parcelize
 @Serializable
 @DbEntity
 @Entity(
@@ -37,7 +31,7 @@ data class ClientStatusEntity(
     val code: String? = null,
 
     val value: String? = null,
-) : Parcelable {
+) {
 
     companion object {
         const val STATUS_ACTIVE = "Active"

@@ -11,15 +11,12 @@ package kpt.core.database.charge.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
 @Serializable
-@Parcelize
 @DbEntity
 @Entity(
     indices = [],
@@ -47,4 +44,4 @@ data class ClientChargeCurrencyEntity(
     val nameCode: String? = null,
 
     val displayLabel: String? = null,
-) : Parcelable
+)

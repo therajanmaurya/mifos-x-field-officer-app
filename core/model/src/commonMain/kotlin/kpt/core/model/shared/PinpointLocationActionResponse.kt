@@ -10,13 +10,10 @@
 package kpt.core.model.shared
 
 import kpt.core.model.objects.clients.ClientAddressResponse
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Parcelize
 data class PinpointLocationActionResponse(
     val resourceId: Int? = null,
     val changes: ClientAddressResponse? = null,
-) : Parcelable
+)

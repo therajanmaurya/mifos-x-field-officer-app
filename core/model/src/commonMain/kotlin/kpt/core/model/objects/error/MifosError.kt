@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.error
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class MifosError(
     var developerMessage: String? = null,
@@ -25,4 +21,4 @@ data class MifosError(
     var userMessageGlobalisationCode: String? = null,
 
     var errors: List<Errors> = emptyList(),
-) : Parcelable
+)

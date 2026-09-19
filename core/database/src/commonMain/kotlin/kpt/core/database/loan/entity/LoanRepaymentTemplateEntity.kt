@@ -12,8 +12,6 @@ package kpt.core.database.loan.entity
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import kpt.core.base.database.annotation.DbEntity
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
@@ -23,7 +21,6 @@ import kpt.core.model.loan.LoanType
 
 
 @Serializable
-@Parcelize
 @DbEntity
 @Entity(
     indices = [],
@@ -55,4 +52,4 @@ data class LoanRepaymentTemplateEntity(
     val penaltyChargesPortion: Double? = null,
 
     val paymentTypeOptions: List<PaymentTypeOptionEntity>? = null,
-) : Parcelable
+)

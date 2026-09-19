@@ -12,9 +12,6 @@ package kpt.core.database.center.entity
 import kpt.core.model.shared.Timeline
 
 import kpt.core.model.objects.collectionsheets.CollectionMeetingCalendar
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import kpt.core.database.client.entity.ClientStatusEntity
 import kpt.core.database.group.entity.GroupEntity
@@ -23,7 +20,6 @@ import kpt.core.database.group.entity.GroupEntity
 /**
  * Created by ishankhanna on 28/06/14.
  */
-@Parcelize
 @Serializable
 data class CenterWithAssociations(
     var id: Int? = null,
@@ -53,7 +49,5 @@ data class CenterWithAssociations(
     var timeline: Timeline? = null,
 
     var groupMembers: List<GroupEntity> = ArrayList(),
-
-    @IgnoredOnParcel
     var collectionMeetingCalendar: CollectionMeetingCalendar = CollectionMeetingCalendar(),
-) : Parcelable
+)

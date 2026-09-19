@@ -11,8 +11,6 @@ package kpt.core.database.group.entity
 
 import kpt.core.model.shared.Timeline
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import kpt.core.database.client.entity.ClientEntity
 import kpt.core.database.client.entity.ClientStatusEntity
@@ -22,7 +20,6 @@ import kpt.core.database.client.entity.ClientStatusEntity
  * Created by ishankhanna on 29/06/14.
  */
 @Serializable
-@Parcelize
 data class GroupWithAssociations(
     val id: Int? = null,
 
@@ -51,4 +48,4 @@ data class GroupWithAssociations(
     val clientMembers: List<ClientEntity> = emptyList(),
 
     val timeline: Timeline? = null,
-) : Parcelable
+)

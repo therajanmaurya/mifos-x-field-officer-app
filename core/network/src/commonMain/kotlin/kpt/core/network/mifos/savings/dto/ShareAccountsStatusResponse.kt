@@ -9,12 +9,9 @@
  */
 package kpt.core.network.mifos.savings.dto
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Parcelize
 data class ShareAccountsStatusResponse(
     val id: Int? = null,
 
@@ -31,4 +28,4 @@ data class ShareAccountsStatusResponse(
     val active: Boolean? = null,
 
     val closed: Boolean? = null,
-) : Parcelable
+)

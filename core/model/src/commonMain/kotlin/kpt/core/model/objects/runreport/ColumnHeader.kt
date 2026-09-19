@@ -9,14 +9,11 @@
  */
 package kpt.core.model.objects.runreport
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Tarun on 03-08-17.
  */
-@Parcelize
 @Serializable
 data class ColumnHeader(
     var columnDisplayType: String,
@@ -25,4 +22,4 @@ data class ColumnHeader(
     var columnValues: List<String>,
     var isColumnNullable: Boolean,
     var isColumnPrimaryKey: Boolean,
-) : Parcelable
+)

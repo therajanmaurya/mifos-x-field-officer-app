@@ -9,14 +9,10 @@
  */
 package kpt.core.model.objects.template.recurring.period
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class ProductOption(
     val id: Int? = null,
     val name: String? = null,
     val withHoldTax: Boolean? = null,
-) : Parcelable
+)

@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.clients
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class ClientAddressEntity(
     val clientID: Int = -1,
@@ -39,4 +35,4 @@ data class ClientAddressEntity(
     val createdOn: String = "",
     val updatedBy: String = "",
     val updatedOn: String = "",
-) : Parcelable
+)

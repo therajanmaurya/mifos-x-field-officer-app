@@ -9,15 +9,12 @@
  */
 package kpt.core.model.objects.template.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Rajan Maurya on 16/07/16.
  */
 @Serializable
-@Parcelize
 data class LoanCollateralOptions(
     var id: Int? = null,
 
@@ -28,4 +25,4 @@ data class LoanCollateralOptions(
     var description: String? = null,
 
     var isActive: Boolean? = null,
-) : Parcelable
+)

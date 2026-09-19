@@ -10,14 +10,11 @@
 package kpt.core.model.objects
 
 import kpt.core.model.objects.commonfiles.InterestType
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by ishankhanna on 14/02/14.
  */
-@Parcelize
 @Serializable
 data class SearchedEntity(
 
@@ -35,7 +32,7 @@ data class SearchedEntity(
 
     var entityStatus: InterestType? = null,
 
-) : Parcelable {
+) {
     val description: String
         get() = "#$entityId - $entityName"
 }

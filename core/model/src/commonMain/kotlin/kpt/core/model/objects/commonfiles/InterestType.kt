@@ -9,8 +9,6 @@
  */
 package kpt.core.model.objects.commonfiles
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /*
@@ -20,7 +18,6 @@ import kotlinx.serialization.Serializable
 /**
  * Created by rajan on 13/3/16.
  */
-@Parcelize
 @Serializable
 data class InterestType(
     var id: Int? = null,
@@ -28,4 +25,4 @@ data class InterestType(
     var code: String? = null,
 
     var value: String? = null,
-) : Parcelable
+)

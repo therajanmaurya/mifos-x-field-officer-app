@@ -9,11 +9,7 @@
  */
 package kpt.core.network.mifos.client.dto
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class PostClientAddressRequest(
     val addressLine1: String = "",
@@ -29,4 +25,4 @@ data class PostClientAddressRequest(
     val countryId: Int = -1,
 
     val postalCode: String = "",
-) : Parcelable
+)

@@ -9,16 +9,13 @@
  */
 package kpt.core.database.collectionsheet.entity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 /**
  * Created by Tarun on 25-07-2017.
  */
-@Parcelize
 data class CenterDetail(
     var staffId: Int = 0,
 
     var staffName: String? = null,
 
     var meetingFallCenters: List<MeetingFallCalendar>? = ArrayList(),
-) : Parcelable
+)

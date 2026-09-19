@@ -9,17 +9,14 @@
  */
 package kpt.core.model.objects.collectionsheets
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Tarun on 31-07-17.
  */
-@Parcelize
 @Serializable
 data class BulkSavingsDueTransaction(
     var savingsId: Int,
 
     var transactionAmount: String?,
-) : Parcelable
+)

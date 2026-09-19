@@ -15,15 +15,9 @@ import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.PrimaryKey
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import kpt.core.base.database.annotation.DbEntity
 import kpt.core.database.client.entity.ClientStatusEntity
-
-
-
-@Parcelize
 @DbEntity
 @Entity(
     tableName = "GroupTable",
@@ -81,4 +75,4 @@ data class GroupEntity(
     val timeline: Timeline? = null,
 
     val externalId: String? = null,
-) : Parcelable
+)

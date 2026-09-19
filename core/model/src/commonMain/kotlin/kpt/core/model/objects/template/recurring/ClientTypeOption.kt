@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.template.recurring
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class ClientTypeOption(
     val active: Boolean? = null,
@@ -22,4 +18,4 @@ data class ClientTypeOption(
     val mandatory: Boolean? = null,
     val name: String? = null,
     val position: Int? = null,
-) : Parcelable
+)

@@ -10,14 +10,11 @@
 package kpt.core.model.objects.account.loan.transfer
 
 import kpt.core.model.objects.template.loan.Currency
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Data class representing an account option for transfers
  */
-@Parcelize
 @Serializable
 data class AccountOption(
     val id: Int? = null,
@@ -29,4 +26,4 @@ data class AccountOption(
     val fieldOfficerId: Int? = null,
     val currency: Currency? = null,
     val currencyCodeFromCurrency: String? = null,
-) : Parcelable
+)

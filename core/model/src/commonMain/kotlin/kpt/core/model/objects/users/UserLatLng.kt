@@ -9,19 +9,16 @@
  */
 package kpt.core.model.objects.users
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Rajan Maurya on 24/01/17.
  */
-@Parcelize
 @Serializable
 data class UserLatLng(
     val lat: Double = 0.0,
     val lng: Double = 0.0,
-) : Parcelable {
+) {
     override fun toString(): String {
         return "{" +
             "lat=" + lat +

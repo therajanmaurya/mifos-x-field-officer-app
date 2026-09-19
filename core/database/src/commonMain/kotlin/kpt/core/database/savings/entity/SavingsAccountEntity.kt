@@ -11,8 +11,6 @@ package kpt.core.database.savings.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
@@ -53,7 +51,6 @@ import androidx.room3.PrimaryKey
         ),
     ],
 )
-@Parcelize
 @Serializable
 data class SavingsAccountEntity(
     @PrimaryKey(autoGenerate = true)
@@ -85,4 +82,4 @@ data class SavingsAccountEntity(
     val depositType: SavingAccountDepositTypeEntity? = null,
 
     val lastActiveTransactionDate: List<Int>? = null,
-) : Parcelable
+)

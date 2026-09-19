@@ -11,15 +11,11 @@ package kpt.core.database.center.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.loan.entity.LoanTimelineEntity
 import kpt.core.database.client.entity.ClientStatusEntity
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.PrimaryKey
-
-@Parcelize
 @DbEntity
 @Entity(
     tableName = "Center",
@@ -69,4 +65,4 @@ data class CenterEntity(
     val timeline: LoanTimelineEntity? = null,
 
     val externalId: String? = null,
-) : Parcelable
+)

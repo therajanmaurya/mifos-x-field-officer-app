@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.account.saving
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class Timeline(
     var submittedOnDate: List<Int?> = ArrayList(),
@@ -33,4 +29,4 @@ data class Timeline(
     var approvedByLastname: String? = null,
 
     var activatedOnDate: List<Int?> = ArrayList(),
-) : Parcelable
+)

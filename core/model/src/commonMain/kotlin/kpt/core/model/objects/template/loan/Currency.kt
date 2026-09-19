@@ -9,14 +9,11 @@
  */
 package kpt.core.model.objects.template.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Rajan Maurya on 16/07/16.
  */
-@Parcelize
 @Serializable
 data class Currency(
     var code: String? = null,
@@ -32,4 +29,4 @@ data class Currency(
     var nameCode: String? = null,
 
     var displayLabel: String? = null,
-) : Parcelable
+)

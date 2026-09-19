@@ -9,17 +9,14 @@
  */
 package kpt.core.model.objects.account.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by nellyk on 3/3/2016.
  */
-@Parcelize
 @Serializable
 data class PaymentTypeOptions(
     var id: Int,
 
     var name: String?,
-) : Parcelable
+)

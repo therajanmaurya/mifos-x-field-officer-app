@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.account.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class Type(
     var id: Int? = null,
@@ -63,4 +59,4 @@ data class Type(
     var chargeoff: Boolean? = null,
     var buyDownFee: Boolean? = null,
     var capitalizedIncome: Boolean? = null,
-) : Parcelable
+)

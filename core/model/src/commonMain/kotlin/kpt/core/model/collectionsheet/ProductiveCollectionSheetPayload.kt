@@ -10,15 +10,12 @@
 package kpt.core.model.collectionsheet
 
 import kpt.core.model.utils.ApiDateFormatter
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.model.shared.BulkRepaymentTransactions
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Tarun on 25-07-2017.
  */
-@Parcelize
 @Serializable
 data class ProductiveCollectionSheetPayload(
     var bulkRepaymentTransactions: MutableList<BulkRepaymentTransactions> = ArrayList(),
@@ -30,4 +27,4 @@ data class ProductiveCollectionSheetPayload(
     var locale: String? = ApiDateFormatter.LOCALE,
 
     var transactionDate: String? = null,
-) : Parcelable
+)

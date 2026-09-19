@@ -19,9 +19,6 @@ import kpt.core.model.objects.account.loan.RepaymentFrequencyType
 import kpt.core.model.objects.account.loan.RepaymentSchedule
 import kpt.core.model.objects.account.loan.TermPeriodFrequencyType
 import kpt.core.model.objects.account.loan.Transaction
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
 import kotlinx.serialization.Serializable
 import androidx.room3.ColumnInfo
@@ -42,8 +39,6 @@ import androidx.room3.PrimaryKey
 //    TimelineTypeConverter::class,
 //    TransactionListConverter::class,
 // )
-
-@Parcelize
 @DbEntity
 @Entity(
     tableName = "LoanWithAssociations",
@@ -119,8 +114,6 @@ data class LoanWithAssociationsEntity(
     val loanOfficerName: String = "",
 
     val loanType: LoanTypeEntity = LoanTypeEntity(),
-
-    @IgnoredOnParcel
     val currency: SavingAccountCurrencyEntity = SavingAccountCurrencyEntity(),
 
     val principal: Double = 0.0,
@@ -137,31 +130,19 @@ data class LoanWithAssociationsEntity(
     val proposedPrincipal: Double = 0.0,
 
     val termFrequency: Int = 0,
-
-    @IgnoredOnParcel
     val termPeriodFrequencyType: TermPeriodFrequencyType = TermPeriodFrequencyType(),
 
     val numberOfRepayments: Int = 0,
 
     val repaymentEvery: Int = 0,
-
-    @IgnoredOnParcel
     val repaymentFrequencyType: RepaymentFrequencyType = RepaymentFrequencyType(),
 
     val interestRatePerPeriod: Double = 0.0,
-
-    @IgnoredOnParcel
     val interestRateFrequencyType: InterestRateFrequencyType = InterestRateFrequencyType(),
 
     val annualInterestRate: Double = 0.0,
-
-    @IgnoredOnParcel
     val amortizationType: AmortizationType = AmortizationType(),
-
-    @IgnoredOnParcel
     val interestType: InterestType = InterestType(),
-
-    @IgnoredOnParcel
     val interestCalculationPeriodType: InterestCalculationPeriodType = InterestCalculationPeriodType(),
 
     val transactionProcessingStrategyId: Int = 0,
@@ -187,11 +168,7 @@ data class LoanWithAssociationsEntity(
         defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
     )
     val summary: LoanAccountSummaryEntity = LoanAccountSummaryEntity(),
-
-    @IgnoredOnParcel
     val repaymentSchedule: RepaymentSchedule = RepaymentSchedule(),
-
-    @IgnoredOnParcel
     val transactions: List<Transaction> = emptyList(),
 
     val feeChargesAtDisbursementCharged: Double = 0.0,
@@ -291,4 +268,4 @@ data class LoanWithAssociationsEntity(
         defaultValue = "0",
     )
     val chargedOff: Boolean = false,
-) : Parcelable
+)

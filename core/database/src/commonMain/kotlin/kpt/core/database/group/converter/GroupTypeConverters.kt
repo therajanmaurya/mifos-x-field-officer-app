@@ -9,6 +9,8 @@
  */
 package kpt.core.database.group.converter
 
+import kpt.core.database.group.entity.GroupEntity
+
 import kpt.core.model.shared.Timeline
 
 import androidx.room3.ColumnTypeConverter
@@ -43,5 +45,15 @@ class GroupTypeConverters {
     @ColumnTypeConverter
     fun toTimeline(json: String?): Timeline? {
         return json?.let { Json.decodeFromString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun fromListGroup(date: List<GroupEntity>): String {
+        return date.let { Json.encodeToString(it) }
+    }
+
+    @ColumnTypeConverter
+    fun toListGroup(json: String): List<GroupEntity> {
+        return json.let { Json.decodeFromString(it) }
     }
 }

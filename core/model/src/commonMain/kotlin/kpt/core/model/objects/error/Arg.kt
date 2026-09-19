@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.error
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
-
-@Parcelize
 data class Arg(
     var value: String? = null,
 
-) : Parcelable
+)

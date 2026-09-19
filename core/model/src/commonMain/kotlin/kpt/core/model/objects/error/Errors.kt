@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.error
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class Errors(
     var developerMessage: String = "",
@@ -23,4 +19,4 @@ data class Errors(
     var userMessageGlobalisationCode: String = "",
 
     var parameterName: String? = null,
-) : Parcelable
+)

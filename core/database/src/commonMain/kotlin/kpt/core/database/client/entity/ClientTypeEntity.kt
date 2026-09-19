@@ -11,13 +11,9 @@ package kpt.core.database.client.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
-
-@Parcelize
 @Serializable
 @DbEntity
 @Entity(
@@ -33,4 +29,4 @@ data class ClientTypeEntity(
     val id: Int = 0,
 
     val name: String? = null,
-) : Parcelable
+)

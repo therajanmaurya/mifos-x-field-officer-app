@@ -9,16 +9,12 @@
  */
 package kpt.core.database.shared.entity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.client.entity.ClientEntity
 /*
  * Created by Aditya Gupta on 22/7/23.
 */
-
-@Parcelize
 data class ClientListArgs(
     val clientsList: List<ClientEntity> = emptyList(),
 
     val isParentFragment: Boolean = false,
-) : Parcelable
+)

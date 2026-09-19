@@ -41,13 +41,4 @@ class CenterTypeConverters {
         return json?.let { Json.decodeFromString(it) }
     }
 
-    @ColumnTypeConverter
-    fun fromGroupDate(groupDate: GroupDateEntity?): String? {
-        return groupDate?.let { Json.encodeToString(it) }
-    }
-
-    @ColumnTypeConverter
-    fun toGroupDate(json: String?): GroupDateEntity? {
-        return json?.let { Json.decodeFromString(it) }
-    }
 }

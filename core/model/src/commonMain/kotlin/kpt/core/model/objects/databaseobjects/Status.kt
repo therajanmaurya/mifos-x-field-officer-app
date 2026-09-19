@@ -9,12 +9,8 @@
  */
 package kpt.core.model.objects.databaseobjects
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
-
-@Parcelize
 data class Status(
     var code: String? = null,
 
     var value: String? = null,
-) : Parcelable
+)

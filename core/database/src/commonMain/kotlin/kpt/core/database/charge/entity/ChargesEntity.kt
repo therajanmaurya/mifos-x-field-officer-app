@@ -11,8 +11,6 @@ package kpt.core.database.charge.entity
 
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import kpt.core.base.database.annotation.DbEntity
 import kpt.core.database.client.entity.ClientDateEntity
@@ -23,7 +21,6 @@ import kpt.core.database.client.entity.ClientDateEntity
  * Created by nellyk on 2/15/2016.
  */
 @Serializable
-@Parcelize
 @DbEntity
 @Entity(
     tableName = "Charges",
@@ -72,7 +69,7 @@ data class ChargesEntity(
     val paid: Boolean? = null,
 
     val waived: Boolean? = null,
-) : Parcelable {
+) {
 
     val formattedDueDate: String
         get() = if (dueDate?.size == 3) {

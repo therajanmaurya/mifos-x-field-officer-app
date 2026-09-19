@@ -9,15 +9,12 @@
  */
 package kpt.core.database.collectionsheet.entity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Tarun on 31-07-17.
  */
-@Parcelize
 @Serializable
 data class SavingsCollectionSheet(
     // The accountId is of String type only. It's not a mistake.
@@ -36,4 +33,4 @@ data class SavingsCollectionSheet(
     val productName: String? = null,
 
     val savingsId: Int = 0,
-) : Parcelable
+)

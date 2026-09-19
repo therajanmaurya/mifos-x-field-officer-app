@@ -9,14 +9,10 @@
  */
 package kpt.core.model.objects.databaseobjects
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
-
-@Parcelize
 data class OfflineCenter(
     var staffId: Int = 0,
 
     var staffName: String? = null,
 
     var meetingFallCenters: Array<MeetingCenter>? = null,
-) : Parcelable
+)

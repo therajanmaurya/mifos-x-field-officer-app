@@ -9,15 +9,11 @@
  */
 package kpt.core.model.objects.checkerinboxtask
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
-
-@Parcelize
 @Serializable
 data class CheckerTask(
     val id: Int,
@@ -27,7 +23,7 @@ data class CheckerTask(
     val actionName: String,
     val entityName: String,
     val resourceId: String,
-) : Parcelable {
+) {
 
     var selectedFlag = false
 

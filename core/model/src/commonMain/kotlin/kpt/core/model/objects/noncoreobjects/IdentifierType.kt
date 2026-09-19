@@ -9,17 +9,14 @@
  */
 package kpt.core.model.objects.noncoreobjects
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 
 /**
  * Created by Rajan Maurya on 01/10/16.
  */
-@Parcelize
 data class IdentifierType(
     var id: Int? = null,
 
     var name: String? = null,
 
     var position: Int? = null,
-) : Parcelable
+)

@@ -10,16 +10,12 @@
 package kpt.core.network.mifos.collectionsheet.dto
 
 import kpt.core.model.utils.ApiDateFormatter
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.model.shared.BulkRepaymentTransactions
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Tarun on 11-07-2017.
  */
-
-@Parcelize
 @Serializable
 data class IndividualCollectionSheetPayload(
     var bulkRepaymentTransactions: ArrayList<BulkRepaymentTransactions> = ArrayList(),
@@ -29,4 +25,4 @@ data class IndividualCollectionSheetPayload(
     var dateFormat: String = ApiDateFormatter.DATE_FORMAT,
     var locale: String = ApiDateFormatter.LOCALE,
     var transactionDate: String? = null,
-) : Parcelable
+)

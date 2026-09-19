@@ -10,13 +10,10 @@
 package kpt.core.network.mifos.savings.dto
 
 import kpt.core.model.objects.organisations.Currency
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.model.shared.Timeline
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Parcelize
 data class ShareAccountResponse(
     val id: Int? = null,
     val accountNo: String? = null,
@@ -30,4 +27,4 @@ data class ShareAccountResponse(
     val status: ShareAccountsStatusResponse? = null,
     val timeline: Timeline? = null,
     val currency: Currency? = null,
-) : Parcelable
+)

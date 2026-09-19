@@ -11,14 +11,11 @@ package kpt.core.database.collectionsheet.entity
 
 import kpt.core.model.objects.collectionsheets.AttendanceTypeOption
 import kpt.core.model.objects.collectionsheets.SavingsProduct
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 
 /**
  * Created by Tarun on 25-07-2017.
  */
-@Parcelize
 data class CollectionSheetResponse(
     var attendanceTypeOptions: List<AttendanceTypeOption> = ArrayList(),
 
@@ -31,4 +28,4 @@ data class CollectionSheetResponse(
     var paymentTypeOptions: List<PaymentTypeOptionEntity> = ArrayList(),
 
     var savingsProducts: List<SavingsProduct> = ArrayList(),
-) : Parcelable
+)

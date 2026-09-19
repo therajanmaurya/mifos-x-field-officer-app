@@ -9,15 +9,12 @@
  */
 package kpt.core.model.objects.template.loan
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by mayankjindal on 02/10/16.
  */
 @Serializable
-@Parcelize
 data class CalendarOptions(
     var id: Int? = null,
 
@@ -66,4 +63,4 @@ data class CalendarOptions(
     var lastUpdatedByUserId: Int? = null,
 
     var lastUpdatedByUsername: String? = null,
-) : Parcelable
+)

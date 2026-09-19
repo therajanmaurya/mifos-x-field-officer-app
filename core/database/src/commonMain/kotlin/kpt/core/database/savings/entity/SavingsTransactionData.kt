@@ -9,19 +9,14 @@
  */
 package kpt.core.database.savings.entity
 
-import kpt.core.model.utils.IgnoredOnParcel
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
  * Created by Pronay Sarker on 15/08/2024 (11:12 PM)
  */
-@Parcelize
 @Serializable
 data class SavingsTransactionData(
-    @IgnoredOnParcel
     val savingsAccountWithAssociations: SavingsAccountWithAssociationsEntity = SavingsAccountWithAssociationsEntity(),
     val depositType: SavingAccountDepositTypeEntity?,
     val transactionType: String,
-) : Parcelable
+)

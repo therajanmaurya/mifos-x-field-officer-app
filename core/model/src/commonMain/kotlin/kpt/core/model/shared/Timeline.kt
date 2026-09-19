@@ -9,12 +9,7 @@
  */
 package kpt.core.model.shared
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-
-@Parcelize
 @Serializable
 data class Timeline(
     val submittedOnDate: List<Int> = emptyList(),
@@ -29,4 +24,4 @@ data class Timeline(
     val closedByUsername: String? = null,
     val closedByFirstname: String? = null,
     val closedByLastname: String? = null,
-) : Parcelable
+)

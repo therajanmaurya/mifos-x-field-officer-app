@@ -9,11 +9,7 @@
  */
 package kpt.core.model.objects.databaseobjects
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-
-@Parcelize
 @Serializable
 data class MifosGroup(
     var staffId: Int = 0,
@@ -31,4 +27,4 @@ data class MifosGroup(
     var centerId: Long = 0,
 
     var clients: List<Client> = ArrayList(),
-) : Parcelable
+)

@@ -9,14 +9,10 @@
  */
 package kpt.core.model.objects.account.saving
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
-
-@Parcelize
 data class ChargeCalculationType(
     var id: Int? = null,
 
     var code: String? = null,
 
     var value: String? = null,
-) : Parcelable
+)

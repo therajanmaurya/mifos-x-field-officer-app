@@ -11,8 +11,6 @@ package kpt.core.database.loan.entity
 
 import kpt.core.base.database.annotation.DbEntity
 
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
@@ -27,10 +25,9 @@ import androidx.room3.PrimaryKey
     tableName = "LoanAccountLoanType",
 )
 @Serializable
-@Parcelize
 data class LoanTypeEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
     val code: String? = null,
     val value: String? = null,
-) : Parcelable
+)

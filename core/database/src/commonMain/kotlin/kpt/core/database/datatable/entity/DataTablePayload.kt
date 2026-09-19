@@ -12,16 +12,12 @@ package kpt.core.database.datatable.entity
 import kpt.core.base.database.annotation.DbEntity
 
 import kpt.core.common.utils.MapDeserializer
-import kpt.core.model.utils.Parcelable
-import kpt.core.model.utils.Parcelize
-import kpt.core.model.utils.RawValue
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
 @Serializable
-@Parcelize
 @DbEntity
 @Entity(
     indices = [],
@@ -46,7 +42,7 @@ data class DataTablePayload(
     @Contextual
     val data: Map<
         String,
-        @RawValue @Contextual
+        @Contextual
         Any,
         >,
-) : Parcelable
+)
