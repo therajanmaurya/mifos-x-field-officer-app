@@ -23,7 +23,6 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.PUT
 import de.jensklingenberg.ktorfit.http.Path
-import kotlinx.coroutines.flow.Flow
 
 @ApiBinding("mifos")
 interface NoteApi {
@@ -72,7 +71,7 @@ interface NoteApi {
      * @param resourceType resourceType, eg : Client, Loan, Group, Savings Account
      * @param resourceId resourceId, eg : ClientId, LoanId, GroupId, Savings AccountId
      * @param noteId noteId
-     * @return [Flow<NoteDto>]
+     * @return [NoteDto]
      */
     @GET("{resourceType}/{resourceId}/" + APIEndPoint.NOTES + "/{noteId}")
     suspend fun retrieveNote(
@@ -89,7 +88,7 @@ interface NoteApi {
      *
      * @param resourceType resourceType, eg : Client, Loan, Group, Savings Account
      * @param resourceId resourceId, eg : ClientId, LoanId, GroupId, Savings AccountId
-     * @return [Flow<List<NoteDto>>]
+     * @return [List<NoteDto>]
      */
     @GET("{resourceType}/{resourceId}/" + APIEndPoint.NOTES)
     suspend fun retrieveListNotes(
