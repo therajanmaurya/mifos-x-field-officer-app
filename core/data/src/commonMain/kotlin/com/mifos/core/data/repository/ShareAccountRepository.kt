@@ -10,7 +10,7 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.savings.dto.ShareAccountPayload
 import kpt.core.network.mifos.savings.dto.ShareTemplate
 import kotlinx.coroutines.flow.Flow

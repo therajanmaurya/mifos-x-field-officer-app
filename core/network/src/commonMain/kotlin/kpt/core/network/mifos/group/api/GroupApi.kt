@@ -26,7 +26,7 @@ import kpt.core.database.group.entity.GroupAccounts
 import kpt.core.database.group.entity.GroupEntity
 import kpt.core.database.group.entity.GroupPayloadEntity
 import kpt.core.database.group.entity.GroupWithAssociations
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.group.dto.GetGroupsResponse
 
 

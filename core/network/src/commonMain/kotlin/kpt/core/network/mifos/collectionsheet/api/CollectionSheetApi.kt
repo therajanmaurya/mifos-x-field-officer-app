@@ -12,7 +12,7 @@ package kpt.core.network.mifos.collectionsheet.api
 import kpt.core.base.network.annotation.ApiBinding
 
 import com.mifos.core.model.objects.collectionsheets.CollectionSheetRequestPayload
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.collectionsheet.dto.IndividualCollectionSheetPayload
 import kpt.core.network.mifos.collectionsheet.dto.RequestCollectionSheetPayload
 import kpt.core.database.basemodel.APIEndPoint

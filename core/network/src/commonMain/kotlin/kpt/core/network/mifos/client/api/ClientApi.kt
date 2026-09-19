@@ -21,7 +21,7 @@ import com.mifos.core.model.objects.clients.ClientCloseRequest
 import com.mifos.core.model.objects.clients.CollateralPayload
 import com.mifos.core.model.objects.clients.ProposeTransferRequest
 import com.mifos.core.model.objects.clients.UpdateSavingsAccountRequest
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.client.dto.ClientCloseTemplateResponse
 import kpt.core.model.shared.CollateralItem
 import kpt.core.model.shared.CollateralItemResult

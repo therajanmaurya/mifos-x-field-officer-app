@@ -11,7 +11,7 @@ package com.mifos.core.domain.useCases
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.data.repository.DataTableRowDialogRepository
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 
 class AddDataTableEntryUseCase(
     private val repository: DataTableRowDialogRepository,

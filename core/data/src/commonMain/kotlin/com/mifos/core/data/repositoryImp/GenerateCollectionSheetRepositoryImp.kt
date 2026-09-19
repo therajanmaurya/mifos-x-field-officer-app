@@ -14,7 +14,7 @@ import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.GenerateCollectionSheetRepository
 import com.mifos.core.model.objects.collectionsheets.CollectionSheetRequestPayload
 import kpt.core.network.DataManager
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kpt.core.network.collectionsheet.datamanager.DataManagerCollectionSheet
 import kpt.core.database.collectionsheet.entity.CenterDetail
 import kpt.core.database.collectionsheet.entity.CollectionSheetPayload

@@ -23,7 +23,7 @@ import com.mifos.core.model.objects.clients.Page
 import com.mifos.core.model.objects.organisations.LoanProducts
 import com.mifos.core.model.objects.payloads.GroupLoanPayload
 import com.mifos.core.model.objects.template.loan.GroupLoanTemplate
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.loan.dto.LoanWithAssociationsDto
 import kpt.core.network.mifos.loan.dto.CreateGuarantorResponseDto
 import kpt.core.network.mifos.loan.dto.GuarantorRequestDto

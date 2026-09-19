@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.repository
 
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.collectionsheet.dto.IndividualCollectionSheetPayload
 
 /**

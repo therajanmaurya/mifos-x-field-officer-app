@@ -21,7 +21,7 @@ import kotlinx.serialization.json.JsonArray
 import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.database.basemodel.APIEndPoint
 import kpt.core.database.datatable.entity.DataTableEntity
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.datatable.dto.DeleteDataTablesDatatableAppTableIdDatatableIdResponse
 import kpt.core.network.mifos.datatable.dto.GetDataTablesResponse
 import kpt.core.model.shared.Payload

@@ -11,7 +11,7 @@ package com.mifos.core.data.repository.loan
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.model.objects.account.loan.LoanApproval
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kotlinx.coroutines.flow.Flow
 
 /**

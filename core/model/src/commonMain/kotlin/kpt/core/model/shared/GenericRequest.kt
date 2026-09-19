@@ -7,7 +7,7 @@
  *
  * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
  */
-package kpt.core.network
+package kpt.core.model.shared
 
 /**
  * Created by ishankhanna on 24/06/14.

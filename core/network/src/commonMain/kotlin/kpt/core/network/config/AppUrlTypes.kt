@@ -32,15 +32,15 @@ object AppUrlTypes {
     // One constant per declared access point (UrlType(id.uppercase()), matching
     // AccessPoint.type's default). Edit the access points THERE; do not hand-edit this block.
 
-    /** `main` — REST access point. */
-    val MAIN: UrlType = UrlType.MAIN
+    /** `mifos` — REST access point. */
+    val MIFOS: UrlType = UrlType("MIFOS")
 
     /** `staging` — REST access point. */
     val STAGING: UrlType = UrlType("STAGING")
 
     /** Every declared endpoint type, in app-profile order. */
     val all: List<UrlType> = listOf(
-        MAIN,
+        MIFOS,
         STAGING,
     )
     // syncForkConfig:url-types:end

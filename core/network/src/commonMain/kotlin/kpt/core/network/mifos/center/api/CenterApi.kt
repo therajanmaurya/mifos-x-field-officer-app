@@ -16,7 +16,7 @@ import com.mifos.core.model.objects.clients.ActivatePayload
 import com.mifos.core.model.objects.databaseobjects.CollectionSheet
 import com.mifos.core.model.objects.databaseobjects.OfflineCenter
 import com.mifos.core.model.objects.responses.SaveResponse
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.collectionsheet.dto.CollectionSheetPayload
 import kpt.core.network.mifos.center.dto.GetCentersResponse
 import kpt.core.model.shared.Payload

@@ -32,7 +32,7 @@ object AppAccessPoints {
     // `type` defaults to UrlType(id.uppercase()) — value-class-equal to the AppUrlTypes.* constants.
     val points: List<AccessPoint> = listOf(
         AccessPoint(
-            id = "main",
+            id = "mifos",
             kind = AccessPointKind.REST,
             baseUrl = "https://apis.mifos.community/",
             basePath = "fineract-provider/api/v1/",
@@ -40,7 +40,7 @@ object AppAccessPoints {
             auth = AuthScheme.BASIC,
             headers = listOf(
                 HeaderSpec(name = "Fineract-Platform-TenantId", value = "default"),
-                HeaderSpec(name = "Authorization", runtimeKey = "main.auth"),
+                HeaderSpec(name = "Authorization", runtimeKey = "mifos.auth"),
             ),
         ),
         AccessPoint(

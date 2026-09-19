@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.repository
 
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 
 /**
  * Created by Aditya Gupta on 13/08/23.

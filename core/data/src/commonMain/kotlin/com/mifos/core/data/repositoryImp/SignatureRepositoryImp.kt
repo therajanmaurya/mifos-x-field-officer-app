@@ -10,7 +10,7 @@
 package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.data.repository.SignatureRepository
-import kpt.core.network.GenericResponse
+import kpt.core.model.shared.GenericResponse
 import kpt.core.network.document.datamanager.DataManagerDocument
 import io.ktor.client.request.forms.MultiPartFormDataContent
 
