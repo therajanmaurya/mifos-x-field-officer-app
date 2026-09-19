@@ -9,10 +9,10 @@
  */
 package com.mifos.room
 
-import androidx.room.AutoMigration
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room3.AutoMigration
+import androidx.room3.Database
+import androidx.room3.RoomDatabase
+import androidx.room3.ColumnTypeConverters
 import com.mifos.room.dao.CenterDao
 import com.mifos.room.dao.ChargeDao
 import com.mifos.room.dao.ClientDao
@@ -157,7 +157,7 @@ import com.mifos.room.typeconverters.CustomTypeConverters
         AutoMigration(from = 2, to = 3),
     ],
 )
-@TypeConverters(
+@ColumnTypeConverters(
     CustomTypeConverters::class,
 )
 actual abstract class MifosDatabase : RoomDatabase() {

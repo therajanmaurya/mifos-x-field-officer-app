@@ -22,17 +22,12 @@ import com.mifos.core.model.utils.Parcelable
 import com.mifos.core.model.utils.Parcelize
 import com.mifos.room.entities.accounts.savings.SavingAccountCurrencyEntity
 import kotlinx.serialization.Serializable
-import template.core.base.database.CollationSequence.UNSPECIFIED
-import template.core.base.database.ColumnInfo
-import template.core.base.database.ColumnInfoTypeAffinity.INHERIT_FIELD_NAME
-import template.core.base.database.ColumnInfoTypeAffinity.UNDEFINED
-import template.core.base.database.ColumnInfoTypeAffinity.VALUE_UNSPECIFIED
-import template.core.base.database.Entity
-import template.core.base.database.ForeignKey
-import template.core.base.database.ForeignKeyAction
-import template.core.base.database.PrimaryKey
+import androidx.room3.ColumnInfo
+import androidx.room3.Entity
+import androidx.room3.ForeignKey
+import androidx.room3.PrimaryKey
 
-// @TypeConverters(
+// @ColumnTypeConverters(
 //    AmortizationTypeConverter::class,
 //    CurrencyTypeConverter::class,
 //    InterestCalculationPeriodTypeConverter::class,
@@ -58,24 +53,24 @@ import template.core.base.database.PrimaryKey
             entity = LoanStatusEntity::class,
             parentColumns = ["id"],
             childColumns = ["status"],
-            onDelete = ForeignKeyAction.CASCADE,
-            onUpdate = ForeignKeyAction.NO_ACTION,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.NO_ACTION,
             deferred = false,
         ),
         ForeignKey(
             entity = LoanTimelineEntity::class,
             parentColumns = ["loanId"],
             childColumns = ["timeline"],
-            onDelete = ForeignKeyAction.CASCADE,
-            onUpdate = ForeignKeyAction.NO_ACTION,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.NO_ACTION,
             deferred = false,
         ),
         ForeignKey(
             entity = LoanAccountSummaryEntity::class,
             parentColumns = ["loanId"],
             childColumns = ["summary"],
-            onDelete = ForeignKeyAction.CASCADE,
-            onUpdate = ForeignKeyAction.NO_ACTION,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.NO_ACTION,
             deferred = false,
         ),
     ],
@@ -89,10 +84,10 @@ data class LoanWithAssociationsEntity(
 
     @ColumnInfo(
         index = true,
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
-        collate = UNSPECIFIED,
-        defaultValue = VALUE_UNSPECIFIED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
     )
     val status: LoanStatusEntity = LoanStatusEntity(),
 
@@ -130,10 +125,10 @@ data class LoanWithAssociationsEntity(
     val approvedPrincipal: Double = 0.0,
 
     @ColumnInfo(
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
         index = false,
-        collate = UNSPECIFIED,
+        collate = ColumnInfo.UNSPECIFIED,
         defaultValue = "0.0",
     )
     val proposedPrincipal: Double = 0.0,
@@ -174,19 +169,19 @@ data class LoanWithAssociationsEntity(
 
     @ColumnInfo(
         index = true,
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
-        collate = UNSPECIFIED,
-        defaultValue = VALUE_UNSPECIFIED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
     )
     val timeline: LoanTimelineEntity = LoanTimelineEntity(),
 
     @ColumnInfo(
         index = true,
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
-        collate = UNSPECIFIED,
-        defaultValue = VALUE_UNSPECIFIED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
     )
     val summary: LoanAccountSummaryEntity = LoanAccountSummaryEntity(),
 
@@ -214,82 +209,82 @@ data class LoanWithAssociationsEntity(
 
     val overpaidOnDate: List<Int>? = null,
     @ColumnInfo(
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
         index = false,
-        collate = UNSPECIFIED,
+        collate = ColumnInfo.UNSPECIFIED,
         defaultValue = "0",
     )
     val isEqualAmortization: Boolean = false,
 
     @ColumnInfo(
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
         index = false,
-        collate = UNSPECIFIED,
+        collate = ColumnInfo.UNSPECIFIED,
         defaultValue = "0",
     )
     val allowPartialPeriodInterestCalculation: Boolean = false,
 
     @ColumnInfo(
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
         index = false,
-        collate = UNSPECIFIED,
+        collate = ColumnInfo.UNSPECIFIED,
         defaultValue = "0",
     )
     val interestRecognitionOnDisbursementDate: Boolean = false,
 
     @ColumnInfo(
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
         index = false,
-        collate = UNSPECIFIED,
+        collate = ColumnInfo.UNSPECIFIED,
         defaultValue = "0",
     )
     val enableDownPayment: Boolean = false,
 
     @ColumnInfo(
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
         index = false,
-        collate = UNSPECIFIED,
+        collate = ColumnInfo.UNSPECIFIED,
         defaultValue = "0",
     )
     val enableIncomeCapitalization: Boolean = false,
 
     @ColumnInfo(
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
         index = false,
-        collate = UNSPECIFIED,
+        collate = ColumnInfo.UNSPECIFIED,
         defaultValue = "0",
     )
     val enableBuyDownFee: Boolean = false,
 
     @ColumnInfo(
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
         index = false,
-        collate = UNSPECIFIED,
+        collate = ColumnInfo.UNSPECIFIED,
         defaultValue = "0",
     )
     val enableInstallmentLevelDelinquency: Boolean = false,
 
     @ColumnInfo(
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
         index = false,
-        collate = UNSPECIFIED,
+        collate = ColumnInfo.UNSPECIFIED,
         defaultValue = "0",
     )
     val isInterestRecalculationEnabled: Boolean = false,
 
     @ColumnInfo(
-        name = INHERIT_FIELD_NAME,
-        typeAffinity = UNDEFINED,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
         index = false,
-        collate = UNSPECIFIED,
+        collate = ColumnInfo.UNSPECIFIED,
         defaultValue = "0",
     )
     val chargedOff: Boolean = false,

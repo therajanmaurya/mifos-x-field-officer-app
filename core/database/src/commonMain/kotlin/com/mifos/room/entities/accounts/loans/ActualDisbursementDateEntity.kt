@@ -11,8 +11,8 @@ package com.mifos.room.entities.accounts.loans
 
 import com.mifos.core.model.utils.Parcelable
 import com.mifos.core.model.utils.Parcelize
-import template.core.base.database.Entity
-import template.core.base.database.PrimaryKey
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
 
 @Entity(
     tableName = "ActualDisbursementDateEntity",

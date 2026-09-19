@@ -9,7 +9,8 @@
  */
 package com.mifos.core.network.datamanager
 
-import com.mifos.core.common.utils.extractErrorMessage
+import com.mifos.core.network.utils.extractErrorMessage
+
 import com.mifos.core.model.objects.noncoreobjects.Identifier
 import com.mifos.core.model.objects.noncoreobjects.IdentifierPayload
 import com.mifos.core.model.objects.noncoreobjects.IdentifierTemplate

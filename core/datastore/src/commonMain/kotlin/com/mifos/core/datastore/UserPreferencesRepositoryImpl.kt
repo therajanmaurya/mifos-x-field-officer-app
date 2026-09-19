@@ -9,8 +9,7 @@
  */
 package com.mifos.core.datastore
 
-import com.mifos.core.common.utils.DataState
-import com.mifos.core.common.utils.ServerConfig
+import com.mifos.core.model.utils.ServerConfig
 import com.mifos.core.datastore.model.AppSettings
 import com.mifos.core.datastore.model.DarkThemeConfig
 import com.mifos.core.datastore.model.UserData
@@ -47,13 +46,13 @@ class UserPreferencesRepositoryImpl(
             started = SharingStarted.Eagerly,
         )
 
-    override suspend fun updateUserInfo(user: UserData): DataState<Unit> {
+    override suspend fun updateUserInfo(user: UserData): Result<Unit> {
         return withContext(ioDispatcher) {
             try {
                 preferenceManager.updateUserInfo(user)
-                DataState.Success(Unit)
+                Result.success(Unit)
             } catch (e: Exception) {
-                DataState.Error(e)
+                Result.failure(e)
             }
         }
     }
@@ -64,56 +63,56 @@ class UserPreferencesRepositoryImpl(
     override val instanceUrl: String
         get() = preferenceManager.instanceUrl
 
-    override suspend fun updateTheme(theme: DarkThemeConfig): DataState<Unit> {
+    override suspend fun updateTheme(theme: DarkThemeConfig): Result<Unit> {
         return try {
             val result = preferenceManager.updateTheme(theme)
-            DataState.Success(result)
+            Result.success(result)
         } catch (e: Exception) {
-            DataState.Error(e)
+            Result.failure(e)
         }
     }
 
-    override suspend fun updateUserStatus(status: Boolean): DataState<Unit> {
+    override suspend fun updateUserStatus(status: Boolean): Result<Unit> {
         return withContext(ioDispatcher) {
             try {
                 preferenceManager.updateUserStatus(status)
-                DataState.Success(Unit)
+                Result.success(Unit)
             } catch (e: Exception) {
-                DataState.Error(e)
+                Result.failure(e)
             }
         }
     }
 
-    override suspend fun updateSettings(appSettings: AppSettings): DataState<Unit> {
+    override suspend fun updateSettings(appSettings: AppSettings): Result<Unit> {
         return try {
             val result = preferenceManager.updateSettingsInfo(appSettings)
-            DataState.Success(result)
+            Result.success(result)
         } catch (e: Exception) {
-            DataState.Error(e)
+            Result.failure(e)
         }
     }
 
     override val getServerConfig: StateFlow<ServerConfig>
         get() = preferenceManager.serverConfig
 
-    override suspend fun updateUser(user: User): DataState<Unit> {
+    override suspend fun updateUser(user: User): Result<Unit> {
         return withContext(ioDispatcher) {
             try {
                 preferenceManager.updateUser(user)
-                DataState.Success(Unit)
+                Result.success(Unit)
             } catch (e: Exception) {
-                DataState.Error(e)
+                Result.failure(e)
             }
         }
     }
 
-    override suspend fun updateServerConfig(serverConfig: ServerConfig): DataState<Unit> {
+    override suspend fun updateServerConfig(serverConfig: ServerConfig): Result<Unit> {
         return withContext(ioDispatcher) {
             try {
                 preferenceManager.updateServerConfig(serverConfig)
-                DataState.Success(Unit)
+                Result.success(Unit)
             } catch (e: Exception) {
-                DataState.Error(e)
+                Result.failure(e)
             }
         }
     }

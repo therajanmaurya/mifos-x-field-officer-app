@@ -21,6 +21,8 @@ import io.github.vinceglb.filekit.div
 import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.write
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.flow
 
 val appCache = FileKit.cacheDir
@@ -35,46 +37,51 @@ actual fun platformWriteFileToCache(
     fileName: String,
     fileExtension: String,
     filesByteArray: ByteArray,
-): Flow<DataState<PlatformFile>> = flow {
+): Flow<Result<PlatformFile>> = flow {
     val filePath: PlatformFile = appCache / "$fileName.$fileExtension"
     filePath.write(filesByteArray)
     emit(filePath)
-}.asDataStateFlow()
+}.map { Result.success(it) }
+    .catch { emit(Result.failure(it)) }
 
 actual fun platformWriteFileToApplicationPrivateInternalStorage(
     fileName: String,
     fileExtension: String,
     filesByteArray: ByteArray,
-): Flow<DataState<PlatformFile?>> = flow {
+): Flow<Result<PlatformFile?>> = flow {
     val privateInternalStorage = appPrivateInternalStorage / "$fileName.$fileExtension"
     privateInternalStorage.write(filesByteArray)
     emit(privateInternalStorage)
-}.asDataStateFlow()
+}.map { Result.success(it) }
+    .catch { emit(Result.failure(it)) }
 
 actual fun platformWriteFileToApplicationInternalStorage(
     fileName: String,
     fileExtension: String,
     filesByteArray: ByteArray,
-): Flow<DataState<PlatformFile?>> = flow {
+): Flow<Result<PlatformFile?>> = flow {
     val internalStorage = appInternalStorage / "$fileName.$fileExtension"
     internalStorage.write(filesByteArray)
     emit(internalStorage)
-}.asDataStateFlow()
+}.map { Result.success(it) }
+    .catch { emit(Result.failure(it)) }
 
 actual fun platformWriteToSelectedDirectory(
     filesByteArray: ByteArray,
     platformFile: PlatformFile,
-): Flow<DataState<Unit>> = flow {
+): Flow<Result<Unit>> = flow {
     emit(platformFile.write(filesByteArray))
-}.asDataStateFlow()
+}.map { Result.success(it) }
+    .catch { emit(Result.failure(it)) }
 
 actual suspend fun platformDeleteFile(file: PlatformFile) {
     file.delete(false)
 }
 
-actual fun platformTakePhoto(): Flow<DataState<PlatformFile?>> = flow {
+actual fun platformTakePhoto(): Flow<Result<PlatformFile?>> = flow {
     val result = FileKit.openCameraPicker(
         FileKitCameraType.Photo,
     )
     emit(result)
-}.asDataStateFlow()
+}.map { Result.success(it) }
+    .catch { emit(Result.failure(it)) }

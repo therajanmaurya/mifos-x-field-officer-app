@@ -15,6 +15,8 @@ import io.github.vinceglb.filekit.download
 import io.github.vinceglb.filekit.extension
 import io.github.vinceglb.filekit.name
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.flow
 
 actual suspend fun platformPickDirectory(): PlatformFile? {
@@ -26,44 +28,47 @@ actual fun platformWriteFileToCache(
     fileName: String,
     fileExtension: String,
     filesByteArray: ByteArray,
-): Flow<DataState<PlatformFile>> = flow {
-    emit(DataState.Error(IllegalStateException("Platform not supported")))
+): Flow<Result<PlatformFile>> = flow {
+    emit(Result.failure(IllegalStateException("Platform not supported")))
 }
 
 actual fun platformWriteFileToApplicationPrivateInternalStorage(
     fileName: String,
     fileExtension: String,
     filesByteArray: ByteArray,
-): Flow<DataState<PlatformFile?>> = flow {
+): Flow<Result<PlatformFile?>> = flow {
     FileKit.download(bytes = filesByteArray, fileName = "$fileName.$fileExtension")
     emit(null)
-}.asDataStateFlow()
+}.map { Result.success(it) }
+    .catch { emit(Result.failure(it)) }
 
 actual fun platformWriteFileToApplicationInternalStorage(
     fileName: String,
     fileExtension: String,
     filesByteArray: ByteArray,
-): Flow<DataState<PlatformFile?>> = flow {
+): Flow<Result<PlatformFile?>> = flow {
     FileKit.download(bytes = filesByteArray, fileName = "$fileName.$fileExtension")
     emit(null)
-}.asDataStateFlow()
+}.map { Result.success(it) }
+    .catch { emit(Result.failure(it)) }
 
 actual fun platformWriteToSelectedDirectory(
     filesByteArray: ByteArray,
     platformFile: PlatformFile,
-): Flow<DataState<Unit>> = flow {
+): Flow<Result<Unit>> = flow {
     emit(
         FileKit.download(
             bytes = filesByteArray,
             fileName = "${platformFile.name}.${platformFile.extension}",
         ),
     )
-}.asDataStateFlow()
+}.map { Result.success(it) }
+    .catch { emit(Result.failure(it)) }
 
 actual suspend fun platformDeleteFile(file: PlatformFile) {
     // not support in WasmJs.
 }
 
-actual fun platformTakePhoto(): Flow<DataState<PlatformFile?>> = flow {
-    emit(DataState.Error(IllegalStateException("Platform not supported")))
+actual fun platformTakePhoto(): Flow<Result<PlatformFile?>> = flow {
+    emit(Result.failure(IllegalStateException("Platform not supported")))
 }

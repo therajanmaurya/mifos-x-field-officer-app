@@ -13,10 +13,9 @@ import com.mifos.core.model.utils.Parcelable
 import com.mifos.core.model.utils.Parcelize
 import com.mifos.room.entities.accounts.loans.LoanTimelineEntity
 import com.mifos.room.entities.client.ClientStatusEntity
-import template.core.base.database.Entity
-import template.core.base.database.ForeignKey
-import template.core.base.database.ForeignKeyAction
-import template.core.base.database.PrimaryKey
+import androidx.room3.Entity
+import androidx.room3.ForeignKey
+import androidx.room3.PrimaryKey
 
 @Parcelize
 @Entity(
@@ -30,8 +29,8 @@ import template.core.base.database.PrimaryKey
             entity = CenterDateEntity::class,
             parentColumns = ["centerId"],
             childColumns = ["id"],
-            onDelete = ForeignKeyAction.CASCADE,
-            onUpdate = ForeignKeyAction.NO_ACTION,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.NO_ACTION,
             deferred = false,
         ),
     ],

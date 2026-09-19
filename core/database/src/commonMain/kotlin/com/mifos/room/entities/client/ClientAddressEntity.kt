@@ -9,12 +9,9 @@
  */
 package com.mifos.room.entities.client
 
-import template.core.base.database.CollationSequence.UNSPECIFIED
-import template.core.base.database.ColumnInfo
-import template.core.base.database.ColumnInfoTypeAffinity.UNDEFINED
-import template.core.base.database.ColumnInfoTypeAffinity.VALUE_UNSPECIFIED
-import template.core.base.database.Entity
-import template.core.base.database.PrimaryKey
+import androidx.room3.ColumnInfo
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
 
 @Entity(
     tableName = "ClientAddress",
@@ -30,9 +27,9 @@ data class ClientAddressEntity(
     @ColumnInfo(
         name = "clientID",
         index = true,
-        typeAffinity = UNDEFINED,
-        collate = UNSPECIFIED,
-        defaultValue = VALUE_UNSPECIFIED,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
     )
     val clientId: Int = -1,
     val addressType: String = "",

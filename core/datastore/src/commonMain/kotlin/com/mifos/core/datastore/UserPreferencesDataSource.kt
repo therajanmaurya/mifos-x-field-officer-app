@@ -9,8 +9,9 @@
  */
 package com.mifos.core.datastore
 
-import com.mifos.core.common.utils.ServerConfig
-import com.mifos.core.common.utils.getInstanceUrl
+import com.mifos.core.model.utils.getInstanceUrl
+
+import com.mifos.core.model.utils.ServerConfig
 import com.mifos.core.datastore.model.AppSettings
 import com.mifos.core.datastore.model.DarkThemeConfig
 import com.mifos.core.datastore.model.UserData

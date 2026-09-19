@@ -13,15 +13,10 @@ import com.mifos.core.model.objects.account.loan.Currency
 import com.mifos.core.model.utils.Parcelable
 import com.mifos.core.model.utils.Parcelize
 import kotlinx.serialization.Serializable
-import template.core.base.database.CollationSequence.UNSPECIFIED
-import template.core.base.database.ColumnInfo
-import template.core.base.database.ColumnInfoTypeAffinity.INHERIT_FIELD_NAME
-import template.core.base.database.ColumnInfoTypeAffinity.UNDEFINED
-import template.core.base.database.ColumnInfoTypeAffinity.VALUE_UNSPECIFIED
-import template.core.base.database.Entity
-import template.core.base.database.ForeignKey
-import template.core.base.database.ForeignKeyAction
-import template.core.base.database.PrimaryKey
+import androidx.room3.ColumnInfo
+import androidx.room3.Entity
+import androidx.room3.ForeignKey
+import androidx.room3.PrimaryKey
 
 @Entity(
     tableName = "LoanAccountEntity",
@@ -30,16 +25,16 @@ import template.core.base.database.PrimaryKey
             entity = LoanStatusEntity::class,
             parentColumns = ["id"],
             childColumns = ["status"],
-            onDelete = ForeignKeyAction.CASCADE,
-            onUpdate = ForeignKeyAction.NO_ACTION,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.NO_ACTION,
             deferred = false,
         ),
         ForeignKey(
             entity = LoanTypeEntity::class,
             parentColumns = ["id"],
             childColumns = ["loanType"],
-            onDelete = ForeignKeyAction.CASCADE,
-            onUpdate = ForeignKeyAction.NO_ACTION,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.NO_ACTION,
             deferred = false,
         ),
     ],
@@ -70,10 +65,10 @@ data class LoanAccountEntity(
 
     val currency: Currency? = null,
 
-    @ColumnInfo(index = true, name = INHERIT_FIELD_NAME, typeAffinity = UNDEFINED, collate = UNDEFINED, defaultValue = VALUE_UNSPECIFIED)
+    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNDEFINED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
     val status: LoanStatusEntity? = null,
 
-    @ColumnInfo(index = true, name = INHERIT_FIELD_NAME, typeAffinity = UNDEFINED, collate = UNSPECIFIED, defaultValue = VALUE_UNSPECIFIED)
+    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNSPECIFIED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
     val loanType: LoanTypeEntity? = null,
 
     val loanCycle: Int? = null,

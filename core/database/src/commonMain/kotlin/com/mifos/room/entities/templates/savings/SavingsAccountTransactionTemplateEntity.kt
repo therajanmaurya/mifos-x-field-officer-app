@@ -13,8 +13,8 @@ import com.mifos.core.model.utils.Parcelable
 import com.mifos.core.model.utils.Parcelize
 import com.mifos.room.entities.PaymentTypeOptionEntity
 import kotlinx.serialization.Serializable
-import template.core.base.database.Entity
-import template.core.base.database.PrimaryKey
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
 
 @Serializable
 @Parcelize

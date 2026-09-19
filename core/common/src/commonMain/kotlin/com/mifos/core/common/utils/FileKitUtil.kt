@@ -15,6 +15,8 @@ import io.github.vinceglb.filekit.dialogs.FileKitMode
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.flow
 
 /**
@@ -24,28 +26,33 @@ import kotlinx.coroutines.flow.flow
  *  Use PlatformFile object returned by pickers directly.
  */
 object FileKitUtil {
+    // NOTE: FileKit 0.14.2 (template catalog) dropped `title` from openFilePicker —
+    // dev was on 0.12.0. The parameter is kept for call-site source compatibility with the
+    // old tree; it is no longer forwarded to the picker.
+    @Suppress("UNUSED_PARAMETER")
     fun pickFile(
         dialogTitle: String = "",
         extensions: Set<String> = setOf("pdf", "jpeg", "jpg", "png"),
-    ): Flow<DataState<PlatformFile?>> = flow {
+    ): Flow<Result<PlatformFile?>> = flow {
         val file = FileKit.openFilePicker(
             type = FileKitType.File(extensions),
             mode = FileKitMode.Single,
-            title = dialogTitle,
         )
         emit(file)
-    }.asDataStateFlow()
+    }.map { Result.success(it) }
+    .catch { emit(Result.failure(it)) }
 
+    @Suppress("UNUSED_PARAMETER")
     fun pickImage(
         dialogTitle: String = "",
-    ): Flow<DataState<PlatformFile?>> = flow {
+    ): Flow<Result<PlatformFile?>> = flow {
         val image = FileKit.openFilePicker(
             type = FileKitType.Image,
             mode = FileKitMode.Single,
-            title = dialogTitle,
         )
         emit(image)
-    }.asDataStateFlow()
+    }.map { Result.success(it) }
+    .catch { emit(Result.failure(it)) }
 
     suspend fun pickDirectory(): PlatformFile? = platformPickDirectory()
 
@@ -83,31 +90,31 @@ object FileKitUtil {
         fileName: String,
         fileExtension: String,
         filesByteArray: ByteArray,
-    ): Flow<DataState<PlatformFile>> = platformWriteFileToCache(fileName, fileExtension, filesByteArray)
+    ): Flow<Result<PlatformFile>> = platformWriteFileToCache(fileName, fileExtension, filesByteArray)
 
     fun writeFileToApplicationPrivateInternalStorage(
         fileName: String,
         fileExtension: String,
         filesByteArray: ByteArray,
-    ): Flow<DataState<PlatformFile?>> = platformWriteFileToApplicationPrivateInternalStorage(fileName, fileExtension, filesByteArray)
+    ): Flow<Result<PlatformFile?>> = platformWriteFileToApplicationPrivateInternalStorage(fileName, fileExtension, filesByteArray)
 
     // Use only if you are using a database service such as room or sql delight
     fun writeFileToApplicationInternalStorage(
         fileName: String,
         fileExtension: String,
         filesByteArray: ByteArray,
-    ): Flow<DataState<PlatformFile?>> = platformWriteFileToApplicationInternalStorage(fileName, fileExtension, filesByteArray)
+    ): Flow<Result<PlatformFile?>> = platformWriteFileToApplicationInternalStorage(fileName, fileExtension, filesByteArray)
 
     fun writeToSelectedDirectory(
         filesByteArray: ByteArray,
         platformFile: PlatformFile,
-    ): Flow<DataState<Unit>> = platformWriteToSelectedDirectory(filesByteArray, platformFile)
+    ): Flow<Result<Unit>> = platformWriteToSelectedDirectory(filesByteArray, platformFile)
 
     suspend fun deleteFile(
         file: PlatformFile,
     ) = platformDeleteFile(file)
 
-    fun takePhoto(): Flow<DataState<PlatformFile?>> = platformTakePhoto()
+    fun takePhoto(): Flow<Result<PlatformFile?>> = platformTakePhoto()
 }
 
 expect suspend fun platformPickDirectory(): PlatformFile?
@@ -116,28 +123,28 @@ expect fun platformWriteFileToCache(
     fileName: String,
     fileExtension: String,
     filesByteArray: ByteArray,
-): Flow<DataState<PlatformFile>>
+): Flow<Result<PlatformFile>>
 
 expect fun platformWriteFileToApplicationPrivateInternalStorage(
     fileName: String,
     fileExtension: String,
     filesByteArray: ByteArray,
-): Flow<DataState<PlatformFile?>>
+): Flow<Result<PlatformFile?>>
 
 // Use only if you are using a database service such as room or sqldelight
 expect fun platformWriteFileToApplicationInternalStorage(
     fileName: String,
     fileExtension: String,
     filesByteArray: ByteArray,
-): Flow<DataState<PlatformFile?>>
+): Flow<Result<PlatformFile?>>
 
 expect fun platformWriteToSelectedDirectory(
     filesByteArray: ByteArray,
     platformFile: PlatformFile,
-): Flow<DataState<Unit>>
+): Flow<Result<Unit>>
 
 expect suspend fun platformDeleteFile(
     file: PlatformFile,
 )
 
-expect fun platformTakePhoto(): Flow<DataState<PlatformFile?>>
+expect fun platformTakePhoto(): Flow<Result<PlatformFile?>>

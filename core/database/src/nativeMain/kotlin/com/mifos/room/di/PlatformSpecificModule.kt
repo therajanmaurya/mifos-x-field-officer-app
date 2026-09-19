@@ -16,7 +16,7 @@ import com.mifos.room.MifosDatabase
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import template.core.base.database.AppDatabaseFactory
+import kpt.core.base.database.AppDatabaseFactory
 import kotlin.coroutines.CoroutineContext
 
 actual val PlatformSpecificDatabaseModule: Module = module {

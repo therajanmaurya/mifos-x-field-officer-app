@@ -14,15 +14,10 @@ import com.mifos.core.model.utils.Parcelize
 import com.mifos.room.entities.Timeline
 import com.mifos.room.entities.group.GroupEntity
 import kotlinx.serialization.Serializable
-import template.core.base.database.CollationSequence.UNSPECIFIED
-import template.core.base.database.ColumnInfo
-import template.core.base.database.ColumnInfoTypeAffinity.INHERIT_FIELD_NAME
-import template.core.base.database.ColumnInfoTypeAffinity.UNDEFINED
-import template.core.base.database.ColumnInfoTypeAffinity.VALUE_UNSPECIFIED
-import template.core.base.database.Entity
-import template.core.base.database.ForeignKey
-import template.core.base.database.ForeignKeyAction
-import template.core.base.database.PrimaryKey
+import androidx.room3.ColumnInfo
+import androidx.room3.Entity
+import androidx.room3.ForeignKey
+import androidx.room3.PrimaryKey
 
 @Parcelize
 @Entity(
@@ -36,16 +31,16 @@ import template.core.base.database.PrimaryKey
             entity = ClientStatusEntity::class,
             parentColumns = ["id"],
             childColumns = ["id"],
-            onDelete = ForeignKeyAction.CASCADE,
-            onUpdate = ForeignKeyAction.NO_ACTION,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.NO_ACTION,
             deferred = false,
         ),
         ForeignKey(
             entity = ClientDateEntity::class,
             parentColumns = ["clientId"],
             childColumns = ["id"],
-            onDelete = ForeignKeyAction.CASCADE,
-            onUpdate = ForeignKeyAction.NO_ACTION,
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.NO_ACTION,
             deferred = false,
         ),
     ],
@@ -53,7 +48,7 @@ import template.core.base.database.PrimaryKey
 @Serializable
 data class ClientEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(index = true, name = INHERIT_FIELD_NAME, typeAffinity = UNDEFINED, collate = UNSPECIFIED, defaultValue = VALUE_UNSPECIFIED)
+    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNSPECIFIED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
     val id: Int = 0,
 
     val groupId: Int? = 0,

@@ -9,7 +9,7 @@
  */
 package com.mifos.core.network.model
 
-import com.mifos.core.common.utils.ApiDateFormatter
+import com.mifos.core.model.utils.ApiDateFormatter
 
 /**
  * Created by ADMIN on 16-Jun-15.
