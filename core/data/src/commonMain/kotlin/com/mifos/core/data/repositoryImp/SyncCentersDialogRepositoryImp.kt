@@ -13,11 +13,11 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SyncCentersDialogRepository
 import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
-import com.mifos.core.network.datamanager.DataManagerCenter
-import com.mifos.core.network.datamanager.DataManagerClient
-import com.mifos.core.network.datamanager.DataManagerGroups
-import com.mifos.core.network.datamanager.DataManagerLoan
-import com.mifos.core.network.datamanager.DataManagerSavings
+import kpt.core.network.center.datamanager.DataManagerCenter
+import kpt.core.network.client.datamanager.DataManagerClient
+import kpt.core.network.group.datamanager.DataManagerGroups
+import kpt.core.network.loan.datamanager.DataManagerLoan
+import kpt.core.network.savings.datamanager.DataManagerSavings
 import kpt.core.database.center.entity.CenterAccounts
 import kpt.core.database.client.entity.ClientAccounts
 import kpt.core.database.group.entity.GroupAccounts

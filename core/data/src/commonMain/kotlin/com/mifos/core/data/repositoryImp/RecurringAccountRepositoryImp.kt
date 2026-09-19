@@ -13,8 +13,8 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.RecurringAccountRepository
 import com.mifos.core.model.objects.payloads.RecurringDepositAccountPayload
-import com.mifos.core.network.GenericResponse
-import com.mifos.core.network.datamanager.DataManagerRecurringAccount
+import kpt.core.network.GenericResponse
+import kpt.core.network.recurringdeposit.datamanager.DataManagerRecurringAccount
 import kpt.core.database.recurringdeposit.entity.RecurringDepositAccountTemplate
 import kotlinx.coroutines.flow.Flow
 

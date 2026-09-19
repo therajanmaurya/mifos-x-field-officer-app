@@ -10,9 +10,9 @@
 package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.data.repository.IndividualCollectionSheetDetailsRepository
-import com.mifos.core.network.GenericResponse
-import com.mifos.core.network.datamanager.DataManagerCollectionSheet
-import com.mifos.core.network.model.IndividualCollectionSheetPayload
+import kpt.core.network.GenericResponse
+import kpt.core.network.collectionsheet.datamanager.DataManagerCollectionSheet
+import kpt.core.network.mifos.collectionsheet.dto.IndividualCollectionSheetPayload
 
 /**
  * Created by Aditya Gupta on 10/08/23.

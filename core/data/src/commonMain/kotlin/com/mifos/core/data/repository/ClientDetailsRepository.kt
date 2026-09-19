@@ -11,11 +11,11 @@ package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.model.objects.account.share.ShareAccounts
-import com.mifos.core.network.model.ClientCloseTemplateResponse
-import com.mifos.core.network.model.CollateralItem
-import com.mifos.core.network.model.CollateralItemResult
-import com.mifos.core.network.model.SavingAccountOption
-import com.mifos.core.network.model.StaffOption
+import kpt.core.network.mifos.client.dto.ClientCloseTemplateResponse
+import kpt.core.network.mifos.shared.dto.CollateralItem
+import kpt.core.network.mifos.shared.dto.CollateralItemResult
+import kpt.core.network.mifos.savings.dto.SavingAccountOption
+import kpt.core.network.mifos.staff.dto.StaffOption
 import kpt.core.database.client.entity.ClientAccounts
 import kpt.core.database.client.entity.ClientEntity
 import io.ktor.client.request.forms.MultiPartFormDataContent

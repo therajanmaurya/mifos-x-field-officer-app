@@ -11,7 +11,7 @@ package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.model.objects.payloads.GroupLoanPayload
-import com.mifos.core.network.model.LoansPayload
+import kpt.core.network.mifos.loan.dto.LoansPayload
 import kpt.core.database.loan.entity.Loan
 import kpt.core.database.client.entity.ClientPayloadEntity
 import io.ktor.client.statement.HttpResponse

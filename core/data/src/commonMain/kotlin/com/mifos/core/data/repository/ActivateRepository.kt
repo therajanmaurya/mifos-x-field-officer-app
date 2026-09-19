@@ -10,8 +10,8 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.model.objects.clients.ActivatePayload
-import com.mifos.core.network.model.PostCentersCenterIdResponse
-import com.mifos.core.network.model.PostClientsClientIdResponse
+import kpt.core.network.mifos.center.dto.PostCentersCenterIdResponse
+import kpt.core.network.mifos.client.dto.PostClientsClientIdResponse
 import io.ktor.client.statement.HttpResponse
 
 /**

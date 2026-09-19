@@ -11,11 +11,11 @@ package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.data.repository.ActivateRepository
 import com.mifos.core.model.objects.clients.ActivatePayload
-import com.mifos.core.network.datamanager.DataManagerCenter
-import com.mifos.core.network.datamanager.DataManagerClient
-import com.mifos.core.network.datamanager.DataManagerGroups
-import com.mifos.core.network.model.PostCentersCenterIdResponse
-import com.mifos.core.network.model.PostClientsClientIdResponse
+import kpt.core.network.center.datamanager.DataManagerCenter
+import kpt.core.network.client.datamanager.DataManagerClient
+import kpt.core.network.group.datamanager.DataManagerGroups
+import kpt.core.network.mifos.center.dto.PostCentersCenterIdResponse
+import kpt.core.network.mifos.client.dto.PostClientsClientIdResponse
 import io.ktor.client.statement.HttpResponse
 
 /**

@@ -15,11 +15,11 @@ import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.mappers.client.ClientAddressMapper
 import com.mifos.core.data.repository.CreateNewClientRepository
 import com.mifos.core.model.objects.clients.ClientAddressEntity
-import com.mifos.core.network.datamanager.DataManagerClient
-import com.mifos.core.network.datamanager.DataManagerOffices
-import com.mifos.core.network.datamanager.DataManagerStaff
-import com.mifos.core.network.model.PostClientAddressRequest
-import com.mifos.core.network.model.PostClientAddressResponse
+import kpt.core.network.client.datamanager.DataManagerClient
+import kpt.core.network.office.datamanager.DataManagerOffices
+import kpt.core.network.staff.datamanager.DataManagerStaff
+import kpt.core.network.mifos.client.dto.PostClientAddressRequest
+import kpt.core.network.mifos.client.dto.PostClientAddressResponse
 import kpt.core.database.client.entity.AddressConfiguration
 import kpt.core.database.client.entity.AddressTemplate
 import kpt.core.database.client.entity.ClientPayloadEntity

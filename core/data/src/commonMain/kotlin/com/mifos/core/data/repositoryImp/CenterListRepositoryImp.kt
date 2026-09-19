@@ -17,7 +17,7 @@ import com.mifos.core.common.utils.Page
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.pagingSource.CenterListPagingSource
 import com.mifos.core.data.repository.CenterListRepository
-import com.mifos.core.network.datamanager.DataManagerCenter
+import kpt.core.network.center.datamanager.DataManagerCenter
 import kpt.core.database.center.entity.CenterEntity
 import kpt.core.database.center.entity.CenterWithAssociations
 import kotlinx.coroutines.flow.Flow

@@ -10,8 +10,8 @@
 package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.data.repository.DataTableRowDialogRepository
-import com.mifos.core.network.GenericResponse
-import com.mifos.core.network.datamanager.DataManagerDataTable
+import kpt.core.network.GenericResponse
+import kpt.core.network.datatable.datamanager.DataManagerDataTable
 
 /**
  * Created by Aditya Gupta on 13/08/23.

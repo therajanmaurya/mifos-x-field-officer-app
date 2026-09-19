@@ -13,8 +13,8 @@ import com.mifos.core.data.mappers.toModel
 import com.mifos.core.model.objects.account.loan.Currency
 import com.mifos.core.model.objects.account.loan.loanDisburse.LoanDisburseInput
 import com.mifos.core.model.objects.account.loan.loanDisburse.LoanDisburseTemplate
-import com.mifos.core.network.dto.loans.disburse.LoanDisburseRequestDto
-import com.mifos.core.network.dto.loans.template.LoanDisburseTemplateDto
+import kpt.core.network.mifos.loan.dto.LoanDisburseRequestDto
+import kpt.core.network.mifos.loan.dto.LoanDisburseTemplateDto
 
 fun LoanDisburseInput.toDto(): LoanDisburseRequestDto = LoanDisburseRequestDto(
     actualDisbursementDate = actualDisbursementDate,

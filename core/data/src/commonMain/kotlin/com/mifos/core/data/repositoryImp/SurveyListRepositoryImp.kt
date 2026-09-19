@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SurveyListRepository
-import com.mifos.core.network.datamanager.DataManagerSurveys
+import kpt.core.network.survey.datamanager.DataManagerSurveys
 import kpt.core.database.survey.entity.QuestionDatasEntity
 import kpt.core.database.survey.entity.ResponseDatasEntity
 import kpt.core.database.survey.entity.SurveyEntity

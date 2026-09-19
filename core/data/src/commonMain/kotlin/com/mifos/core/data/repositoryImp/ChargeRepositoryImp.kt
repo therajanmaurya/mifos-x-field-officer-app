@@ -20,7 +20,7 @@ import com.mifos.core.model.objects.clients.ChargeCreationResponse
 import com.mifos.core.model.objects.clients.Page
 import com.mifos.core.model.objects.payloads.ChargesPayload
 import com.mifos.core.model.objects.template.client.ChargeTemplate
-import com.mifos.core.network.datamanager.DataManagerCharge
+import kpt.core.network.charge.datamanager.DataManagerCharge
 import kpt.core.database.charge.entity.ChargesEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

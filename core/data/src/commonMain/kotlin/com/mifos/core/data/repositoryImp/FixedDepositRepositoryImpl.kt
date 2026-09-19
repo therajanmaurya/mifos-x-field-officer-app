@@ -12,9 +12,9 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.FixedDepositRepository
-import com.mifos.core.network.datamanager.DataManagerFixedDeposit
-import com.mifos.core.network.model.fixedDeposit.FixedDepositPayload
-import com.mifos.core.network.model.fixedDeposit.FixedDepositTemplate
+import kpt.core.network.savings.datamanager.DataManagerFixedDeposit
+import kpt.core.network.mifos.savings.dto.FixedDepositPayload
+import kpt.core.network.mifos.savings.dto.FixedDepositTemplate
 import kotlinx.coroutines.flow.Flow
 
 class FixedDepositRepositoryImpl(private val dataManagerFixedDeposit: DataManagerFixedDeposit) :

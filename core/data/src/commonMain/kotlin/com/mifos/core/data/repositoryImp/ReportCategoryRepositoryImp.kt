@@ -13,7 +13,7 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.ReportCategoryRepository
 import com.mifos.core.model.objects.runreport.client.ClientReportTypeItem
-import com.mifos.core.network.datamanager.DataManagerRunReport
+import kpt.core.network.report.datamanager.DataManagerRunReport
 import kotlinx.coroutines.flow.Flow
 
 /**

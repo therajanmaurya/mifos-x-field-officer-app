@@ -12,10 +12,10 @@ package com.mifos.core.data.mappers.loan
 import com.mifos.core.model.objects.account.loan.assignLoanOfficer.AssignLoanOfficerInput
 import com.mifos.core.model.objects.account.loan.assignLoanOfficer.AssignLoanOfficerResponse
 import com.mifos.core.model.objects.template.loan.LoanOfficerOption
-import com.mifos.core.network.dto.loans.assignLoanOfficer.AssignLoanOfficerRequestDto
-import com.mifos.core.network.dto.loans.assignLoanOfficer.AssignLoanOfficerResponseDto
-import com.mifos.core.network.dto.loans.template.LoanOfficerOptionDto
-import com.mifos.core.network.dto.loans.template.LoanOfficerOptionsTemplateDto
+import kpt.core.network.mifos.loan.dto.AssignLoanOfficerRequestDto
+import kpt.core.network.mifos.loan.dto.AssignLoanOfficerResponseDto
+import kpt.core.network.mifos.loan.dto.LoanOfficerOptionDto
+import kpt.core.network.mifos.loan.dto.LoanOfficerOptionsTemplateDto
 
 // Unwrap the DTO directly into a List for the Domain
 fun LoanOfficerOptionsTemplateDto.toDomain(): List<LoanOfficerOption> =

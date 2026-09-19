@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SyncCenterPayloadsRepository
-import com.mifos.core.network.datamanager.DataManagerCenter
+import kpt.core.network.center.datamanager.DataManagerCenter
 import kpt.core.database.center.entity.CenterPayloadEntity
 import kotlinx.coroutines.flow.Flow
 

@@ -14,7 +14,7 @@ import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.CheckerInboxTasksRepository
 import com.mifos.core.model.objects.checkerinboxtask.CheckerTask
 import com.mifos.core.model.objects.checkerinboxtask.RescheduleLoansTask
-import com.mifos.core.network.datamanager.DataManagerCheckerInbox
+import kpt.core.network.checkerinbox.datamanager.DataManagerCheckerInbox
 import kotlinx.coroutines.flow.Flow
 
 /**

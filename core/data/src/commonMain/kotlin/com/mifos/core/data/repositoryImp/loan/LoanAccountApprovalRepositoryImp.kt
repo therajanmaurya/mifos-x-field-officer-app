@@ -13,8 +13,8 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.loan.LoanAccountApprovalRepository
 import com.mifos.core.model.objects.account.loan.LoanApproval
-import com.mifos.core.network.DataManager
-import com.mifos.core.network.GenericResponse
+import kpt.core.network.DataManager
+import kpt.core.network.GenericResponse
 import kotlinx.coroutines.flow.Flow
 
 /**

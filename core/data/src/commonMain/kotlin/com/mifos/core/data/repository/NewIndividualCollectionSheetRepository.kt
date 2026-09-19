@@ -10,7 +10,7 @@
 package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
-import com.mifos.core.network.model.RequestCollectionSheetPayload
+import kpt.core.network.mifos.collectionsheet.dto.RequestCollectionSheetPayload
 import kpt.core.database.collectionsheet.entity.IndividualCollectionSheet
 import kpt.core.database.office.entity.OfficeEntity
 import kpt.core.database.staff.entity.StaffEntity

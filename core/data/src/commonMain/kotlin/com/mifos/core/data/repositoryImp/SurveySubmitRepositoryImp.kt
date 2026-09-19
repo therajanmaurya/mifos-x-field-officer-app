@@ -13,7 +13,7 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SurveySubmitRepository
 import com.mifos.core.model.objects.surveys.Scorecard
-import com.mifos.core.network.datamanager.DataManagerSurveys
+import kpt.core.network.survey.datamanager.DataManagerSurveys
 import kotlinx.coroutines.flow.Flow
 
 /**

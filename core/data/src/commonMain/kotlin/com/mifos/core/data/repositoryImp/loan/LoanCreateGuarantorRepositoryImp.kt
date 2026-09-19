@@ -19,7 +19,7 @@ import com.mifos.core.model.objects.account.loan.guarantor.CreateGuarantor
 import com.mifos.core.model.objects.account.loan.guarantor.CreateGuarantorInput
 import com.mifos.core.model.objects.account.loan.guarantor.GuarantorAccountTemplate
 import com.mifos.core.model.objects.account.loan.guarantor.GuarantorTemplate
-import com.mifos.core.network.datamanager.DataManagerLoan
+import kpt.core.network.loan.datamanager.DataManagerLoan
 import kotlinx.coroutines.CoroutineDispatcher
 
 class LoanCreateGuarantorRepositoryImp(

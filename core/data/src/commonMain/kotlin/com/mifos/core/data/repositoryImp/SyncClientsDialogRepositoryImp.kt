@@ -13,9 +13,9 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SyncClientsDialogRepository
 import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
-import com.mifos.core.network.datamanager.DataManagerClient
-import com.mifos.core.network.datamanager.DataManagerLoan
-import com.mifos.core.network.datamanager.DataManagerSavings
+import kpt.core.network.client.datamanager.DataManagerClient
+import kpt.core.network.loan.datamanager.DataManagerLoan
+import kpt.core.network.savings.datamanager.DataManagerSavings
 import kpt.core.database.client.entity.ClientAccounts
 import kpt.core.database.savings.entity.SavingsAccountWithAssociationsEntity
 import kpt.core.database.client.entity.ClientEntity

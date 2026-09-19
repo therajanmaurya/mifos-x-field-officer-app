@@ -110,11 +110,29 @@ class ApiBindingProcessor(
             Triple(id, "$fqn|$bound", kind)
         }
 
-        // Two classes on one point would emit two `single` of different types for the same id: the
-        // second silently shadows the first everywhere it is injected by qualifier.
-        bindings.groupBy { it.first }.filterValues { it.size > 1 }.forEach { (id, rows) ->
-            logger.error("network-ksp: access point '$id' is bound by ${rows.joinToString { it.second }}")
-        }
+        // The hazard is the SAME TYPE bound twice to one point — that emits two `single<T>` for one
+        // T, and the second silently wins everywhere T is injected.
+        //
+        // It is NOT "two classes on one point". Both emitters key by TYPE, never by qualifier:
+        // `restApi<T>(id)` -> `single<T>`, `supabaseApi<Bound>(id)` -> `single<Bound>`. N DISTINCT
+        // types on one access point are therefore N distinct singles which cannot shadow each other.
+        //
+        // The stricter rule assumed one API per endpoint, which fits a showcase endpoint
+        // (coingecko, frankfurter, fred) and breaks on a MONOLITH: Fineract is one server, one
+        // base_url, one credential — and 21 resource-oriented APIs over it. Splitting it into 21
+        // app-profile access points to satisfy the check would make the deployment SoT claim 21
+        // endpoints where there is one, which is worse than the thing the check was protecting.
+        // (Fork fix 2026-09-19; enqueued upstream per RULE-TEMPLATE-MODULE-FIX-UPSTREAM-001.)
+        bindings.groupBy { it.first to it.second.substringAfter('|') }
+            .filterValues { it.size > 1 }
+            .forEach { (key, rows) ->
+                val (id, type) = key
+                logger.error(
+                    "network-ksp: access point '$id' binds '$type' ${rows.size} times — " +
+                        "each would emit a `single<$type>` and the last one silently wins. " +
+                        "Annotate exactly one type per (access point, bound type).",
+                )
+            }
 
         // app-profile order, so the generated file reads like the declaration it mirrors — and is
         // stable, which KSP's own symbol order is not.

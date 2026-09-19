@@ -9,7 +9,7 @@
  */
 package com.mifos.core.store.staff
 
-import com.mifos.core.network.services.StaffService
+import kpt.core.network.mifos.staff.api.StaffApi
 import kpt.core.database.staff.dao.StaffDao
 import kpt.core.database.staff.entity.StaffEntity
 import kotlinx.coroutines.flow.first
@@ -31,7 +31,7 @@ import org.mobilenativefoundation.store.store5.Store
 @StoreProvider(id = "staff")
 @CacheKey(fn = "forOffice", key = "staff:{officeId}", params = ["officeId:Int"])
 fun provideStaffStore(
-    service: StaffService,
+    service: StaffApi,
     dao: StaffDao,
 ): Store<Int, List<StaffEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { officeId: Int -> service.getStaffForOffice(officeId).first() },

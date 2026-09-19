@@ -13,7 +13,7 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SearchRepository
 import com.mifos.core.model.objects.SearchedEntity
-import com.mifos.core.network.datamanager.DataManagerSearch
+import kpt.core.network.search.datamanager.DataManagerSearch
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -11,7 +11,7 @@ package com.mifos.core.data.repository
 
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.model.objects.collectionsheets.CollectionSheetRequestPayload
-import com.mifos.core.network.GenericResponse
+import kpt.core.network.GenericResponse
 import kpt.core.database.collectionsheet.entity.CenterDetail
 import kpt.core.database.collectionsheet.entity.CollectionSheetPayload
 import kpt.core.database.collectionsheet.entity.CollectionSheetResponse

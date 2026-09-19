@@ -20,7 +20,7 @@ import com.mifos.core.data.util.withNetworkCheck
 import com.mifos.core.model.objects.note.CreateNoteInput
 import com.mifos.core.model.objects.note.Note
 import com.mifos.core.model.objects.note.UpdateNoteInput
-import com.mifos.core.network.datamanager.DataManagerNote
+import kpt.core.network.note.datamanager.DataManagerNote
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map

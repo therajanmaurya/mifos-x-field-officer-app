@@ -13,10 +13,10 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.DataTableListRepository
 import com.mifos.core.model.objects.payloads.GroupLoanPayload
-import com.mifos.core.network.DataManager
-import com.mifos.core.network.datamanager.DataManagerClient
-import com.mifos.core.network.datamanager.DataManagerLoan
-import com.mifos.core.network.model.LoansPayload
+import kpt.core.network.DataManager
+import kpt.core.network.client.datamanager.DataManagerClient
+import kpt.core.network.loan.datamanager.DataManagerLoan
+import kpt.core.network.mifos.loan.dto.LoansPayload
 import kpt.core.database.loan.entity.Loan
 import kpt.core.database.client.entity.ClientPayloadEntity
 import io.ktor.client.statement.HttpResponse

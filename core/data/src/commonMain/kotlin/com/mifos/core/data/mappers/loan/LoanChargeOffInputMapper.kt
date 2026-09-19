@@ -10,7 +10,7 @@
 package com.mifos.core.data.mappers.loan
 
 import com.mifos.core.model.objects.account.loan.LoanChargeOffInput
-import com.mifos.core.network.dto.loans.LoanChargeOffRequestDto
+import kpt.core.network.mifos.loan.dto.LoanChargeOffRequestDto
 
 fun LoanChargeOffInput.toDto(): LoanChargeOffRequestDto = LoanChargeOffRequestDto(
     chargeOffReasonId = chargeOffReasonId,

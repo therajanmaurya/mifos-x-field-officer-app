@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.repository
 
-import com.mifos.core.network.model.PostAuthenticationResponse
+import kpt.core.network.mifos.auth.dto.PostAuthenticationResponse
 
 /**
  * Created by Aditya Gupta on 06/08/23.

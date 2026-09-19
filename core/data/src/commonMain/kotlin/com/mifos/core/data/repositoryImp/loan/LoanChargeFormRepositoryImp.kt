@@ -13,7 +13,7 @@ import com.mifos.core.data.repository.loan.LoanChargeFormRepository
 import com.mifos.core.model.objects.clients.ChargeCreationResponse
 import com.mifos.core.model.objects.payloads.ChargesPayload
 import com.mifos.core.model.objects.template.client.ChargeTemplate
-import com.mifos.core.network.datamanager.DataManagerCharge
+import kpt.core.network.charge.datamanager.DataManagerCharge
 
 /**
  * Created by Aditya Gupta on 16/08/23.

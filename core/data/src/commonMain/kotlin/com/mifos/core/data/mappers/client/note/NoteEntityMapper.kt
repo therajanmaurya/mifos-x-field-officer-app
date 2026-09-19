@@ -10,7 +10,7 @@
 package com.mifos.core.data.mappers.client.note
 
 import com.mifos.core.model.objects.note.Note
-import com.mifos.core.network.dto.note.NoteDto
+import kpt.core.network.mifos.note.dto.NoteDto
 import kpt.core.database.note.entity.NoteEntity
 
 fun NoteDto.toEntity(): NoteEntity = NoteEntity(

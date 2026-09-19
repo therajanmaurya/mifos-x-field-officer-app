@@ -95,7 +95,7 @@ network:
   # `main`/`staging` are `fork`: they are placeholders for the CONSUMER's own backend, and
   # `UrlType.MAIN` is the framework default in core-base/network — every fork needs one.
   access_points:
-    - id: main
+    - id: mifos
       owner: fork
       type: rest
       # Fineract production (from dev). ORIGIN only; the API path travels with the endpoint.

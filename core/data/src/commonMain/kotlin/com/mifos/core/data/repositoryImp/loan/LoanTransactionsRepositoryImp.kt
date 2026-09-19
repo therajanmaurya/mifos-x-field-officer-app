@@ -13,8 +13,8 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.loan.LoanTransactionsRepository
 import com.mifos.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
-import com.mifos.core.network.DataManager
-import com.mifos.core.network.mappers.loan.toDomain
+import kpt.core.network.DataManager
+import kpt.core.network.mifos.loan.mapper.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

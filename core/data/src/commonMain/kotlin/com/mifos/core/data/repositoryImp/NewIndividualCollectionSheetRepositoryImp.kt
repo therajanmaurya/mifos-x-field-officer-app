@@ -12,9 +12,9 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.NewIndividualCollectionSheetRepository
-import com.mifos.core.network.DataManager
-import com.mifos.core.network.datamanager.DataManagerCollectionSheet
-import com.mifos.core.network.model.RequestCollectionSheetPayload
+import kpt.core.network.DataManager
+import kpt.core.network.collectionsheet.datamanager.DataManagerCollectionSheet
+import kpt.core.network.mifos.collectionsheet.dto.RequestCollectionSheetPayload
 import kpt.core.database.collectionsheet.entity.IndividualCollectionSheet
 import kpt.core.database.office.entity.OfficeEntity
 import kpt.core.database.staff.entity.StaffEntity

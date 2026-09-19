@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.repository
 
-import com.mifos.core.network.model.DeleteDataTablesDatatableAppTableIdDatatableIdResponse
+import kpt.core.network.mifos.datatable.dto.DeleteDataTablesDatatableAppTableIdDatatableIdResponse
 import kotlinx.serialization.json.JsonArray
 
 /**

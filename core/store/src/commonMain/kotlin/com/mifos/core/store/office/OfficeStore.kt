@@ -9,7 +9,7 @@
  */
 package com.mifos.core.store.office
 
-import com.mifos.core.network.services.OfficeService
+import kpt.core.network.mifos.office.api.OfficeApi
 import kpt.core.database.office.dao.OfficeDao
 import kpt.core.database.office.entity.OfficeEntity
 import kotlinx.coroutines.flow.first
@@ -24,7 +24,7 @@ import org.mobilenativefoundation.store.store5.Store
  * Offices — READ-CACHE archetype (`createStore`).
  *
  * The first vertical of the DataManager→Store5 collapse. It replaces the
- * `Repository → DataManagerOffice → { OfficeService , OfficeDaoHelper }` chain, in which the
+ * `Repository → DataManagerOffice → { OfficeApi , OfficeDaoHelper }` chain, in which the
  * Room branch was commented out and every read went to the network — so this store is not a
  * re-wrapping of the old path, it is the offline-first read that path intended.
  *
@@ -36,7 +36,7 @@ import org.mobilenativefoundation.store.store5.Store
 @StoreProvider(id = "offices")
 @CacheKey(name = "LIST", key = "offices")
 fun provideOfficeStore(
-    service: OfficeService,
+    service: OfficeApi,
     dao: OfficeDao,
 ): Store<Unit, List<OfficeEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { _: Unit -> service.allOffices().first() },

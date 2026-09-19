@@ -10,8 +10,8 @@
 package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.data.repository.SignatureRepository
-import com.mifos.core.network.GenericResponse
-import com.mifos.core.network.datamanager.DataManagerDocument
+import kpt.core.network.GenericResponse
+import kpt.core.network.document.datamanager.DataManagerDocument
 import io.ktor.client.request.forms.MultiPartFormDataContent
 
 /**

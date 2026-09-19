@@ -9,7 +9,7 @@
  */
 package com.mifos.core.store.group
 
-import com.mifos.core.network.services.GroupService
+import kpt.core.network.mifos.group.api.GroupApi
 import kpt.core.database.group.dao.GroupsDao
 import kpt.core.database.group.entity.GroupEntity
 import kotlinx.coroutines.flow.first
@@ -27,7 +27,7 @@ import org.mobilenativefoundation.store.store5.Store
 @StoreProvider(id = "groups")
 @CacheKey(name = "LIST", key = "groups")
 fun provideGroupStore(
-    service: GroupService,
+    service: GroupApi,
     dao: GroupsDao,
 ): Store<Unit, List<GroupEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { _: Unit ->

@@ -9,7 +9,7 @@
  */
 package com.mifos.core.store.charge
 
-import com.mifos.core.network.services.ChargeService
+import kpt.core.network.mifos.charge.api.ChargeApi
 import kpt.core.database.charge.dao.ChargeDao
 import kpt.core.database.charge.entity.ChargesEntity
 import kotlinx.coroutines.flow.first
@@ -34,7 +34,7 @@ import org.mobilenativefoundation.store.store5.Store
 @StoreProvider(id = "clientCharges")
 @CacheKey(fn = "forClient", key = "clientCharges:{clientId}", params = ["clientId:Int"])
 fun provideClientChargeStore(
-    service: ChargeService,
+    service: ChargeApi,
     dao: ChargeDao,
 ): Store<Int, List<ChargesEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { clientId: Int ->

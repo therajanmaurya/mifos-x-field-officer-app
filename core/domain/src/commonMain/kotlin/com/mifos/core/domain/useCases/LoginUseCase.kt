@@ -12,7 +12,7 @@ package com.mifos.core.domain.useCases
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.LoginRepository
-import com.mifos.core.network.model.PostAuthenticationResponse
+import kpt.core.network.mifos.auth.dto.PostAuthenticationResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

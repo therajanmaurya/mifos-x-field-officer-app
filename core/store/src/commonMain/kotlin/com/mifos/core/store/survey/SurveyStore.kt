@@ -9,7 +9,7 @@
  */
 package com.mifos.core.store.survey
 
-import com.mifos.core.network.services.SurveyService
+import kpt.core.network.mifos.survey.api.SurveyApi
 import kpt.core.database.survey.dao.SurveyDao
 import kpt.core.database.survey.entity.SurveyEntity
 import kotlinx.coroutines.flow.first
@@ -31,7 +31,7 @@ import org.mobilenativefoundation.store.store5.Store
 @StoreProvider(id = "surveys")
 @CacheKey(name = "LIST", key = "surveys")
 fun provideSurveyStore(
-    service: SurveyService,
+    service: SurveyApi,
     dao: SurveyDao,
 ): Store<Unit, List<SurveyEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { _: Unit -> service.allSurveys().first() },

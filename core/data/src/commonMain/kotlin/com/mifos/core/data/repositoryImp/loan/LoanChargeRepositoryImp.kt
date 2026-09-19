@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp.loan
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.loan.LoanChargeRepository
-import com.mifos.core.network.DataManager
+import kpt.core.network.DataManager
 import kpt.core.database.charge.entity.ChargesEntity
 import kotlinx.coroutines.flow.Flow
 

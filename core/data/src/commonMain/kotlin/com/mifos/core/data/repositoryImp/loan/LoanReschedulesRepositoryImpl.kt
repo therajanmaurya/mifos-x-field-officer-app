@@ -17,7 +17,7 @@ import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleRejec
 import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleRequest
 import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleResponse
 import com.mifos.core.model.objects.account.loan.reschedules.LoanRescheduleTemplate
-import com.mifos.core.network.datamanager.DataManagerLoan
+import kpt.core.network.loan.datamanager.DataManagerLoan
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

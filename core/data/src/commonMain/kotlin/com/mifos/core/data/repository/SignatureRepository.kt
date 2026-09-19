@@ -9,7 +9,7 @@
  */
 package com.mifos.core.data.repository
 
-import com.mifos.core.network.GenericResponse
+import kpt.core.network.GenericResponse
 import io.ktor.client.request.forms.MultiPartFormDataContent
 
 /**

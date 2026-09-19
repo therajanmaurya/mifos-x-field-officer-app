@@ -14,7 +14,7 @@ import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SavingsAccountRepository
 import com.mifos.core.model.objects.organisations.ProductSavings
 import com.mifos.core.model.objects.payloads.SavingsPayload
-import com.mifos.core.network.datamanager.DataManagerSavings
+import kpt.core.network.savings.datamanager.DataManagerSavings
 import kpt.core.database.client.entity.Savings
 import kpt.core.database.savings.entity.SavingProductsTemplate
 import kotlinx.coroutines.flow.Flow

@@ -15,7 +15,7 @@ import com.mifos.core.data.repository.AmountTransferRepository
 import com.mifos.core.model.objects.account.loan.transfer.AccountTransferRequest
 import com.mifos.core.model.objects.account.loan.transfer.AccountTransferResponse
 import com.mifos.core.model.objects.account.loan.transfer.AccountTransferTemplate
-import com.mifos.core.network.datamanager.DataManagerLoan
+import kpt.core.network.loan.datamanager.DataManagerLoan
 import kotlinx.coroutines.flow.Flow
 
 /**

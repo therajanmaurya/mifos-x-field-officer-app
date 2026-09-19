@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SyncLoanRepaymentTransactionRepository
-import com.mifos.core.network.datamanager.DataManagerLoan
+import kpt.core.network.loan.datamanager.DataManagerLoan
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
 import kpt.core.database.loan.entity.LoanRepaymentResponseEntity

@@ -10,7 +10,7 @@
 package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.data.repository.ClientDetailsEditRepository
-import com.mifos.core.network.datamanager.DataManagerClient
+import kpt.core.network.client.datamanager.DataManagerClient
 import kpt.core.database.client.entity.ClientPayloadEntity
 
 class ClientDetailsEditRepositoryImpl(

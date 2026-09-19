@@ -9,8 +9,8 @@
  */
 package com.mifos.core.store.note
 
-import com.mifos.core.network.mappers.note.toEntity
-import com.mifos.core.network.services.NoteService
+import kpt.core.network.mifos.note.mapper.toEntity
+import kpt.core.network.mifos.note.api.NoteApi
 import kpt.core.database.note.dao.NoteDao
 import kpt.core.database.note.entity.NoteEntity
 import kotlinx.coroutines.flow.first
@@ -32,7 +32,7 @@ import org.mobilenativefoundation.store.store5.Store
 @StoreProvider(id = "clientNotes")
 @CacheKey(fn = "forClient", key = "clientNotes:{clientId}", params = ["clientId:Long"])
 fun provideNoteStore(
-    service: NoteService,
+    service: NoteApi,
     dao: NoteDao,
 ): Store<Long, List<NoteEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { clientId: Long ->

@@ -12,7 +12,7 @@ package com.mifos.core.data.repositoryImp
 import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.GroupDetailsRepository
-import com.mifos.core.network.datamanager.DataManagerGroups
+import kpt.core.network.group.datamanager.DataManagerGroups
 import kpt.core.database.group.entity.GroupAccounts
 import kpt.core.database.group.entity.GroupEntity
 import kpt.core.database.group.entity.GroupWithAssociations

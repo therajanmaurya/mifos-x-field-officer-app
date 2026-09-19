@@ -10,7 +10,7 @@
 package com.mifos.core.data.repositoryImp
 
 import com.mifos.core.data.repository.CreateNewCenterRepository
-import com.mifos.core.network.datamanager.DataManagerCenter
+import kpt.core.network.center.datamanager.DataManagerCenter
 import kpt.core.database.center.entity.CenterPayloadEntity
 
 /**

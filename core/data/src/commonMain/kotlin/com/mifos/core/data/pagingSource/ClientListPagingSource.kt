@@ -11,7 +11,7 @@ package com.mifos.core.data.pagingSource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.mifos.core.network.datamanager.DataManagerClient
+import kpt.core.network.client.datamanager.DataManagerClient
 import kpt.core.database.client.entity.ClientEntity
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

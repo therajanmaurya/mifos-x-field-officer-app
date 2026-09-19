@@ -9,7 +9,7 @@
  */
 package com.mifos.core.store.client
 
-import com.mifos.core.network.services.ClientService
+import kpt.core.network.mifos.client.api.ClientApi
 import kpt.core.database.client.dao.ClientDao
 import kpt.core.database.client.entity.ClientEntity
 import kotlinx.coroutines.flow.first
@@ -30,7 +30,7 @@ import org.mobilenativefoundation.store.store5.Store
 @StoreProvider(id = "clients")
 @CacheKey(name = "LIST", key = "clients")
 fun provideClientStore(
-    service: ClientService,
+    service: ClientApi,
     dao: ClientDao,
 ): Store<Unit, List<ClientEntity>> = StoreFactory.createStore(
     fetcher = Fetcher.of { _: Unit ->

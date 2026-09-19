@@ -13,8 +13,8 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.CenterDetailsRepository
 import com.mifos.core.model.objects.groups.CenterInfo
-import com.mifos.core.network.datamanager.DataManagerCenter
-import com.mifos.core.network.datamanager.DataManagerRunReport
+import kpt.core.network.center.datamanager.DataManagerCenter
+import kpt.core.network.report.datamanager.DataManagerRunReport
 import kpt.core.database.center.entity.CenterWithAssociations
 import kotlinx.coroutines.flow.Flow
 

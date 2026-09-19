@@ -13,8 +13,8 @@ import com.mifos.core.common.utils.DataState
 import com.mifos.core.common.utils.asDataStateFlow
 import com.mifos.core.data.repository.SyncSavingsAccountTransactionRepository
 import com.mifos.core.model.objects.account.saving.SavingsAccountTransactionResponse
-import com.mifos.core.network.datamanager.DataManagerLoan
-import com.mifos.core.network.datamanager.DataManagerSavings
+import kpt.core.network.loan.datamanager.DataManagerLoan
+import kpt.core.network.savings.datamanager.DataManagerSavings
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
 import kotlinx.coroutines.flow.Flow

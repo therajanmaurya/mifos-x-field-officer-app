@@ -11,7 +11,7 @@ package com.mifos.core.data.mappers.client.note
 
 import com.mifos.core.model.objects.note.CreateNoteInput
 import com.mifos.core.model.objects.note.UpdateNoteInput
-import com.mifos.core.network.dto.note.NoteRequestDto
+import kpt.core.network.mifos.note.dto.NoteRequestDto
 
 fun CreateNoteInput.toDto(): NoteRequestDto = NoteRequestDto(
     note = note,
