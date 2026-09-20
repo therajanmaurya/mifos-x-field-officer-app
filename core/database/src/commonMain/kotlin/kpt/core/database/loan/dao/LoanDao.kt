@@ -25,6 +25,9 @@ import androidx.room3.Transaction
 import kotlinx.coroutines.flow.map
 import kpt.core.database.loan.entity.ActualDisbursementDateEntity
 import kpt.core.database.utils.getCurrentTimeInMillis
+import androidx.room3.Upsert
+import kpt.core.database.loan.entity.LoanTemplateCacheEntity
+import kpt.core.database.loan.entity.LoanDisburseTemplateCacheEntity
 
 @DbDao
 @Dao
@@ -145,4 +148,27 @@ interface LoanDao {
      */
     @Query("SELECT * FROM LoanRepaymentRequestEntity WHERE loanId = :loanId LIMIT 1")
     fun observeLoanRepaymentRequest(loanId: Int): Flow<LoanRepaymentRequestEntity?>
+
+    // ── Application + disbursement template caches ────────────────────────────────
+    //
+    // Both are payload-blob rows: an officer out of signal still needs the option lists to fill in
+    // an application or a disbursement, and those lists only ever travel whole.
+
+    @Query("SELECT * FROM loan_application_templates WHERE clientId = :clientId AND productId = :productId LIMIT 1")
+    fun observeLoanTemplate(clientId: Int, productId: Int): Flow<LoanTemplateCacheEntity?>
+
+    @Upsert
+    suspend fun upsertLoanTemplate(template: LoanTemplateCacheEntity)
+
+    @Query("SELECT * FROM loan_disburse_templates WHERE loanId = :loanId LIMIT 1")
+    fun observeLoanDisburseTemplate(loanId: Int): Flow<LoanDisburseTemplateCacheEntity?>
+
+    @Upsert
+    suspend fun upsertLoanDisburseTemplate(template: LoanDisburseTemplateCacheEntity)
+
+    @Query("DELETE FROM loan_application_templates")
+    suspend fun deleteAllLoanTemplates()
+
+    @Query("DELETE FROM loan_disburse_templates")
+    suspend fun deleteAllLoanDisburseTemplates()
 }

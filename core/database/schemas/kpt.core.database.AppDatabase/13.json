@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 13,
-    "identityHash": "386dc6aa7be0179754fb8e9c51544cd2",
+    "identityHash": "4cf591d36abec58cb6e54b9467c5dd8b",
     "entities": [
       {
         "tableName": "store_bookkeeper",
@@ -2470,6 +2470,36 @@
         }
       },
       {
+        "tableName": "loan_disburse_templates",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`loanId` INTEGER NOT NULL, `payload` TEXT NOT NULL, `fetchedAtMs` INTEGER NOT NULL, PRIMARY KEY(`loanId`))",
+        "fields": [
+          {
+            "fieldPath": "loanId",
+            "columnName": "loanId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payload",
+            "columnName": "payload",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fetchedAtMs",
+            "columnName": "fetchedAtMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "loanId"
+          ]
+        }
+      },
+      {
         "tableName": "LoanRepaymentRequestEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timeStamp` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `loanId` INTEGER, `errorMessage` TEXT, `dateFormat` TEXT, `locale` TEXT, `transactionDate` TEXT, `transactionAmount` TEXT, `paymentTypeId` TEXT, `note` TEXT, `accountNumber` TEXT, `checkNumber` TEXT, `routingCode` TEXT, `receiptNumber` TEXT, `bankNumber` TEXT)",
         "fields": [
@@ -2733,6 +2763,43 @@
           "autoGenerate": true,
           "columnNames": [
             "id"
+          ]
+        }
+      },
+      {
+        "tableName": "loan_application_templates",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`clientId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `payload` TEXT NOT NULL, `fetchedAtMs` INTEGER NOT NULL, PRIMARY KEY(`clientId`, `productId`))",
+        "fields": [
+          {
+            "fieldPath": "clientId",
+            "columnName": "clientId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productId",
+            "columnName": "productId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payload",
+            "columnName": "payload",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fetchedAtMs",
+            "columnName": "fetchedAtMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "clientId",
+            "productId"
           ]
         }
       },
@@ -4781,7 +4848,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '386dc6aa7be0179754fb8e9c51544cd2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4cf591d36abec58cb6e54b9467c5dd8b')"
     ]
   }
 }
