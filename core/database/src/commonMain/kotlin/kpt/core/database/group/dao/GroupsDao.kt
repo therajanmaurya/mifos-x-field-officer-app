@@ -21,6 +21,10 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Update
+import androidx.room3.Transaction
+import kotlinx.coroutines.flow.map
+import kpt.core.database.group.entity.GroupAccounts
+import kpt.core.database.group.entity.GroupDateEntity
 
 /**
  * Created by Pronay Sarker on 15/02/2025 (1:07 PM)
@@ -64,4 +68,44 @@ interface GroupsDao {
 
     @Query("SELECT * FROM SavingsAccount WHERE groupId = :groupId")
     fun getSavingsAccountsByGroupId(groupId: Int): Flow<List<SavingsAccountEntity>>
+
+    /** Persist a group, deriving its split date columns. Was `GroupsDaoHelper.saveGroup`. */
+    suspend fun saveGroupWithDate(group: GroupEntity) {
+        val id = group.id
+        val date = if (group.activationDate.size >= 3 && id != null) {
+            GroupDateEntity(
+                groupId = id.toLong(),
+                chargeId = 0,
+                day = group.activationDate[0] ?: 0,
+                month = group.activationDate[1] ?: 0,
+                year = group.activationDate[2] ?: 0,
+            )
+        } else {
+            null
+        }
+        insertGroup(if (date != null) group.copy(groupDate = date) else group)
+    }
+
+    /**
+     * Read a group back with `activationDate` rebuilt from its columns — the inverse of
+     * [saveGroupWithDate], so a stored group round-trips. Was `GroupsDaoHelper.getGroup`.
+     */
+    fun observeGroupWithDate(groupId: Int): Flow<GroupEntity> =
+        getGroupById(groupId).map { group ->
+            group.copy(
+                activationDate = listOf(
+                    group.groupDate?.day ?: 0,
+                    group.groupDate?.month ?: 0,
+                    group.groupDate?.year ?: 0,
+                ),
+            )
+        }
+
+    /** Was `GroupsDaoHelper.saveGroupAccounts` — now atomic across both tables. */
+    @Transaction
+    suspend fun saveGroupAccounts(groupAccounts: GroupAccounts, groupId: Int) {
+        val owner = groupId.toLong()
+        groupAccounts.loanAccounts.forEach { insertLoanAccount(it.copy(groupId = owner)) }
+        groupAccounts.savingsAccounts.forEach { insertSavingsAccount(it.copy(groupId = owner)) }
+    }
 }

@@ -21,6 +21,10 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Update
+import androidx.room3.Transaction
+import kotlinx.coroutines.flow.map
+import kpt.core.database.loan.entity.ActualDisbursementDateEntity
+import kpt.core.database.utils.getCurrentTimeInMillis
 
 @DbDao
 @Dao
@@ -58,4 +62,80 @@ interface LoanDao {
 
     @Query("DELETE FROM LoanRepaymentTemplate WHERE loanId = :loanId")
     suspend fun deleteLoanRepaymentByLoanId(loanId: Int)
+
+    /**
+     * Persist a loan, stamping its id onto the summary and timeline rows and splitting the
+     * timeline's `actualDisbursementDate` into columns. Was `LoanDaoHelper.saveLoanById`.
+     */
+    @Transaction
+    suspend fun saveLoanWithAssociationsShaped(loan: LoanWithAssociationsEntity) {
+        saveLoanWithAssociations(
+            loan.copy(
+                summary = loan.summary.copy(loanId = loan.id),
+                timeline = loan.timeline.copy(
+                    loanId = loan.id,
+                    actualDisburseDate = loan.timeline.actualDisbursementDate?.let {
+                        ActualDisbursementDateEntity(
+                            loanId = loan.id,
+                            year = it.getOrNull(0),
+                            month = it.getOrNull(1),
+                            date = it.getOrNull(2),
+                        )
+                    },
+                ),
+            ),
+        )
+    }
+
+    /**
+     * Read a loan back with `actualDisbursementDate` rebuilt — the inverse of
+     * [saveLoanWithAssociationsShaped]. Was `LoanDaoHelper.getLoanById`.
+     */
+    fun observeLoanWithAssociationsShaped(loanId: Int): Flow<LoanWithAssociationsEntity?> =
+        getLoanById(loanId).map { loan ->
+            loan?.copy(
+                timeline = loan.timeline.copy(
+                    actualDisbursementDate = listOf(
+                        loan.timeline.actualDisburseDate?.year,
+                        loan.timeline.actualDisburseDate?.month,
+                        loan.timeline.actualDisburseDate?.date,
+                    ),
+                ),
+            )
+        }
+
+    /**
+     * Queue an offline repayment, stamping the loan and the submission time (seconds, which is what
+     * the sync payload expects). Was `LoanDaoHelper.saveLoanRepaymentTransaction`.
+     */
+    suspend fun saveLoanRepaymentTransaction(loanId: Int, request: LoanRepaymentRequestEntity) {
+        insertLoanRepaymentTransaction(
+            request.copy(loanId = loanId, timeStamp = getCurrentTimeInMillis() / 1000),
+        )
+    }
+
+    /**
+     * Persist a repayment template with its payment-type options.
+     * Was `LoanDaoHelper.saveLoanRepaymentTemplate` — now atomic, so the template cannot land
+     * without the options a repayment form needs to render.
+     */
+    @Transaction
+    suspend fun saveLoanRepaymentTemplateFor(
+        loanId: Int,
+        template: LoanRepaymentTemplateEntity,
+    ): LoanRepaymentTemplateEntity {
+        val stamped = template.copy(loanId = loanId)
+        stamped.paymentTypeOptions?.forEach { insertPaymentTypeOption(it) }
+        insertLoanRepaymentTemplate(stamped)
+        return stamped
+    }
+
+    /**
+     * Read a repayment template back with its payment-type options attached — they live in a
+     * separate table. Was `LoanDaoHelper.getLoanRepayTemplate`.
+     */
+    fun observeLoanRepaymentTemplate(loanId: Int): Flow<LoanRepaymentTemplateEntity?> =
+        getPaymentTypeOptions().map { options ->
+            getLoanRepaymentTemplate(loanId)?.copy(paymentTypeOptions = options.toMutableList())
+        }
 }

@@ -34,6 +34,9 @@ import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
 import androidx.room3.Update
+import kotlinx.coroutines.flow.map
+import kpt.core.database.client.entity.ClientAccounts
+import kpt.core.database.client.entity.ClientDateEntity
 
 @DbDao
 @Dao
@@ -219,5 +222,99 @@ interface ClientDao {
         if (valid.isEmpty()) return
         valid.mapNotNull { it.clientId }.distinct().forEach { deleteIdentifiersByClientId(it) }
         insertIdentifiers(valid)
+    }
+
+    /** Persist a client, deriving its split date columns. Was `ClientDaoHelper.saveClient`. */
+    suspend fun saveClientWithDate(client: ClientEntity) {
+        val date = if (client.activationDate.size >= 3) {
+            ClientDateEntity(
+                clientId = client.id,
+                chargeId = 0,
+                day = client.activationDate[0] ?: 0,
+                month = client.activationDate[1] ?: 0,
+                year = client.activationDate[2] ?: 0,
+            )
+        } else {
+            null
+        }
+        insertClient(if (date != null) client.copy(clientDate = date) else client)
+    }
+
+    /**
+     * Read a client back with `activationDate` rebuilt — the inverse of [saveClientWithDate].
+     * Was `ClientDaoHelper.getClient`.
+     */
+    fun observeClientWithDate(clientId: Int): Flow<ClientEntity?> =
+        getClientByClientId(clientId).map { client ->
+            client?.copy(
+                activationDate = listOf(
+                    client.clientDate?.day,
+                    client.clientDate?.month,
+                    client.clientDate?.year,
+                ),
+            )
+        }
+
+    /** Was `ClientDaoHelper.saveClientAccounts` — now atomic across both tables. */
+    @Transaction
+    suspend fun saveClientAccounts(clientAccounts: ClientAccounts, clientId: Int) {
+        val owner = clientId.toLong()
+        clientAccounts.loanAccounts.forEach { insertLoanAccount(it.copy(clientId = owner)) }
+        clientAccounts.savingsAccounts.forEach { insertSavingsAccount(it.copy(clientId = owner)) }
+    }
+
+    /**
+     * Fan one client template out across the option, datatable and header/value tables.
+     *
+     * Was `ClientDaoHelper.saveClientTemplate`. Two things changed:
+     *
+     * 1. It is a transaction. The original wrote 8+ tables unguarded, so a mid-way failure left the
+     *    template rows disagreeing with the option rows.
+     * 2. The datatable tables are cleared ONCE, before the loop. The original called
+     *    `deleteDataTables()` / `deleteColumnHeaders()` / `deleteColumnValues()` INSIDE
+     *    `for (dataTable in ...)`, so every iteration wiped what the previous one wrote and only
+     *    the last datatable survived.
+     *
+     * The `optionType` stamp is load-bearing: gender, client-type and classification options all
+     * share one `OptionsEntity` table and are told apart only by that discriminator.
+     */
+    @Transaction
+    suspend fun saveClientTemplate(clientsTemplate: ClientsTemplateEntity) {
+        insertClientsTemplate(clientsTemplate)
+        clientsTemplate.officeOptions?.let { insertOfficeOptions(it) }
+        clientsTemplate.staffOptions?.let { insertStaffOptions(it) }
+        clientsTemplate.savingProductOptions?.let { insertSavingProductOptions(it) }
+        clientsTemplate.genderOptions?.forEach { insertOption(it.copy(optionType = GENDER_OPTIONS)) }
+        clientsTemplate.clientTypeOptions?.forEach { insertOption(it.copy(optionType = CLIENT_TYPE_OPTIONS)) }
+        clientsTemplate.clientClassificationOptions?.forEach {
+            insertOption(it.copy(optionType = CLIENT_CLASSIFICATION_OPTIONS))
+        }
+        clientsTemplate.clientLegalFormOptions?.let { insertInterestTypes(it) }
+
+        clientsTemplate.dataTables?.let { dataTables ->
+            deleteDataTables()
+            deleteColumnHeaders()
+            deleteColumnValues()
+            dataTables.forEach { dataTable ->
+                insertDataTable(dataTable)
+                dataTable.columnHeaderData.forEach { header ->
+                    insertColumnHeader(header.copy(registeredTableName = dataTable.applicationTableName))
+                    header.columnValues.forEach { value ->
+                        insertColumnValue(value.copy(registeredTableName = dataTable.registeredTableName))
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Drop an offline client payload together with the datatable rows queued alongside it.
+     * Was `ClientDaoHelper.deleteAndUpdatePayloads` — now atomic, so a half-deleted payload cannot
+     * be replayed on the next sync.
+     */
+    @Transaction
+    suspend fun deleteClientPayloadWithData(id: Int, clientCreationTime: Long) {
+        deleteClientPayloadById(id)
+        deleteDataTablePayloadByCreationTime(clientCreationTime)
     }
 }

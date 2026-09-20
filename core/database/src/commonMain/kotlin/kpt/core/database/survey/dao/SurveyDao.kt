@@ -44,4 +44,18 @@ interface SurveyDao {
 
     @Query("SELECT * FROM ResponseDatas WHERE id = :questionId ORDER BY sequenceNo ASC")
     fun getResponseDatas(questionId: Int): Flow<List<ResponseDatasEntity>>
+
+    /** Stamp the owning survey onto question data before persisting. Was `SurveyDaoHelper`. */
+    suspend fun saveQuestionDataFor(surveyId: Int, questionData: QuestionDatasEntity): QuestionDatasEntity {
+        val stamped = questionData.copy(surveyId = surveyId)
+        insertQuestionData(stamped)
+        return stamped
+    }
+
+    /** Stamp the owning question onto response data before persisting. Was `SurveyDaoHelper`. */
+    suspend fun saveResponseDataFor(questionId: Int, responseData: ResponseDatasEntity): ResponseDatasEntity {
+        val stamped = responseData.copy(id = questionId)
+        insertResponseData(stamped)
+        return stamped
+    }
 }
