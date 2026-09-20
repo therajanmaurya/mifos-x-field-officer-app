@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 13,
-    "identityHash": "4cf591d36abec58cb6e54b9467c5dd8b",
+    "identityHash": "615468619af122ab315808bb1bd83784",
     "entities": [
       {
         "tableName": "store_bookkeeper",
@@ -173,6 +173,36 @@
           "autoGenerate": true,
           "columnNames": [
             "id"
+          ]
+        }
+      },
+      {
+        "tableName": "api_response_cache",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cacheKey` TEXT NOT NULL, `payload` TEXT NOT NULL, `fetchedAtMs` INTEGER NOT NULL, PRIMARY KEY(`cacheKey`))",
+        "fields": [
+          {
+            "fieldPath": "cacheKey",
+            "columnName": "cacheKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payload",
+            "columnName": "payload",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fetchedAtMs",
+            "columnName": "fetchedAtMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cacheKey"
           ]
         }
       },
@@ -4848,7 +4878,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4cf591d36abec58cb6e54b9467c5dd8b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '615468619af122ab315808bb1bd83784')"
     ]
   }
 }
