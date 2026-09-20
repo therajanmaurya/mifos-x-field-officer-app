@@ -5,59 +5,93 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.datastore.prefs
 
+import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
+import com.russhwolf.settings.serialization.decodeValueOrNull
+import com.russhwolf.settings.serialization.encodeValue
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
 import kpt.core.base.common.manager.DispatcherManager
+import kpt.core.model.objects.users.User
+import kpt.core.model.utils.ServerConfig
+import kpt.core.model.utils.getInstanceUrl
 
 /**
- * Fork implementation of [ProjectPreferencesRepository]. `owner: fork` — never synced.
+ * Fork preferences, delegating every framework preference to the template's implementation.
  *
- * `by delegate` forwards every framework preference to the template's own implementation, so this
- * class starts out complete and STAYS complete when the template ADDS a preference: the new member
- * arrives on the supertype and the delegate already satisfies it. No edit here, no compile break.
+ * The keys are namespaced `fineract.*` per the seam's contract, so a future framework preference
+ * cannot collide with one of these. That does mean they do not match the pre-port app's `user_details`
+ * / `server_config` keys — deliberate: this port rebuilds the local database too, so an upgrading
+ * install re-authenticates regardless, and inheriting ambiguous top-level keys into the shared
+ * Settings store would be the thing that is hard to undo later.
  *
- * It also receives the same storage handles the template's impl gets — [plainSettings],
- * [secureSettings] and [dispatcher] — because delegation alone gives you READ access to framework
- * preferences and nowhere to put your OWN. A fork needs somewhere to write.
- *
- * They are public `val`s, mirroring [UserPreferencesRepositoryImpl]: the whole point of this class is
- * that a fork fills it in, so the handles it is handed should be reachable rather than sealed off in
- * a class the fork owns anyway. It also means the compiler does not warn about unused private
- * members while the body is still empty.
- *
- * ## Add a preference
- * Declare it on [ProjectPreferencesRepository], then implement it here against the settings:
- * ```
- * override val observeMyFlag: Flow<Boolean> =
- *     MutableStateFlow(plainSettings.getBoolean(KEY_MY_FLAG, false))
- *
- * override suspend fun setMyFlag(enabled: Boolean) = withContext(dispatcher.io) {
- *     plainSettings.putBoolean(KEY_MY_FLAG, enabled)
- * }
- * ```
- * Use [secureSettings] for anything sensitive — it is encrypted at rest on every platform that can
- * be (Android EncryptedSharedPreferences, iOS/native Keychain, desktop AES-GCM). Web is browser
- * storage and is NOT encrypted; do not put a credential there.
- *
- * Namespace your keys (e.g. a `project.` prefix) so a future framework preference cannot collide
- * with yours on the shared `Settings` instances.
- *
- * ## Alter a framework preference
- * `override` it — the explicit member wins over the delegated one, and `delegate.…` still reaches
- * the framework behaviour underneath:
- * ```
- * override suspend fun setDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
- *     analytics.log("theme_changed")
- *     delegate.setDarkThemeConfig(darkThemeConfig)
- * }
- * ```
+ * The user record goes in `secureSettings` because it carries the encoded authentication key;
+ * the server choice is not a secret and goes in `plainSettings`.
  */
+@OptIn(ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
 class ProjectPreferencesRepositoryImpl(
     val delegate: UserPreferencesRepository,
     val plainSettings: Settings,
     val secureSettings: Settings,
     val dispatcher: DispatcherManager,
-) : ProjectPreferencesRepository, UserPreferencesRepository by delegate
+) : ProjectPreferencesRepository, UserPreferencesRepository by delegate {
+
+    private val _serverConfig = MutableStateFlow(
+        plainSettings.decodeValueOrNull(serializer = ServerConfig.serializer(), key = SERVER_CONFIG) ?: ServerConfig.DEFAULT,
+    )
+    override val serverConfig: StateFlow<ServerConfig> = _serverConfig.asStateFlow()
+
+    private val _fineractUser = MutableStateFlow(
+        secureSettings.decodeValueOrNull(serializer = User.serializer(), key = FINERACT_USER) ?: User(),
+    )
+    override val fineractUser: StateFlow<User> = _fineractUser.asStateFlow()
+
+    override val instanceUrl: String
+        get() = _serverConfig.value.getInstanceUrl()
+
+    override val authHeader: String
+        get() = _fineractUser.value.base64EncodedAuthenticationKey?.let { "Basic $it" }.orEmpty()
+
+    override suspend fun updateServerConfig(serverConfig: ServerConfig) {
+        withContext(dispatcher.io) {
+            plainSettings.encodeValue(
+                serializer = ServerConfig.serializer(),
+                key = SERVER_CONFIG,
+                value = serverConfig,
+            )
+            _serverConfig.value = serverConfig
+        }
+    }
+
+    override suspend fun updateFineractUser(user: User) {
+        withContext(dispatcher.io) {
+            secureSettings.encodeValue(serializer = User.serializer(), key = FINERACT_USER, value = user)
+            _fineractUser.value = user
+            // Keep the framework's token slot in step — the network layer reads it from there, and a
+            // stale token outliving the user it belongs to is the failure this pairing prevents.
+            delegate.setAuthToken(user.base64EncodedAuthenticationKey?.let { "Basic $it" })
+            delegate.setIsAuthenticated(user.isAuthenticated)
+        }
+    }
+
+    override suspend fun clearFineractUser() {
+        withContext(dispatcher.io) {
+            secureSettings.encodeValue(serializer = User.serializer(), key = FINERACT_USER, value = User())
+            _fineractUser.value = User()
+            delegate.setAuthToken(null)
+            delegate.setIsAuthenticated(false)
+        }
+    }
+
+    private companion object {
+        const val SERVER_CONFIG = "fineract.server_config"
+        const val FINERACT_USER = "fineract.user"
+    }
+}

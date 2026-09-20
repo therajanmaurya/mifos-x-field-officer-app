@@ -5,47 +5,50 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.datastore.prefs
 
+import kotlinx.coroutines.flow.StateFlow
+import kpt.core.model.objects.users.User
+import kpt.core.model.utils.ServerConfig
+
 /**
- * THE FORK'S preferences. Extends the framework's — this is yours to fill.
+ * The fork's preference surface: everything the framework has no concept of.
  *
- * ## The split
- * [UserPreferencesRepository] and its impl are `owner: template`: the framework DESIGNS and MANAGES
- * those preferences (theme, language, auth, passcode, biometrics, onboarding) and keeps improving
- * them. They FULL-COPY on a sync, so a fork must never edit them — an accessor added there
- * disappears on the next adopt while its value stays on disk.
- *
- * This file and [ProjectPreferencesRepositoryImpl] are `owner: fork` and are never copied. Extending
- * rather than paralleling means a fork gets all framework preferences for free and adds its own
- * beside them, through ONE injected type.
- *
- * ## What you get by default
- * Every framework preference, inherited. Inject [ProjectPreferencesRepository] and
- * `userData`, `observeLanguage`, `setDarkThemeConfig`… are all there — the impl delegates them to
- * the template's, so the template can change how any of them works and this file never notices.
- *
- * ## Adding your own
- * ```
- * interface ProjectPreferencesRepository : UserPreferencesRepository {
- *     val observeMyFlag: Flow<Boolean>
- *     suspend fun setMyFlag(enabled: Boolean)
- * }
- * ```
- *
- * ## Altering a framework one
- * Override it in [ProjectPreferencesRepositoryImpl] — delegation supplies the default, an explicit
- * `override` wins. The template's own implementation stays untouched and keeps evolving:
- * ```
- * override suspend fun setDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
- *     analytics.log("theme_changed")
- *     delegate.setDarkThemeConfig(darkThemeConfig)
- * }
- * ```
- *
- * Framework preferences cannot be REMOVED — the framework reads them. Inheritance makes that
- * structural rather than a rule: drop one and this interface no longer satisfies its supertype.
+ * Inheritance is the contract — a framework preference cannot be dropped without a compile error,
+ * and anything declared here is additive. What belongs here is only what is Fineract-specific:
+ * WHICH server this install talks to, and WHO is signed in to it. Theme, language, passcode,
+ * onboarding and the auth-token slot already exist on [UserPreferencesRepository] and must be used
+ * from there rather than re-declared — the fork's old datastore carried its own parallel copies of
+ * all four, which is how they drifted.
  */
-interface ProjectPreferencesRepository : UserPreferencesRepository
+interface ProjectPreferencesRepository : UserPreferencesRepository {
+
+    /** Which Fineract instance this install talks to — protocol, host, port and tenant. */
+    val serverConfig: StateFlow<ServerConfig>
+
+    /** Resolved base URL for [serverConfig], the value the network layer reads. */
+    val instanceUrl: String
+
+    /**
+     * The signed-in Fineract user. Distinct from [userData], which is the framework's device-level
+     * preference record — this is the server's account object (office, staff, roles, permissions).
+     */
+    val fineractUser: StateFlow<User>
+
+    /**
+     * `Basic <key>` for the current [fineractUser], or empty when signed out.
+     *
+     * Derived rather than stored: Fineract returns the encoded key as part of authentication, so a
+     * second copy in preferences could disagree with the user record it came from.
+     */
+    val authHeader: String
+
+    suspend fun updateServerConfig(serverConfig: ServerConfig)
+
+    suspend fun updateFineractUser(user: User)
+
+    /** Sign out of Fineract, leaving device preferences (theme, language) intact. */
+    suspend fun clearFineractUser()
+}

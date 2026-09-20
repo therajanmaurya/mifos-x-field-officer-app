@@ -9,7 +9,6 @@
  */
 package com.mifos.core.data.repositoryImp
 
-import kpt.core.datastore.UserPreferencesRepository
 import com.russhwolf.settings.Settings
 import org.mifos.authenticator.passcode.PasscodeStorageAdapter
 
@@ -22,8 +21,16 @@ const val MIFOS_PASSCODE = "com.mifos.passcode"
  * `null` for both the "key absent" and "value blank" cases so the manager's
  * consumer logic can treat them uniformly as "no passcode set."
  */
+/**
+ * TODO(phase-04): fold into `ProjectPreferencesRepository` — the template already stores a passcode
+ *  on the user record via `setPasscode`/`passcode`, which lives in SECURE settings. This adapter
+ *  writes its own key into whichever `Settings` is injected, so the app currently has two passcode
+ *  homes and this one is not guaranteed to be the secure store.
+ *
+ * The unused `UserPreferencesRepository` constructor parameter was dropped with the fork's legacy
+ * datastore: it was injected and never read.
+ */
 class PasscodeStorageAdapterImpl(
-    private val userPreferencesRepository: UserPreferencesRepository,
     private val settings: Settings,
 ) : PasscodeStorageAdapter {
 
