@@ -19,7 +19,7 @@ import kpt.core.model.objects.noncoreobjects.IdentifierPayload
 import kpt.core.model.objects.noncoreobjects.IdentifierTemplate
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.client.datamanager.DataManagerIdentifiers
-import kpt.core.database.client.helper.ClientDaoHelper
+import kpt.core.database.client.dao.ClientDao
 import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
@@ -30,7 +30,7 @@ import kotlin.coroutines.cancellation.CancellationException
  */
 class ClientIdentifiersRepositoryImp(
     private val dataManagerIdentifiers: DataManagerIdentifiers,
-    private val clientDaoHelper: ClientDaoHelper,
+    private val clientDao: ClientDao,
 ) : ClientIdentifiersRepository {
 
     override fun getClientListIdentifiers(clientId: Long): Flow<DataState<List<Identifier>>> {
@@ -42,7 +42,7 @@ class ClientIdentifiersRepositoryImp(
                         ClientIdentifierMapper.mapFromEntity(it.copy(clientId = clientId.toInt()))
                     }
                     try {
-                        clientDaoHelper.insertIdentifiers(entities)
+                        clientDao.replaceIdentifiersForClients(entities)
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: Throwable) {

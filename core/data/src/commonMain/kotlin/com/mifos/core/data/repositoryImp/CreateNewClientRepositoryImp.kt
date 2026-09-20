@@ -26,7 +26,7 @@ import kpt.core.database.client.entity.ClientPayloadEntity
 import kpt.core.database.office.entity.OfficeEntity
 import kpt.core.database.staff.entity.StaffEntity
 import kpt.core.database.client.entity.ClientsTemplateEntity
-import kpt.core.database.client.helper.ClientDaoHelper
+import kpt.core.database.client.dao.ClientDao
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import kotlinx.coroutines.flow.Flow
 import kotlin.coroutines.cancellation.CancellationException
@@ -38,7 +38,7 @@ class CreateNewClientRepositoryImp(
     private val dataManagerClient: DataManagerClient,
     private val dataManagerOffices: DataManagerOffices,
     private val dataManagerStaff: DataManagerStaff,
-    private val clientDaoHelper: ClientDaoHelper,
+    private val clientDao: ClientDao,
 ) : CreateNewClientRepository {
 
     override fun clientTemplate(): Flow<DataState<ClientsTemplateEntity>> {
@@ -76,13 +76,13 @@ class CreateNewClientRepositoryImp(
         val addresses = dataManagerClient.getClientAddresses(clientId = clientId)
 
         try {
-            clientDaoHelper.deleteAddressesByClientId(clientId)
+            clientDao.deleteAddressesByClientId(clientId)
 
             if (addresses.isNotEmpty()) {
                 val roomEntities = addresses.map {
                     ClientAddressMapper.mapFromEntity(it.copy(clientID = clientId))
                 }
-                clientDaoHelper.insertAddresses(roomEntities)
+                clientDao.insertAddresses(roomEntities)
             }
         } catch (e: CancellationException) {
             throw e

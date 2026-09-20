@@ -32,6 +32,7 @@ import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
+import androidx.room3.Transaction
 import androidx.room3.Update
 
 @DbDao
@@ -202,5 +203,21 @@ interface ClientDao {
         const val GENDER_OPTIONS = "genderOptions"
         const val CLIENT_TYPE_OPTIONS = "clientTypeOptions"
         const val CLIENT_CLASSIFICATION_OPTIONS = "clientClassificationOptions"
+    }
+
+    /**
+     * Replace every identifier belonging to the touched clients.
+     *
+     * Was `ClientDaoHelper.insertIdentifiers`, which hand-rolled a backup/restore around the
+     * delete+insert to fake atomicity — reading every row back, then re-inserting it from memory if
+     * the write threw. `@Transaction` is that guarantee for free, and a real rollback rather than a
+     * best-effort one (the hand-rolled restore could itself throw, which it only logged).
+     */
+    @Transaction
+    suspend fun replaceIdentifiersForClients(identifiers: List<ClientIdentifierEntity>) {
+        val valid = identifiers.filter { it.clientId != null }
+        if (valid.isEmpty()) return
+        valid.mapNotNull { it.clientId }.distinct().forEach { deleteIdentifiersByClientId(it) }
+        insertIdentifiers(valid)
     }
 }

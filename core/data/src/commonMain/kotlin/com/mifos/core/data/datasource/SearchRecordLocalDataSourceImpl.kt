@@ -13,13 +13,13 @@ import kpt.core.common.utils.Constants
 import kpt.core.model.objects.searchrecord.GenericSearchRecord
 import kpt.core.model.objects.searchrecord.RecordType
 import kpt.core.database.client.entity.ClientAddressEntity
-import kpt.core.database.client.helper.ClientDaoHelper
+import kpt.core.database.client.dao.ClientDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class SearchRecordLocalDataSourceImpl(
-    private val clientDaoHelper: ClientDaoHelper,
+    private val clientDao: ClientDao,
 ) : SearchRecordLocalDataSource {
 
     override fun searchRecords(
@@ -36,7 +36,7 @@ class SearchRecordLocalDataSourceImpl(
     private fun searchAddressesLocal(query: String): Flow<List<GenericSearchRecord>> {
         val sanitized = query.replace("%", "\\%").replace("_", "\\_")
         val fuzzyQuery = "%$sanitized%"
-        return clientDaoHelper.searchAddressesByQuery(fuzzyQuery)
+        return clientDao.searchAddressesByQuery(fuzzyQuery)
             .map { addresses ->
                 addresses.map { address ->
                     GenericSearchRecord(
@@ -62,7 +62,7 @@ class SearchRecordLocalDataSourceImpl(
     private fun searchIdentifiersLocal(query: String): Flow<List<GenericSearchRecord>> {
         val sanitized = query.replace("%", "\\%").replace("_", "\\_")
         val fuzzyQuery = "%$sanitized%"
-        return clientDaoHelper.searchIdentifiersByQuery(fuzzyQuery)
+        return clientDao.searchIdentifiersByQuery(fuzzyQuery)
             .map { identifiers ->
                 identifiers.map { identifier ->
                     GenericSearchRecord(
