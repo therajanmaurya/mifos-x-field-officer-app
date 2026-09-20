@@ -16,6 +16,7 @@ import kpt.core.base.store.mutation.MutationGateway
 import kpt.core.base.store.mutation.MutationPolicy
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.loan.LoanCommandRepository
+import kpt.core.database.loan.entity.Loan
 import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
 import kpt.core.database.loan.entity.LoanRepaymentResponseEntity
 import kpt.core.model.objects.account.loan.LoanApproval
@@ -33,6 +34,7 @@ import kpt.core.network.mifos.loan.dto.LoanChargeOffRequestDto
 import kpt.core.network.mifos.loan.dto.LoanChargeOffResponseDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseRequestDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseResponseDto
+import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.network.mifos.loan.dto.LoansPayload
 import kpt.core.network.mifos.loan.dto.RejectLoanRequestDto
 import kpt.core.network.mifos.loan.dto.RejectLoanResponseDto
@@ -63,8 +65,12 @@ internal class LoanCommandRepositoryImpl(
     override suspend fun createLoanAccount(payload: LoansPayload) =
         online(payload) { api.createLoansAccount(it) }
 
+    override suspend fun createGroupLoanAccount(payload: GroupLoanPayload) =
+        online(payload) { api.createGroupLoansAccount(it) }
+
     // A schedule preview changes nothing on the server, but it is a POST and needs the network —
     // OnlineRequired keeps it from being queued as if it were a mutation.
+
     override suspend fun calculateLoanSchedule(payload: LoansPayload) =
         online(payload) { api.calculateLoanSchedule(it) }
 

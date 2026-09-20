@@ -11,6 +11,7 @@ package kpt.core.data.loan
 
 import io.ktor.client.statement.HttpResponse
 import kpt.core.base.store.mutation.MutationResult
+import kpt.core.database.loan.entity.Loan
 import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
 import kpt.core.database.loan.entity.LoanRepaymentResponseEntity
 import kpt.core.model.objects.account.loan.LoanApproval
@@ -27,6 +28,7 @@ import kpt.core.network.mifos.loan.dto.LoanChargeOffRequestDto
 import kpt.core.network.mifos.loan.dto.LoanChargeOffResponseDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseRequestDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseResponseDto
+import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.network.mifos.loan.dto.LoansPayload
 import kpt.core.network.mifos.loan.dto.RejectLoanRequestDto
 import kpt.core.network.mifos.loan.dto.RejectLoanResponseDto
@@ -71,6 +73,8 @@ interface LoanCommandRepository {
     suspend fun assignLoanOfficer(loanId: Int, request: AssignLoanOfficerRequestDto): MutationResult<AssignLoanOfficerResponseDto>
 
     suspend fun createLoanAccount(payload: LoansPayload): MutationResult<HttpResponse>
+
+    suspend fun createGroupLoanAccount(payload: GroupLoanPayload): MutationResult<Loan>
 
     suspend fun calculateLoanSchedule(payload: LoansPayload): MutationResult<HttpResponse>
 
