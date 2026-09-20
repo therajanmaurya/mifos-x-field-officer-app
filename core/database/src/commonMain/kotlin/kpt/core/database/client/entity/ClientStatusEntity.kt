@@ -15,17 +15,16 @@ import kotlinx.serialization.Serializable
 import kpt.core.base.database.annotation.DbEntity
 import kpt.core.model.recurringdeposit.Status
 @Serializable
-@DbEntity
-@Entity(
-    indices = [],
-    inheritSuperIndices = false,
-    primaryKeys = [],
-    foreignKeys = [],
-    ignoredColumns = [],
-    tableName = "Status",
-)
+/**
+ * A COLUMN, not a table.
+ *
+ * This is embedded in its parent entity and persisted by a `@ColumnTypeConverter` as a JSON
+ * string. It carried `@DbEntity` as well, so Room also generated a standalone table that no
+ * DAO ever read or wrote — dead schema that counted against the generated
+ * `onValidateSchema`, which at 85 tables exceeded the JVM 64KB method limit and broke every
+ * JVM target.
+ */
 data class ClientStatusEntity(
-    @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
     val code: String? = null,

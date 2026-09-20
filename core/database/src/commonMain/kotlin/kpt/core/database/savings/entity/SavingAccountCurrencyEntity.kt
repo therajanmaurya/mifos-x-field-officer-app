@@ -16,18 +16,17 @@ import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
-@DbEntity
-@Entity(
-    indices = [],
-    inheritSuperIndices = false,
-    primaryKeys = [],
-    foreignKeys = [],
-    ignoredColumns = [],
-    tableName = "SavingAccountCurrency",
-)
+/**
+ * A COLUMN, not a table.
+ *
+ * This is embedded in its parent entity and persisted by a `@ColumnTypeConverter` as a JSON
+ * string. It carried `@DbEntity` as well, so Room also generated a standalone table that no
+ * DAO ever read or wrote — dead schema that counted against the generated
+ * `onValidateSchema`, which at 85 tables exceeded the JVM 64KB method limit and broke every
+ * JVM target.
+ */
 @Serializable
 data class SavingAccountCurrencyEntity(
-    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNSPECIFIED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
     val id: Int = 0,
 

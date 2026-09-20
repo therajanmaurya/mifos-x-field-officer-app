@@ -24,14 +24,6 @@ import androidx.room3.PrimaryKey
     primaryKeys = [],
     ignoredColumns = [],
     foreignKeys = [
-        ForeignKey(
-            entity = OfficeOpeningDateEntity::class,
-            parentColumns = ["officeId"],
-            childColumns = ["id"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
     ],
 )
 @Serializable

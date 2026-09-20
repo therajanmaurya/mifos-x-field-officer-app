@@ -27,14 +27,6 @@ import kpt.core.database.group.entity.GroupEntity
     ignoredColumns = [],
     foreignKeys = [
         ForeignKey(
-            entity = ClientStatusEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["id"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
-        ForeignKey(
             entity = ClientDateEntity::class,
             parentColumns = ["clientId"],
             childColumns = ["id"],

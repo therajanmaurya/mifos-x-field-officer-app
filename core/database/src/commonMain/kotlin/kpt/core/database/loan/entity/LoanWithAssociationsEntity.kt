@@ -48,25 +48,9 @@ import androidx.room3.PrimaryKey
     ignoredColumns = [],
     foreignKeys = [
         ForeignKey(
-            entity = LoanStatusEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["status"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
-        ForeignKey(
             entity = LoanTimelineEntity::class,
             parentColumns = ["loanId"],
             childColumns = ["timeline"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
-        ForeignKey(
-            entity = LoanAccountSummaryEntity::class,
-            parentColumns = ["loanId"],
-            childColumns = ["summary"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.NO_ACTION,
             deferred = false,

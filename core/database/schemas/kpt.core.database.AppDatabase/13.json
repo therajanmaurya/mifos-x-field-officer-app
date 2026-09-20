@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 13,
-    "identityHash": "68a001f05f27bca97c1fe0e277acbbe0",
+    "identityHash": "39fcfe7b5fd2944bb6676f6f2d4ab275",
     "entities": [
       {
         "tableName": "store_bookkeeper",
@@ -416,72 +416,6 @@
         }
       },
       {
-        "tableName": "ChargeCalculationType",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `code` TEXT, `value` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "code",
-            "columnName": "code",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "value",
-            "columnName": "value",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_ChargeCalculationType_id",
-            "unique": false,
-            "columnNames": [
-              "id"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ChargeCalculationType_id` ON `${TABLE_NAME}` (`id`)"
-          }
-        ]
-      },
-      {
-        "tableName": "ChargeTimeTypeEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT, `value` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "code",
-            "columnName": "code",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "value",
-            "columnName": "value",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
         "tableName": "Charges",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `clientId` INTEGER, `loanId` INTEGER, `chargeId` INTEGER, `name` TEXT, `chargeTimeType` TEXT, `chargeDueDate` TEXT, `dueDate` TEXT, `chargeCalculationType` TEXT, `currency` TEXT, `amount` REAL, `amountPaid` REAL, `amountWaived` REAL, `amountWrittenOff` REAL, `amountOutstanding` REAL, `penalty` INTEGER, `active` INTEGER, `paid` INTEGER, `waived` INTEGER)",
         "fields": [
@@ -588,70 +522,6 @@
             "id"
           ]
         }
-      },
-      {
-        "tableName": "ClientChargeCurrency",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `code` TEXT, `name` TEXT, `decimalPlaces` INTEGER, `inMultiplesOf` INTEGER, `displaySymbol` TEXT, `nameCode` TEXT, `displayLabel` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "code",
-            "columnName": "code",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "decimalPlaces",
-            "columnName": "decimalPlaces",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "inMultiplesOf",
-            "columnName": "inMultiplesOf",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "displaySymbol",
-            "columnName": "displaySymbol",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "nameCode",
-            "columnName": "nameCode",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "displayLabel",
-            "columnName": "displayLabel",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_ClientChargeCurrency_id",
-            "unique": false,
-            "columnNames": [
-              "id"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ClientChargeCurrency_id` ON `${TABLE_NAME}` (`id`)"
-          }
-        ]
       },
       {
         "tableName": "checker_tasks",
@@ -810,29 +680,6 @@
         ]
       },
       {
-        "tableName": "ClientClassification",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
         "tableName": "ClientDate",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`clientId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `chargeId` INTEGER NOT NULL, `day` INTEGER NOT NULL, `month` INTEGER NOT NULL, `year` INTEGER NOT NULL)",
         "fields": [
@@ -887,7 +734,7 @@
       },
       {
         "tableName": "Client",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` INTEGER, `groupName` TEXT, `accountNo` TEXT, `clientId` INTEGER, `status` TEXT, `sync` INTEGER NOT NULL, `active` INTEGER NOT NULL, `clientDate` TEXT, `activationDate` TEXT NOT NULL, `dateOfBirth` TEXT NOT NULL, `groups` TEXT, `mobileNo` TEXT, `firstname` TEXT, `middlename` TEXT, `lastname` TEXT, `displayName` TEXT, `officeId` INTEGER NOT NULL, `officeName` TEXT, `staffId` INTEGER NOT NULL, `staffName` TEXT, `timeline` TEXT, `fullname` TEXT, `savingsAccountId` INTEGER, `imageId` INTEGER NOT NULL, `imagePresent` INTEGER NOT NULL, `externalId` TEXT, `emailAddress` TEXT, `legalForm` TEXT, `gender` TEXT, `clientType` TEXT, `clientClassification` TEXT, FOREIGN KEY(`id`) REFERENCES `Status`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`id`) REFERENCES `ClientDate`(`clientId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` INTEGER, `groupName` TEXT, `accountNo` TEXT, `clientId` INTEGER, `status` TEXT, `sync` INTEGER NOT NULL, `active` INTEGER NOT NULL, `clientDate` TEXT, `activationDate` TEXT NOT NULL, `dateOfBirth` TEXT NOT NULL, `groups` TEXT, `mobileNo` TEXT, `firstname` TEXT, `middlename` TEXT, `lastname` TEXT, `displayName` TEXT, `officeId` INTEGER NOT NULL, `officeName` TEXT, `staffId` INTEGER NOT NULL, `staffName` TEXT, `timeline` TEXT, `fullname` TEXT, `savingsAccountId` INTEGER, `imageId` INTEGER NOT NULL, `imagePresent` INTEGER NOT NULL, `externalId` TEXT, `emailAddress` TEXT, `legalForm` TEXT, `gender` TEXT, `clientType` TEXT, `clientClassification` TEXT, FOREIGN KEY(`id`) REFERENCES `ClientDate`(`clientId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -1078,17 +925,6 @@
         ],
         "foreignKeys": [
           {
-            "table": "Status",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "id"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
             "table": "ClientDate",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
@@ -1100,29 +936,6 @@
             ]
           }
         ]
-      },
-      {
-        "tableName": "Gender",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
       },
       {
         "tableName": "ClientIdentifier",
@@ -1295,57 +1108,6 @@
             "fieldPath": "legalFormId",
             "columnName": "legalFormId",
             "affinity": "INTEGER"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
-        "tableName": "Status",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `code` TEXT, `value` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "code",
-            "columnName": "code",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "value",
-            "columnName": "value",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
-        "tableName": "ClientType",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -2164,7 +1926,7 @@
       },
       {
         "tableName": "LoanAccountEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `clientId` INTEGER NOT NULL, `groupId` INTEGER NOT NULL, `centerId` INTEGER NOT NULL, `accountNo` TEXT, `externalId` TEXT, `productId` INTEGER, `productName` TEXT, `currency` TEXT, `status` TEXT, `loanType` TEXT, `loanCycle` INTEGER, `inArrears` INTEGER, `originalLoan` REAL, `loanBalance` REAL, `amountPaid` REAL, FOREIGN KEY(`status`) REFERENCES `LoanStatus`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`loanType`) REFERENCES `LoanAccountLoanType`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `clientId` INTEGER NOT NULL, `groupId` INTEGER NOT NULL, `centerId` INTEGER NOT NULL, `accountNo` TEXT, `externalId` TEXT, `productId` INTEGER, `productName` TEXT, `currency` TEXT, `status` TEXT, `loanType` TEXT, `loanCycle` INTEGER, `inArrears` INTEGER, `originalLoan` REAL, `loanBalance` REAL, `amountPaid` REAL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -2275,223 +2037,7 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_LoanAccountEntity_loanType` ON `${TABLE_NAME}` (`loanType`)"
           }
-        ],
-        "foreignKeys": [
-          {
-            "table": "LoanStatus",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "status"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
-            "table": "LoanAccountLoanType",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "loanType"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
         ]
-      },
-      {
-        "tableName": "LoansAccountSummary",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`loanId` INTEGER PRIMARY KEY AUTOINCREMENT, `currency` TEXT, `principalDisbursed` REAL, `principalPaid` REAL, `principalWaived` REAL, `principalWrittenOff` REAL, `principalOutstanding` REAL, `principalOverdue` REAL, `interestCharged` REAL, `interestPaid` REAL, `interestWaived` REAL, `interestWrittenOff` REAL, `interestOutstanding` REAL, `interestOverdue` REAL, `feeChargesCharged` REAL, `feeChargesDueAtDisbursementCharged` REAL, `feeChargesPaid` REAL, `feeChargesWaived` REAL, `feeChargesWrittenOff` REAL, `feeChargesOutstanding` REAL, `feeChargesOverdue` REAL, `penaltyChargesCharged` REAL, `penaltyChargesPaid` REAL, `penaltyChargesWaived` REAL, `penaltyChargesWrittenOff` REAL, `penaltyChargesOutstanding` REAL, `penaltyChargesOverdue` REAL, `totalExpectedRepayment` REAL, `totalRepayment` REAL, `totalExpectedCostOfLoan` REAL, `totalCostOfLoan` REAL, `totalWaived` REAL, `totalWrittenOff` REAL, `totalOutstanding` REAL, `totalOverdue` REAL, `overdueSinceDate` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "loanId",
-            "columnName": "loanId",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "currency",
-            "columnName": "currency",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "principalDisbursed",
-            "columnName": "principalDisbursed",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "principalPaid",
-            "columnName": "principalPaid",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "principalWaived",
-            "columnName": "principalWaived",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "principalWrittenOff",
-            "columnName": "principalWrittenOff",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "principalOutstanding",
-            "columnName": "principalOutstanding",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "principalOverdue",
-            "columnName": "principalOverdue",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "interestCharged",
-            "columnName": "interestCharged",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "interestPaid",
-            "columnName": "interestPaid",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "interestWaived",
-            "columnName": "interestWaived",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "interestWrittenOff",
-            "columnName": "interestWrittenOff",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "interestOutstanding",
-            "columnName": "interestOutstanding",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "interestOverdue",
-            "columnName": "interestOverdue",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "feeChargesCharged",
-            "columnName": "feeChargesCharged",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "feeChargesDueAtDisbursementCharged",
-            "columnName": "feeChargesDueAtDisbursementCharged",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "feeChargesPaid",
-            "columnName": "feeChargesPaid",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "feeChargesWaived",
-            "columnName": "feeChargesWaived",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "feeChargesWrittenOff",
-            "columnName": "feeChargesWrittenOff",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "feeChargesOutstanding",
-            "columnName": "feeChargesOutstanding",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "feeChargesOverdue",
-            "columnName": "feeChargesOverdue",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "penaltyChargesCharged",
-            "columnName": "penaltyChargesCharged",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "penaltyChargesPaid",
-            "columnName": "penaltyChargesPaid",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "penaltyChargesWaived",
-            "columnName": "penaltyChargesWaived",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "penaltyChargesWrittenOff",
-            "columnName": "penaltyChargesWrittenOff",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "penaltyChargesOutstanding",
-            "columnName": "penaltyChargesOutstanding",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "penaltyChargesOverdue",
-            "columnName": "penaltyChargesOverdue",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "totalExpectedRepayment",
-            "columnName": "totalExpectedRepayment",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "totalRepayment",
-            "columnName": "totalRepayment",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "totalExpectedCostOfLoan",
-            "columnName": "totalExpectedCostOfLoan",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "totalCostOfLoan",
-            "columnName": "totalCostOfLoan",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "totalWaived",
-            "columnName": "totalWaived",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "totalWrittenOff",
-            "columnName": "totalWrittenOff",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "totalOutstanding",
-            "columnName": "totalOutstanding",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "totalOverdue",
-            "columnName": "totalOverdue",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "overdueSinceDate",
-            "columnName": "overdueSinceDate",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "loanId"
-          ]
-        }
       },
       {
         "tableName": "loan_disburse_templates",
@@ -2724,73 +2270,6 @@
         ]
       },
       {
-        "tableName": "LoanStatus",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT, `value` TEXT, `pendingApproval` INTEGER, `waitingForDisbursal` INTEGER, `active` INTEGER, `closedObligationsMet` INTEGER, `closedWrittenOff` INTEGER, `closedRescheduled` INTEGER, `closed` INTEGER, `overpaid` INTEGER)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "code",
-            "columnName": "code",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "value",
-            "columnName": "value",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "pendingApproval",
-            "columnName": "pendingApproval",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "waitingForDisbursal",
-            "columnName": "waitingForDisbursal",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "active",
-            "columnName": "active",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "closedObligationsMet",
-            "columnName": "closedObligationsMet",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "closedWrittenOff",
-            "columnName": "closedWrittenOff",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "closedRescheduled",
-            "columnName": "closedRescheduled",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "closed",
-            "columnName": "closed",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "overpaid",
-            "columnName": "overpaid",
-            "affinity": "INTEGER"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
         "tableName": "loan_application_templates",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`clientId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `payload` TEXT NOT NULL, `fetchedAtMs` INTEGER NOT NULL, PRIMARY KEY(`clientId`, `productId`))",
         "fields": [
@@ -2954,35 +2433,8 @@
         ]
       },
       {
-        "tableName": "LoanAccountLoanType",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT, `value` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "code",
-            "columnName": "code",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "value",
-            "columnName": "value",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
         "tableName": "LoanWithAssociations",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accountNo` TEXT NOT NULL, `status` TEXT NOT NULL, `clientId` INTEGER NOT NULL, `clientName` TEXT NOT NULL, `clientOfficeId` INTEGER NOT NULL, `loanProductId` INTEGER NOT NULL, `loanProductName` TEXT NOT NULL, `loanProductDescription` TEXT NOT NULL, `fundId` INTEGER NOT NULL, `fundName` TEXT NOT NULL, `loanPurposeId` INTEGER NOT NULL, `loanPurposeName` TEXT NOT NULL, `loanOfficerId` INTEGER NOT NULL, `loanOfficerName` TEXT NOT NULL, `loanType` TEXT NOT NULL, `currency` TEXT NOT NULL, `principal` REAL NOT NULL, `approvedPrincipal` REAL NOT NULL, `proposedPrincipal` REAL NOT NULL DEFAULT 0.0, `termFrequency` INTEGER NOT NULL, `termPeriodFrequencyType` TEXT NOT NULL, `numberOfRepayments` INTEGER NOT NULL, `repaymentEvery` INTEGER NOT NULL, `repaymentFrequencyType` TEXT NOT NULL, `interestRatePerPeriod` REAL NOT NULL, `interestRateFrequencyType` TEXT NOT NULL, `annualInterestRate` REAL NOT NULL, `amortizationType` TEXT NOT NULL, `interestType` TEXT NOT NULL, `interestCalculationPeriodType` TEXT NOT NULL, `transactionProcessingStrategyId` INTEGER NOT NULL, `transactionProcessingStrategyName` TEXT NOT NULL, `syncDisbursementWithMeeting` INTEGER NOT NULL, `timeline` TEXT NOT NULL, `summary` TEXT NOT NULL, `repaymentSchedule` TEXT NOT NULL, `transactions` TEXT NOT NULL, `feeChargesAtDisbursementCharged` REAL NOT NULL, `totalOverpaid` REAL NOT NULL, `loanCounter` INTEGER NOT NULL, `loanProductCounter` INTEGER NOT NULL, `multiDisburseLoan` INTEGER NOT NULL, `canDisburse` INTEGER NOT NULL, `inArrears` INTEGER NOT NULL, `isNPA` INTEGER NOT NULL, `overpaidOnDate` TEXT, `isEqualAmortization` INTEGER NOT NULL DEFAULT 0, `allowPartialPeriodInterestCalculation` INTEGER NOT NULL DEFAULT 0, `interestRecognitionOnDisbursementDate` INTEGER NOT NULL DEFAULT 0, `enableDownPayment` INTEGER NOT NULL DEFAULT 0, `enableIncomeCapitalization` INTEGER NOT NULL DEFAULT 0, `enableBuyDownFee` INTEGER NOT NULL DEFAULT 0, `enableInstallmentLevelDelinquency` INTEGER NOT NULL DEFAULT 0, `isInterestRecalculationEnabled` INTEGER NOT NULL DEFAULT 0, `chargedOff` INTEGER NOT NULL DEFAULT 0, FOREIGN KEY(`status`) REFERENCES `LoanStatus`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`timeline`) REFERENCES `Timeline`(`loanId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`summary`) REFERENCES `LoansAccountSummary`(`loanId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accountNo` TEXT NOT NULL, `status` TEXT NOT NULL, `clientId` INTEGER NOT NULL, `clientName` TEXT NOT NULL, `clientOfficeId` INTEGER NOT NULL, `loanProductId` INTEGER NOT NULL, `loanProductName` TEXT NOT NULL, `loanProductDescription` TEXT NOT NULL, `fundId` INTEGER NOT NULL, `fundName` TEXT NOT NULL, `loanPurposeId` INTEGER NOT NULL, `loanPurposeName` TEXT NOT NULL, `loanOfficerId` INTEGER NOT NULL, `loanOfficerName` TEXT NOT NULL, `loanType` TEXT NOT NULL, `currency` TEXT NOT NULL, `principal` REAL NOT NULL, `approvedPrincipal` REAL NOT NULL, `proposedPrincipal` REAL NOT NULL DEFAULT 0.0, `termFrequency` INTEGER NOT NULL, `termPeriodFrequencyType` TEXT NOT NULL, `numberOfRepayments` INTEGER NOT NULL, `repaymentEvery` INTEGER NOT NULL, `repaymentFrequencyType` TEXT NOT NULL, `interestRatePerPeriod` REAL NOT NULL, `interestRateFrequencyType` TEXT NOT NULL, `annualInterestRate` REAL NOT NULL, `amortizationType` TEXT NOT NULL, `interestType` TEXT NOT NULL, `interestCalculationPeriodType` TEXT NOT NULL, `transactionProcessingStrategyId` INTEGER NOT NULL, `transactionProcessingStrategyName` TEXT NOT NULL, `syncDisbursementWithMeeting` INTEGER NOT NULL, `timeline` TEXT NOT NULL, `summary` TEXT NOT NULL, `repaymentSchedule` TEXT NOT NULL, `transactions` TEXT NOT NULL, `feeChargesAtDisbursementCharged` REAL NOT NULL, `totalOverpaid` REAL NOT NULL, `loanCounter` INTEGER NOT NULL, `loanProductCounter` INTEGER NOT NULL, `multiDisburseLoan` INTEGER NOT NULL, `canDisburse` INTEGER NOT NULL, `inArrears` INTEGER NOT NULL, `isNPA` INTEGER NOT NULL, `overpaidOnDate` TEXT, `isEqualAmortization` INTEGER NOT NULL DEFAULT 0, `allowPartialPeriodInterestCalculation` INTEGER NOT NULL DEFAULT 0, `interestRecognitionOnDisbursementDate` INTEGER NOT NULL DEFAULT 0, `enableDownPayment` INTEGER NOT NULL DEFAULT 0, `enableIncomeCapitalization` INTEGER NOT NULL DEFAULT 0, `enableBuyDownFee` INTEGER NOT NULL DEFAULT 0, `enableInstallmentLevelDelinquency` INTEGER NOT NULL DEFAULT 0, `isInterestRecalculationEnabled` INTEGER NOT NULL DEFAULT 0, `chargedOff` INTEGER NOT NULL DEFAULT 0, FOREIGN KEY(`timeline`) REFERENCES `Timeline`(`loanId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -3367,33 +2819,11 @@
         ],
         "foreignKeys": [
           {
-            "table": "LoanStatus",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "status"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
             "table": "Timeline",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
               "timeline"
-            ],
-            "referencedColumns": [
-              "loanId"
-            ]
-          },
-          {
-            "table": "LoansAccountSummary",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "summary"
             ],
             "referencedColumns": [
               "loanId"
@@ -3460,7 +2890,7 @@
       },
       {
         "tableName": "Office",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `externalId` TEXT, `name` TEXT, `nameDecorated` TEXT, `officeOpeningDate` TEXT, `openingDate` TEXT NOT NULL, FOREIGN KEY(`id`) REFERENCES `OfficeOpeningDate`(`officeId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `externalId` TEXT, `name` TEXT, `nameDecorated` TEXT, `officeOpeningDate` TEXT, `openingDate` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -3500,64 +2930,7 @@
           "columnNames": [
             "id"
           ]
-        },
-        "foreignKeys": [
-          {
-            "table": "OfficeOpeningDate",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "id"
-            ],
-            "referencedColumns": [
-              "officeId"
-            ]
-          }
-        ]
-      },
-      {
-        "tableName": "OfficeOpeningDate",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`officeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `year` INTEGER, `month` INTEGER, `day` INTEGER)",
-        "fields": [
-          {
-            "fieldPath": "officeId",
-            "columnName": "officeId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "year",
-            "columnName": "year",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "month",
-            "columnName": "month",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "day",
-            "columnName": "day",
-            "affinity": "INTEGER"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "officeId"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_OfficeOpeningDate_officeId",
-            "unique": false,
-            "columnNames": [
-              "officeId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_OfficeOpeningDate_officeId` ON `${TABLE_NAME}` (`officeId`)"
-          }
-        ]
+        }
       },
       {
         "tableName": "PaymentTypeOption",
@@ -3695,126 +3068,8 @@
         ]
       },
       {
-        "tableName": "SavingAccountCurrency",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `code` TEXT, `name` TEXT, `decimalPlaces` INTEGER, `inMultiplesOf` INTEGER, `displaySymbol` TEXT, `nameCode` TEXT, `displayLabel` TEXT)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "code",
-            "columnName": "code",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "decimalPlaces",
-            "columnName": "decimalPlaces",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "inMultiplesOf",
-            "columnName": "inMultiplesOf",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "displaySymbol",
-            "columnName": "displaySymbol",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "nameCode",
-            "columnName": "nameCode",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "displayLabel",
-            "columnName": "displayLabel",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_SavingAccountCurrency_id",
-            "unique": false,
-            "columnNames": [
-              "id"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_SavingAccountCurrency_id` ON `${TABLE_NAME}` (`id`)"
-          },
-          {
-            "name": "index_SavingAccountCurrency_code",
-            "unique": false,
-            "columnNames": [
-              "code"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_SavingAccountCurrency_code` ON `${TABLE_NAME}` (`code`)"
-          }
-        ]
-      },
-      {
-        "tableName": "SavingAccountDepositType",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT, `value` TEXT, `isRecurring` INTEGER NOT NULL, `endpoint` TEXT NOT NULL, `serverType` INTEGER NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "code",
-            "columnName": "code",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "value",
-            "columnName": "value",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "isRecurring",
-            "columnName": "isRecurring",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "endpoint",
-            "columnName": "endpoint",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "serverType",
-            "columnName": "serverType",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
         "tableName": "SavingsAccount",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `clientId` INTEGER NOT NULL, `groupId` INTEGER NOT NULL, `centerId` INTEGER NOT NULL, `accountNo` TEXT, `productId` INTEGER, `shortProductName` TEXT, `productName` TEXT, `status` TEXT, `currency` TEXT, `accountBalance` REAL, `depositType` TEXT, `lastActiveTransactionDate` TEXT, FOREIGN KEY(`status`) REFERENCES `SavingsAccountStatus`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`currency`) REFERENCES `SavingAccountCurrency`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`depositType`) REFERENCES `SavingAccountDepositType`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `clientId` INTEGER NOT NULL, `groupId` INTEGER NOT NULL, `centerId` INTEGER NOT NULL, `accountNo` TEXT, `productId` INTEGER, `shortProductName` TEXT, `productName` TEXT, `status` TEXT, `currency` TEXT, `accountBalance` REAL, `depositType` TEXT, `lastActiveTransactionDate` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -3919,145 +3174,11 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_SavingsAccount_depositType` ON `${TABLE_NAME}` (`depositType`)"
           }
-        ],
-        "foreignKeys": [
-          {
-            "table": "SavingsAccountStatus",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "status"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
-            "table": "SavingAccountCurrency",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "currency"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
-            "table": "SavingAccountDepositType",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "depositType"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
         ]
       },
       {
-        "tableName": "SavingsAccountStatus",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT, `value` TEXT, `submittedAndPendingApproval` INTEGER, `approved` INTEGER, `rejected` INTEGER, `withdrawnByApplicant` INTEGER, `active` INTEGER, `closed` INTEGER)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "code",
-            "columnName": "code",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "value",
-            "columnName": "value",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "submittedAndPendingApproval",
-            "columnName": "submittedAndPendingApproval",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "approved",
-            "columnName": "approved",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "rejected",
-            "columnName": "rejected",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "withdrawnByApplicant",
-            "columnName": "withdrawnByApplicant",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "active",
-            "columnName": "active",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "closed",
-            "columnName": "closed",
-            "affinity": "INTEGER"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
-        "tableName": "SavingsAccountSummary",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`savingsId` INTEGER PRIMARY KEY AUTOINCREMENT, `currency` TEXT, `totalDeposits` REAL, `accountBalance` REAL, `totalWithdrawals` REAL, `totalInterestEarned` REAL)",
-        "fields": [
-          {
-            "fieldPath": "savingsId",
-            "columnName": "savingsId",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "currency",
-            "columnName": "currency",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "totalDeposits",
-            "columnName": "totalDeposits",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "accountBalance",
-            "columnName": "accountBalance",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "totalWithdrawals",
-            "columnName": "totalWithdrawals",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "totalInterestEarned",
-            "columnName": "totalInterestEarned",
-            "affinity": "REAL"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "savingsId"
-          ]
-        }
-      },
-      {
         "tableName": "TransactionTable",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `savingsAccountId` INTEGER, `transactionType` TEXT, `accountId` INTEGER, `accountNo` TEXT, `savingsTransactionDate` TEXT, `date` TEXT NOT NULL, `currency` TEXT, `amount` REAL, `runningBalance` REAL, `reversed` INTEGER, FOREIGN KEY(`id`) REFERENCES `TransactionType`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`id`) REFERENCES `SavingsTransactionDate`(`transactionId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`id`) REFERENCES `SavingAccountCurrency`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `savingsAccountId` INTEGER, `transactionType` TEXT, `accountId` INTEGER, `accountNo` TEXT, `savingsTransactionDate` TEXT, `date` TEXT NOT NULL, `currency` TEXT, `amount` REAL, `runningBalance` REAL, `reversed` INTEGER, FOREIGN KEY(`id`) REFERENCES `SavingsTransactionDate`(`transactionId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -4136,17 +3257,6 @@
         ],
         "foreignKeys": [
           {
-            "table": "TransactionType",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "id"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
             "table": "SavingsTransactionDate",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
@@ -4155,17 +3265,6 @@
             ],
             "referencedColumns": [
               "transactionId"
-            ]
-          },
-          {
-            "table": "SavingAccountCurrency",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "id"
-            ],
-            "referencedColumns": [
-              "id"
             ]
           }
         ]
@@ -4304,7 +3403,7 @@
       },
       {
         "tableName": "SavingsAccountWithAssociations",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `accountNo` TEXT, `clientId` INTEGER, `clientName` TEXT, `savingsProductId` INTEGER, `savingsProductName` TEXT, `fieldOfficerId` INTEGER, `status` TEXT, `timeline` TEXT, `currency` TEXT, `nominalAnnualInterestRate` REAL, `interestCompoundingPeriodType` TEXT, `interestPostingPeriodType` TEXT, `interestCalculationType` TEXT, `interestCalculationDaysInYearType` TEXT, `minRequiredOpeningBalance` REAL, `lockinPeriodFrequency` INTEGER, `lockinPeriodFrequencyType` TEXT, `withdrawalFeeForTransfers` INTEGER, `allowOverdraft` INTEGER, `enforceMinRequiredBalance` INTEGER, `withHoldTax` INTEGER, `lastActiveTransactionDate` TEXT NOT NULL, `dormancyTrackingActive` INTEGER, `overdraftLimit` INTEGER, `summary` TEXT, `transactions` TEXT NOT NULL, `charges` TEXT NOT NULL, FOREIGN KEY(`status`) REFERENCES `SavingsAccountStatus`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`summary`) REFERENCES `SavingsAccountSummary`(`savingsId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `accountNo` TEXT, `clientId` INTEGER, `clientName` TEXT, `savingsProductId` INTEGER, `savingsProductName` TEXT, `fieldOfficerId` INTEGER, `status` TEXT, `timeline` TEXT, `currency` TEXT, `nominalAnnualInterestRate` REAL, `interestCompoundingPeriodType` TEXT, `interestPostingPeriodType` TEXT, `interestCalculationType` TEXT, `interestCalculationDaysInYearType` TEXT, `minRequiredOpeningBalance` REAL, `lockinPeriodFrequency` INTEGER, `lockinPeriodFrequencyType` TEXT, `withdrawalFeeForTransfers` INTEGER, `allowOverdraft` INTEGER, `enforceMinRequiredBalance` INTEGER, `withHoldTax` INTEGER, `lastActiveTransactionDate` TEXT NOT NULL, `dormancyTrackingActive` INTEGER, `overdraftLimit` INTEGER, `summary` TEXT, `transactions` TEXT NOT NULL, `charges` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -4475,30 +3574,6 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_SavingsAccountWithAssociations_summary` ON `${TABLE_NAME}` (`summary`)"
           }
-        ],
-        "foreignKeys": [
-          {
-            "table": "SavingsAccountStatus",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "status"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
-            "table": "SavingsAccountSummary",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "summary"
-            ],
-            "referencedColumns": [
-              "savingsId"
-            ]
-          }
         ]
       },
       {
@@ -4530,88 +3605,6 @@
           "autoGenerate": true,
           "columnNames": [
             "transactionId"
-          ]
-        }
-      },
-      {
-        "tableName": "TransactionType",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT, `value` TEXT, `deposit` INTEGER, `withdrawal` INTEGER, `interestPosting` INTEGER, `feeDeduction` INTEGER, `initiateTransfer` INTEGER, `approveTransfer` INTEGER, `withdrawTransfer` INTEGER, `rejectTransfer` INTEGER, `overdraftInterest` INTEGER, `writtenoff` INTEGER, `overdraftFee` INTEGER)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "code",
-            "columnName": "code",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "value",
-            "columnName": "value",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "deposit",
-            "columnName": "deposit",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "withdrawal",
-            "columnName": "withdrawal",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "interestPosting",
-            "columnName": "interestPosting",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "feeDeduction",
-            "columnName": "feeDeduction",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "initiateTransfer",
-            "columnName": "initiateTransfer",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "approveTransfer",
-            "columnName": "approveTransfer",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "withdrawTransfer",
-            "columnName": "withdrawTransfer",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "rejectTransfer",
-            "columnName": "rejectTransfer",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "overdraftInterest",
-            "columnName": "overdraftInterest",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "writtenoff",
-            "columnName": "writtenoff",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "overdraftFee",
-            "columnName": "overdraftFee",
-            "affinity": "INTEGER"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
           ]
         }
       },
@@ -4872,7 +3865,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '68a001f05f27bca97c1fe0e277acbbe0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '39fcfe7b5fd2944bb6676f6f2d4ab275')"
     ]
   }
 }

@@ -32,22 +32,6 @@ import kpt.core.database.loan.entity.LoanTimelineEntity
     primaryKeys = [],
     ignoredColumns = [],
     foreignKeys = [
-        ForeignKey(
-            entity = SavingsAccountStatusEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["status"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
-        ForeignKey(
-            entity = SavingsAccountSummaryEntity::class,
-            parentColumns = ["savingsId"],
-            childColumns = ["summary"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
     ],
 )
 @Serializable

@@ -15,18 +15,17 @@ import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
-@DbEntity
-@Entity(
-    tableName = "LoanStatus",
-    indices = [],
-    inheritSuperIndices = false,
-    primaryKeys = [],
-    foreignKeys = [],
-    ignoredColumns = [],
-)
+/**
+ * A COLUMN, not a table.
+ *
+ * This is embedded in its parent entity and persisted by a `@ColumnTypeConverter` as a JSON
+ * string. It carried `@DbEntity` as well, so Room also generated a standalone table that no
+ * DAO ever read or wrote — dead schema that counted against the generated
+ * `onValidateSchema`, which at 85 tables exceeded the JVM 64KB method limit and broke every
+ * JVM target.
+ */
 @Serializable
 data class LoanStatusEntity(
-    @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
 
     val code: String? = null,

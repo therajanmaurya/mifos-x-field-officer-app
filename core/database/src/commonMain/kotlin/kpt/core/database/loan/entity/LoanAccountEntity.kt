@@ -23,22 +23,6 @@ import kpt.core.base.database.annotation.DbEntity
 @Entity(
     tableName = "LoanAccountEntity",
     foreignKeys = [
-        ForeignKey(
-            entity = LoanStatusEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["status"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
-        ForeignKey(
-            entity = LoanTypeEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["loanType"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
     ],
     indices = [],
     inheritSuperIndices = false,

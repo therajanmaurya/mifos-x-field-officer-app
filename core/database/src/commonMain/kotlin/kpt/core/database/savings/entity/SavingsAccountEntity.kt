@@ -25,30 +25,6 @@ import androidx.room3.PrimaryKey
     primaryKeys = [],
     ignoredColumns = [],
     foreignKeys = [
-        ForeignKey(
-            entity = SavingsAccountStatusEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["status"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
-        ForeignKey(
-            entity = SavingAccountCurrencyEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["currency"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
-        ForeignKey(
-            entity = SavingAccountDepositTypeEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["depositType"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
     ],
 )
 @Serializable
