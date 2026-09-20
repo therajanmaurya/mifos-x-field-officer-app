@@ -26,7 +26,7 @@ import org.mobilenativefoundation.store.store5.Store
  * field officer depends on most when offline. Room answers from cache immediately and a reconnect
  * refreshes it.
  */
-@StoreProvider(id = "clients")
+@StoreProvider(id = "clients", ttl = "1h")
 @CacheKey(name = "LIST", key = "clients")
 fun provideClientStore(
     service: ClientApi,

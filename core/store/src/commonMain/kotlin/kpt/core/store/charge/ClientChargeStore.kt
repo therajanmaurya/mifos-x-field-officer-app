@@ -30,7 +30,7 @@ import org.mobilenativefoundation.store.store5.Store
  * `resourceType` is pinned to "clients": the endpoint is shared with loans/savings, but this store
  * is the CLIENT charge read. A loan-charge store would be its own provider with its own key.
  */
-@StoreProvider(id = "clientCharges")
+@StoreProvider(id = "clientCharges", ttl = "15m")
 @CacheKey(fn = "forClient", key = "clientCharges:{clientId}", params = ["clientId:Int"])
 fun provideClientChargeStore(
     service: ChargeApi,

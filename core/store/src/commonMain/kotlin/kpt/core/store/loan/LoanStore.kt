@@ -29,7 +29,7 @@ import org.mobilenativefoundation.store.store5.Store
  * the writer narrows it to the entity, and the reader widens the entity back to the domain, so no
  * caller ever sees a `*Dto` or a `*Entity`.
  */
-@StoreProvider(id = "loans")
+@StoreProvider(id = "loans", ttl = "15m")
 @CacheKey(fn = "byId", key = "loan:{loanId}", params = ["loanId:Int"])
 fun provideLoanStore(
     service: LoanApi,

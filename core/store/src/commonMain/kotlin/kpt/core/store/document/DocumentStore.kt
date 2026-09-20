@@ -25,7 +25,7 @@ import org.mobilenativefoundation.store.store5.Store
 /** Documents hang off any entity (client, loan, group, ...), so the owner pair is the key. */
 data class DocumentKey(val entityType: String, val entityId: Int)
 
-@StoreProvider(id = "documents")
+@StoreProvider(id = "documents", ttl = "15m")
 @CacheKey(
     fn = "forEntity",
     key = "documents:{entityType}:{entityId}",

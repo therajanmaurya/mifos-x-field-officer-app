@@ -30,7 +30,7 @@ data class SavingsAccountKey(
     val associations: String? = "transactions",
 )
 
-@StoreProvider(id = "savingsAccounts")
+@StoreProvider(id = "savingsAccounts", ttl = "15m")
 @CacheKey(
     fn = "forAccount",
     key = "savingsAccounts:{savingsAccountType}:{savingsAccountId}",

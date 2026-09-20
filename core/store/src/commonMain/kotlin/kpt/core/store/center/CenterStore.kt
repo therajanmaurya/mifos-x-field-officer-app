@@ -27,7 +27,7 @@ import org.mobilenativefoundation.store.store5.Store
  * The wire call is paged (`Page<CenterEntity>`) while Room holds the accumulated rows, so the
  * fetcher unwraps `pageItems` and the SoT writes them through.
  */
-@StoreProvider(id = "centers")
+@StoreProvider(id = "centers", ttl = "1h")
 @CacheKey(name = "LIST", key = "centers")
 fun provideCenterStore(
     service: CenterApi,

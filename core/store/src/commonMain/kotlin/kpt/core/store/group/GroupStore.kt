@@ -23,7 +23,7 @@ import org.mobilenativefoundation.store.store5.Store
  * Groups — READ-CACHE (`createStore`). Same shape as centers; groups sit under a center in the
  * Fineract hierarchy and are read on the same offline paths.
  */
-@StoreProvider(id = "groups")
+@StoreProvider(id = "groups", ttl = "1h")
 @CacheKey(name = "LIST", key = "groups")
 fun provideGroupStore(
     service: GroupApi,

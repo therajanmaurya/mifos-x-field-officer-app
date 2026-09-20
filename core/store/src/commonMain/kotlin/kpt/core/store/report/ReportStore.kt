@@ -27,7 +27,7 @@ import org.mobilenativefoundation.store.store5.Store
  * data rather than a rendered report, and `parameterType = false` keeps the response to report
  * definitions instead of their parameter metadata.
  */
-@StoreProvider(id = "reportTypes")
+@StoreProvider(id = "reportTypes", ttl = "24h")
 @CacheKey(name = "LIST", key = "reportTypes")
 fun provideReportStore(
     service: RunReportsApi,

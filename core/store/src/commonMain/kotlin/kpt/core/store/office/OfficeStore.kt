@@ -32,7 +32,7 @@ import org.mobilenativefoundation.store.store5.Store
  * reference data — server-authoritative, low-churn, read-only on the device — which is exactly
  * the read-cache shape rather than a ledger (no delta/paging) or a mutable store (no local writes).
  */
-@StoreProvider(id = "offices")
+@StoreProvider(id = "offices", ttl = "24h")
 @CacheKey(name = "LIST", key = "offices")
 fun provideOfficeStore(
     service: OfficeApi,

@@ -27,7 +27,7 @@ import org.mobilenativefoundation.store.store5.Store
  * Caching the definitions is what makes that possible; the RESPONSES are a write path and are not
  * part of this store (D1 keeps submissions online-only / on the `feature:offline` queue).
  */
-@StoreProvider(id = "surveys")
+@StoreProvider(id = "surveys", ttl = "24h")
 @CacheKey(name = "LIST", key = "surveys")
 fun provideSurveyStore(
     service: SurveyApi,

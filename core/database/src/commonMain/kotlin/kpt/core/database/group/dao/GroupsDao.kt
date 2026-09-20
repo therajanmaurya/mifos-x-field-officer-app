@@ -108,4 +108,8 @@ interface GroupsDao {
         groupAccounts.loanAccounts.forEach { insertLoanAccount(it.copy(groupId = owner)) }
         groupAccounts.savingsAccounts.forEach { insertSavingsAccount(it.copy(groupId = owner)) }
     }
+
+    /** One queued offline group, for the write store's source of truth. */
+    @Query("SELECT * FROM GroupPayload WHERE id = :id LIMIT 1")
+    fun observeGroupPayload(id: Int): Flow<GroupPayloadEntity?>
 }

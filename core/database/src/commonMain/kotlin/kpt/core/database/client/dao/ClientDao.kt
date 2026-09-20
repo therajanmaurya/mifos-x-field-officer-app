@@ -317,4 +317,8 @@ interface ClientDao {
         deleteClientPayloadById(id)
         deleteDataTablePayloadByCreationTime(clientCreationTime)
     }
+
+    /** One queued offline client, for the write store's source of truth. */
+    @Query("SELECT * FROM ClientPayload WHERE id = :id LIMIT 1")
+    fun observeClientPayload(id: Int): Flow<ClientPayloadEntity?>
 }

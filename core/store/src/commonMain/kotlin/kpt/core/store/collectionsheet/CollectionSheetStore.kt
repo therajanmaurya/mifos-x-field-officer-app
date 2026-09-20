@@ -34,7 +34,7 @@ data class CollectionSheetKey(
     val locale: String = "en",
 )
 
-@StoreProvider(id = "collectionSheetCenters")
+@StoreProvider(id = "collectionSheetCenters", ttl = "5m")
 @CacheKey(
     fn = "forQuery",
     key = "collectionSheetCenters:{officeId}:{staffId}:{meetingDate}",

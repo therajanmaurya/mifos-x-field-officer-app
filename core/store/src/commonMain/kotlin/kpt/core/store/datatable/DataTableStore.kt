@@ -24,7 +24,7 @@ import org.mobilenativefoundation.store.store5.Store
  * onto each row on write: it is the column the cache is read back by, and Fineract does not
  * reliably echo it on every row.
  */
-@StoreProvider(id = "dataTables")
+@StoreProvider(id = "dataTables", ttl = "24h")
 @CacheKey(fn = "forAppTable", key = "dataTables:{appTable}", params = ["appTable:String"])
 fun provideDataTableStore(
     service: DataTableApi,

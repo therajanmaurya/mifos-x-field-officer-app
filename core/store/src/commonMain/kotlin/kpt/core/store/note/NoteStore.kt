@@ -28,7 +28,7 @@ import org.mobilenativefoundation.store.store5.Store
  * optimisation. The DTO→entity map lives in the SourceOfTruth writer per the template's read-path
  * contract, so the store emits the Room type the UI observes.
  */
-@StoreProvider(id = "clientNotes")
+@StoreProvider(id = "clientNotes", ttl = "15m")
 @CacheKey(fn = "forClient", key = "clientNotes:{clientId}", params = ["clientId:Long"])
 fun provideNoteStore(
     service: NoteApi,

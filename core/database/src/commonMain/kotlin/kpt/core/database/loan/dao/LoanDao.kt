@@ -138,4 +138,11 @@ interface LoanDao {
         getPaymentTypeOptions().map { options ->
             getLoanRepaymentTemplate(loanId)?.copy(paymentTypeOptions = options.toMutableList())
         }
+
+    /**
+     * One queued offline repayment, keyed by loan — the table's own primary key is `timeStamp`, but
+     * every read, write and delete path addresses it by `loanId`, which is what the queue is keyed by.
+     */
+    @Query("SELECT * FROM LoanRepaymentRequestEntity WHERE loanId = :loanId LIMIT 1")
+    fun observeLoanRepaymentRequest(loanId: Int): Flow<LoanRepaymentRequestEntity?>
 }

@@ -27,7 +27,7 @@ import org.mobilenativefoundation.store.store5.Store
  * separate cache slots — a bare `Unit` key would let the second office's fetch overwrite the first
  * (the Store5 `inconsistent-read-paths` anti-pattern).
  */
-@StoreProvider(id = "staff")
+@StoreProvider(id = "staff", ttl = "24h")
 @CacheKey(fn = "forOffice", key = "staff:{officeId}", params = ["officeId:Int"])
 fun provideStaffStore(
     service: StaffApi,

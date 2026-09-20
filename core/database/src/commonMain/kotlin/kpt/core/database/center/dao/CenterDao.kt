@@ -95,4 +95,8 @@ interface CenterDao {
         centerAccounts.savingsAccounts.forEach { saveSavingsAccount(it.copy(centerId = owner)) }
         centerAccounts.memberLoanAccounts.forEach { saveMemberLoanAccount(it.copy(centerId = owner)) }
     }
+
+    /** One queued offline center, for the write store's source of truth. */
+    @Query("SELECT * FROM CenterPayload WHERE id = :id LIMIT 1")
+    fun observeCenterPayload(id: Int): Flow<CenterPayloadEntity?>
 }

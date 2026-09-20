@@ -27,7 +27,7 @@ import org.mobilenativefoundation.store.store5.Store
  * screen filters client-side over the cached set — narrowing server-side would make the cache a
  * partial view keyed by nothing.
  */
-@StoreProvider(id = "checkerTasks")
+@StoreProvider(id = "checkerTasks", ttl = "5m")
 @CacheKey(name = "LIST", key = "checkerTasks")
 fun provideCheckerInboxStore(
     service: CheckerInboxApi,
