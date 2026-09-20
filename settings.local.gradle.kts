@@ -24,3 +24,5 @@
 //     include(":feature:my-feature")
 
 // Fork module includes go below this line.
+
+include(":feature:auth")

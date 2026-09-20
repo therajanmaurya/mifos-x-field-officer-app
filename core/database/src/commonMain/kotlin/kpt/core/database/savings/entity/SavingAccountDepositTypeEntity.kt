@@ -14,6 +14,7 @@ import kpt.core.base.database.annotation.DbEntity
 import kotlinx.serialization.Serializable
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
+import androidx.room3.Ignore
 
 @DbEntity
 @Entity(
@@ -34,10 +35,13 @@ data class SavingAccountDepositTypeEntity(
     val value: String? = null,
 ) {
 
+    @Ignore
     val isRecurring: Boolean
         get() = ServerTypes.RECURRING.id == id
+    @Ignore
     val endpoint: String
         get() = ServerTypes.fromId(id).endpoint
+    @Ignore
     val serverType: ServerTypes
         get() = ServerTypes.fromId(id)
 

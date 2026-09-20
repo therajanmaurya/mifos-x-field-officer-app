@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 13,
-    "identityHash": "615468619af122ab315808bb1bd83784",
+    "identityHash": "68a001f05f27bca97c1fe0e277acbbe0",
     "entities": [
       {
         "tableName": "store_bookkeeper",
@@ -483,7 +483,7 @@
       },
       {
         "tableName": "Charges",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `clientId` INTEGER, `loanId` INTEGER, `chargeId` INTEGER, `name` TEXT, `chargeTimeType` TEXT, `chargeDueDate` TEXT, `dueDate` TEXT, `chargeCalculationType` TEXT, `currency` TEXT, `amount` REAL, `amountPaid` REAL, `amountWaived` REAL, `amountWrittenOff` REAL, `amountOutstanding` REAL, `penalty` INTEGER, `active` INTEGER, `paid` INTEGER, `waived` INTEGER, `formattedDueDate` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `clientId` INTEGER, `loanId` INTEGER, `chargeId` INTEGER, `name` TEXT, `chargeTimeType` TEXT, `chargeDueDate` TEXT, `dueDate` TEXT, `chargeCalculationType` TEXT, `currency` TEXT, `amount` REAL, `amountPaid` REAL, `amountWaived` REAL, `amountWrittenOff` REAL, `amountOutstanding` REAL, `penalty` INTEGER, `active` INTEGER, `paid` INTEGER, `waived` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -580,12 +580,6 @@
             "fieldPath": "waived",
             "columnName": "waived",
             "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "formattedDueDate",
-            "columnName": "formattedDueDate",
-            "affinity": "TEXT",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -4878,7 +4872,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '615468619af122ab315808bb1bd83784')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '68a001f05f27bca97c1fe0e277acbbe0')"
     ]
   }
 }

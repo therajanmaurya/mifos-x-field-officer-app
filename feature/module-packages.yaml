@@ -70,6 +70,7 @@ template: []
 # template-owned (see customization-surface.yaml), because nobody redesigns a platform shim and a
 # fork missing an `actual` for a newly-added KMP target would simply stop compiling.
 fork:
+  - { id: auth,             status: exists }
   - { id: home,             status: exists }
   - { id: profile,          status: exists }
   - { id: settings,         status: exists }

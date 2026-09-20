@@ -14,6 +14,7 @@ import androidx.room3.PrimaryKey
 import kotlinx.serialization.Serializable
 import kpt.core.base.database.annotation.DbEntity
 import kpt.core.database.client.entity.ClientDateEntity
+import androidx.room3.Ignore
 
 
 
@@ -71,6 +72,14 @@ data class ChargesEntity(
     val waived: Boolean? = null,
 ) {
 
+    /**
+     * Derived, not stored — `@Ignore` keeps Room from treating it as a column.
+     *
+     * Without it Room emits `_item.formattedDueDate = ...` into the generated DAO impl, which does
+     * not compile against a get-only property. Latent since the original app: it only surfaces once
+     * the generated desktop impls are actually compiled.
+     */
+    @Ignore
     val formattedDueDate: String
         get() = if (dueDate?.size == 3) {
             "${dueDate[0]}-${dueDate[1]}-${dueDate[2]}"
