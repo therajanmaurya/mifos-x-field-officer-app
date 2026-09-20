@@ -12,6 +12,8 @@ package kpt.core.database.client.entity
 import kpt.core.model.objects.account.share.ShareAccounts
 import kpt.core.database.loan.entity.LoanAccountEntity
 import kpt.core.database.savings.entity.SavingsAccountEntity
+import kotlinx.serialization.Serializable
+@Serializable
 data class ClientAccounts(
     var loanAccounts: List<LoanAccountEntity> = emptyList(),
 
