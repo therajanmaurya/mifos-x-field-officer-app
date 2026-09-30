@@ -22,3 +22,19 @@
 //     }
 //
 // Empty on the template — this is yours to fill.
+
+dependencies {
+    // kpt.core.platform.permission.PermissionRequester — suspendCancellableCoroutine bridges the
+    // Android ActivityResult callback to a suspend fn. core-base/platform declares coroutines as
+    // `implementation`, so it is not visible transitively here.
+    "commonMainImplementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+
+    // Android permission mechanics: ComponentActivity + activityResultRegistry +
+    // ActivityResultContracts come from activity-ktx; ContextCompat.checkSelfPermission and
+    // ActivityCompat.shouldShowRequestPermissionRationale come from core-ktx.
+    //
+    // These live HERE, not in `core/designsystem`, because the permission surface moved to this
+    // module. designsystem is Compose-only and must not carry android platform deps.
+    "androidMainImplementation"("androidx.activity:activity-ktx:1.13.0")
+    "androidMainImplementation"("androidx.core:core-ktx:1.19.0")
+}

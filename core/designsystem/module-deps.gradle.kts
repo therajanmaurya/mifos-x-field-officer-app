@@ -22,3 +22,10 @@
 //     }
 //
 // Empty on the template — this is yours to fill.
+
+dependencies {
+    // PermissionBox consumes kpt.core.platform.permission.PermissionRequester. The permission
+    // mechanics (and therefore every androidx.activity / androidx.core dependency) live in
+    // core/platform — this module stays Compose-only, with no android platform deps of its own.
+    "commonMainImplementation"(project(":core:platform"))
+}

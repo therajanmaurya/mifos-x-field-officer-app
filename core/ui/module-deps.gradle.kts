@@ -22,3 +22,16 @@
 //     }
 //
 // Empty on the template — this is yours to fill.
+
+dependencies {
+    // kpt.core.ui.util.ShareUtils (androidMain) launches OssLicensesMenuActivity. The oss-licenses
+    // GRADLE PLUGIN is already on the root classpath; this is the runtime artifact that provides the
+    // activity itself, and it was never declared — so `:core:ui:compileAndroidMain` could not resolve
+    // `com.google.android.gms.oss.licenses`.
+    //
+    // DEBT, recorded as capability #10 in FEATURE_LAYER_MIGRATION_SPEC.md §3a: ShareUtils is an
+    // `actual object` of platform code sitting in core/ui, which is Compose-only. It belongs in
+    // core/platform (and its sharing half largely duplicates core-base/platform's ShareManager).
+    // Declared here to unblock the baseline; relocated in the slice that owns `about`/`settings`.
+    "androidMainImplementation"("com.google.android.gms:play-services-oss-licenses:17.5.1")
+}
