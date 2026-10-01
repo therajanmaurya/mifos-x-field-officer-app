@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kpt.core.model.user.UserData
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -159,5 +160,46 @@ class RootNavViewModelTest {
         assertEquals(login, rootTargetRoute(RootNavState.ShowOnboarding))
         assertEquals(login, rootTargetRoute(RootNavState.UserLocked))
         assertTrue(login !is String)
+    }
+
+    /**
+     * A FRESH INSTALL must land on sign-in, not inside the app.
+     *
+     * `UserData.DEFAULT` shipped `isAuthenticated = true` — correct for the kmp-project-template,
+     * whose demo has no sign-in, and wrong for this fork. With it, the gate read
+     * `firstTimeUser=false -> isAuthenticated=true -> passcode non-empty -> isUnlocked=true` and a
+     * brand-new install entered the authenticated graph with no credentials. Confirmed on a physical
+     * device: the fresh install rendered the empty Home shell and sign-in was unreachable.
+     *
+     * Asserted against `UserData.DEFAULT` itself rather than a hand-built fixture — a fixture would
+     * keep passing if the shipped default regressed, which is the only thing this test is for.
+     */
+    @Test
+    fun aFreshInstallDefaultIsNotAuthenticated() = runTest(dispatcher) {
+        val repo = FakeUserDataRepository(UserData.DEFAULT)
+        val vm = RootNavViewModel(repo)
+        advanceUntilIdle()
+        assertEquals(
+            RootNavState.Auth,
+            vm.stateFlow.value,
+            "a fresh install must reach sign-in, never the authenticated graph",
+        )
+    }
+
+    /**
+     * ...and `isUnlocked` must stay true in the default, or signing in loops.
+     *
+     * `updateFineractUser` sets `isAuthenticated` only. If the default also cleared `isUnlocked`, a
+     * just-signed-in user would match the gate's `else -> UserLocked` branch, which S1 routes back to
+     * sign-in because this fork has no unlock screen.
+     */
+    @Test
+    fun aSignedInUserReachesTheAuthenticatedGraphRatherThanLoopingToLocked() = runTest(dispatcher) {
+        val repo = FakeUserDataRepository(
+            UserData.DEFAULT.copy(isAuthenticated = true, activeUserId = "officer-1"),
+        )
+        val vm = RootNavViewModel(repo)
+        advanceUntilIdle()
+        assertEquals(RootNavState.UserUnlocked("officer-1"), vm.stateFlow.value)
     }
 }

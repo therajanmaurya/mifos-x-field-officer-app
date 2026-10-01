@@ -35,7 +35,22 @@ data class UserData(
             darkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
             useDynamicColor = false,
             appLanguage = LanguageConfig.DEFAULT,
-            isAuthenticated = true,
+            // FORK DIVERGENCE from kmp-project-template (S1, 2026-10-01).
+            //
+            // The template demo ships no sign-in, so defaulting a fresh install to authenticated is
+            // right FOR IT — see the matching note in UserPreferencesRepositoryImpl.clearUserData().
+            // This fork has real Fineract authentication, and with `true` a brand-new install walked
+            // straight into the authenticated graph with no credentials: RootNavViewModel's gate read
+            // firstTimeUser=false -> isAuthenticated=true -> passcode non-empty -> isUnlocked=true ->
+            // UserUnlocked. Verified on device: a fresh install rendered the empty Home shell and the
+            // sign-in screen was unreachable.
+            //
+            // ONLY `isAuthenticated` flips. `isUnlocked` must stay true: `updateFineractUser` sets
+            // isAuthenticated alone, so a false default would leave a just-signed-in user matching the
+            // gate's `else -> UserLocked` branch, and this fork has no unlock screen to show — the
+            // original's passcode UI is an Android-only library with no multiplatform form, so S1
+            // routes UserLocked to sign-in. That combination would loop login -> locked -> login.
+            isAuthenticated = false,
             isUnlocked = true,
             isPasscodeEnabled = false,
             isBiometricsEnabled = false,

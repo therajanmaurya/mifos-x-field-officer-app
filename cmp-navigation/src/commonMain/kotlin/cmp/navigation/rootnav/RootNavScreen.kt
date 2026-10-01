@@ -130,19 +130,6 @@ fun RootNavScreen(
     }
 
     val targetRoute = rootTargetRoute(state)
-    val currentRoute = navController.currentDestination?.rootLevelRoute()
-
-    // Don't navigate if we are already at the correct root. This notably happens during process
-    // death. In this case, the NavHost already restores state, so we don't have to navigate.
-    // However, if the route is correct but the underlying state is different, we should still
-    // proceed in order to get a fresh version of that route.
-    if (currentRoute == targetRoute.toObjectNavigationRoute() &&
-        previousStateReference.load() == state
-    ) {
-        previousStateReference.store(state)
-        return
-    }
-    previousStateReference.store(state)
 
     // In some scenarios on an emulator the Activity can leak when recreated
     // if we don't first clear focus anytime we change the root destination.
@@ -163,6 +150,29 @@ fun RootNavScreen(
     // avoids a bug that first appeared in Compose Material3 1.2.0-rc01 that causes the initial
     // transition to appear corrupted.
     LaunchedEffect(state) {
+        // The "already at the correct root" guard lives INSIDE the effect, not as an early `return`
+        // from the composable.
+        //
+        // It used to be an early return, and that made this LaunchedEffect leave and re-enter the
+        // composition: while the app sat on a root destination the guard matched, the composable
+        // returned before reaching here, and the effect was DISPOSED. The moment anything navigated
+        // to a non-root destination — the first of which this fork added in S1, the server-config
+        // screen reachable from sign-in — `currentRoute` stopped matching, the early return no longer
+        // fired, and the effect ENTERED the composition fresh and ran again, even though `state` had
+        // not changed. The result was a push immediately followed by a pop: measured on device at
+        // 20ms, ServerConfigRoute -> LoginRoute, with no crash and nothing in the log to explain it.
+        //
+        // Re-entry re-runs a LaunchedEffect regardless of its key, so the guard has to be a condition
+        // the effect evaluates, never a reason to remove the effect from the tree.
+        val currentRoute = navController.currentDestination?.rootLevelRoute()
+        if (currentRoute == targetRoute.toObjectNavigationRoute() &&
+            previousStateReference.load() == state
+        ) {
+            previousStateReference.store(state)
+            return@LaunchedEffect
+        }
+        previousStateReference.store(state)
+
         when (state) {
             RootNavState.Splash -> navController.navigateToSplash(rootNavOptions)
             // Auth, ShowOnboarding and UserLocked all land on sign-in — see [rootTargetRoute].
