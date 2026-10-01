@@ -5,10 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.model.recurringdeposit
 
+import kotlinx.serialization.Serializable
 import kpt.core.model.objects.template.recurring.AccountChart
 import kpt.core.model.objects.template.recurring.Currency
 import kpt.core.model.objects.template.recurring.FieldOfficerOption
@@ -32,7 +33,6 @@ import kpt.core.model.objects.template.recurring.period.LockinPeriodFrequencyTyp
 import kpt.core.model.objects.template.recurring.period.LockinPeriodFrequencyTypeOption
 import kpt.core.model.objects.template.recurring.period.PeriodFrequencyTypeOption
 import kpt.core.model.objects.template.recurring.period.ProductOption
-import kotlinx.serialization.Serializable
 @Serializable
 data class RecurringDepositAccountTemplate(
     val accountChart: AccountChart? = null,

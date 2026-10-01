@@ -5,15 +5,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.model.collectionsheet
 
-import kpt.core.model.utils.ApiDateFormatter
-import kpt.core.model.objects.collectionsheets.BulkSavingsDueTransaction
-import kpt.core.model.client.ClientsAttendance
-import kpt.core.model.shared.BulkRepaymentTransactions
 import kotlinx.serialization.Serializable
+import kpt.core.model.client.ClientsAttendance
+import kpt.core.model.objects.collectionsheets.BulkSavingsDueTransaction
+import kpt.core.model.shared.BulkRepaymentTransactions
+import kpt.core.model.utils.ApiDateFormatter
 
 /**
  * Created by Tarun on 31-07-17.

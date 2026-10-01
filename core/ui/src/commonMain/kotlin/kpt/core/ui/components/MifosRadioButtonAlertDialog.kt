@@ -5,12 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.components
 
-import kpt.core.ui.generated.resources.Res
-import kpt.core.ui.generated.resources.core_ui_core_common_working
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,12 +25,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.designsystem.theme.MifosTheme
+import kpt.core.ui.generated.resources.Res
+import kpt.core.ui.generated.resources.core_ui_core_common_working
 import kpt.core.ui.util.DevicePreview
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import kpt.core.base.designsystem.theme.KptTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

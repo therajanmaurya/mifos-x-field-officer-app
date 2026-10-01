@@ -5,10 +5,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.loan.mapper
 
+import kpt.core.database.loan.entity.ActualDisbursementDateEntity
+import kpt.core.database.loan.entity.LoanAccountSummaryEntity
+import kpt.core.database.loan.entity.LoanStatusEntity
+import kpt.core.database.loan.entity.LoanTimelineEntity
+import kpt.core.database.loan.entity.LoanTypeEntity
+import kpt.core.database.loan.entity.LoanWithAssociationsEntity
+import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
 import kpt.core.model.objects.account.loan.AmortizationType
 import kpt.core.model.objects.account.loan.InterestCalculationPeriodType
 import kpt.core.model.objects.account.loan.InterestRateFrequencyType
@@ -24,13 +31,6 @@ import kpt.core.model.objects.account.loan.loanWithAssociations.LoanType
 import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
 import kpt.core.model.objects.account.loan.loanWithAssociations.SavingAccountCurrency
 import kpt.core.network.data.AbstractMapper
-import kpt.core.database.loan.entity.ActualDisbursementDateEntity
-import kpt.core.database.loan.entity.LoanAccountSummaryEntity
-import kpt.core.database.loan.entity.LoanStatusEntity
-import kpt.core.database.loan.entity.LoanTimelineEntity
-import kpt.core.database.loan.entity.LoanTypeEntity
-import kpt.core.database.loan.entity.LoanWithAssociationsEntity
-import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
 
 object LoanAccountMapper : AbstractMapper<LoanWithAssociationsEntity, LoanWithAssociations>() {
 

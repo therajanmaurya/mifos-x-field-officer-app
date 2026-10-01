@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.components
 
@@ -24,11 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kpt.core.base.designsystem.KptTheme
+import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.designsystem.theme.MifosTypography
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kpt.core.base.designsystem.KptTheme
-import kpt.core.base.designsystem.theme.KptTheme
 
 @Composable
 fun MifosGeneralCardComponentOutline(

@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.savings
 
@@ -27,27 +27,30 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 /** Addresses one `fixedDepositProductTemplate` read. */
 data class FixedDepositProductTemplateKey(
     val clientId: Int,
     val productId: Int?,
 )
+
 /** Addresses one `getClientSavingsAccountTemplateByProduct` read. */
 data class GetClientSavingsAccountTemplateByProductKey(
     val clientId: Int,
     val productId: Int,
 )
+
 /** Addresses one `getGroupSavingsAccountTemplateByProduct` read. */
 data class GetGroupSavingsAccountTemplateByProductKey(
     val groupId: Int,
     val productId: Int,
 )
+
 /** Addresses one `shareProductTemplate` read. */
 data class ShareProductTemplateKey(
     val clientId: Int,
     val productId: Int?,
 )
+
 @StoreProvider(id = "savingsFixedDepositProductTemplate", ttl = "12h")
 @CacheKey(fn = "forKey", key = "savingsFixedDepositProductTemplate:{key}", params = ["key:String"])
 fun provideFixedDepositProductTemplateStore(
@@ -58,6 +61,7 @@ fun provideFixedDepositProductTemplateStore(
     keyOf = { key -> AppCacheKeys.SavingsFixedDepositProductTemplate.forKey("${key.clientId}:${key.productId}") },
     fetch = { key -> fixedDepositApi.fixedDepositProductTemplate(clientId = key.clientId, productId = key.productId) },
 )
+
 @StoreProvider(id = "savingsGetClientSavingsAccountTemplateByProduct", ttl = "12h")
 @CacheKey(fn = "forKey", key = "savingsGetClientSavingsAccountTemplateByProduct:{key}", params = ["key:String"])
 fun provideGetClientSavingsAccountTemplateByProductStore(
@@ -68,6 +72,7 @@ fun provideGetClientSavingsAccountTemplateByProductStore(
     keyOf = { key -> AppCacheKeys.SavingsGetClientSavingsAccountTemplateByProduct.forKey("${key.clientId}:${key.productId}") },
     fetch = { key -> savingsAccountApi.getClientSavingsAccountTemplateByProduct(clientId = key.clientId, productId = key.productId) },
 )
+
 @StoreProvider(id = "savingsGetGroupSavingsAccountTemplateByProduct", ttl = "12h")
 @CacheKey(fn = "forKey", key = "savingsGetGroupSavingsAccountTemplateByProduct:{key}", params = ["key:String"])
 fun provideGetGroupSavingsAccountTemplateByProductStore(
@@ -78,6 +83,7 @@ fun provideGetGroupSavingsAccountTemplateByProductStore(
     keyOf = { key -> AppCacheKeys.SavingsGetGroupSavingsAccountTemplateByProduct.forKey("${key.groupId}:${key.productId}") },
     fetch = { key -> savingsAccountApi.getGroupSavingsAccountTemplateByProduct(groupId = key.groupId, productId = key.productId) },
 )
+
 @StoreProvider(id = "savingsShareProductTemplate", ttl = "12h")
 @CacheKey(fn = "forKey", key = "savingsShareProductTemplate:{key}", params = ["key:String"])
 fun provideShareProductTemplateStore(

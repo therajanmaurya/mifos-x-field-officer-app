@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.datatable
 
@@ -24,11 +24,11 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 /** Addresses one `getDatatables` read. */
 data class GetDatatablesKey(
     val apptable: String? = null,
 )
+
 @StoreProvider(id = "datatableGetDatatables", ttl = "12h")
 @CacheKey(fn = "forKey", key = "datatableGetDatatables:{key}", params = ["key:String"])
 fun provideGetDatatablesStore(
@@ -39,6 +39,7 @@ fun provideGetDatatablesStore(
     keyOf = { key -> AppCacheKeys.DatatableGetDatatables.forKey("${key.apptable}") },
     fetch = { key -> dataTableApi.getDatatables(apptable = key.apptable) },
 )
+
 @StoreProvider(id = "datatableGetUserPathTracking", ttl = "12h")
 @CacheKey(fn = "forKey", key = "datatableGetUserPathTracking:{key}", params = ["key:String"])
 fun provideGetUserPathTrackingStore(

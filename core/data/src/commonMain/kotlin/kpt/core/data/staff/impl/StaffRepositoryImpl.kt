@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.staff.impl
 
@@ -15,11 +15,11 @@ import kpt.core.base.data.annotation.RepositoryBinding
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.staff.StaffRepository
+import kpt.core.database.staff.entity.StaffEntity
 import kpt.core.store.config.AppCacheKeys
 import kpt.core.store.config.AppStoreIds
 import kpt.core.store.config.AppStoreRegistry
 import org.mobilenativefoundation.store.store5.Store
-import kpt.core.database.staff.entity.StaffEntity
 
 @RepositoryBinding(binds = StaffRepository::class)
 internal class StaffRepositoryImpl(
@@ -34,7 +34,7 @@ internal class StaffRepositoryImpl(
             key = officeId,
             cacheKey = AppCacheKeys.Staff.forOffice(officeId),
             scope = scope,
-        isEmpty = { it.isEmpty() },
+            isEmpty = { it.isEmpty() },
             ttl = AppStoreRegistry.Ttl.STAFF,
         )
 }

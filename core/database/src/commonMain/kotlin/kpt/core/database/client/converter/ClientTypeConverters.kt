@@ -5,10 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.client.converter
 
+import androidx.room3.ColumnTypeConverter
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kpt.core.base.database.annotation.DbConverters
 import kpt.core.database.client.entity.ClientClassificationEntity
 import kpt.core.database.client.entity.ClientDateEntity
 import kpt.core.database.client.entity.ClientGenderEntity
@@ -19,15 +23,8 @@ import kpt.core.database.client.entity.OfficeOptionsEntity
 import kpt.core.database.client.entity.OptionsEntity
 import kpt.core.database.client.entity.SavingProductOptionsEntity
 import kpt.core.database.client.entity.StaffOptionsEntity
-
-import androidx.room3.ColumnTypeConverter
-import kpt.core.model.objects.account.loan.Currency
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kpt.core.base.database.annotation.DbConverters
 import kpt.core.database.loan.entity.LoanAccountEntity
-
-
+import kpt.core.model.objects.account.loan.Currency
 
 @DbConverters
 class ClientTypeConverters {

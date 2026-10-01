@@ -5,21 +5,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.group.converter
-
-import kpt.core.database.group.entity.GroupEntity
-
-import kpt.core.model.shared.Timeline
 
 import androidx.room3.ColumnTypeConverter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kpt.core.base.database.annotation.DbConverters
 import kpt.core.database.group.entity.GroupDateEntity
-
-
+import kpt.core.database.group.entity.GroupEntity
+import kpt.core.model.shared.Timeline
 
 /**
  * Created by Pronay Sarker on 17/02/2025 (7:45 AM)

@@ -5,19 +5,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.client.impl
 
 import io.ktor.client.request.forms.MultiPartFormDataContent
-import io.ktor.client.statement.HttpResponse
 import kpt.core.base.data.annotation.RepositoryBinding
 import kpt.core.base.store.mutation.CommandSpec
 import kpt.core.base.store.mutation.MutationGateway
 import kpt.core.base.store.mutation.MutationPolicy
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.client.ClientCommandRepository
-import kpt.core.database.client.entity.ClientEntity
 import kpt.core.database.client.entity.ClientPayloadEntity
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.clients.AssignStaffRequest
@@ -27,14 +25,10 @@ import kpt.core.model.objects.clients.CollateralPayload
 import kpt.core.model.objects.clients.ProposeTransferRequest
 import kpt.core.model.objects.clients.UpdateSavingsAccountRequest
 import kpt.core.model.objects.noncoreobjects.IdentifierPayload
-import kpt.core.model.shared.GenericResponse
-import kpt.core.model.shared.PinpointLocationActionResponse
 import kpt.core.network.mifos.client.api.ClientApi
 import kpt.core.network.mifos.client.api.ClientIdentifierApi
 import kpt.core.network.mifos.client.dto.PostClientAddressRequest
-import kpt.core.network.mifos.client.dto.PostClientAddressResponse
 import kpt.core.network.mifos.client.dto.PostClientsClientIdRequest
-import kpt.core.network.mifos.client.dto.PostClientsClientIdResponse
 
 @RepositoryBinding(binds = ClientCommandRepository::class)
 internal class ClientCommandRepositoryImpl(

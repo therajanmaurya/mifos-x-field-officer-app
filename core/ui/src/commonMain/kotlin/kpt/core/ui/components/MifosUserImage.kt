@@ -5,12 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.components
 
-import kpt.core.ui.generated.resources.Res
-import kpt.core.ui.generated.resources.profile
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.CircleShape
@@ -22,11 +20,13 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.ImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
+import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.designsystem.theme.MifosTheme
+import kpt.core.ui.generated.resources.Res
+import kpt.core.ui.generated.resources.profile
 import kpt.core.ui.util.DevicePreview
 import org.jetbrains.compose.resources.painterResource
-import kpt.core.base.designsystem.theme.KptTheme
 
 @Composable
 fun MifosUserImage(

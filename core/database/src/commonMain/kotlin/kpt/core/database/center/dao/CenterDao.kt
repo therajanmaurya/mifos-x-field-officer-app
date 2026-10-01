@@ -5,26 +5,25 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.center.dao
 
-import kpt.core.base.database.annotation.DbDao
-
-import kpt.core.database.loan.entity.LoanAccountEntity
-import kpt.core.database.savings.entity.SavingsAccountEntity
-import kpt.core.database.center.entity.CenterPayloadEntity
-import kpt.core.database.center.entity.CenterEntity
-import kpt.core.database.group.entity.GroupEntity
-import kotlinx.coroutines.flow.Flow
 import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
-import androidx.room3.Update
 import androidx.room3.Transaction
+import androidx.room3.Update
+import kotlinx.coroutines.flow.Flow
+import kpt.core.base.database.annotation.DbDao
 import kpt.core.database.center.entity.CenterAccounts
 import kpt.core.database.center.entity.CenterDateEntity
+import kpt.core.database.center.entity.CenterEntity
+import kpt.core.database.center.entity.CenterPayloadEntity
+import kpt.core.database.group.entity.GroupEntity
+import kpt.core.database.loan.entity.LoanAccountEntity
+import kpt.core.database.savings.entity.SavingsAccountEntity
 
 @DbDao
 @Dao

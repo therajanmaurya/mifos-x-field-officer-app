@@ -5,34 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.client.api
 
-import kpt.core.base.network.annotation.ApiBinding
-
-import kpt.core.common.utils.Page
-import kpt.core.model.objects.clients.ActivatePayload
-import kpt.core.model.objects.clients.AssignStaffRequest
-import kpt.core.model.objects.clients.ClientAddressEntity
-import kpt.core.model.objects.clients.ClientAddressRequest
-import kpt.core.model.objects.clients.ClientAddressResponse
-import kpt.core.model.objects.clients.ClientCloseRequest
-import kpt.core.model.objects.clients.CollateralPayload
-import kpt.core.model.objects.clients.ProposeTransferRequest
-import kpt.core.model.objects.clients.UpdateSavingsAccountRequest
-import kpt.core.model.shared.GenericResponse
-import kpt.core.network.mifos.client.dto.ClientCloseTemplateResponse
-import kpt.core.model.shared.CollateralItem
-import kpt.core.model.shared.CollateralItemResult
-import kpt.core.network.mifos.client.dto.GetClientsClientIdAccountsResponse
-import kpt.core.network.mifos.client.dto.GetClientsPageItemsResponse
-import kpt.core.network.mifos.client.dto.GetClientsResponse
-import kpt.core.model.shared.PinpointLocationActionResponse
-import kpt.core.network.mifos.client.dto.PostClientAddressRequest
-import kpt.core.network.mifos.client.dto.PostClientAddressResponse
-import kpt.core.network.mifos.client.dto.PostClientsClientIdRequest
-import kpt.core.network.mifos.client.dto.PostClientsClientIdResponse
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET
@@ -42,12 +18,35 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.statement.HttpResponse
+import kpt.core.base.network.annotation.ApiBinding
+import kpt.core.common.utils.Page
 import kpt.core.database.client.entity.AddressConfiguration
 import kpt.core.database.client.entity.AddressTemplate
 import kpt.core.database.client.entity.ClientAccounts
 import kpt.core.database.client.entity.ClientEntity
 import kpt.core.database.client.entity.ClientPayloadEntity
 import kpt.core.database.client.entity.ClientsTemplateEntity
+import kpt.core.model.objects.clients.ActivatePayload
+import kpt.core.model.objects.clients.AssignStaffRequest
+import kpt.core.model.objects.clients.ClientAddressEntity
+import kpt.core.model.objects.clients.ClientAddressRequest
+import kpt.core.model.objects.clients.ClientAddressResponse
+import kpt.core.model.objects.clients.ClientCloseRequest
+import kpt.core.model.objects.clients.CollateralPayload
+import kpt.core.model.objects.clients.ProposeTransferRequest
+import kpt.core.model.objects.clients.UpdateSavingsAccountRequest
+import kpt.core.model.shared.CollateralItem
+import kpt.core.model.shared.CollateralItemResult
+import kpt.core.model.shared.GenericResponse
+import kpt.core.model.shared.PinpointLocationActionResponse
+import kpt.core.network.mifos.client.dto.ClientCloseTemplateResponse
+import kpt.core.network.mifos.client.dto.GetClientsClientIdAccountsResponse
+import kpt.core.network.mifos.client.dto.GetClientsPageItemsResponse
+import kpt.core.network.mifos.client.dto.GetClientsResponse
+import kpt.core.network.mifos.client.dto.PostClientAddressRequest
+import kpt.core.network.mifos.client.dto.PostClientAddressResponse
+import kpt.core.network.mifos.client.dto.PostClientsClientIdRequest
+import kpt.core.network.mifos.client.dto.PostClientsClientIdResponse
 
 @ApiBinding("mifos")
 interface ClientApi {

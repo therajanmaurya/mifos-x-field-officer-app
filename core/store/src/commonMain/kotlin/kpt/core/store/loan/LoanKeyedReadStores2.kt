@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.loan
 
@@ -24,7 +24,6 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 @StoreProvider(id = "loanGetListOfLoanCharges", ttl = "12h")
 @CacheKey(fn = "forKey", key = "loanGetListOfLoanCharges:{key}", params = ["key:String"])
 fun provideGetListOfLoanChargesStore(
@@ -35,6 +34,7 @@ fun provideGetListOfLoanChargesStore(
     keyOf = { key -> AppCacheKeys.LoanGetListOfLoanCharges.forKey(key.toString()) },
     fetch = { key -> loanApi.getListOfLoanCharges(loanId = key) },
 )
+
 @StoreProvider(id = "loanGetListOfCharges", ttl = "12h")
 @CacheKey(fn = "forKey", key = "loanGetListOfCharges:{key}", params = ["key:String"])
 fun provideGetListOfChargesStore(

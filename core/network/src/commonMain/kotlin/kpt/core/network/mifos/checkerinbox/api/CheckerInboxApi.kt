@@ -5,21 +5,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.checkerinbox.api
 
-import kpt.core.base.network.annotation.ApiBinding
-
-import kpt.core.model.objects.checkerinboxtask.CheckerInboxSearchTemplate
-import kpt.core.model.objects.checkerinboxtask.CheckerTask
-import kpt.core.model.objects.checkerinboxtask.RescheduleLoansTask
-import kpt.core.model.shared.GenericResponse
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
+import kpt.core.base.network.annotation.ApiBinding
+import kpt.core.model.objects.checkerinboxtask.CheckerInboxSearchTemplate
+import kpt.core.model.objects.checkerinboxtask.CheckerTask
+import kpt.core.model.objects.checkerinboxtask.RescheduleLoansTask
+import kpt.core.model.shared.GenericResponse
 
 @ApiBinding("mifos")
 interface CheckerInboxApi {

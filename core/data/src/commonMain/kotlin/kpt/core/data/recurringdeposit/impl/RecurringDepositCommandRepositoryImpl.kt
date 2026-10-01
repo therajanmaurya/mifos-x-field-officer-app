@@ -5,11 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.recurringdeposit.impl
 
-import io.ktor.client.statement.HttpResponse
 import kpt.core.base.data.annotation.RepositoryBinding
 import kpt.core.base.store.mutation.CommandSpec
 import kpt.core.base.store.mutation.MutationGateway

@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.checkerinbox
 
@@ -24,7 +24,6 @@ import org.mobilenativefoundation.store.store5.Store
  * own, cached through the shared read cache so they still render with no signal.
  */
 
-
 @StoreProvider(id = "rescheduleLoanTasks", ttl = "12h")
 @CacheKey(name = "LIST", key = "rescheduleLoanTasks")
 fun provideRescheduleLoanTasksStore(
@@ -35,6 +34,7 @@ fun provideRescheduleLoanTasksStore(
     keyOf = { AppCacheKeys.RescheduleLoanTasks.LIST },
     fetch = { checkerInboxApi.getRescheduleLoansTaskList() },
 )
+
 @StoreProvider(id = "checkerSearchTemplate", ttl = "12h")
 @CacheKey(name = "LIST", key = "checkerSearchTemplate")
 fun provideCheckerSearchTemplateStore(

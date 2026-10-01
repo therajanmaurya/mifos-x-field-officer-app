@@ -5,24 +5,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.savings.entity
 
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
-import androidx.room3.ForeignKey
 import androidx.room3.PrimaryKey
+import kotlinx.serialization.Serializable
+import kpt.core.base.database.annotation.DbEntity
+import kpt.core.database.loan.entity.LoanTimelineEntity
 import kpt.core.model.objects.account.saving.InterestCalculationDaysInYearType
 import kpt.core.model.objects.account.saving.InterestCalculationType
 import kpt.core.model.objects.account.saving.InterestCompoundingPeriodType
 import kpt.core.model.objects.account.saving.InterestPostingPeriodType
 import kpt.core.model.objects.account.saving.LockinPeriodFrequencyType
-import kotlinx.serialization.Serializable
-import kpt.core.base.database.annotation.DbEntity
-import kpt.core.database.loan.entity.LoanTimelineEntity
-
-
 
 @DbEntity
 @Entity(
@@ -31,8 +28,7 @@ import kpt.core.database.loan.entity.LoanTimelineEntity
     inheritSuperIndices = false,
     primaryKeys = [],
     ignoredColumns = [],
-    foreignKeys = [
-    ],
+    foreignKeys = [],
 )
 @Serializable
 data class SavingsAccountWithAssociationsEntity(

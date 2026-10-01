@@ -5,17 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.charge.api
 
-import kpt.core.base.network.annotation.ApiBinding
-
-import kpt.core.model.objects.clients.ChargeCreationResponse
-import kpt.core.model.objects.clients.Page
-import kpt.core.model.objects.payloads.ChargesPayload
-import kpt.core.model.objects.template.client.ChargeTemplate
-import kpt.core.database.charge.entity.ChargesEntity
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET
@@ -24,6 +17,12 @@ import de.jensklingenberg.ktorfit.http.PUT
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.statement.HttpResponse
+import kpt.core.base.network.annotation.ApiBinding
+import kpt.core.database.charge.entity.ChargesEntity
+import kpt.core.model.objects.clients.ChargeCreationResponse
+import kpt.core.model.objects.clients.Page
+import kpt.core.model.objects.payloads.ChargesPayload
+import kpt.core.model.objects.template.client.ChargeTemplate
 
 /**
  * Service interface that defines all API endpoints related to charges.

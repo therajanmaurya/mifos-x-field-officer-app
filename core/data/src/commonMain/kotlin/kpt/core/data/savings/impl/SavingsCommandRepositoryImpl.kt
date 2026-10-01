@@ -5,11 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.savings.impl
 
-import io.ktor.client.statement.HttpResponse
 import kpt.core.base.data.annotation.RepositoryBinding
 import kpt.core.base.store.mutation.CommandSpec
 import kpt.core.base.store.mutation.MutationGateway
@@ -18,9 +17,7 @@ import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.savings.SavingsCommandRepository
 import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
 import kpt.core.model.objects.account.loan.SavingsApproval
-import kpt.core.model.objects.account.saving.SavingsAccountTransactionResponse
 import kpt.core.model.objects.payloads.SavingsPayload
-import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.savings.api.FixedDepositApi
 import kpt.core.network.mifos.savings.api.SavingsAccountApi
 import kpt.core.network.mifos.savings.api.ShareAccountApi

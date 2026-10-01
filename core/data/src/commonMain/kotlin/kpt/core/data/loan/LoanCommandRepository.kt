@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.loan
 
@@ -19,6 +19,7 @@ import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleApprovalReq
 import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRejectionRequest
 import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRequest
 import kpt.core.model.objects.account.loan.transfer.AccountTransferRequest
+import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.loan.dto.AssignLoanOfficerRequestDto
 import kpt.core.network.mifos.loan.dto.AssignLoanOfficerResponseDto
@@ -28,7 +29,6 @@ import kpt.core.network.mifos.loan.dto.LoanChargeOffRequestDto
 import kpt.core.network.mifos.loan.dto.LoanChargeOffResponseDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseRequestDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseResponseDto
-import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.network.mifos.loan.dto.LoansPayload
 import kpt.core.network.mifos.loan.dto.RejectLoanRequestDto
 import kpt.core.network.mifos.loan.dto.RejectLoanResponseDto

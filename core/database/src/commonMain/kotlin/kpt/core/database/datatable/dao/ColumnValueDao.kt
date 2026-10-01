@@ -5,19 +5,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.datatable.dao
 
-import kpt.core.base.database.annotation.DbDao
-
-import kpt.core.database.datatable.entity.ColumnValue
 import androidx.room3.Dao
 import androidx.room3.Delete
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Update
+import kpt.core.base.database.annotation.DbDao
+import kpt.core.database.datatable.entity.ColumnValue
 
 @DbDao
 @Dao

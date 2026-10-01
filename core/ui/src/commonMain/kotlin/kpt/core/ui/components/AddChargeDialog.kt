@@ -5,18 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.components
 
-import kpt.core.ui.generated.resources.Res
-import kpt.core.ui.generated.resources.amount
-import kpt.core.ui.generated.resources.cancel
-import kpt.core.ui.generated.resources.collected_on
-import kpt.core.ui.generated.resources.date
-import kpt.core.ui.generated.resources.name
-import kpt.core.ui.generated.resources.ok
-import kpt.core.ui.generated.resources.type
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -39,6 +31,14 @@ import kpt.core.designsystem.component.MifosTextFieldDropdown
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.designsystem.theme.MifosTheme
 import kpt.core.designsystem.theme.MifosTypography
+import kpt.core.ui.generated.resources.Res
+import kpt.core.ui.generated.resources.amount
+import kpt.core.ui.generated.resources.cancel
+import kpt.core.ui.generated.resources.collected_on
+import kpt.core.ui.generated.resources.date
+import kpt.core.ui.generated.resources.name
+import kpt.core.ui.generated.resources.ok
+import kpt.core.ui.generated.resources.type
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Clock

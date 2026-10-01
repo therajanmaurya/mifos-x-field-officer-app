@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.datatable.impl
 
@@ -16,9 +16,7 @@ import kpt.core.base.store.mutation.MutationPolicy
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.datatable.DataTableCommandRepository
 import kpt.core.model.objects.users.UserLocation
-import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.datatable.api.DataTableApi
-import kpt.core.network.mifos.datatable.dto.DeleteDataTablesDatatableAppTableIdDatatableIdResponse
 
 @RepositoryBinding(binds = DataTableCommandRepository::class)
 internal class DataTableCommandRepositoryImpl(

@@ -5,13 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.collectionsheet.entity
 
+import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 import kpt.core.model.objects.collectionsheets.AttendanceTypeOption
 import kpt.core.model.objects.collectionsheets.SavingsProduct
-import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 
 /**
  * Created by Tarun on 25-07-2017.

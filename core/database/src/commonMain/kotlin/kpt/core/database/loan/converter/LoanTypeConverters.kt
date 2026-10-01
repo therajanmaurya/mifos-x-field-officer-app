@@ -5,11 +5,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.loan.converter
 
 import androidx.room3.ColumnTypeConverter
+import kotlinx.serialization.json.Json
+import kpt.core.base.database.annotation.DbConverters
+import kpt.core.database.loan.entity.ActualDisbursementDateEntity
+import kpt.core.database.loan.entity.LoanAccountSummaryEntity
+import kpt.core.database.loan.entity.LoanStatusEntity
+import kpt.core.database.loan.entity.LoanTimelineEntity
+import kpt.core.database.loan.entity.LoanTypeEntity
+import kpt.core.database.payment.entity.PaymentTypeOptionEntity
+import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
 import kpt.core.model.objects.Changes
 import kpt.core.model.objects.account.loan.AmortizationType
 import kpt.core.model.objects.account.loan.InterestCalculationPeriodType
@@ -21,15 +30,6 @@ import kpt.core.model.objects.account.loan.RepaymentSchedule
 import kpt.core.model.objects.account.loan.TermPeriodFrequencyType
 import kpt.core.model.objects.account.loan.Transaction
 import kpt.core.model.objects.account.loan.Type
-import kotlinx.serialization.json.Json
-import kpt.core.base.database.annotation.DbConverters
-import kpt.core.database.loan.entity.ActualDisbursementDateEntity
-import kpt.core.database.loan.entity.LoanAccountSummaryEntity
-import kpt.core.database.loan.entity.LoanStatusEntity
-import kpt.core.database.loan.entity.LoanTimelineEntity
-import kpt.core.database.loan.entity.LoanTypeEntity
-import kpt.core.database.payment.entity.PaymentTypeOptionEntity
-import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
 
 /**
  * Created by Pronay Sarker on 24/01/2025 (3:07 PM)

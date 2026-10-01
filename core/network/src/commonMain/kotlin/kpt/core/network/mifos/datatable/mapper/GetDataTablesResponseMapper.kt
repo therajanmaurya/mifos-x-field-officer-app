@@ -5,15 +5,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.datatable.mapper
 
-import kpt.core.network.data.AbstractMapper
-import kpt.core.network.mifos.datatable.dto.GetDataTablesResponse
-import kpt.core.model.shared.ResultsetColumnHeaderData
 import kpt.core.database.datatable.entity.ColumnHeader
 import kpt.core.database.datatable.entity.DataTableEntity
+import kpt.core.model.shared.ResultsetColumnHeaderData
+import kpt.core.network.data.AbstractMapper
+import kpt.core.network.mifos.datatable.dto.GetDataTablesResponse
 
 /**
  * Created by Aditya Gupta on 31/08/23.

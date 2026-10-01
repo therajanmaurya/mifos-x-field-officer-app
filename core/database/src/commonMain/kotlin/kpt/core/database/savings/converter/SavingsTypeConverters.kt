@@ -5,27 +5,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.savings.converter
 
+import androidx.room3.ColumnTypeConverter
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kpt.core.base.database.annotation.DbConverters
+import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 import kpt.core.database.savings.entity.SavingsAccountStatusEntity
 import kpt.core.database.savings.entity.SavingsAccountSummaryEntity
-
-import androidx.room3.ColumnTypeConverter
+import kpt.core.database.savings.entity.SavingsTransactionDateEntity
+import kpt.core.database.savings.entity.SavingsTransactionTypeEntity
 import kpt.core.model.objects.account.saving.InterestCalculationDaysInYearType
 import kpt.core.model.objects.account.saving.InterestCalculationType
 import kpt.core.model.objects.account.saving.InterestCompoundingPeriodType
 import kpt.core.model.objects.account.saving.InterestPostingPeriodType
 import kpt.core.model.objects.account.saving.LockinPeriodFrequencyType
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kpt.core.base.database.annotation.DbConverters
-import kpt.core.database.payment.entity.PaymentTypeOptionEntity
-import kpt.core.database.savings.entity.SavingsTransactionDateEntity
-import kpt.core.database.savings.entity.SavingsTransactionTypeEntity
-
-
 
 // todo add missing converters
 @DbConverters

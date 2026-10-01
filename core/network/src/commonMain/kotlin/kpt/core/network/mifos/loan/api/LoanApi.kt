@@ -5,12 +5,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.loan.api
 
+import de.jensklingenberg.ktorfit.http.Body
+import de.jensklingenberg.ktorfit.http.GET
+import de.jensklingenberg.ktorfit.http.POST
+import de.jensklingenberg.ktorfit.http.Path
+import de.jensklingenberg.ktorfit.http.Query
+import io.ktor.client.statement.HttpResponse
 import kpt.core.base.network.annotation.ApiBinding
-
+import kpt.core.database.charge.entity.ChargesEntity
+import kpt.core.database.loan.entity.Loan
+import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
+import kpt.core.database.loan.entity.LoanRepaymentResponseEntity
+import kpt.core.database.loan.entity.LoanRepaymentTemplateEntity
+import kpt.core.database.loan.entity.LoanTemplate
+import kpt.core.database.loan.entity.LoanTransactionTemplate
 import kpt.core.model.objects.account.loan.LoanApproval
 import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleApprovalRequest
 import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRejectionRequest
@@ -24,36 +36,23 @@ import kpt.core.model.objects.organisations.LoanProducts
 import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.model.objects.template.loan.GroupLoanTemplate
 import kpt.core.model.shared.GenericResponse
-import kpt.core.network.mifos.loan.dto.LoanWithAssociationsDto
-import kpt.core.network.mifos.loan.dto.CreateGuarantorResponseDto
-import kpt.core.network.mifos.loan.dto.GuarantorRequestDto
-import kpt.core.network.mifos.loan.dto.LoanChargeOffRequestDto
-import kpt.core.network.mifos.loan.dto.LoanChargeOffResponseDto
-import kpt.core.network.mifos.loan.dto.RejectLoanRequestDto
-import kpt.core.network.mifos.loan.dto.RejectLoanResponseDto
 import kpt.core.network.mifos.loan.dto.AssignLoanOfficerRequestDto
 import kpt.core.network.mifos.loan.dto.AssignLoanOfficerResponseDto
+import kpt.core.network.mifos.loan.dto.CreateGuarantorResponseDto
+import kpt.core.network.mifos.loan.dto.GuarantorAccountTemplateDto
+import kpt.core.network.mifos.loan.dto.GuarantorRequestDto
+import kpt.core.network.mifos.loan.dto.GuarantorTemplateDto
+import kpt.core.network.mifos.loan.dto.LoanChargeOffRequestDto
+import kpt.core.network.mifos.loan.dto.LoanChargeOffResponseDto
+import kpt.core.network.mifos.loan.dto.LoanChargeOffTemplateDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseRequestDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseResponseDto
-import kpt.core.network.mifos.loan.dto.GuarantorAccountTemplateDto
-import kpt.core.network.mifos.loan.dto.GuarantorTemplateDto
-import kpt.core.network.mifos.loan.dto.LoanChargeOffTemplateDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseTemplateDto
 import kpt.core.network.mifos.loan.dto.LoanOfficerOptionsTemplateDto
+import kpt.core.network.mifos.loan.dto.LoanWithAssociationsDto
 import kpt.core.network.mifos.loan.dto.LoansPayload
-import kpt.core.database.loan.entity.Loan
-import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
-import kpt.core.database.loan.entity.LoanRepaymentResponseEntity
-import kpt.core.database.charge.entity.ChargesEntity
-import kpt.core.database.loan.entity.LoanRepaymentTemplateEntity
-import kpt.core.database.loan.entity.LoanTemplate
-import kpt.core.database.loan.entity.LoanTransactionTemplate
-import de.jensklingenberg.ktorfit.http.Body
-import de.jensklingenberg.ktorfit.http.GET
-import de.jensklingenberg.ktorfit.http.POST
-import de.jensklingenberg.ktorfit.http.Path
-import de.jensklingenberg.ktorfit.http.Query
-import io.ktor.client.statement.HttpResponse
+import kpt.core.network.mifos.loan.dto.RejectLoanRequestDto
+import kpt.core.network.mifos.loan.dto.RejectLoanResponseDto
 
 /**
  * @author fomenkoo

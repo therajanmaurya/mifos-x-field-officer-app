@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.center
 
@@ -24,7 +24,6 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 @StoreProvider(id = "centerGetCenterAccounts", ttl = "12h")
 @CacheKey(fn = "forKey", key = "centerGetCenterAccounts:{key}", params = ["key:String"])
 fun provideGetCenterAccountsStore(
@@ -35,6 +34,7 @@ fun provideGetCenterAccountsStore(
     keyOf = { key -> AppCacheKeys.CenterGetCenterAccounts.forKey(key.toString()) },
     fetch = { key -> centerApi.getCenterAccounts(centerId = key) },
 )
+
 @StoreProvider(id = "centerGetCenterWithGroupMembersAndCollectionMeetingCalendar", ttl = "12h")
 @CacheKey(fn = "forKey", key = "centerGetCenterWithGroupMembersAndCollectionMeetingCalendar:{key}", params = ["key:String"])
 fun provideGetCenterWithGroupMembersAndCollectionMeetingCalendarStore(
@@ -45,6 +45,7 @@ fun provideGetCenterWithGroupMembersAndCollectionMeetingCalendarStore(
     keyOf = { key -> AppCacheKeys.CenterGetCenterWithGroupMembersAndCollectionMeetingCalendar.forKey(key.toString()) },
     fetch = { key -> centerApi.getCenterWithGroupMembersAndCollectionMeetingCalendar(centerId = key) },
 )
+
 @StoreProvider(id = "centerGetAllGroupsForCenter", ttl = "12h")
 @CacheKey(fn = "forKey", key = "centerGetAllGroupsForCenter:{key}", params = ["key:String"])
 fun provideGetAllGroupsForCenterStore(

@@ -5,15 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.components
 
-import kpt.core.ui.generated.resources.Res
-import kpt.core.ui.generated.resources.core_ui_core_common_working
-import kpt.core.ui.generated.resources.core_ui_ic_centers_24dp
-import kpt.core.ui.generated.resources.core_ui_ic_group_black_24dp
-import kpt.core.ui.generated.resources.core_ui_no_internet
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,15 +22,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import kpt.core.base.designsystem.KptTheme
+import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.icon.MifosIcons
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.designsystem.theme.MifosTheme
 import kpt.core.designsystem.theme.MifosTypography
+import kpt.core.ui.generated.resources.Res
+import kpt.core.ui.generated.resources.core_ui_core_common_working
+import kpt.core.ui.generated.resources.core_ui_ic_centers_24dp
+import kpt.core.ui.generated.resources.core_ui_ic_group_black_24dp
+import kpt.core.ui.generated.resources.core_ui_no_internet
 import kpt.core.ui.util.DevicePreview
 import kpt.core.ui.util.TextUtil
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kpt.core.base.designsystem.KptTheme
-import kpt.core.base.designsystem.theme.KptTheme
 
 @DevicePreview
 @Composable

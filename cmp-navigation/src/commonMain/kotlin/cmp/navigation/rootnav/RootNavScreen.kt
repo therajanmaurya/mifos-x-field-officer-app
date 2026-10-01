@@ -32,6 +32,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
+import cmp.navigation.auth.authNavGraph
 import cmp.navigation.authenticated.AuthenticatedGraphRoute
 import cmp.navigation.authenticated.authenticatedGraph
 import cmp.navigation.authenticated.navigateToAuthenticatedGraph
@@ -47,6 +48,8 @@ import kpt.core.base.ui.KptConnectivityBanner
 import kpt.core.base.ui.util.NonNullEnterTransitionProvider
 import kpt.core.base.ui.util.NonNullExitTransitionProvider
 import kpt.core.base.ui.util.RootTransitionProviders
+import kpt.feature.auth.LoginRoute
+import kpt.feature.auth.navigateToLogin
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -100,10 +103,8 @@ fun RootNavScreen(
                 popExitTransition = { pickExit(fadeThroughExit, noExit)(this) },
             ) {
                 splashDestination()
-//            onboardingDestination()
-//            authNavGraph(navController)
                 authenticatedGraph(navController)
-//            userUnlockDestination()
+                authNavGraph(navController)
             }
         }
     }
@@ -128,16 +129,7 @@ fun RootNavScreen(
         }
     }
 
-    val targetRoute = when (state) {
-        // SetLanguageRoute
-        RootNavState.ShowOnboarding -> ""
-        // AuthGraphRoute
-        RootNavState.Auth -> ""
-        RootNavState.Splash -> SplashRoute
-        // UserUnlockRoute.Standard
-        RootNavState.UserLocked -> ""
-        is RootNavState.UserUnlocked -> AuthenticatedGraphRoute
-    }
+    val targetRoute = rootTargetRoute(state)
     val currentRoute = navController.currentDestination?.rootLevelRoute()
 
     // Don't navigate if we are already at the correct root. This notably happens during process
@@ -173,12 +165,11 @@ fun RootNavScreen(
     LaunchedEffect(state) {
         when (state) {
             RootNavState.Splash -> navController.navigateToSplash(rootNavOptions)
-            // navController.navigateToAuthGraph(rootNavOptions)
-            RootNavState.Auth -> {}
-            // navController.navigateToSetLanguage(rootNavOptions)
-            RootNavState.ShowOnboarding -> {}
-            // navController.navigateToUserUnlock(rootNavOptions)
-            RootNavState.UserLocked -> {}
+            // Auth, ShowOnboarding and UserLocked all land on sign-in — see [rootTargetRoute].
+            RootNavState.Auth,
+            RootNavState.ShowOnboarding,
+            RootNavState.UserLocked,
+            -> navController.navigateToLogin(rootNavOptions)
             is RootNavState.UserUnlocked -> navController.navigateToAuthenticatedGraph(
                 navOptions = rootNavOptions,
             )
@@ -223,4 +214,28 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.pickExit(
 @Composable
 fun ClearFocus() {
     LocalFocusManager.current.clearFocus()
+}
+
+/**
+ * The root destination each [RootNavState] maps to.
+ *
+ * Extracted from [RootNavScreen] so it can be asserted without a composition — the previous inline
+ * `when` returned the empty STRING for `Auth`, `ShowOnboarding` and `UserLocked`, which made three of
+ * five states unreachable dead ends. Worse, the caller feeds this to `toObjectNavigationRoute()`,
+ * which is `<T : Any> T.() -> String` over the KClass serializer: on a `String` receiver it yields
+ * `"kotlin.String"`, so the already-at-target comparison was silently comparing against that.
+ *
+ * Returning route OBJECTS removes the placeholder entirely. `Auth`, `ShowOnboarding` and `UserLocked`
+ * all resolve to [LoginRoute], which is exactly what the original app did
+ * (`6b66e8a43:RootNavScreen.kt` — `else -> LoginRoute`): it shipped no onboarding destination, and
+ * passed `navigatePasscode = {}`, its passcode implementation being an Android-only library
+ * (`libs/mifos-passcode`) with no multiplatform form.
+ */
+internal fun rootTargetRoute(state: RootNavState): Any = when (state) {
+    RootNavState.Splash -> SplashRoute
+    is RootNavState.UserUnlocked -> AuthenticatedGraphRoute
+    RootNavState.Auth,
+    RootNavState.ShowOnboarding,
+    RootNavState.UserLocked,
+    -> LoginRoute
 }

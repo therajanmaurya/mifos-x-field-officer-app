@@ -5,13 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.util
 
+import kpt.core.ui.utils.PasswordStrength
 import kotlin.math.log2
 import kotlin.math.pow
-import kpt.core.ui.utils.PasswordStrength
 
 object PasswordChecker {
     private const val MIN_PASSWORD_LENGTH = 8

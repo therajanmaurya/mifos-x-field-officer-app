@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.client
 
@@ -25,7 +25,6 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 @StoreProvider(id = "clientGetAllAccountsOfClient", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientGetAllAccountsOfClient:{key}", params = ["key:String"])
 fun provideGetAllAccountsOfClientStore(
@@ -36,6 +35,7 @@ fun provideGetAllAccountsOfClientStore(
     keyOf = { key -> AppCacheKeys.ClientGetAllAccountsOfClient.forKey(key.toString()) },
     fetch = { key -> clientAccountsApi.getAllAccountsOfClient(clientId = key) },
 )
+
 @StoreProvider(id = "clientGetClientAccounts", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientGetClientAccounts:{key}", params = ["key:String"])
 fun provideGetClientAccountsStore(
@@ -46,6 +46,7 @@ fun provideGetClientAccountsStore(
     keyOf = { key -> AppCacheKeys.ClientGetClientAccounts.forKey(key.toString()) },
     fetch = { key -> clientApi.getClientAccounts(clientId = key) },
 )
+
 @StoreProvider(id = "clientGetClientAddresses", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientGetClientAddresses:{key}", params = ["key:String"])
 fun provideGetClientAddressesStore(

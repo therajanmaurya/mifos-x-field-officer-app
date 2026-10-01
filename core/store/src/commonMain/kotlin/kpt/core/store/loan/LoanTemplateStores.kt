@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.loan
 
@@ -22,10 +22,10 @@ import kpt.core.database.loan.entity.LoanTemplateCacheEntity
 import kpt.core.database.utils.getCurrentTimeInMillis
 import kpt.core.model.objects.account.loan.loanDisburse.LoanDisburseTemplate
 import kpt.core.network.mifos.loan.api.LoanApi
-import kpt.core.network.mifos.loan.mapper.toDomain as disburseTemplateToDomain
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.Store
+import kpt.core.network.mifos.loan.mapper.toDomain as disburseTemplateToDomain
 
 private val templateJson = Json { ignoreUnknownKeys = true }
 

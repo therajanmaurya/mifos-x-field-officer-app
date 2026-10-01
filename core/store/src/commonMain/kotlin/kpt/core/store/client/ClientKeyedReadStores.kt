@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.client
 
@@ -30,12 +30,12 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 /** Addresses one `getClientIdentifiers` read. */
 data class GetClientIdentifiersKey(
     val clientId: Long,
     val identifierId: Long,
 )
+
 @StoreProvider(id = "clientRetrieveAssociatedAccounts", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientRetrieveAssociatedAccounts:{key}", params = ["key:String"])
 fun provideRetrieveAssociatedAccountsStore(
@@ -46,6 +46,7 @@ fun provideRetrieveAssociatedAccountsStore(
     keyOf = { key -> AppCacheKeys.ClientRetrieveAssociatedAccounts.forKey(key.toString()) },
     fetch = { key -> clientApi.retrieveAssociatedAccounts(clientId = key) },
 )
+
 @StoreProvider(id = "clientGetClient", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientGetClient:{key}", params = ["key:String"])
 fun provideGetClientStore(
@@ -56,6 +57,7 @@ fun provideGetClientStore(
     keyOf = { key -> AppCacheKeys.ClientGetClient.forKey(key.toString()) },
     fetch = { key -> clientApi.getClient(clientId = key) },
 )
+
 @StoreProvider(id = "clientGetClientPinpointLocations", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientGetClientPinpointLocations:{key}", params = ["key:String"])
 fun provideGetClientPinpointLocationsStore(
@@ -66,6 +68,7 @@ fun provideGetClientPinpointLocationsStore(
     keyOf = { key -> AppCacheKeys.ClientGetClientPinpointLocations.forKey(key.toString()) },
     fetch = { key -> clientApi.getClientPinpointLocations(clientId = key) },
 )
+
 @StoreProvider(id = "clientGetClientTemplate", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientGetClientTemplate:{key}", params = ["key:String"])
 fun provideGetClientTemplateStore(
@@ -76,6 +79,7 @@ fun provideGetClientTemplateStore(
     keyOf = { key -> AppCacheKeys.ClientGetClientTemplate.forKey(key.toString()) },
     fetch = { key -> clientApi.getClientTemplate(clientId = key) },
 )
+
 @StoreProvider(id = "clientGetClientCollateralItems", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientGetClientCollateralItems:{key}", params = ["key:String"])
 fun provideGetClientCollateralItemsStore(
@@ -86,6 +90,7 @@ fun provideGetClientCollateralItemsStore(
     keyOf = { key -> AppCacheKeys.ClientGetClientCollateralItems.forKey(key.toString()) },
     fetch = { key -> clientApi.getClientCollateralItems(clientId = key) },
 )
+
 @StoreProvider(id = "clientGetClientListIdentifiers", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientGetClientListIdentifiers:{key}", params = ["key:String"])
 fun provideGetClientListIdentifiersStore(
@@ -96,6 +101,7 @@ fun provideGetClientListIdentifiersStore(
     keyOf = { key -> AppCacheKeys.ClientGetClientListIdentifiers.forKey(key.toString()) },
     fetch = { key -> clientIdentifierApi.getClientListIdentifiers(clientId = key) },
 )
+
 @StoreProvider(id = "clientGetClientIdentifiers", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientGetClientIdentifiers:{key}", params = ["key:String"])
 fun provideGetClientIdentifiersStore(
@@ -106,6 +112,7 @@ fun provideGetClientIdentifiersStore(
     keyOf = { key -> AppCacheKeys.ClientGetClientIdentifiers.forKey("${key.clientId}:${key.identifierId}") },
     fetch = { key -> clientIdentifierApi.getClientIdentifiers(clientId = key.clientId, identifierId = key.identifierId) },
 )
+
 @StoreProvider(id = "clientGetClientIdentifierTemplate", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientGetClientIdentifierTemplate:{key}", params = ["key:String"])
 fun provideGetClientIdentifierTemplateStore(

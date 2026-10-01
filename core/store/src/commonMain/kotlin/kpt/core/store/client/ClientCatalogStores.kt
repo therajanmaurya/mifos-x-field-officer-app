@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.client
 
@@ -26,7 +26,6 @@ import org.mobilenativefoundation.store.store5.Store
  * own, cached through the shared read cache so they still render with no signal.
  */
 
-
 @StoreProvider(id = "addressConfiguration", ttl = "12h")
 @CacheKey(name = "LIST", key = "addressConfiguration")
 fun provideAddressConfigurationStore(
@@ -37,6 +36,7 @@ fun provideAddressConfigurationStore(
     keyOf = { AppCacheKeys.AddressConfiguration.LIST },
     fetch = { clientApi.getAddressConfiguration() },
 )
+
 @StoreProvider(id = "addressTemplate", ttl = "12h")
 @CacheKey(name = "LIST", key = "addressTemplate")
 fun provideAddressTemplateStore(
@@ -47,6 +47,7 @@ fun provideAddressTemplateStore(
     keyOf = { AppCacheKeys.AddressTemplate.LIST },
     fetch = { clientApi.getAddressTemplate() },
 )
+
 @StoreProvider(id = "clientCloseTemplate", ttl = "12h")
 @CacheKey(name = "LIST", key = "clientCloseTemplate")
 fun provideClientCloseTemplateStore(
@@ -57,6 +58,7 @@ fun provideClientCloseTemplateStore(
     keyOf = { AppCacheKeys.ClientCloseTemplate.LIST },
     fetch = { clientApi.getClientCloseTemplate() },
 )
+
 @StoreProvider(id = "collateralItems", ttl = "12h")
 @CacheKey(name = "LIST", key = "collateralItems")
 fun provideCollateralItemsStore(

@@ -5,21 +5,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.client.mapper
 
+import kpt.core.database.client.entity.ClientClassificationEntity
+import kpt.core.database.client.entity.ClientEntity
+import kpt.core.database.client.entity.ClientGenderEntity
+import kpt.core.database.client.entity.ClientStatusEntity
+import kpt.core.database.client.entity.ClientTypeEntity
 import kpt.core.network.data.AbstractMapper
 import kpt.core.network.mifos.client.dto.GetClientClassificationOptions
 import kpt.core.network.mifos.client.dto.GetClientStatus
 import kpt.core.network.mifos.client.dto.GetClientTypeOptions
 import kpt.core.network.mifos.client.dto.GetClientsPageItemsResponse
 import kpt.core.network.mifos.client.dto.GetGenderOptions
-import kpt.core.database.client.entity.ClientClassificationEntity
-import kpt.core.database.client.entity.ClientEntity
-import kpt.core.database.client.entity.ClientGenderEntity
-import kpt.core.database.client.entity.ClientStatusEntity
-import kpt.core.database.client.entity.ClientTypeEntity
 
 object ClientMapper : AbstractMapper<GetClientsPageItemsResponse, ClientEntity>() {
 

@@ -5,11 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.components
 
-import kpt.core.ui.generated.resources.Res
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,16 +26,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kpt.core.designsystem.theme.DesignToken
-import kpt.core.designsystem.theme.MifosTheme
-import kpt.core.ui.util.LottieConstants
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.animateLottieCompositionAsState
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import kpt.core.base.designsystem.KptTheme
 import kpt.core.base.designsystem.theme.KptTheme
+import kpt.core.designsystem.theme.DesignToken
+import kpt.core.designsystem.theme.MifosTheme
+import kpt.core.ui.generated.resources.Res
+import kpt.core.ui.util.LottieConstants
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun MifosProgressIndicator(

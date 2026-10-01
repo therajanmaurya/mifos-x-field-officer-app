@@ -5,38 +5,37 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.client.dao
 
-import kpt.core.base.database.annotation.DbDao
-
-import kpt.core.database.loan.entity.LoanAccountEntity
-import kpt.core.database.savings.entity.SavingsAccountEntity
-import kpt.core.database.client.entity.ClientAddressEntity
-import kpt.core.database.client.entity.ClientEntity
-import kpt.core.database.client.entity.ClientIdentifierEntity
-import kpt.core.database.client.entity.ClientPayloadEntity
-import kpt.core.database.datatable.entity.ColumnHeader
-import kpt.core.database.datatable.entity.ColumnValue
-import kpt.core.database.datatable.entity.DataTableEntity
-import kpt.core.database.datatable.entity.DataTablePayload
-import kpt.core.database.client.entity.ClientsTemplateEntity
-import kpt.core.database.client.entity.InterestTypeEntity
-import kpt.core.database.client.entity.OfficeOptionsEntity
-import kpt.core.database.client.entity.OptionsEntity
-import kpt.core.database.client.entity.SavingProductOptionsEntity
-import kpt.core.database.client.entity.StaffOptionsEntity
-import kotlinx.coroutines.flow.Flow
 import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
 import androidx.room3.Update
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kpt.core.base.database.annotation.DbDao
 import kpt.core.database.client.entity.ClientAccounts
+import kpt.core.database.client.entity.ClientAddressEntity
 import kpt.core.database.client.entity.ClientDateEntity
+import kpt.core.database.client.entity.ClientEntity
+import kpt.core.database.client.entity.ClientIdentifierEntity
+import kpt.core.database.client.entity.ClientPayloadEntity
+import kpt.core.database.client.entity.ClientsTemplateEntity
+import kpt.core.database.client.entity.InterestTypeEntity
+import kpt.core.database.client.entity.OfficeOptionsEntity
+import kpt.core.database.client.entity.OptionsEntity
+import kpt.core.database.client.entity.SavingProductOptionsEntity
+import kpt.core.database.client.entity.StaffOptionsEntity
+import kpt.core.database.datatable.entity.ColumnHeader
+import kpt.core.database.datatable.entity.ColumnValue
+import kpt.core.database.datatable.entity.DataTableEntity
+import kpt.core.database.datatable.entity.DataTablePayload
+import kpt.core.database.loan.entity.LoanAccountEntity
+import kpt.core.database.savings.entity.SavingsAccountEntity
 
 @DbDao
 @Dao

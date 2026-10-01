@@ -5,37 +5,35 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.center.api
 
-import kpt.core.base.network.annotation.ApiBinding
-
-import kpt.core.common.utils.Page
-import kpt.core.model.objects.clients.ActivatePayload
-import kpt.core.model.objects.databaseobjects.CollectionSheet
-import kpt.core.model.objects.databaseobjects.OfflineCenter
-import kpt.core.model.objects.responses.SaveResponse
-import kpt.core.model.shared.GenericResponse
-import kpt.core.network.mifos.collectionsheet.dto.CollectionSheetPayload
-import kpt.core.network.mifos.center.dto.GetCentersResponse
-import kpt.core.model.shared.Payload
-import kpt.core.network.mifos.center.dto.PostCentersCenterIdRequest
-import kpt.core.network.mifos.center.dto.PostCentersCenterIdResponse
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
+import kpt.core.base.network.annotation.ApiBinding
+import kpt.core.common.utils.Page
 import kpt.core.database.center.entity.CenterAccounts
 import kpt.core.database.center.entity.CenterEntity
 import kpt.core.database.center.entity.CenterPayloadEntity
 import kpt.core.database.center.entity.CenterWithAssociations
+import kpt.core.model.objects.clients.ActivatePayload
+import kpt.core.model.objects.databaseobjects.CollectionSheet
+import kpt.core.model.objects.databaseobjects.OfflineCenter
+import kpt.core.model.objects.responses.SaveResponse
+import kpt.core.model.shared.GenericResponse
+import kpt.core.model.shared.Payload
+import kpt.core.network.mifos.center.dto.GetCentersResponse
+import kpt.core.network.mifos.center.dto.PostCentersCenterIdRequest
+import kpt.core.network.mifos.center.dto.PostCentersCenterIdResponse
+import kpt.core.network.mifos.collectionsheet.dto.CollectionSheetPayload
 
 @ApiBinding("mifos")
 interface CenterApi {
-
 
     /**
      * List Centers

@@ -5,10 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.model.recurringdeposit
 
+import kotlinx.serialization.Serializable
 import kpt.core.model.recurringdeposit.deposit.DepositPeriodFrequency
 import kpt.core.model.recurringdeposit.deposit.DepositType
 import kpt.core.model.recurringdeposit.deposit.InMultiplesOfDepositTermType
@@ -18,7 +19,6 @@ import kpt.core.model.recurringdeposit.interest.InterestCalculationDaysInYearTyp
 import kpt.core.model.recurringdeposit.interest.InterestCalculationType
 import kpt.core.model.recurringdeposit.interest.InterestCompoundingPeriodType
 import kpt.core.model.recurringdeposit.interest.InterestPostingPeriodType
-import kotlinx.serialization.Serializable
 
 @Serializable
 data class RecurringDeposit(

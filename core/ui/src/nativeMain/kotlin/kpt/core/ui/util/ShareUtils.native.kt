@@ -5,18 +5,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.util
 
 import androidx.compose.ui.graphics.ImageBitmap
-import kpt.core.ui.util.ImageUtil.compressImage
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.cacheDir
 import io.github.vinceglb.filekit.dialogs.shareFile
 import io.github.vinceglb.filekit.write
+import kpt.core.ui.util.ImageUtil.compressImage
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 

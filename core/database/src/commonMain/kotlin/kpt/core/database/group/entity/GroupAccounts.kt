@@ -5,13 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.group.entity
 
+import kotlinx.serialization.Serializable
 import kpt.core.database.loan.entity.LoanAccountEntity
 import kpt.core.database.savings.entity.SavingsAccountEntity
-import kotlinx.serialization.Serializable
 @Serializable
 data class GroupAccounts(
     var loanAccounts: List<LoanAccountEntity> = emptyList(),

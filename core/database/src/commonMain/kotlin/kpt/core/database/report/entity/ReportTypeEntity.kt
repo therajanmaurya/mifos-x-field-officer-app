@@ -5,13 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.report.entity
 
 import androidx.room3.Entity
 import androidx.room3.Index
-import androidx.room3.PrimaryKey
 import kpt.core.base.database.annotation.DbEntity
 
 /**

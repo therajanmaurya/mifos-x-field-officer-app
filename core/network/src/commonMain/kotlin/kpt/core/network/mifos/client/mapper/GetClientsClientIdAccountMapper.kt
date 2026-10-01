@@ -5,10 +5,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.client.mapper
 
+import kpt.core.database.client.entity.ClientAccounts
+import kpt.core.database.loan.entity.LoanAccountEntity
+import kpt.core.database.loan.entity.LoanTypeEntity
+import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
+import kpt.core.database.savings.entity.SavingAccountDepositTypeEntity
+import kpt.core.database.savings.entity.SavingsAccountEntity
+import kpt.core.database.savings.entity.SavingsAccountStatusEntity
 import kpt.core.model.objects.account.share.ShareAccounts
 import kpt.core.model.objects.account.share.ShareAccountsStatus
 import kpt.core.network.data.AbstractMapper
@@ -20,13 +27,6 @@ import kpt.core.network.mifos.client.dto.GetClientsSavingsAccounts
 import kpt.core.network.mifos.client.dto.GetClientsSavingsAccountsCurrency
 import kpt.core.network.mifos.client.dto.GetClientsSavingsAccountsDepositType
 import kpt.core.network.mifos.client.dto.GetClientsSavingsAccountsStatus
-import kpt.core.database.client.entity.ClientAccounts
-import kpt.core.database.loan.entity.LoanAccountEntity
-import kpt.core.database.loan.entity.LoanTypeEntity
-import kpt.core.database.savings.entity.SavingAccountCurrencyEntity
-import kpt.core.database.savings.entity.SavingAccountDepositTypeEntity
-import kpt.core.database.savings.entity.SavingsAccountEntity
-import kpt.core.database.savings.entity.SavingsAccountStatusEntity
 
 /**
  * Created by Aditya Gupta on 30/08/23.

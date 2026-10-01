@@ -5,13 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.loan.entity
 
-import kpt.core.model.objects.template.loan.Type
-import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 import kotlinx.serialization.Serializable
+import kpt.core.database.payment.entity.PaymentTypeOptionEntity
+import kpt.core.model.objects.template.loan.Type
 
 /**
  * Created by Rajan Maurya on 14/02/17.

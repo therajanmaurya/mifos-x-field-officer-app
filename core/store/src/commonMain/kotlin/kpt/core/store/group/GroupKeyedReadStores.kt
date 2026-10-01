@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.group
 
@@ -25,12 +25,12 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 /** Addresses one `getAllGroupsInOffice` read. */
 data class GetAllGroupsInOfficeKey(
     val officeId: Int,
     val params: Map<String, String>,
 )
+
 @StoreProvider(id = "groupGetGroupWithAssociations", ttl = "12h")
 @CacheKey(fn = "forKey", key = "groupGetGroupWithAssociations:{key}", params = ["key:String"])
 fun provideGetGroupWithAssociationsStore(
@@ -41,6 +41,7 @@ fun provideGetGroupWithAssociationsStore(
     keyOf = { key -> AppCacheKeys.GroupGetGroupWithAssociations.forKey(key.toString()) },
     fetch = { key -> groupApi.getGroupWithAssociations(groupId = key) },
 )
+
 @StoreProvider(id = "groupGetAllGroupsInOffice", ttl = "12h")
 @CacheKey(fn = "forKey", key = "groupGetAllGroupsInOffice:{key}", params = ["key:String"])
 fun provideGetAllGroupsInOfficeStore(
@@ -51,6 +52,7 @@ fun provideGetAllGroupsInOfficeStore(
     keyOf = { key -> AppCacheKeys.GroupGetAllGroupsInOffice.forKey("${key.officeId}:${key.params}") },
     fetch = { key -> groupApi.getAllGroupsInOffice(officeId = key.officeId, params = key.params) },
 )
+
 @StoreProvider(id = "groupGetGroup", ttl = "12h")
 @CacheKey(fn = "forKey", key = "groupGetGroup:{key}", params = ["key:String"])
 fun provideGetGroupStore(
@@ -61,6 +63,7 @@ fun provideGetGroupStore(
     keyOf = { key -> AppCacheKeys.GroupGetGroup.forKey(key.toString()) },
     fetch = { key -> groupApi.getGroup(groupId = key) },
 )
+
 @StoreProvider(id = "groupGetGroupAccounts", ttl = "12h")
 @CacheKey(fn = "forKey", key = "groupGetGroupAccounts:{key}", params = ["key:String"])
 fun provideGetGroupAccountsStore(

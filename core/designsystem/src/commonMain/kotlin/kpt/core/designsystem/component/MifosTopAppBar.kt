@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.designsystem.component
 
@@ -31,11 +31,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
+import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.icon.MifosIcons
 import kpt.core.designsystem.theme.MifosTheme
 import kpt.core.designsystem.utils.mirrorIfRtl
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kpt.core.base.designsystem.theme.KptTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MifosTopAppBar(

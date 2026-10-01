@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.collectionsheet
 
@@ -22,7 +22,6 @@ import org.mobilenativefoundation.store.store5.Store
  * Keyed reads for collectionsheet with no table of their own — cached through the shared read cache so the
  * last-known answer still renders with no signal.
  */
-
 
 @StoreProvider(id = "collectionsheetFetchGroupsAssociatedWithCenter", ttl = "12h")
 @CacheKey(fn = "forKey", key = "collectionsheetFetchGroupsAssociatedWithCenter:{key}", params = ["key:String"])

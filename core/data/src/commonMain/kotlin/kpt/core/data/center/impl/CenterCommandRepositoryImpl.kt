@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.center.impl
 
@@ -17,13 +17,9 @@ import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.center.CenterCommandRepository
 import kpt.core.database.center.entity.CenterPayloadEntity
 import kpt.core.model.objects.clients.ActivatePayload
-import kpt.core.model.objects.databaseobjects.CollectionSheet
-import kpt.core.model.objects.responses.SaveResponse
-import kpt.core.model.shared.GenericResponse
 import kpt.core.model.shared.Payload
 import kpt.core.network.mifos.center.api.CenterApi
 import kpt.core.network.mifos.center.dto.PostCentersCenterIdRequest
-import kpt.core.network.mifos.center.dto.PostCentersCenterIdResponse
 import kpt.core.network.mifos.collectionsheet.dto.CollectionSheetPayload
 
 @RepositoryBinding(binds = CenterCommandRepository::class)

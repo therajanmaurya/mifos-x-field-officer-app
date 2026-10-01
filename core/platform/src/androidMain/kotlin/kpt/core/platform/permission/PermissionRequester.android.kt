@@ -77,7 +77,7 @@ actual class PermissionRequester actual constructor(private val context: AppCont
             // reading as if the launcher might be absent when it provably is not.
             var pending: ActivityResultLauncher<Array<String>>? = null
             val registered = host.activityResultRegistry.register(
-                "kpt-permission-${REGISTRATION_COUNTER++}",
+                "kpt-permission-${registrationCounter++}",
                 ActivityResultContracts.RequestMultiplePermissions(),
             ) { results ->
                 pending?.unregister()
@@ -121,7 +121,7 @@ actual class PermissionRequester actual constructor(private val context: AppCont
 
     private companion object {
         /** Registry keys must be unique per registration; a monotonic counter is enough. */
-        private var REGISTRATION_COUNTER = 0
+        private var registrationCounter = 0
     }
 }
 

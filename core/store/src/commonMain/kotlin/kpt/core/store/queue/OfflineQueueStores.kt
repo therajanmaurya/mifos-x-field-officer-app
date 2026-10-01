@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.queue
 
@@ -23,8 +23,8 @@ import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
 import kpt.core.database.savings.dao.SavingsDao
 import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
 import org.mobilenativefoundation.store.store5.MutableStore
-import org.mobilenativefoundation.store.store5.Store
 import org.mobilenativefoundation.store.store5.SourceOfTruth
+import org.mobilenativefoundation.store.store5.Store
 
 /**
  * The offline WRITE half of the field-officer app: work captured with no connectivity.

@@ -24,6 +24,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Locks the [RootNavViewModel] gate ordering.
@@ -124,5 +125,39 @@ class RootNavViewModelTest {
         drain()
 
         assertEquals(RootNavState.UserLocked, vm.stateFlow.value)
+    }
+
+    /**
+     * Every [RootNavState] must map to a real route OBJECT.
+     *
+     * Before S1, `Auth`, `ShowOnboarding` and `UserLocked` mapped to the empty STRING — three of five
+     * states were unreachable dead ends, and since `RootNavViewModel` checks `firstTimeUser` first, a
+     * fresh install was stranded on `ShowOnboarding` before it could even reach sign-in.
+     *
+     * Asserting "not a String" rather than "not empty" is deliberate: the caller feeds this to
+     * `toObjectNavigationRoute()`, which is `<T : Any> T.() -> String` over the KClass serializer, so
+     * a `""` target silently became the route string `"kotlin.String"` instead of staying empty. A
+     * String here is the defect, whatever its content.
+     */
+    @Test
+    fun everyRootStateMapsToARouteObjectNotAPlaceholderString() {
+        val states = listOf(
+            RootNavState.Splash,
+            RootNavState.ShowOnboarding,
+            RootNavState.Auth,
+            RootNavState.UserLocked,
+            RootNavState.UserUnlocked(activeUserId = "u1"),
+        )
+        val deadEnds = states.filter { rootTargetRoute(it) is String }
+        assertEquals(emptyList(), deadEnds, "states mapped to a String are unrouted dead ends")
+    }
+
+    /** The three non-terminal states land on sign-in, exactly as `6b66e8a43:RootNavScreen.kt` did. */
+    @Test
+    fun unauthenticatedStatesAllRouteToLogin() {
+        val login = rootTargetRoute(RootNavState.Auth)
+        assertEquals(login, rootTargetRoute(RootNavState.ShowOnboarding))
+        assertEquals(login, rootTargetRoute(RootNavState.UserLocked))
+        assertTrue(login !is String)
     }
 }

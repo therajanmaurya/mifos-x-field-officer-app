@@ -5,10 +5,36 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
+import kpt.core.base.designsystem.KptTheme
+import kpt.core.base.designsystem.theme.KptTheme
+import kpt.core.designsystem.icon.MifosIcons
+import kpt.core.designsystem.theme.AppColors
+import kpt.core.designsystem.theme.DesignToken
+import kpt.core.designsystem.theme.MifosTheme
+import kpt.core.designsystem.theme.MifosTypography
 import kpt.core.ui.generated.resources.Res
 import kpt.core.ui.generated.resources.core_ui_account_no
 import kpt.core.ui.generated.resources.core_ui_action
@@ -46,35 +72,9 @@ import kpt.core.ui.generated.resources.core_ui_total_value
 import kpt.core.ui.generated.resources.core_ui_transfer_external_id
 import kpt.core.ui.generated.resources.core_ui_type
 import kpt.core.ui.generated.resources.core_ui_waived
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
-import kpt.core.designsystem.icon.MifosIcons
-import kpt.core.designsystem.theme.AppColors
-import kpt.core.designsystem.theme.DesignToken
-import kpt.core.designsystem.theme.MifosTheme
-import kpt.core.designsystem.theme.MifosTypography
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kpt.core.base.designsystem.KptTheme
-import kpt.core.base.designsystem.theme.KptTheme
 
 @Composable
 fun MifosListingComponentOutline(

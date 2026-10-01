@@ -9,123 +9,115 @@
  */
 package cmp.navigation
 
+import cmp.navigation.authenticated.AuthenticatedGraphRoute
 import cmp.navigation.authenticatednavbar.AuthenticatedNavBarTabItem
+import cmp.navigation.authenticatednavbar.AuthenticatedNavbarRoute
+import cmp.navigation.rootnav.RootNavNavigation
+import cmp.navigation.splash.SplashRoute
+import cmp.navigation.utils.toObjectNavigationRoute
 import kotlinx.serialization.serializer
+import kpt.feature.auth.LoginRoute
+import kpt.feature.home.HomeRoute
+import kpt.feature.profile.ProfileRoute
+import kpt.feature.settings.NotificationRoute
+import kpt.feature.settings.SettingsRoute
+import kpt.feature.settings.SyncAndDraftsRoute
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
- * End-to-end smoke test for the app's navigation graph.
+ * Smoke test for the app's navigation graph.
  *
- * Catches the bug class where someone deletes / renames / mis-wires a route in a
- * feature module without realising the AuthenticatedNavigation graph or another
- * feature still references it. The test exercises:
+ * REWRITTEN for the fork's own surface (S1, Phase 10). Every route this file previously named —
+ * `BillsGraphRoute`, `LoansGraphRoute`, `RatesGraphRoute`, `CalculatorsGraphRoute`,
+ * `MacroGraphRoute`, `EmiCalculatorRoute` and the rest — belonged to the kmp-project-template DEMO
+ * features that `remove-demo.sh` stripped during the fork standup. The file therefore failed to
+ * compile with **95 unresolved references**, and had done so since demo removal: `commonTest` only
+ * breaks the build when someone runs it, and nobody had. It was found by running
+ * `:cmp-navigation:desktopTest` for the first time while wiring the entry graph.
  *
- *  1. Every parameterless route can be referenced as an object (compile-time check).
- *  2. Every parameterised route can be instantiated with sensible defaults.
- *  3. Every route is `@Serializable` — the `serializer()` lookup at runtime
- *     fails fast if anyone forgets the annotation, so the kotlinx.serialization
- *     compiler plugin is wired correctly for the module.
- *  4. Bottom-nav tab items have non-blank routes + stable testTags (used by
- *     instrumentation tests + analytics).
+ * What it guards now:
  *
- * This is a coarse-grained gate — finer-grained route arg behaviour is covered
- * by per-feature VM tests. Add a new route → add it to one of the lists below.
+ *  1. Every route is `@Serializable` AND its producing module applies the kotlinx-serialization
+ *     plugin — enforced at COMPILE time by `serializer<T>()` resolving at all.
+ *  2. No two routes collapse onto the same navigation route string. This one can genuinely fail at
+ *     runtime: the route string is the serializer's `serialName`, so two `data object`s with the
+ *     same qualified name in different modules, or a hand-set `@SerialName`, silently alias and the
+ *     NavHost resolves the wrong destination.
+ *  3. Backbone bottom-nav tabs keep stable testTags and non-blank routes.
+ *  4. A route-count canary, so a module silently dropping out of the graph is noticed.
+ *
+ * Adding a route → add it to [allRoutes] and bump [EXPECTED_ROUTE_COUNT].
  */
 class NavigationGraphSmokeTest {
 
     /**
-     * Parameterless routes (data object) that every consumer references by type.
-     * Adding a new top-level route → add it here.
+     * Every route the fork declares today. All are parameterless `data object`s — the original app's
+     * arg-carrying routes (`ClientDetailRoute`, `LoanDetailRoute`, `ActivateRoute(id, type)` …)
+     * arrive with their slices, and a `parameterisedRoutesInstantiateWithDefaults` test returns then.
+     * There is deliberately no such test now: there is nothing to instantiate, and a test asserting
+     * that an empty list is empty is worse than no test.
      */
-    private val parameterlessRoutes: List<Any> = listOf(
-        // Graph roots
-        BillsGraphRoute,
-        LoansGraphRoute,
-        RatesGraphRoute,
-        CurrencyRatesGraphRoute,
-        CalculatorsGraphRoute,
-        MacroGraphRoute,
-
-        // Leaf screens with no args
-        BillRemindersListRoute,
-        PersonalLoansListRoute,
-        RatesListRoute,
-        CurrencyRatesRoute,
-        RateHistoryRoute,
-        EmiCalculatorRoute,
-        AffordabilityCalculatorRoute,
-        LoanComparisonRoute,
-        CountryPickerRoute,
+    private val allRoutes: List<Any> = listOf(
+        // shell
+        RootNavNavigation,
+        SplashRoute,
+        AuthenticatedGraphRoute,
+        AuthenticatedNavbarRoute,
+        // features
+        LoginRoute,
+        HomeRoute,
+        ProfileRoute,
+        SettingsRoute,
+        NotificationRoute,
+        SyncAndDraftsRoute,
     )
 
-    // REMOVED: `everyParameterlessRouteIsReferenceableAndNonNull`.
-    //
-    // It looped `parameterlessRoutes` asserting `assertNotNull(route)`. The list is `List<Any>`, so
-    // every element is non-null BY TYPE and the assertion could not fail. Its companion duplicate
-    // check compared the hand-written list against itself, so a route MISSING from the list was
-    // never noticed either.
-    //
-    // The list itself stays: `everyRouteIsKotlinxSerializable` and
-    // `routeCountMatchesExpectedFeatureSurface` both use the same routes, and those DO fail —
-    // `serializer<T>()` stops resolving the moment a route loses `@Serializable` or a feature module
-    // drops the serialization plugin.
-
-    @Test
-    fun parameterisedRoutesInstantiateWithDefaults() {
-        // Each of these has at least one optional/nullable arg — the screen falls
-        // back to "create new" / sensible default when the host navigates without
-        // an argument. Locking this so a future refactor that adds a mandatory
-        // arg has to update all entry points first.
-        assertNotNull(AddOrEditBillReminderRoute(billId = null))
-        assertNotNull(AddOrEditLoanRoute(loanId = null))
-        assertNotNull(LoanCalcWizardRoute(scenarioId = null))
-        assertNotNull(AmortizationRoute(loanId = null))
-        assertNotNull(CountryMacroRoute()) // defaults to "US"
-
-        // Strict-arg routes — locked for the inverse: callers MUST pass the id.
-        assertNotNull(LoanDetailRoute(loanId = "L-test"))
-        assertNotNull(RateDetailRoute(seriesId = "DFF"))
-    }
-
-    // vacuous-ok: every assertion below is `assertNotNull(serializer<T>())`, and `serializer<T>()`
-    // returns a non-null KSerializer by signature — so none of them can fail at RUNTIME. They are
-    // kept because the guarantee is at COMPILE time: `serializer<T>()` stops resolving the moment a
-    // route loses `@Serializable`, or its feature module drops the kotlinx-serialization plugin.
-    // That is the bug this test exists to catch, and it is caught by the file compiling at all.
-    // The asserts remain so the intent is legible in the test report rather than implicit.
+    // vacuous-ok: `serializer<T>()` returns a non-null KSerializer by signature, so these
+    // assertions cannot fail at RUNTIME. They are kept because the guarantee is at COMPILE time —
+    // `serializer<T>()` stops resolving the moment a route loses `@Serializable` or its module drops
+    // the serialization plugin, which is exactly the bug class, and is caught by this file compiling
+    // at all. The asserts remain so the intent is legible in the test report rather than implicit.
     @Test
     fun everyRouteIsKotlinxSerializable() {
-        // serializer<T>() resolves at compile time iff T is @Serializable AND the
-        // kotlinx.serialization compiler plugin ran on the producing module.
-        // Catches the bug where someone deletes @Serializable from a route or
-        // forgets to apply the plugin in a feature module's build.gradle.kts.
-        assertNotNull(serializer<BillsGraphRoute>())
-        assertNotNull(serializer<LoansGraphRoute>())
-        assertNotNull(serializer<RatesGraphRoute>())
-        assertNotNull(serializer<CurrencyRatesGraphRoute>())
-        assertNotNull(serializer<CalculatorsGraphRoute>())
-        assertNotNull(serializer<MacroGraphRoute>())
+        assertNotNull(serializer<RootNavNavigation>())
+        assertNotNull(serializer<SplashRoute>())
+        assertNotNull(serializer<AuthenticatedGraphRoute>())
+        assertNotNull(serializer<AuthenticatedNavbarRoute>())
+        assertNotNull(serializer<LoginRoute>())
+        assertNotNull(serializer<HomeRoute>())
+        assertNotNull(serializer<ProfileRoute>())
+        assertNotNull(serializer<SettingsRoute>())
+        assertNotNull(serializer<NotificationRoute>())
+        assertNotNull(serializer<SyncAndDraftsRoute>())
+    }
 
-        assertNotNull(serializer<BillRemindersListRoute>())
-        assertNotNull(serializer<PersonalLoansListRoute>())
-        assertNotNull(serializer<RatesListRoute>())
-        assertNotNull(serializer<CurrencyRatesRoute>())
-        assertNotNull(serializer<RateHistoryRoute>())
-        assertNotNull(serializer<EmiCalculatorRoute>())
-        assertNotNull(serializer<AffordabilityCalculatorRoute>())
-        assertNotNull(serializer<LoanComparisonRoute>())
-        assertNotNull(serializer<CountryPickerRoute>())
+    /**
+     * Two routes must never resolve to the same navigation route string.
+     *
+     * Unlike the serializer checks above, this CAN fail at runtime. `toObjectNavigationRoute()`
+     * returns the serializer's `serialName`, which defaults to the fully-qualified class name but is
+     * overridable with `@SerialName`. An alias means `navigate(A)` can land on B, and the NavHost
+     * reports nothing — it resolved a real destination, just the wrong one.
+     */
+    @Test
+    fun noTwoRoutesShareANavigationRouteString() {
+        val byRouteString = allRoutes.groupBy { it.toObjectNavigationRoute() }
+        val collisions = byRouteString.filterValues { it.size > 1 }
+        assertEquals(
+            emptyMap(),
+            collisions,
+            "routes aliased onto one route string — navigate(A) would resolve to B",
+        )
+    }
 
-        assertNotNull(serializer<AddOrEditBillReminderRoute>())
-        assertNotNull(serializer<AddOrEditLoanRoute>())
-        assertNotNull(serializer<LoanCalcWizardRoute>())
-        assertNotNull(serializer<AmortizationRoute>())
-        assertNotNull(serializer<CountryMacroRoute>())
-        assertNotNull(serializer<LoanDetailRoute>())
-        assertNotNull(serializer<RateDetailRoute>())
+    /** Every route string is non-blank; a blank one makes the destination unreachable. */
+    @Test
+    fun everyRouteStringIsNonBlank() {
+        val blank = allRoutes.filter { it.toObjectNavigationRoute().isBlank() }
+        assertEquals(emptyList(), blank, "a blank route string is an unreachable destination")
     }
 
     @Test
@@ -159,17 +151,22 @@ class NavigationGraphSmokeTest {
     }
 
     @Test
-    fun routeCountMatchesExpectedFeatureSurface() {
-        // Canary: the toolkit ships these N parameterless graph + screen routes.
-        // If you intentionally add or remove a route, update this count + the
-        // `parameterlessRoutes` list above. Catches accidental nav-graph
-        // shrinkage / silent module drop after a refactor.
-        val expectedCount = 15
+    fun routeCountMatchesExpectedSurface() {
+        // Canary: the fork ships these N routes as of S1. A module silently dropping out of the
+        // graph shows up here. Intentional change → update the count AND [allRoutes].
+        //
+        // This grows per slice: S2 adds the Client/Centers/Groups tab routes, S3 the client
+        // vertical's arg-carrying routes, and so on to the original's full surface.
         assertEquals(
-            expectedCount,
-            parameterlessRoutes.size,
-            "Expected $expectedCount parameterless routes, found ${parameterlessRoutes.size}. " +
-                "If this is intentional, update both the expectedCount and parameterlessRoutes list.",
+            EXPECTED_ROUTE_COUNT,
+            allRoutes.size,
+            "expected $EXPECTED_ROUTE_COUNT routes, found ${allRoutes.size}. " +
+                "If intentional, update both EXPECTED_ROUTE_COUNT and allRoutes.",
         )
+    }
+
+    private companion object {
+        /** Route count at S1 (Phase 10). Bumped by each slice that adds destinations. */
+        const val EXPECTED_ROUTE_COUNT = 10
     }
 }

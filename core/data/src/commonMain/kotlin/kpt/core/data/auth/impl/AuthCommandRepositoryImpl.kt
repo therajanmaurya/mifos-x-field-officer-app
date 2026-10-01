@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.auth.impl
 
@@ -17,7 +17,6 @@ import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.auth.AuthCommandRepository
 import kpt.core.network.mifos.auth.api.AuthApi
 import kpt.core.network.mifos.auth.dto.PostAuthenticationRequest
-import kpt.core.network.mifos.auth.dto.PostAuthenticationResponse
 
 @RepositoryBinding(binds = AuthCommandRepository::class)
 internal class AuthCommandRepositoryImpl(

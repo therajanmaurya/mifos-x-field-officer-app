@@ -5,12 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.note.mapper
 
-import kpt.core.network.mifos.note.dto.NoteDto
 import kpt.core.database.note.entity.NoteEntity
+import kpt.core.network.mifos.note.dto.NoteDto
 
 /**
  * Wire → Room. `NoteDto.note` is the body text; `NoteEntity` names the same column

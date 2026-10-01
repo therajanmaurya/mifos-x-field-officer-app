@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.recurringdeposit.entity
 
@@ -13,7 +13,6 @@ import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 import kpt.core.base.database.annotation.DbEntity
 import kpt.core.model.recurringdeposit.RecurringDepositAccountTemplate
-
 
 /**
  * The recurring-deposit account-opening TEMPLATE, cached per client.

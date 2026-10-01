@@ -5,16 +5,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.client
 
-import kpt.core.network.mifos.client.api.ClientApi
-import kpt.core.database.client.dao.ClientDao
-import kpt.core.database.client.entity.ClientEntity
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
+import kpt.core.database.client.dao.ClientDao
+import kpt.core.database.client.entity.ClientEntity
+import kpt.core.network.mifos.client.api.ClientApi
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.Store

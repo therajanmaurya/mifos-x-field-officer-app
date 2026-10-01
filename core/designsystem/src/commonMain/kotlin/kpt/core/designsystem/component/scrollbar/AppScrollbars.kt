@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.designsystem.component.scrollbar
 
@@ -46,14 +46,12 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.component.scrollbar.ThumbState.Active
 import kpt.core.designsystem.component.scrollbar.ThumbState.Dormant
 import kpt.core.designsystem.component.scrollbar.ThumbState.Inactive
 import kpt.core.designsystem.theme.DesignToken
-import kotlinx.coroutines.delay
-import kpt.core.designsystem.component.scrollbar.Scrollbar
-import kpt.core.designsystem.component.scrollbar.ScrollbarState
-import kpt.core.base.designsystem.theme.KptTheme
 
 /**
  * The time period for showing the scrollbar thumb after interacting with it, before it fades away

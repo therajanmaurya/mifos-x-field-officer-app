@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.note.impl
 
@@ -16,10 +16,7 @@ import kpt.core.base.store.mutation.MutationPolicy
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.note.NoteCommandRepository
 import kpt.core.network.mifos.note.api.NoteApi
-import kpt.core.network.mifos.note.dto.CreateNoteResponseDto
-import kpt.core.network.mifos.note.dto.DeleteNoteResponseDto
 import kpt.core.network.mifos.note.dto.NoteRequestDto
-import kpt.core.network.mifos.note.dto.UpdateNoteResponseDto
 
 @RepositoryBinding(binds = NoteCommandRepository::class)
 internal class NoteCommandRepositoryImpl(

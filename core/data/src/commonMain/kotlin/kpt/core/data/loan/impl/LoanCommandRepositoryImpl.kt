@@ -5,39 +5,30 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.loan.impl
 
-import io.ktor.client.statement.HttpResponse
 import kpt.core.base.data.annotation.RepositoryBinding
 import kpt.core.base.store.mutation.CommandSpec
 import kpt.core.base.store.mutation.MutationGateway
 import kpt.core.base.store.mutation.MutationPolicy
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.loan.LoanCommandRepository
-import kpt.core.database.loan.entity.Loan
 import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
-import kpt.core.database.loan.entity.LoanRepaymentResponseEntity
 import kpt.core.model.objects.account.loan.LoanApproval
 import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleApprovalRequest
 import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRejectionRequest
 import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRequest
 import kpt.core.model.objects.account.loan.transfer.AccountTransferRequest
-import kpt.core.model.shared.GenericResponse
+import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.network.mifos.loan.api.LoanApi
 import kpt.core.network.mifos.loan.dto.AssignLoanOfficerRequestDto
-import kpt.core.network.mifos.loan.dto.AssignLoanOfficerResponseDto
-import kpt.core.network.mifos.loan.dto.CreateGuarantorResponseDto
 import kpt.core.network.mifos.loan.dto.GuarantorRequestDto
 import kpt.core.network.mifos.loan.dto.LoanChargeOffRequestDto
-import kpt.core.network.mifos.loan.dto.LoanChargeOffResponseDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseRequestDto
-import kpt.core.network.mifos.loan.dto.LoanDisburseResponseDto
-import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.network.mifos.loan.dto.LoansPayload
 import kpt.core.network.mifos.loan.dto.RejectLoanRequestDto
-import kpt.core.network.mifos.loan.dto.RejectLoanResponseDto
 @RepositoryBinding(binds = LoanCommandRepository::class)
 internal class LoanCommandRepositoryImpl(
     private val api: LoanApi,

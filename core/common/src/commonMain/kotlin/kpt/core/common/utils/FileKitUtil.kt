@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.common.utils
 
@@ -16,8 +16,8 @@ import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 /**
  *  Do not pass the path or absolute path you get by using any picker,
@@ -40,7 +40,7 @@ object FileKitUtil {
         )
         emit(file)
     }.map { Result.success(it) }
-    .catch { emit(Result.failure(it)) }
+        .catch { emit(Result.failure(it)) }
 
     @Suppress("UNUSED_PARAMETER")
     fun pickImage(
@@ -52,7 +52,7 @@ object FileKitUtil {
         )
         emit(image)
     }.map { Result.success(it) }
-    .catch { emit(Result.failure(it)) }
+        .catch { emit(Result.failure(it)) }
 
     suspend fun pickDirectory(): PlatformFile? = platformPickDirectory()
 

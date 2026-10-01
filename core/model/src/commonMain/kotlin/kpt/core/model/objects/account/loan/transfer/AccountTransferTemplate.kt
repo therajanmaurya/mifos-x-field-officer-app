@@ -5,12 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.model.objects.account.loan.transfer
 
-import kpt.core.model.objects.template.loan.Currency
 import kotlinx.serialization.Serializable
+import kpt.core.model.objects.template.loan.Currency
 
 /**
  * Data class representing the template for account transfers

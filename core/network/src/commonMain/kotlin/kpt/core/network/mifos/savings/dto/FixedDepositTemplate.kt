@@ -5,10 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.savings.dto
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kpt.core.model.objects.account.saving.FieldOfficerOptions
 import kpt.core.model.objects.template.recurring.AccountChart
 import kpt.core.model.objects.template.recurring.Currency
@@ -20,9 +22,6 @@ import kpt.core.model.objects.template.recurring.interest.InterestCompoundingPer
 import kpt.core.model.objects.template.recurring.interest.InterestPostingPeriodTypeOption
 import kpt.core.model.objects.template.recurring.period.LockinPeriodFrequencyTypeOption
 import kpt.core.model.objects.template.recurring.period.PeriodFrequencyTypeOption
-import kpt.core.network.mifos.savings.dto.SavingsAccountOption
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
 @Serializable
 data class FixedDepositTemplate(

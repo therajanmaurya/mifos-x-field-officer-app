@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.components
 
@@ -25,9 +25,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.theme.MifosTheme
 import kpt.core.ui.util.DevicePreview
-import kpt.core.base.designsystem.theme.KptTheme
 import kotlin.math.min
 
 @Composable

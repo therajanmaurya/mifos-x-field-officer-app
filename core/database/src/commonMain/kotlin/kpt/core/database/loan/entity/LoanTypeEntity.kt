@@ -5,15 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.loan.entity
 
-import kpt.core.base.database.annotation.DbEntity
-
 import kotlinx.serialization.Serializable
-import androidx.room3.Entity
-import androidx.room3.PrimaryKey
 
 /**
  * A COLUMN, not a table.

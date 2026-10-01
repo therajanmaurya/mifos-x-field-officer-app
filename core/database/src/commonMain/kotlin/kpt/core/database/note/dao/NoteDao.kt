@@ -5,18 +5,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.note.dao
-
-import kpt.core.base.database.annotation.DbDao
 
 import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
-import kpt.core.database.note.entity.NoteEntity
 import kotlinx.coroutines.flow.Flow
+import kpt.core.base.database.annotation.DbDao
+import kpt.core.database.note.entity.NoteEntity
 
 /**
  * Notes attached to a client (or other Fineract resource).

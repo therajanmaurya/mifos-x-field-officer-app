@@ -5,20 +5,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.loan.entity
 
+import kotlinx.serialization.Serializable
+import kpt.core.model.loan.AmortizationType
 import kpt.core.model.objects.account.loan.Currency
 import kpt.core.model.objects.account.loan.InterestCalculationPeriodType
 import kpt.core.model.objects.account.loan.InterestRateFrequencyType
 import kpt.core.model.objects.account.loan.InterestType
 import kpt.core.model.objects.account.loan.RepaymentFrequencyType
 import kpt.core.model.objects.account.loan.TermPeriodFrequencyType
-import kotlinx.serialization.Serializable
-import kpt.core.model.loan.AmortizationType
-
-
 
 @Serializable
 data class Loan(

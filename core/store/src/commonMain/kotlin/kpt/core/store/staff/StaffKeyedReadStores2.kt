@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.staff
 
@@ -23,7 +23,6 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 @StoreProvider(id = "staffAllStaff", ttl = "12h")
 @CacheKey(fn = "forKey", key = "staffAllStaff:{key}", params = ["key:String"])
 fun provideAllStaffStore(
@@ -34,6 +33,7 @@ fun provideAllStaffStore(
     keyOf = { key -> AppCacheKeys.StaffAllStaff.forKey("all") },
     fetch = { key -> staffApi.allStaff() },
 )
+
 @StoreProvider(id = "staffFieldStaffForOffice", ttl = "12h")
 @CacheKey(fn = "forKey", key = "staffFieldStaffForOffice:{key}", params = ["key:String"])
 fun provideFieldStaffForOfficeStore(

@@ -5,14 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.components
 
-import kpt.core.ui.generated.resources.Res
-import kpt.core.ui.generated.resources.core_ui_click_here_to_view_filled_state
-import kpt.core.ui.generated.resources.core_ui_click_to_add_new
-import kpt.core.ui.generated.resources.core_ui_no_item_found
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +20,10 @@ import kpt.core.designsystem.component.MifosButton
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.designsystem.theme.MifosTheme
 import kpt.core.designsystem.theme.MifosTypography
+import kpt.core.ui.generated.resources.Res
+import kpt.core.ui.generated.resources.core_ui_click_here_to_view_filled_state
+import kpt.core.ui.generated.resources.core_ui_click_to_add_new
+import kpt.core.ui.generated.resources.core_ui_no_item_found
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

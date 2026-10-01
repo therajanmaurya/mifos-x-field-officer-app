@@ -5,19 +5,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.savings.dto
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kpt.core.model.objects.template.client.ChargeAppliesTo
 import kpt.core.model.objects.template.client.ChargeCalculationType
 import kpt.core.model.objects.template.client.ChargePaymentMode
 import kpt.core.model.objects.template.client.ChargeTimeType
 import kpt.core.model.objects.template.client.Currency
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kpt.core.model.shared.ProductOption
-
 
 @Serializable
 data class ShareTemplate(

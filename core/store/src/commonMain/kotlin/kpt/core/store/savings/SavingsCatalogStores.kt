@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.savings
 
@@ -24,7 +24,6 @@ import org.mobilenativefoundation.store.store5.Store
  * own, cached through the shared read cache so they still render with no signal.
  */
 
-
 @StoreProvider(id = "savingsProducts", ttl = "12h")
 @CacheKey(name = "LIST", key = "savingsProducts")
 fun provideSavingsProductsStore(
@@ -35,6 +34,7 @@ fun provideSavingsProductsStore(
     keyOf = { AppCacheKeys.SavingsProducts.LIST },
     fetch = { savingsAccountApi.allSavingsAccounts() },
 )
+
 @StoreProvider(id = "savingsProductTemplate", ttl = "12h")
 @CacheKey(name = "LIST", key = "savingsProductTemplate")
 fun provideSavingsProductTemplateStore(

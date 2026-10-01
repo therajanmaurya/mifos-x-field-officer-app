@@ -5,18 +5,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.datatable.converter
 
+import androidx.room3.ColumnTypeConverter
 import kotlinx.serialization.json.Json
+import kpt.core.base.database.annotation.DbConverters
 import kpt.core.database.datatable.entity.ColumnHeader
 import kpt.core.database.datatable.entity.ColumnValue
 import kpt.core.database.datatable.entity.DataTableEntity
 import kpt.core.database.datatable.entity.DataTablePayload
-
-import androidx.room3.ColumnTypeConverter
-import kpt.core.base.database.annotation.DbConverters
 
 @DbConverters
 object DataTableTypeConverters {

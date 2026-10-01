@@ -5,12 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.loan.dto
 
-import kpt.core.database.datatable.entity.DataTablePayload
 import kotlinx.serialization.Serializable
+import kpt.core.database.datatable.entity.DataTablePayload
 
 /**
  * Created by nellyk on 2/20/2016.

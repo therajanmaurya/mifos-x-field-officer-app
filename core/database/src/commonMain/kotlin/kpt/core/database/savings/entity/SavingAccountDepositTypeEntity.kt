@@ -5,16 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.savings.entity
 
-import kpt.core.base.database.annotation.DbEntity
-
-import kotlinx.serialization.Serializable
-import androidx.room3.Entity
-import androidx.room3.PrimaryKey
 import androidx.room3.Ignore
+import kotlinx.serialization.Serializable
 
 /**
  * A COLUMN, not a table.
@@ -37,9 +33,11 @@ data class SavingAccountDepositTypeEntity(
     @Ignore
     val isRecurring: Boolean
         get() = ServerTypes.RECURRING.id == id
+
     @Ignore
     val endpoint: String
         get() = ServerTypes.fromId(id).endpoint
+
     @Ignore
     val serverType: ServerTypes
         get() = ServerTypes.fromId(id)

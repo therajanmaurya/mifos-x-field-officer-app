@@ -5,19 +5,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.report.api
 
-import kpt.core.base.network.annotation.ApiBinding
-
-import kpt.core.model.objects.groups.CenterInfo
-import kpt.core.model.objects.runreport.FullParameterListResponse
-import kpt.core.model.objects.runreport.client.ClientReportTypeItem
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
+import kpt.core.base.network.annotation.ApiBinding
+import kpt.core.model.objects.groups.CenterInfo
+import kpt.core.model.objects.runreport.FullParameterListResponse
+import kpt.core.model.objects.runreport.client.ClientReportTypeItem
 
 /**
  * Created by Rajan Maurya on 05/02/17.

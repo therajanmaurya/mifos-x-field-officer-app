@@ -11,7 +11,6 @@ package kpt.core.network.di
 
 import kpt.core.base.network.SupabaseConfigClient
 import kpt.core.base.network.SupabaseExtrasProvider
-import kpt.core.network.BuildKonfig
 import org.koin.dsl.module
 
 /**
@@ -107,5 +106,4 @@ val ProjectNetworkModule = module {
             }
         }
     }
-
 }
