@@ -9,7 +9,10 @@
  */
 package kpt.feature.home.di
 
+import kpt.feature.home.search.SearchViewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val HomeModule = module {
+    viewModelOf(::SearchViewModel)
 }

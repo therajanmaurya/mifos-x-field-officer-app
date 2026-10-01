@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import kpt.core.base.ui.nav.popBackStackSafely
+import kpt.feature.home.search.SearchBody
+import kpt.feature.profile.identity.ProfileBody
 import kpt.feature.settings.navigateToSettings
 import kpt.feature.settings.notificationDestination
 import kpt.feature.settings.settingsDestination
@@ -39,7 +41,14 @@ object BackboneRegistry {
      * default is the demo Money-Toolkit dashboard wired to its feature destinations; `customizer --clean`
      * strips the fenced block below, leaving `{ }` — an empty backbone body for the fork to fill.
      */
-    val homeBody: @Composable (NavController) -> Unit = { navController ->
+    val homeBody: @Composable (NavController) -> Unit = { _ ->
+        // Fineract resource search — the original app's de-facto dashboard, ported in S2 from
+        // 6b66e8a43:feature/search. This seam was EMPTY, which is why the Home tab rendered as a
+        // blank screen on device.
+        //
+        // No NavController is used yet: result rows are not clickable until S3 lands client detail,
+        // the first destination a result can open (RULE-IMPL-DEAD-CLICKABLE-001).
+        SearchBody()
     }
 
     /**
@@ -59,6 +68,12 @@ object BackboneRegistry {
      * `homeBody`). WS01 / AC7.
      */
     val profileBody: @Composable (NavController) -> Unit = { _ ->
+        // Signed-in officer identity + sign-out (S2). Another seam that was EMPTY.
+        //
+        // Sign-out needs no navigation callback: clearing the session flips
+        // `UserData.isAuthenticated` to false, RootNavViewModel emits `RootNavState.Auth`, and the
+        // root effect routes to sign-in. Navigating here as well would race the state machine.
+        ProfileBody(onSignedOut = {})
     }
 
     /**

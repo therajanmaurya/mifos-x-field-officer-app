@@ -15,6 +15,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.data)
+            implementation(projects.core.datastore)
             implementation(projects.core.model)
             implementation(projects.core.store)
             // koinNavViewModel(), imported aliased as `retainedKoinViewModel` — same contract

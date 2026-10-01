@@ -16,4 +16,11 @@
 
     <string name="screens_profile_local_title">Local profile</string>
     <string name="screens_profile_local_message">%1$s runs entirely on-device. No account required.</string>
+    <!-- Identity + sign-out (S2). New surface: the original had no Profile tab. -->
+    <string name="feature_profile_office">Office: %1$s</string>
+    <string name="feature_profile_server">Server: %1$s</string>
+    <string name="feature_profile_sign_out">Sign out</string>
+    <string name="feature_profile_sign_out_prompt">You will need your credentials to sign back in. Unsynced work stays on this device.</string>
+    <string name="feature_profile_sign_out_confirm">Sign out</string>
+    <string name="feature_profile_sign_out_cancel">Cancel</string>
 </resources>

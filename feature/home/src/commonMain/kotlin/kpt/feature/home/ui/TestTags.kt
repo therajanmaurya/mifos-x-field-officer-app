@@ -29,5 +29,12 @@ object TestTags {
 
         /** The vertically-scrollable dashboard `Column`. */
         const val DASHBOARD_SCROLL: String = "home_dashboard_scroll"
+
+        /** Search — the Home body supplied through BackboneRegistry.homeBody (S2). */
+        const val SEARCH: String = "home.search"
+        const val SEARCH_FIELD: String = "home.search.field"
+        const val SEARCH_FILTERS: String = "home.search.filters"
+        const val SEARCH_EXACT_MATCH: String = "home.search.exact_match"
+        const val SEARCH_RESULTS: String = "home.search.results"
     }
 }

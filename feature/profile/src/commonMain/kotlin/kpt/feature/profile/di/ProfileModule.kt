@@ -9,6 +9,8 @@
  */
 package kpt.feature.profile.di
 
+import kpt.feature.profile.identity.ProfileViewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 /**
@@ -21,4 +23,5 @@ import org.koin.dsl.module
  * ViewModel + sources are bound here.
  */
 val ProfileModule = module {
+    viewModelOf(::ProfileViewModel)
 }

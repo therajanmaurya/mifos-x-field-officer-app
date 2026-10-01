@@ -20,5 +20,12 @@ object TestTags {
     object Profile {
         /** Root scaffold — always rendered regardless of content state. */
         const val SCREEN: String = "profile_screen"
+
+        /** Identity + sign-out body, supplied through BackboneRegistry.profileBody (S2). */
+        const val BODY: String = "profile.body"
+        const val USERNAME: String = "profile.username"
+        const val SERVER: String = "profile.server"
+        const val SIGN_OUT: String = "profile.sign_out"
+        const val SIGN_OUT_CONFIRM: String = "profile.sign_out.confirm"
     }
 }

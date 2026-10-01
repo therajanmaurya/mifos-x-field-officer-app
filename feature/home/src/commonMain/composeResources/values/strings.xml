@@ -83,4 +83,12 @@
 
     <!-- ===== HomeScreen — Empty state ===== -->
     <string name="screens_home_money_zero">$0.00</string>
+    <!-- Search — the Home body, ported from 6b66e8a43:feature/search (S2). -->
+    <string name="feature_home_search_hint">Search clients, groups, accounts</string>
+    <string name="feature_home_search_blank_query">Enter something to search for</string>
+    <string name="feature_home_search_exact_match">Exact match</string>
+    <string name="feature_home_search_filter_clients">Clients</string>
+    <string name="feature_home_search_filter_groups">Groups</string>
+    <string name="feature_home_search_filter_loans">Loans</string>
+    <string name="feature_home_search_filter_savings">Savings</string>
 </resources>
