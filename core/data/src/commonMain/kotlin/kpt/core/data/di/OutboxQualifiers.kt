@@ -39,4 +39,16 @@ package kpt.core.data.di
  * deletes them with the rest of the showcase and a template sync can blind-copy THIS file
  * without re-introducing them.
  */
+/**
+ * Koin qualifiers for this fork's `SubmitOutbox` instances — the FORK-OWNED seam.
+ *
+ * Empty today. The kmp-project-template filled it with `AppOutboxQualifiers.{Loan, BillReminder,
+ * LoanCalcScenario, PriceAlert}` for its demo entities; `remove-demo.sh` stripped those at fork
+ * standup, and `OutboxBindingVerifyTest` was deleted in S0b because it asserted their registration
+ * and had not compiled since (found on the first-ever run of `:core:data:desktopTest`).
+ *
+ * The fork's 72 writes currently route through `MutationGateway` without per-entity outbox
+ * qualifiers. When S8 migrates `feature/offline` and declares real ones, the binding-verification
+ * test returns here asserting THOSE — not the template's.
+ */
 object OutboxQualifiers
