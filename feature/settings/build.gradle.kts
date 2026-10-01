@@ -20,6 +20,8 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.domain)
+            implementation(projects.core.datastore)
             implementation(projects.core.data)
             implementation(projects.core.model)
             implementation(projects.core.ui)
@@ -37,6 +39,17 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+        }
+        commonTest.dependencies {
+            // ServerConfigViewModelTest builds a real ProjectPreferencesRepository over MapSettings
+            // and needs DispatcherManager — the same fakes feature/auth's LoginViewModelTest uses.
+            implementation(projects.coreBase.common)
+            implementation(projects.core.datastore)
+            // `Settings` itself, not just MapSettings: core/datastore declares
+            // multiplatform-settings as `implementation`, so the interface in
+            // ProjectPreferencesRepositoryImpl's signature is not exposed transitively.
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.test)
         }
     }
 }

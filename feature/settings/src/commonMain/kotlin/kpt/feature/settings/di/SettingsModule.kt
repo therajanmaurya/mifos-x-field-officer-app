@@ -12,6 +12,7 @@ package kpt.feature.settings.di
 import kpt.feature.settings.ConflictInboxViewModel
 import kpt.feature.settings.SettingsViewModel
 import kpt.feature.settings.SyncAndDraftsViewModel
+import kpt.feature.settings.serverconfig.ServerConfigViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -21,4 +22,5 @@ val SettingsModule = module {
     // Sync conflicts screen — a live window over the framework ConflictInbox (provided by
     // core-base StoreModule, included via appStoreModule).
     viewModelOf(::ConflictInboxViewModel)
+    viewModelOf(::ServerConfigViewModel)
 }

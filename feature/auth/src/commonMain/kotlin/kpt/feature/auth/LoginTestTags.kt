@@ -17,4 +17,10 @@ object LoginTestTags {
     const val SUBMIT = "login:submit"
     const val ERROR = "login:error"
     const val PROGRESS = "login:progress"
+
+    /** Restored in S1 T3 — absent from the authored replacement. */
+    const val LOGO = "login:logo"
+
+    /** The server-config entry point. Without it a first-run user can never sign in. */
+    const val SERVER_CONFIG = "login:server-config"
 }

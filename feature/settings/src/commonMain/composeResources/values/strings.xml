@@ -71,4 +71,30 @@
     <string name="feature_settings_conflicts_row_label">Conflict</string>
     <string name="feature_settings_conflicts_accept_server">Keep server</string>
     <string name="feature_settings_conflicts_retry_local">Retry mine</string>
+    <!--
+        Server configuration (S1 T4) — ported from 6b66e8a43 feature/settings/updateServer.
+        Error copy names no numeric bound: ValidationFailure.TooShort / PortOutOfRange carry their
+        own parameters, so a bound can be formatted from the failure instead of hardcoded. The login
+        strings got this wrong ("at least 5 characters", against a rule of 4).
+        Only values/ is populated; the other 19 locales fall back to English until translated.
+    -->
+    <string name="feature_settings_server_config_title">Server configuration</string>
+    <string name="feature_settings_server_protocol">Protocol</string>
+    <string name="feature_settings_server_endpoint">Endpoint</string>
+    <string name="feature_settings_server_api_path">API path</string>
+    <string name="feature_settings_server_port">Port</string>
+    <string name="feature_settings_server_tenant">Tenant</string>
+    <string name="feature_settings_server_use_defaults">Use defaults</string>
+    <string name="feature_settings_server_use_localhost">Use localhost</string>
+    <string name="feature_settings_server_save">Save</string>
+    <string name="feature_settings_server_saved">Server configuration saved</string>
+    <string name="feature_settings_server_invalid">Fix the highlighted fields first</string>
+    <string name="feature_settings_server_error_required">Required</string>
+    <string name="feature_settings_server_error_too_short">Too short</string>
+    <string name="feature_settings_server_error_hostname">Enter a valid host name, without a scheme</string>
+    <string name="feature_settings_server_error_port_range">Enter a port between 1 and 65535</string>
+    <string name="feature_settings_server_error_protocol">Must be http:// or https://</string>
+    <string name="feature_settings_server_error_api_path_leading">Must start with /</string>
+    <string name="feature_settings_server_error_api_path_trailing">Must end with /</string>
+    <string name="feature_settings_server_error_tenant">Letters and digits only</string>
 </resources>

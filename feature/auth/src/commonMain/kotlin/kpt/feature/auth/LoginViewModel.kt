@@ -16,6 +16,8 @@ import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.ui.viewmodel.BaseViewModel
 import kpt.core.data.auth.AuthCommandRepository
 import kpt.core.datastore.prefs.ProjectPreferencesRepository
+import kpt.core.domain.validation.CredentialRules
+import kpt.core.domain.validation.ValidationResult
 import kpt.core.model.objects.users.User
 import kpt.core.network.mifos.auth.dto.PostAuthenticationRequest
 import kpt.core.network.mifos.auth.dto.PostAuthenticationResponse
@@ -101,15 +103,20 @@ class LoginViewModel(
         mutableStateFlow.value = state.copy(isSubmitting = false, error = error)
     }
 
+    /**
+     * Credential rules come from [CredentialRules], never from a local constant.
+     *
+     * This ViewModel previously declared its own `MIN_USERNAME = 5` while the original app's
+     * `UsernameValidationUseCase` rejected `length < 4` (`897ffdac1`). Nothing related the two, so a
+     * four-character username that signed in on the original was refused here — a regression
+     * introduced by re-authoring the screen rather than porting it, and then baked into the
+     * user-facing copy ("at least 5 characters"). Reading through the shared rules is what makes the
+     * thresholds impossible to diverge again.
+     */
     private fun validate(username: String, password: String): LoginError? = when {
-        username.length < MIN_USERNAME -> LoginError.UsernameTooShort
-        password.length < MIN_PASSWORD -> LoginError.PasswordTooShort
+        CredentialRules.username(username) is ValidationResult.Invalid -> LoginError.UsernameTooShort
+        CredentialRules.password(password) is ValidationResult.Invalid -> LoginError.PasswordTooShort
         else -> null
-    }
-
-    private companion object {
-        const val MIN_USERNAME = 5
-        const val MIN_PASSWORD = 6
     }
 }
 

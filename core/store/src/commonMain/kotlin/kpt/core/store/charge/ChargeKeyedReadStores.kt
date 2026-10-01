@@ -23,12 +23,12 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 /** Addresses one `getChargeTemplate` read. */
 data class GetChargeTemplateKey(
     val resourceType: String,
     val resourceId: Int,
 )
+
 @StoreProvider(id = "chargeGetChargeTemplate", ttl = "12h")
 @CacheKey(fn = "forKey", key = "chargeGetChargeTemplate:{key}", params = ["key:String"])
 fun provideGetChargeTemplateStore(

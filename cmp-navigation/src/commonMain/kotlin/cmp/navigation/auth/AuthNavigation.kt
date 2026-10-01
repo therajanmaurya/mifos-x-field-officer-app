@@ -15,6 +15,8 @@ import androidx.navigation.navOptions
 import cmp.navigation.authenticated.AuthenticatedGraphRoute
 import kpt.feature.auth.LoginRoute
 import kpt.feature.auth.loginDestination
+import kpt.feature.settings.serverconfig.navigateToServerConfig
+import kpt.feature.settings.serverconfig.serverConfigDestination
 
 /**
  * Installs the unauthenticated entry destinations on the ROOT graph.
@@ -41,5 +43,13 @@ internal fun NavGraphBuilder.authNavGraph(navController: NavController) {
                 },
             )
         },
+        onUpdateServerConfig = navController::navigateToServerConfig,
     )
+
+    // Server config sits on the ROOT graph, not inside the authenticated one, because a first-run
+    // user has no Fineract URL and so cannot sign in until they have set one — the screen has to be
+    // reachable while signed OUT. Registered here exactly once: `navigate()` resolves across the
+    // nested boundary, so Settings reaches the same destination once authenticated, whereas a second
+    // registration inside `authenticatedGraph` would be a duplicate destination on one NavHost.
+    serverConfigDestination(onBackClick = navController::popBackStack)
 }

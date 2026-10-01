@@ -13,6 +13,7 @@ import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
 import kpt.core.database.savings.entity.SavingProductsTemplate
+import kpt.core.database.savings.entity.SavingsAccountTransactionTemplateEntity
 import kpt.core.network.mifos.savings.api.FixedDepositApi
 import kpt.core.network.mifos.savings.api.SavingsAccountApi
 import kpt.core.network.mifos.savings.api.ShareAccountApi
@@ -93,4 +94,22 @@ fun provideShareProductTemplateStore(
     dao = cache,
     keyOf = { key -> AppCacheKeys.SavingsShareProductTemplate.forKey("${key.clientId}:${key.productId}") },
     fetch = { key -> shareAccountApi.shareProductTemplate(clientId = key.clientId, productId = key.productId) },
+)
+
+/** Addresses one `getSavingsAccountTransactionTemplate` read. */
+data class GetSavingsAccountTransactionTemplateKey(
+    val savingsAccountType: String,
+    val savingsAccountId: Int,
+    val transactionType: String?,
+)
+
+@StoreProvider(id = "savingsGetSavingsAccountTransactionTemplate", ttl = "12h")
+@CacheKey(fn = "forKey", key = "savingsGetSavingsAccountTransactionTemplate:{key}", params = ["key:String"])
+fun provideGetSavingsAccountTransactionTemplateStore(
+    savingsAccountApi: SavingsAccountApi,
+    cache: ApiResponseCacheDao,
+): Store<GetSavingsAccountTransactionTemplateKey, SavingsAccountTransactionTemplateEntity> = cachedRead(
+    dao = cache,
+    keyOf = { key -> AppCacheKeys.SavingsGetSavingsAccountTransactionTemplate.forKey("${key.savingsAccountType}:${key.savingsAccountId}:${key.transactionType}") },
+    fetch = { key -> savingsAccountApi.getSavingsAccountTransactionTemplate(savingsAccountType = key.savingsAccountType, savingsAccountId = key.savingsAccountId, transactionType = key.transactionType) },
 )

@@ -23,13 +23,13 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 /** Addresses one `retrieveNote` read. */
 data class RetrieveNoteKey(
     val resourceType: String,
     val resourceId: Long,
     val noteId: Long,
 )
+
 @StoreProvider(id = "noteRetrieveNote", ttl = "12h")
 @CacheKey(fn = "forKey", key = "noteRetrieveNote:{key}", params = ["key:String"])
 fun provideRetrieveNoteStore(

@@ -23,13 +23,13 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 /** Addresses one `searchResources` read. */
 data class SearchResourcesKey(
     val query: String,
     val resource: String?,
     val exactMatch: Boolean?,
 )
+
 @StoreProvider(id = "searchSearchResources", ttl = "12h")
 @CacheKey(fn = "forKey", key = "searchSearchResources:{key}", params = ["key:String"])
 fun provideSearchResourcesStore(

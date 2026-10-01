@@ -12,8 +12,31 @@
     <string name="feature_auth_login">Login</string>
     <string name="feature_auth_username">Username</string>
     <string name="feature_auth_password">Password</string>
-    <string name="feature_auth_error_username_length">Username must be at least 5 characters</string>
-    <string name="feature_auth_error_password_length">Password must be at least 6 characters</string>
+
+    <!-- Restored from 6b66e8a43 (S1 T3): absent from the authored replacement. -->
+    <string name="feature_auth_enter_credentials">Please enter your credentials</string>
+    <string name="feature_auth_error_enter_credentials">Please enter the credentials</string>
+    <string name="feature_auth_error_not_connected_internet">No internet connection</string>
+
+    <!--
+        Deliberately carries NO number. The replacement read "Username must be at least 5
+        characters", which hardcoded a threshold into user-facing copy AND hardcoded the wrong one —
+        the rule is 4 (kpt.core.domain.validation.CredentialRules.MIN_USERNAME_LENGTH). The original
+        said "Invalid username length" for exactly this reason: copy that names a number drifts from
+        the rule silently. If a count is ever wanted here, format it from the constant.
+    -->
+    <string name="feature_auth_error_username_length">Invalid username length</string>
+    <string name="feature_auth_error_password_length">Invalid password length</string>
+
     <string name="feature_auth_error_login_failed">Login failed. Check your credentials and try again.</string>
+
+    <!--
+        No original equivalent. The old app could not tell "offline" from "rejected" — DataState had
+        no such state. MutationResult.Blocked(OFFLINE) can, so this is a deliberate addition rather
+        than a port (ledger §5).
+    -->
     <string name="feature_auth_error_offline">You are offline. Signing in needs a connection.</string>
+
+    <!-- Server-config entry point, reached from login (S1 T4). -->
+    <string name="feature_auth_update_server_config">Update server configuration</string>
 </resources>

@@ -17,9 +17,9 @@
 | `src/commonMain/kotlin/com/mifos/feature/auth/login/LoginUiState.kt` | ✗ absent — no state type |
 | `src/commonMain/kotlin/com/mifos/feature/auth/navigation/AuthNavigation.kt` | ✗ absent — see §6 |
 | `src/commonMain/kotlin/com/mifos/feature/auth/di/AuthModule.kt` | ✓ present |
-| `src/commonMain/composeResources/values/strings.xml` | **✗ MISSING** |
+| `src/commonMain/composeResources/values/strings.xml` | ✓ present — **CORRECTED 2026-10-01**, see below |
 | `src/commonMain/composeResources/drawable/feature_auth_mifos_logo.jpg` | **✗ MISSING** |
-| `src/androidMain/AndroidManifest.xml` | **✗ MISSING** |
+| `src/androidMain/AndroidManifest.xml` | ✓ present — **CORRECTED 2026-10-01** |
 | `build.gradle.kts` · `consumer-rules.pro` · `proguard-rules.pro` · `README.md` | ✓ / n-a |
 
 Current module adds `LoginRoute.kt` and `TestTags.kt` (both template-idiomatic, keep) and
@@ -102,6 +102,37 @@ return 200 with `authenticated: false`. Preserve that check; dropping it admits 
 
 ## Audit verdict
 
-**Not migrated.** Four artifacts missing outright (strings, logo, manifest, nav), the state type absent,
-the screen 138 lines shorter than the original, and one open security question. S1 T3 closes items 1–6;
-the plaintext-password question is the one item that needs a decision rather than a port.
+**Not migrated** — but less by absence than by silent divergence, which the correction below revises.
+One artifact missing (the logo drawable), 3 of 9 original strings absent, the screen 138 lines shorter,
+**a validation threshold changed from 4 to 5 with the user-facing copy rewritten to match the invented
+number**, and one open security question. S1 T3 closes everything except the plaintext-password
+question, which needs a decision rather than a port.
+
+The threshold regression is the finding that matters: a missing file fails loudly at compile time,
+while a changed rule ships and quietly locks out users whose username is four characters long.
+
+### Correction — 2026-10-01 (Phase 10 T3)
+
+Two rows above originally read **MISSING** and were wrong. `strings.xml` and `AndroidManifest.xml`
+both exist. The Phase 9 audit enumerated the module with
+`find feature/auth -name "*.kt" -o -name 'build.gradle.kts'` — a filter that excludes `.xml`
+entirely — and then reported absence from that listing. The measurement could not have seen them.
+
+The real defects in those two artifacts are different, and one is worse than a missing file:
+
+| artifact | actual finding |
+|---|---|
+| `strings.xml` | present with 7 strings, but **3 of the original's 9 are absent**: `feature_auth_enter_credentials`, `feature_auth_error_enter_credentials`, `feature_auth_error_not_connected_internet`. It also adds `feature_auth_error_offline`, which is a genuine improvement (the substrate can now distinguish offline). |
+| `strings.xml` copy | `"Username must be at least 5 characters"` **hardcodes a threshold into user-facing copy**, and hardcodes the WRONG one — the original is 4. The original's copy carried no number (`"Invalid username length"`), so it could not drift. |
+| `AndroidManifest.xml` | present; no finding. |
+| drawable logo | genuinely missing — the original's `feature_auth_mifos_logo.jpg` is not in the module. |
+
+**The regression this correction uncovered.** `LoginViewModel` declares its own
+`MIN_USERNAME = 5`, while the original `UsernameValidationUseCase` rejects `length < 4`. A
+four-character username that signed in on the original app is refused by this one. No requirement
+changed — the number was invented while re-authoring, and the string copy was then written to match
+the invented number. This is the single clearest instance of why §1 audits rather than trusts
+existing code.
+
+Fix (T3): the ViewModel consumes `kpt.core.domain.validation.CredentialRules`, whose thresholds are
+preserved verbatim from `897ffdac1`, and the copy stops naming a number.

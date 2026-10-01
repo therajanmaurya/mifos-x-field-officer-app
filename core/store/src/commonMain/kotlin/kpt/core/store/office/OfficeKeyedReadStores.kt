@@ -23,13 +23,13 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-
 /** Addresses one `retrieveOffices` read. */
 data class RetrieveOfficesKey(
     val includeAllOffices: Boolean? = false,
     val orderBy: String? = null,
     val sortOrder: String? = null,
 )
+
 @StoreProvider(id = "officeRetrieveOffices", ttl = "12h")
 @CacheKey(fn = "forKey", key = "officeRetrieveOffices:{key}", params = ["key:String"])
 fun provideRetrieveOfficesStore(

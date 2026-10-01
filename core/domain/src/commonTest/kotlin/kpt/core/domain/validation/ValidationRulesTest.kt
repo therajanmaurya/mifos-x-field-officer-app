@@ -126,12 +126,21 @@ class ValidationRulesTest {
         )
     }
 
+    /**
+     * Tenant admits hyphen and underscore — a recorded DEVIATION from the original's
+     * `^[a-zA-Z0-9]+$`, which rejected `ServerConfig.DEFAULT.tenant` ("mifos-bank-1") and so made the
+     * app unable to save its own shipped configuration. What the rule still guards is path and
+     * scheme characters.
+     */
     @Test
-    fun tenantIsAlphanumericOnly() {
+    fun tenantAdmitsHyphenAndUnderscoreButNotPathOrSchemeCharacters() {
         assertTrue(ServerConfigRules.tenant("default").isValid)
         assertTrue(ServerConfigRules.tenant("tenant1").isValid)
-        assertTrue(ServerConfigRules.tenant("my-tenant") is ValidationResult.Invalid)
-        assertTrue(ServerConfigRules.tenant("my_tenant") is ValidationResult.Invalid)
+        assertTrue(ServerConfigRules.tenant("mifos-bank-1").isValid, "the shipped DEFAULT must be valid")
+        assertTrue(ServerConfigRules.tenant("my_tenant").isValid)
+        assertTrue(ServerConfigRules.tenant("my/tenant") is ValidationResult.Invalid)
+        assertTrue(ServerConfigRules.tenant("https://t") is ValidationResult.Invalid)
+        assertTrue(ServerConfigRules.tenant("my tenant") is ValidationResult.Invalid)
     }
 
     // ─── aggregation ────────────────────────────────────────────────────────────

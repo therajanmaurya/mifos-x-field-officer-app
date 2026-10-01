@@ -27,8 +27,14 @@ fun NavController.navigateToLogin(navOptions: NavOptions? = null) = navigate(Log
  * must not be — it is the gate in front of it. The app shell owns where sign-in sits in the
  * navigation graph, so this stays a plain builder the shell installs deliberately.
  */
-fun NavGraphBuilder.loginDestination(onLoggedIn: () -> Unit) {
+fun NavGraphBuilder.loginDestination(
+    onLoggedIn: () -> Unit,
+    onUpdateServerConfig: () -> Unit,
+) {
     composableWithStayTransitions<LoginRoute> {
-        LoginScreen(onLoggedIn = onLoggedIn)
+        LoginScreen(
+            onLoggedIn = onLoggedIn,
+            onUpdateServerConfig = onUpdateServerConfig,
+        )
     }
 }

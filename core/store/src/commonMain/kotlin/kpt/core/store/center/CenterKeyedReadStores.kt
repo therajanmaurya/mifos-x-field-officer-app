@@ -13,6 +13,7 @@ import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
 import kpt.core.database.center.entity.CenterAccounts
+import kpt.core.database.center.entity.CenterEntity
 import kpt.core.database.center.entity.CenterWithAssociations
 import kpt.core.network.mifos.center.api.CenterApi
 import kpt.core.store.cache.cachedRead
@@ -55,4 +56,21 @@ fun provideGetAllGroupsForCenterStore(
     dao = cache,
     keyOf = { key -> AppCacheKeys.CenterGetAllGroupsForCenter.forKey(key.toString()) },
     fetch = { key -> centerApi.getAllGroupsForCenter(centerId = key) },
+)
+
+/** Addresses one `getAllCentersInOffice` read. */
+data class GetAllCentersInOfficeKey(
+    val officeId: Int,
+    val additionalParams: Map<String, String>,
+)
+
+@StoreProvider(id = "centerGetAllCentersInOffice", ttl = "12h")
+@CacheKey(fn = "forKey", key = "centerGetAllCentersInOffice:{key}", params = ["key:String"])
+fun provideGetAllCentersInOfficeStore(
+    centerApi: CenterApi,
+    cache: ApiResponseCacheDao,
+): Store<GetAllCentersInOfficeKey, List<CenterEntity>> = cachedRead(
+    dao = cache,
+    keyOf = { key -> AppCacheKeys.CenterGetAllCentersInOffice.forKey("${key.officeId}:${key.additionalParams}") },
+    fetch = { key -> centerApi.getAllCentersInOffice(officeId = key.officeId, additionalParams = key.additionalParams) },
 )

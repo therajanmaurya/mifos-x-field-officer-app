@@ -17,7 +17,7 @@ import kpt.core.designsystem.theme.KptTheme
 import kotlin.test.Test
 
 /**
- * Compose Multiplatform UI test for the settings inner body [SettingsDemoBody] (the fork-owned seam
+ * Compose Multiplatform UI test for the fork's [SettingsScreenContent] (was the template's `SettingsDemoBody` seam
  * rendered by `cmp-navigation`'s `BackboneRegistry.settingsBody` inside the template `SettingsScreen`
  * shell).
  *
@@ -33,8 +33,15 @@ class SettingsScreenUiTest {
         setContent {
             KptTheme {
                 // In production cmp-navigation's BackboneRegistry.settingsBody supplies this body.
-                SettingsDemoBody(
+                // Repointed in S1 T4 from `SettingsDemoBody`, a kmp-project-template DEMO seam that
+                // `remove-demo.sh` stripped at fork standup and this fork never supplied — so the
+                // test referenced a declaration that exists nowhere in the tree and the module's
+                // commonTest had not compiled since. `SettingsScreenContent` is the fork's real
+                // screen, which keeps the original assertion's intent.
+                SettingsScreenContent(
                     onBackClick = {},
+                    onThemeCardClick = {},
+                    onLanguageCardClick = {},
                     onSyncAndDraftsClick = {},
                 )
             }

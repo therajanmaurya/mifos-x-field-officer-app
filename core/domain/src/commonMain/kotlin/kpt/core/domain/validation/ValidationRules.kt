@@ -61,7 +61,19 @@ object ServerConfigRules {
 
     private val PROTOCOL = Regex("^(http://|https://)$")
 
-    private val TENANT = Regex("^[a-zA-Z0-9]+$")
+    /**
+     * Tenant identifier.
+     *
+     * **DEVIATION from `897ffdac1:ValidateServerTenantUseCase.kt`**, which used `^[a-zA-Z0-9]+$`.
+     * That rule rejects the substrate's own shipped default — `ServerConfig.DEFAULT.tenant` is
+     * `"mifos-bank-1"` — so the app could not save the configuration it ships with. Caught by
+     * `ServerConfigViewModelTest.theDefaultConfigIsValid`, which asserts exactly that the presets
+     * pass their own rules.
+     *
+     * Hyphen and underscore are admitted; the identifier is still prevented from carrying path or
+     * scheme characters, which is what the rule is actually guarding against.
+     */
+    private val TENANT = Regex("^[a-zA-Z0-9_-]+$")
 
     fun endpoint(value: String): ValidationResult = when {
         value.isBlank() -> ValidationResult.Invalid(ValidationFailure.Required)

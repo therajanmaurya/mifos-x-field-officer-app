@@ -28,6 +28,7 @@ import kpt.core.data.auth.AuthCommandRepository
 import kpt.core.datastore.prefs.ProjectPreferencesRepository
 import kpt.core.datastore.prefs.ProjectPreferencesRepositoryImpl
 import kpt.core.datastore.prefs.UserPreferencesRepositoryImpl
+import kpt.core.domain.validation.CredentialRules
 import kpt.core.network.mifos.auth.dto.PostAuthenticationRequest
 import kpt.core.network.mifos.auth.dto.PostAuthenticationResponse
 import kotlin.test.AfterTest
@@ -144,5 +145,86 @@ class LoginViewModelTest {
         assertEquals("Basic a2V5", prefs.authToken)
         assertTrue(loggedIn)
         job.cancel()
+    }
+
+    /**
+     * A username of exactly the minimum length must be ACCEPTED.
+     *
+     * This is the boundary the authored replacement broke. `shortUsernameIsRejectedWithoutCallingTheServer`
+     * above uses "abc" — 3 characters, refused by both the original rule (`< 4`) and the invented one
+     * (`< 5`), so it passes either way and cannot see the difference. At exactly 4 the two rules
+     * disagree: the original app signed such a user in, the rewrite locked them out.
+     *
+     * Asserted against `CredentialRules.MIN_USERNAME_LENGTH` rather than a literal 4, so the test
+     * tracks the rule instead of a number someone can edit to make it pass.
+     */
+    @Test
+    fun aUsernameAtExactlyTheMinimumLengthIsAccepted() = runTest(dispatcher) {
+        val auth = FakeAuth(MutationResult.Applied(response(true), synced = true))
+        val model = LoginViewModel(auth, preferences())
+        model.actionChannel.trySend(
+            LoginAction.UsernameChanged("u".repeat(CredentialRules.MIN_USERNAME_LENGTH)),
+        )
+        model.actionChannel.trySend(LoginAction.PasswordChanged("longenough"))
+        model.actionChannel.trySend(LoginAction.Submit)
+        runCurrent()
+        assertNull(model.stateFlow.value.error, "a username at the minimum length must not be refused")
+        assertEquals(1, auth.calls, "the server should have been called")
+    }
+
+    /** One character below the minimum is still refused, and without a server call. */
+    @Test
+    fun aUsernameOneBelowTheMinimumIsRefusedLocally() = runTest(dispatcher) {
+        val auth = FakeAuth(MutationResult.Applied(response(true), synced = true))
+        val model = LoginViewModel(auth, preferences())
+        model.actionChannel.trySend(
+            LoginAction.UsernameChanged("u".repeat(CredentialRules.MIN_USERNAME_LENGTH - 1)),
+        )
+        model.actionChannel.trySend(LoginAction.PasswordChanged("longenough"))
+        model.actionChannel.trySend(LoginAction.Submit)
+        runCurrent()
+        assertEquals(LoginError.UsernameTooShort, model.stateFlow.value.error)
+        assertEquals(0, auth.calls)
+    }
+
+    /** Same boundary for the password, against its own constant. */
+    @Test
+    fun aPasswordAtExactlyTheMinimumLengthIsAccepted() = runTest(dispatcher) {
+        val auth = FakeAuth(MutationResult.Applied(response(true), synced = true))
+        val model = LoginViewModel(auth, preferences())
+        model.actionChannel.trySend(LoginAction.UsernameChanged("officer"))
+        model.actionChannel.trySend(
+            LoginAction.PasswordChanged("p".repeat(CredentialRules.MIN_PASSWORD_LENGTH)),
+        )
+        model.actionChannel.trySend(LoginAction.Submit)
+        runCurrent()
+        assertNull(model.stateFlow.value.error)
+        assertEquals(1, auth.calls)
+    }
+
+    /**
+     * The ViewModel must not carry its own copy of the thresholds.
+     *
+     * The regression existed because it did: a private `MIN_USERNAME = 5` sat beside the original's
+     * `< 4`, with nothing relating them. Reading through [CredentialRules] is what makes the two
+     * impossible to diverge again.
+     */
+    @Test
+    fun thresholdsComeFromTheSharedRulesNotALocalConstant() = runTest(dispatcher) {
+        val auth = FakeAuth(MutationResult.Applied(response(true), synced = true))
+        val model = LoginViewModel(auth, preferences())
+        val justBelow = "u".repeat(CredentialRules.MIN_USERNAME_LENGTH - 1)
+        val atMinimum = "u".repeat(CredentialRules.MIN_USERNAME_LENGTH)
+
+        model.actionChannel.trySend(LoginAction.UsernameChanged(justBelow))
+        model.actionChannel.trySend(LoginAction.PasswordChanged("longenough"))
+        model.actionChannel.trySend(LoginAction.Submit)
+        runCurrent()
+        assertEquals(LoginError.UsernameTooShort, model.stateFlow.value.error)
+
+        model.actionChannel.trySend(LoginAction.UsernameChanged(atMinimum))
+        model.actionChannel.trySend(LoginAction.Submit)
+        runCurrent()
+        assertNull(model.stateFlow.value.error, "the accept/reject edge must sit exactly on the shared constant")
     }
 }
