@@ -26,3 +26,4 @@
 // Fork module includes go below this line.
 
 include(":feature:auth")
+include(":feature:client")

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright 2026 Mifos Initiative
+
+    This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed with this file,
+    You can obtain one at https://mozilla.org/MPL/2.0/.
+
+    See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+-->
+<resources>
+    <string name="feature_client_title">Clients</string>
+    <string name="feature_client_search_hint">Search clients</string>
+    <string name="feature_client_empty">No clients in this office yet</string>
+    <string name="feature_client_create">Create client</string>
+    <string name="feature_client_sort_name">Name</string>
+    <string name="feature_client_sort_account">Account no.</string>
+    <string name="feature_client_sort_external_id">External ID</string>
+    <string name="feature_client_filter_clear">Clear filters</string>
+</resources>
