@@ -12,6 +12,7 @@ package kpt.core.data.savings.impl
 import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.data.annotation.FromStore
 import kpt.core.base.data.annotation.RepositoryBinding
+import kpt.core.base.store.screen.FetchPolicy
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.savings.SavingsAccountRepository
@@ -37,6 +38,7 @@ internal class SavingsAccountRepositoryImpl(
             key = SavingsAccountKey(savingsAccountType, savingsAccountId),
             cacheKey = AppCacheKeys.SavingsAccounts.forAccount(savingsAccountType, savingsAccountId),
             scope = scope,
+            fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
             ttl = AppStoreRegistry.Ttl.SAVINGS_ACCOUNTS,
         )
 }

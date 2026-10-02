@@ -9,7 +9,7 @@
  */
 package kpt.core.network.mifos.center.mapper
 
-import kpt.core.common.utils.Page
+import kpt.core.model.objects.clients.Page
 import kpt.core.database.center.entity.CenterEntity
 import kpt.core.network.data.AbstractMapper
 import kpt.core.network.mifos.center.dto.GetCentersResponse

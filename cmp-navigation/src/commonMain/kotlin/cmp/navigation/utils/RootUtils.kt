@@ -9,18 +9,21 @@
  */
 package cmp.navigation.utils
 
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.serializer
 import kotlin.reflect.KClass
+import kpt.core.ui.navigation.toObjectKClassNavigationRoute as coreToObjectKClassNavigationRoute
+import kpt.core.ui.navigation.toObjectNavigationRoute as coreToObjectNavigationRoute
 
 /**
  * Gets the route string for an object.
+ *
+ * The implementation moved to `kpt.core.ui.navigation` so a FEATURE module can produce the route
+ * strings its `@FeatureTab` must supply — `cmp-navigation` depends on the features, so nothing below
+ * it could import this. These two keep the original import path working and delegate, rather than
+ * carrying a second copy that could drift from the one features compile against.
  */
-@OptIn(InternalSerializationApi::class)
-fun <T : Any> T.toObjectNavigationRoute(): String = this::class.toObjectKClassNavigationRoute()
+fun <T : Any> T.toObjectNavigationRoute(): String = coreToObjectNavigationRoute()
 
 /**
  * Gets the route string for a [KClass] of an object.
  */
-@OptIn(InternalSerializationApi::class)
-fun <T : Any> KClass<T>.toObjectKClassNavigationRoute(): String = this.serializer().descriptor.serialName
+fun <T : Any> KClass<T>.toObjectKClassNavigationRoute(): String = coreToObjectKClassNavigationRoute()

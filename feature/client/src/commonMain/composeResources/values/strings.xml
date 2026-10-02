@@ -17,4 +17,9 @@
     <string name="feature_client_sort_account">Account no.</string>
     <string name="feature_client_sort_external_id">External ID</string>
     <string name="feature_client_filter_clear">Clear filters</string>
+    <string name="feature_client_detail_title">Client</string>
+    <string name="feature_client_loans">Loan accounts</string>
+    <string name="feature_client_savings">Savings accounts</string>
+    <string name="feature_client_no_accounts">No accounts yet</string>
+    <string name="feature_client_tab">Clients</string>
 </resources>

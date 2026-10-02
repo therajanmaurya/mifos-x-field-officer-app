@@ -76,8 +76,26 @@ class ProjectPreferencesRepositoryImpl(
             _fineractUser.value = user
             // Keep the framework's token slot in step — the network layer reads it from there, and a
             // stale token outliving the user it belongs to is the failure this pairing prevents.
-            delegate.setAuthToken(user.base64EncodedAuthenticationKey?.let { "Basic $it" })
+            // The RAW credential — no "Basic " prefix. `setAuthToken` is documented to take "the value
+            // the auth endpoint returned (for Basic, the base64 of user:password)", and the wire
+            // format comes from the access point's declared `auth: basic`: AuthHeaderBridge runs it
+            // through `AuthScheme.BASIC.format`, which prepends "Basic " itself. Prefixing here sent
+            // `Authorization: Basic Basic <token>` and every authenticated call answered 401 — with
+            // sign-in itself unaffected, since that request is anonymous. Observed on device
+            // 2026-10-01: login succeeded, then the Clients list 401'd.
+            delegate.setAuthToken(user.base64EncodedAuthenticationKey)
             delegate.setIsAuthenticated(user.isAuthenticated)
+            // …and UNLOCKED. `RootNavViewModel` routes an authenticated-but-locked user to
+            // `UserLocked`, which this fork renders as the sign-in screen, because the original's
+            // passcode UI is an Android-only library with no multiplatform form (see
+            // `UserData.DEFAULT`). `clearUserData()` sets `isUnlocked = false` on sign-out — correct
+            // for the template, which has an unlock screen — so without this line the FIRST sign-in
+            // after a sign-out bounced straight back: observed on device 2026-10-01 as
+            // AuthenticatedGraphRoute → LoginRoute 52 ms apart, with a successful 200 in the log.
+            //
+            // Provisional, and deliberately paired with the sign-out that clears it: when the
+            // passcode/unlock flow is migrated (S7) this becomes that screen's job and this line goes.
+            if (user.isAuthenticated) delegate.setIsUnlocked(true)
         }
     }
 

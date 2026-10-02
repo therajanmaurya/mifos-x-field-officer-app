@@ -10,6 +10,8 @@
 package kpt.core.data.user
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kpt.core.base.data.annotation.DataProvider
 import kpt.core.base.network.AccessPointRegistry
 import kpt.core.base.network.AuthHeaderBridge
@@ -30,7 +32,20 @@ import kpt.core.datastore.prefs.UserPreferencesRepository
  */
 @DataProvider
 fun provideAuthTokenSource(preferences: UserPreferencesRepository): AuthTokenSource =
-    AuthTokenSource { _: String -> preferences.observeAuthToken }
+    // Re-emitted as a COLD flow rather than handed over as the repository's `StateFlow`.
+    //
+    // Measured on device 2026-10-02, same binary otherwise, clean install each time: returning
+    // `preferences.observeAuthToken` directly left `Authorization` unset, so sign-in succeeded (an
+    // anonymous call) and the very next request — the client list — came back 401, every time.
+    // Wrapping the same StateFlow so the bridge receives a plain Flow made it 200 and the list
+    // rendered, every time. `AuthHeaderBridge` applies `distinctUntilChanged()`, which kotlinx
+    // short-circuits to `this` for a StateFlow, so the two paths differ in what the bridge collects.
+    //
+    // Why a wrapper is the right place for the fix rather than a workaround: this function's job is
+    // to supply "the current credential as a stream", and a cold flow is the weaker, more portable
+    // contract — nothing downstream should depend on getting a StateFlow. The underlying difference
+    // lives in `core-base/network`'s bridge, which this fork does not modify; raised for upstream.
+    AuthTokenSource { _: String -> flow { emitAll(preferences.observeAuthToken) } }
 
 /**
  * Eager: starts collecting the credential at graph construction.

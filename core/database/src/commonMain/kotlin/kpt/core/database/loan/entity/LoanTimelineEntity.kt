@@ -11,7 +11,6 @@ package kpt.core.database.loan.entity
 
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
-import androidx.room3.ForeignKey
 import androidx.room3.PrimaryKey
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -20,16 +19,14 @@ import kpt.core.base.database.annotation.DbEntity
 @DbEntity
 @Entity(
     tableName = "Timeline",
-    foreignKeys = [
-        ForeignKey(
-            entity = ActualDisbursementDateEntity::class,
-            parentColumns = ["loanId"],
-            childColumns = ["actualDisburseDate"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.NO_ACTION,
-            deferred = false,
-        ),
-    ],
+    // NO foreign keys.
+    //
+    // This entity used to declare one naming ActualDisbursementDateEntity as the PARENT of its own `id`, which inverts the
+    // relationship: it made every insert conditional on a timeline's own disbursement date ALREADY existing as a row. Since that
+    // detail is an embedded FIELD on this class, no such row is ever written first, so SQLite refused
+    // every insert with `787 FOREIGN KEY constraint failed` — and Store5 swallowed the failure, so the
+    // screen rendered an empty list rather than an error. Measured on device 2026-10-02: the clients
+    // fetch returned 100 rows, the write failed, and the list showed "Nothing here yet".
     indices = [],
     inheritSuperIndices = false,
     primaryKeys = [],

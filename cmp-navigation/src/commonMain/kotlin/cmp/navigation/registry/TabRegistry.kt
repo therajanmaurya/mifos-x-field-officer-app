@@ -14,6 +14,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import cmp.navigation.authenticatednavbar.AuthenticatedNavBarTabItem
 import kpt.core.ui.navigation.NavigationItem
+import kpt.feature.client.navigation.clientTabGraph
 
 /**
  * TabRegistry — the FORK-OWNED white-label seam for the authenticated bottom-nav tabs.
@@ -60,12 +61,21 @@ object TabRegistry {
      * Template default = no-op (the template ships no inline extra tabs). `owner: fork`.
      */
     val extraInlineTabDestinations: NavGraphBuilder.(innerNav: NavHostController, outerNav: NavController) -> Unit =
-        { _, _ -> }
+        { _, outerNav ->
+            // The Clients tab's own graph. `outerNav` (not innerNav) is handed to it so client DETAIL
+            // pushes on the authenticated graph and covers the bottom bar, while the list stays inline.
+            clientTabGraph(outerNav)
+        }
 
     /** The full ordered tab list the navbar renders: backbone shell tabs + [extraTabs]. */
     val tabs: List<NavigationItem> = buildList {
         add(AuthenticatedNavBarTabItem.HomeTab)
-        add(AuthenticatedNavBarTabItem.ProfileTab)
+        // Feature tabs sit BETWEEN Home and Profile — a deliberate fork layout decision, which
+        // `@FeatureTab`'s own doc says belongs here rather than encoded as a priority on the feature.
+        // Profile is an account menu, not a workspace; for a field officer the day's work (Clients,
+        // then Centers and Groups) belongs next to Home, and leaving Profile last keeps the bar
+        // stable as later slices add their tabs.
         addAll(extraTabs)
+        add(AuthenticatedNavBarTabItem.ProfileTab)
     }
 }

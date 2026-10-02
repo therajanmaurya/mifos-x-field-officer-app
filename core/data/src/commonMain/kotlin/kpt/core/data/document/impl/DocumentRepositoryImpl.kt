@@ -12,6 +12,7 @@ package kpt.core.data.document.impl
 import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.data.annotation.FromStore
 import kpt.core.base.data.annotation.RepositoryBinding
+import kpt.core.base.store.screen.FetchPolicy
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.document.DocumentRepository
@@ -37,6 +38,7 @@ internal class DocumentRepositoryImpl(
             cacheKey = AppCacheKeys.Documents.forEntity(entityType, entityId),
             scope = scope,
             isEmpty = { it.isEmpty() },
+            fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
             ttl = AppStoreRegistry.Ttl.DOCUMENTS,
         )
 }

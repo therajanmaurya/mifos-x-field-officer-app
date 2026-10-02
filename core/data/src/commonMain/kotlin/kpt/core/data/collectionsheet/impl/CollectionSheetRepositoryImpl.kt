@@ -12,6 +12,7 @@ package kpt.core.data.collectionsheet.impl
 import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.data.annotation.FromStore
 import kpt.core.base.data.annotation.RepositoryBinding
+import kpt.core.base.store.screen.FetchPolicy
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.collectionsheet.CollectionSheetRepository
@@ -39,6 +40,7 @@ internal class CollectionSheetRepositoryImpl(
             cacheKey = AppCacheKeys.CollectionSheetCenters.forQuery(officeId, staffId, meetingDate),
             scope = scope,
             isEmpty = { it.isEmpty() },
+            fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
             ttl = AppStoreRegistry.Ttl.COLLECTION_SHEET_CENTERS,
         )
 }

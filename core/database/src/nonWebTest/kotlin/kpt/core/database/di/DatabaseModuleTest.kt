@@ -42,12 +42,12 @@ class DatabaseModuleTest : KoinTest {
     @Test
     fun databaseModuleProvidesAlertDao() {
         val database: AppDatabase = get()
-        assertNotNull(database.alertDao)
+        assertNotNull(database.clientDao)
     }
 
     @Test
-    fun alertDaoComesFromDatabase() {
+    fun clientDaoComesFromDatabase() {
         val database: AppDatabase = get()
-        assertNotNull(database.alertDao)
+        assertNotNull(database.clientDao)
     }
 }

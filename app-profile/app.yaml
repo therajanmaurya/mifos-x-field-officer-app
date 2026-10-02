@@ -98,15 +98,46 @@ network:
     - id: mifos
       owner: fork
       type: rest
-      # Fineract production (from dev). ORIGIN only; the API path travels with the endpoint.
+      # The Field Officer API gateway. ORIGIN only; the API path travels with the endpoint.
+      #
+      # `1.0/field/v1/` — NOT the plain Fineract `fineract-provider/api/v1/`. This app talks to the
+      # field-officer gateway documented at
+      # https://mifosforge.jira.com/wiki/spaces/MP/pages/4537024513 (base URL
+      # `https://apis.mifos.community/1.0/field`). Measured 2026-10-01 by probing both paths with a
+      # throwaway credential: `1.0/field/v1/authentication` answers 401 (exists, rejected) while
+      # `fineract-provider/api/v1/authentication` answers 404. The old value made EVERY call 404, so
+      # sign-in failed with "Login failed. Check your credentials" no matter what was typed.
+      #
+      # These three values must stay equal to `ServerConfig.DEFAULT` (core/model) — that is what the
+      # server-config screen shows and restores with "Use defaults", and a user who repairs their
+      # settings with it must land on a working server.
       base_url: https://apis.mifos.community/
-      base_path: fineract-provider/api/v1/
+      base_path: 1.0/field/v1/
       auth: basic                   # Fineract authenticates the field officer with basic credentials
       loggable_host: apis.mifos.community
       headers:
         # Fineract requires a tenant on EVERY call; it is a build-time constant, unlike the
         # Authorization header which the login flow writes to the runtime store.
-        - { name: Fineract-Platform-TenantId, value: default }
+        #
+        # KNOWN GAP (S7): this is still a BUILD constant, so editing Tenant — or any other field —
+        # on the server-config screen does not reach the HTTP client; the access point's values win.
+        # Tracked in feature/settings/MIGRATION.md; until then the shipped default is the only
+        # server that works.
+        - { name: Fineract-Platform-TenantId, value: mifos-bank-1 }
+        # Declared here, per access point, because Fineract is a JSON API and every call to it is
+        # JSON — it is a property of THIS endpoint, not of the HTTP client.
+        #
+        # Without a Content-Type the request never leaves the device: `ContentNegotiation` only
+        # serializes a body whose declared type it has a converter for, and a Ktorfit `@Body`
+        # parameter sets none, so Ktor throws before opening a socket:
+        #
+        #   IllegalStateException: Fail to prepare request body for sending.
+        #   The body type is: …PostAuthenticationRequest, with Content-Type: null.
+        #
+        # On device 2026-10-01 that surfaced as "Login failed. Check your credentials and try
+        # again" with no HTTP log at all — indistinguishable from a wrong password.
+        - { name: Content-Type, value: application/json }
+        - { name: Accept, value: application/json }
     - id: staging
       owner: fork
       type: rest
@@ -119,6 +150,9 @@ network:
         # Fineract requires a tenant on EVERY call; it is a build-time constant, unlike the
         # Authorization header which the login flow writes to the runtime store.
         - { name: Fineract-Platform-TenantId, value: default }
+        # Same JSON contract as `mifos` — keep the two in step.
+        - { name: Content-Type, value: application/json }
+        - { name: Accept, value: application/json }
 
 # ── Room database — declared by ANNOTATION, not here (E1/C7, superseded by the KSP migration) ──
 # This block used to carry `entities:` / `daos:` / `type_converters:` / `auto_migrations:`, which

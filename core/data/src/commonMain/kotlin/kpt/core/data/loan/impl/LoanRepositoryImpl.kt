@@ -12,6 +12,7 @@ package kpt.core.data.loan.impl
 import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.data.annotation.FromStore
 import kpt.core.base.data.annotation.RepositoryBinding
+import kpt.core.base.store.screen.FetchPolicy
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.loan.LoanRepository
@@ -33,14 +34,17 @@ internal class LoanRepositoryImpl(
     @FromStore(AppStoreIds.LoanDisburseTemplates) private val disburseTemplateStore: Store<Int, LoanDisburseTemplate>,
 ) : LoanRepository {
 
-    // CACHE_FIRST_SWR is the asScreenStream default and is NOT overridden: offline with an empty
-    // cache must render this app's own Empty, not a blocking NoNetwork. The ttl is the declared
+    // NETWORK_WITH_CACHE, not the CACHE_FIRST_SWR default: SWR's read path is
+    // `cached(key, refresh = false)` and leaves fetching to a freshness-band gate that cannot fire
+    // until something HAS been fetched, so on a clean install nothing ever loads. Room is still
+    // served first, so the offline-first behaviour is unchanged. The ttl stays the declared
     // freshness bound — it drives the "updated N ago" indicator, never whether cache is served.
     override fun loanStream(loanId: Int, scope: CoroutineScope): ScreenDataStream<LoanWithAssociations> =
         store.asScreenStream(
             key = loanId,
             cacheKey = AppCacheKeys.Loans.byId(loanId),
             scope = scope,
+            fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
             ttl = AppStoreRegistry.Ttl.LOANS,
         )
 
@@ -53,6 +57,7 @@ internal class LoanRepositoryImpl(
             key = LoanTemplateKey(clientId, productId),
             cacheKey = AppCacheKeys.LoanTemplates.forClient(clientId, productId ?: NO_PRODUCT),
             scope = scope,
+            fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
             ttl = AppStoreRegistry.Ttl.LOAN_TEMPLATES,
         )
 
@@ -64,6 +69,7 @@ internal class LoanRepositoryImpl(
             key = loanId,
             cacheKey = AppCacheKeys.LoanRepaymentTemplates.forLoan(loanId),
             scope = scope,
+            fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
             ttl = AppStoreRegistry.Ttl.LOAN_REPAYMENT_TEMPLATES,
         )
 
@@ -75,6 +81,7 @@ internal class LoanRepositoryImpl(
             key = loanId,
             cacheKey = AppCacheKeys.LoanDisburseTemplates.forLoan(loanId),
             scope = scope,
+            fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
             ttl = AppStoreRegistry.Ttl.LOAN_DISBURSE_TEMPLATES,
         )
 

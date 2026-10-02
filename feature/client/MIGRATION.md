@@ -142,3 +142,182 @@ Plus two Android resource files that must travel WITH their capability:
 duplicate package that would have become `G-IMPL-DUP`, and a feature-local repository that would have
 re-created the read-path split S0b just removed. The `userStatus` branch is the clearest evidence that
 `DataState` → `ScreenState` is a behaviour change, not a rename.
+
+---
+
+## S3b — detail, the tab, and the end-to-end defects that surfaced behind them
+
+S3b set out to add client detail. Wiring the feature so a user could actually REACH it exposed a
+chain of defects, each of which hid the next. None were introduced by this slice; every one was
+found by driving the real app against the live Fineract demo (`apis.mifos.community`,
+`fieldofficer`), and none was visible to `assembleProdDebug`.
+
+### Delivered
+
+| Artifact | Note |
+|---|---|
+| `detail/ClientDetailViewModel.kt` | one state, two independently-loading `ScreenState`s (identity · accounts); streams HELD so per-section Retry reaches the one that failed |
+| `detail/ClientDetailScreen.kt` | stateless `ClientDetailContent` half; account rows clickable only when an id exists |
+| `navigation/ClientDetailRoute` | type-safe `clientId` argument, nested in the feature graph and deliberately NOT `@FeatureDestination` |
+| `navigation/ClientTab.kt` | `@FeatureTab` — what finally makes the module reachable |
+| `navigation/clientTabGraph` | the tab's inner-NavHost graph; detail pushes on the OUTER controller so it covers the bottom bar |
+| `detail/ClientDetailViewModelTest.kt` | 6 tests, incl. the route-id read and the independent-state invariant |
+
+`ClientListScreen`'s `onClientClick` is no longer `null` — the S2/S3a deferral is closed.
+
+### Defects found and fixed (all pre-existing)
+
+| # | Symptom on device | Root cause | Fix (and where) |
+|---|---|---|---|
+| 1 | "Login failed. Check your credentials" for a valid credential | `base_path: fineract-provider/api/v1/` — the plain-Fineract path, not the field-officer gateway's | `app-profile/app.yaml` → `1.0/field/v1/`. Probed both: the first 404s, the second 401s |
+| 2 | same message, in <1s, with NO HTTP log at all | no Content-Type, so `ContentNegotiation` refused the `@Body` and Ktor threw before opening a socket | declared `Content-Type`/`Accept: application/json` on the access point in app-profile |
+| 3 | every authenticated call 401, while sign-in itself worked | `updateFineractUser` stored `"Basic $key"`, and `AuthScheme.BASIC.format` prefixes again → `Basic Basic …` | store the RAW credential (`ProjectPreferencesRepositoryImpl`) |
+| 4 | first sign-in after a sign-out bounced back to the login screen 52 ms later | sign-out sets `isUnlocked = false`; sign-in set only `isAuthenticated`, and this fork has no unlock screen | `updateFineractUser` also unlocks (provisional until the passcode flow lands in S7) |
+| 5 | Clients tab on Loading forever, zero network requests | `CACHE_FIRST_SWR` reads `cached(refresh = false)` and leaves fetching to a band gate that cannot fire on a cold cache | the three client reads declare `NETWORK_WITH_CACHE` (`ClientRepositoryImpl`) |
+| 6 | 200 from the server, then an empty list | two `Page<T>` classes; the APIs imported the one that is NOT `@Serializable` | deleted `core/common/utils/Page.kt`, repointed all six call sites at `core/model`'s |
+| 7 | feature built, registered, and unreachable | nothing in the UI navigated to it | `@FeatureTab` + the inline tab graph |
+
+Four test files encoded defects 3 and 6 rather than catching them, and four more
+(`RuntimeHeaderTest`, `AuthSchemeTest`) had been asserting against an access-point id (`fineract`)
+that no longer exists — they threw `NoSuchElementException` and nobody had run them. All corrected.
+
+### Template gap, NOT fixed here
+
+`@FeatureTab` and `NavigationItem` live in `core/ui` so a feature can declare its own tab, but the
+only helper producing the route STRINGS they require (`toObjectNavigationRoute`) lived in
+`cmp-navigation`, which depends on the feature modules — so no feature could use the seam it was
+given. The helper now lives in `core/ui` with `cmp-navigation` delegating to it. Flows upstream per
+RULE-TEMPLATE-MODULE-FIX-UPSTREAM-001.
+
+### Three more, found after the first seven were cleared
+
+| # | Symptom | Root cause | Fix |
+|---|---|---|---|
+| 8 | 200 from the server, `fetched 100`, list still empty | six entities declared their own embedded detail table as the FOREIGN KEY **parent** of their id, so every insert failed `787 FOREIGN KEY constraint failed` — Client, Center, Group, SavingsAccountTransaction, LoanTimeline, LoanWithAssociations | constraints dropped; schema 13 → 14 in `migration-ledger.yaml` |
+| 9 | ledger said `version: 1`, generated `ForkDatabaseConfig.VERSION` said 13 | `syncForkConfig` only rewrites `version:` when it APPENDS a template unit, so with none pending the two never reconciled | both set to 14 |
+| 10 | sign-in OK, every authenticated call 401 | `AuthTokenSource` handed the bridge the repository's `StateFlow`; re-emitting the same values as a cold flow fixes it, reproducibly, same binary otherwise | `flow { emitAll(...) }` in `provideAuthTokenSource`, with the measurement recorded there |
+
+Defect 8 is the keystone: with it, the offline cache of this app could never be written **at all** —
+clients, centers, groups, savings transactions and loans alike. Store5 swallowed the SQLite failure,
+so every one of those screens would have rendered "Nothing here yet" forever.
+
+### Verified on device (2026-10-02, clean install, live `apis.mifos.community`)
+
+sign-in → authenticated shell → Clients tab → **100 real clients** (names, account numbers, Active
+status) → tap a row → **client detail** with identity (CENTRAL · Active) and the Loan accounts
+section listing the client's real loan products. Zero crashes. 450 tests green.
+
+### Still open
+
+- **A server error renders as "Nothing here yet".** A 502 or a 401 reaches the screen as an empty
+  list, because the HTTP client does not set `expectSuccess`, so a non-2xx body is deserialized onto
+  a DTO's defaults and looks like a successful empty page. This is how defects 1, 3 and 8 all hid.
+  It needs `expectSuccess` on the shared client (`core-base/network`) — raised for upstream.
+- **Destructive migration did not fire** on the 13 → 14 bump even though
+  `fallbackToDestructiveMigration(dropAllTables = true)` is configured; the app crashed until the
+  package was uninstalled. No installed base here, but it would strand real users.
+- The root cause behind defect 10 sits inside `AuthHeaderBridge`; the fork works around it at its own
+  seam rather than editing `core-base/`.
+
+---
+
+# S3c — Stage A extraction (idea-first pipeline, spec §7.0)
+
+Input to Stage B. Every row cites its original path at `6b66e8a43` (AC11). 16 packages, 46 `.kt`.
+
+## A.1 Routes and arguments — as the original declares them
+
+| Package | Route | Args | Registered by |
+|---|---|---|---|
+| clientIdentifiersList | `ClientIdentifiersListRoute` | `clientId: Int = -1` | `clientIdentifiersListDestination` |
+| clientIdentifiersAddUpdate | `ClientIdentitiesAddUpdateRoute` | `clientId`, `feature: String`, `uniqueKeyForHandleDocument: String?` | `clientIdentifiersAddUpdateDestination` |
+| clientDocuments | `ClientDocumentsRoute` | `clientId: Int = -1` | `clientDocumentsDestination` |
+| clientAddDocuments | `AddDocumentRoute` | *(object — no args)* | `clientAddDocumentGraphRoute` |
+| documentPreviewScreen | `DocumentPreviewScreenRoute` | *(object — no args)* | `createDocumentPreviewRoute` |
+| charges | `ChargesRoute` | `resourceId: Int`, `resourceType: String` | `chargesDestination` |
+| clientUpcomingCharges | `ClientUpcomingChargesRoute` | `resourceId`, `resourceType` | `clientUpcomingChargesDestination` |
+| clientClosure | `ClientClosureRoute` | `id: Int = -1` | `clientClosureDestination` |
+| clientTransfer | `ClientTransferRoute` | `id: Int = -1` | `clientTransferDestination` |
+| clientSignature | `ClientSignatureRoute` | `clientId`, `name: String`, `accountNo: String` | `clientSignatureDestination` |
+| clientCollateral | `ClientCollateralRoute` | `clientId: Int = -1` | `clientCollateralDestination` |
+| clientCollateralDetails | `ClientCollateralDetailRoute` | `clientId: Int = -1` | `clientCollateralDetailDestination` |
+| clientSurveyList / Question / Submit | **string routes**, not `@Serializable` | `ClientScreens.ClientSurveyListScreen` etc. | `clientSurveyListRoute`, `clientSurveyQuestionRoute` |
+| clientPinpoint | **string route** `ClientScreens.ClientPinPointScreen` | `clientId` | `clientPinPointRoute` |
+
+The survey and pinpoint screens predate the type-safe-route migration and still use
+`ClientScreens(val route: String)` with `{clientId}` placeholders. They port to `@Serializable`
+routes — a deviation recorded in §deviations, not a silent rewrite.
+
+## A.2 Substrate mapping, measured from each ViewModel's constructor
+
+| Screen | Depends on |
+|---|---|
+| clientIdentifiersList | `deleteClientIdentifierUseCase`, `getDocumentListUseCase`, `removeDocumentUseCase` |
+| clientIdentifiersAddUpdate | `clientIdentifiersRepository`, `createClientIdentifierUseCase`, `downloadDocumentUseCase`, `getDocumentListUseCase` |
+| clientDocuments | `documentSelectAndUploadRepository`, `documentsRepository` |
+| clientAddDocuments · documentPreview | `documentSelectAndUploadRepository` |
+| charges | `createChargesUseCase`, `getChargeTemplateUseCase` |
+| clientPinpoint | `add/update/delete/getClientPinpointLocationsUseCase` (4) |
+| clientSignature | `create/updateSignatureUseCase`, `downloadDocumentUseCase`, `getDocumentListUseCase`, `removeDocumentUseCase` |
+| clientUpcomingCharges · clientClosure · clientTransfer · clientCollateral · clientCollateralDetails · survey (3) | **no repository or use-case injected** |
+
+Six screens injecting nothing is a finding, not an omission in this table: they are either
+pure-UI, or read through a parent, or unfinished in the original. Each is classified per §2 in
+Stage A.3 before any of them is materialized — a screen that turns out to be a shell must be
+recorded as such rather than regenerated as a working one.
+
+`DocumentSelectAndUploadRepository` lives INSIDE the original feature module
+(`feature/client/.../DocumentSelectAndUploadRepository.kt` + `Impl`). That is the S5-2
+feature-local-repository defect the S0b fold removed everywhere else; it hoists to `core/data`,
+matching what was done for `SyncSurveysDialogRepository` (see `feature/settings/MIGRATION.md` §1).
+
+## A.3 Two findings that change delivered work
+
+### F1 — the list→detail edge does not match the original
+
+The original has **two distinct client screens reached by two different entry points**:
+
+```
+Clients list tab  --onClientSelect-->  ClientProfileScreen     (clientProfile/)
+search / nav shell --------------->    ClientDetailsScreen     (clientDetails/)
+```
+
+`ClientNavigation.kt:133` wires `clientListScreenRoute(onClientSelect =
+navController::navigateToClientProfileRoute)`, while `ClientDetailsScreen` is reached from
+`cmp-navigation/.../AuthenticatedNavigation.kt:72` (`client.id?.let {
+navController.navigateClientDetailsScreen(it) }`) and from the navbar's `onSavings`.
+
+**S3b wired the Clients list row to the ported `ClientDetailsScreen`.** That edge is the
+original's search edge, not its list edge. Both screens are real and both are needed; what is
+wrong is which one the list opens — and `clientProfile/` (5 files, incl. `ProfileCard.kt` and
+`ClientProfileActions.kt`) is not ported at all.
+
+This was invisible to the S3b device walkthrough because *a* plausible detail screen appeared with
+correct live data. Only reading the original's graph surfaced it. It is the first concrete
+argument for §7.0: the port was faithful to a file and unfaithful to the app.
+
+### F2 — the ported detail screen carries 4 of 13 actions
+
+`clientDetailRoute` declares thirteen: `addLoanAccount`, `addSavingsAccount`, `charges`,
+`documents`, `identifiers`, `moreClientInfo`, `notes`, `pinpointLocation`, `survey`,
+`uploadSignature`, `loanAccountSelected`, `savingsAccountSelected`, `activateClient`.
+
+The S3b port exposes four (`onLoanClick`, `onSavingsClick`, `onNotesClick`, `onDocumentsClick`),
+all passed `null` pending later slices. Nine are absent from the signature entirely, so nothing
+would ever have reported them missing. S3c supplies `charges`, `identifiers`, `pinpointLocation`,
+`survey` and `uploadSignature`; `activateClient` and `moreClientInfo` belong to S3d; the loan and
+savings edges to S4/S5.
+
+## A.4 Platform capabilities (§3a)
+
+`clientPinpoint/PinpointClientScreen.android.kt` is an `androidMain` file — a map/location surface.
+Per §3a it is classified before materialization, not carried into the port as a platform source
+set. `clientSignature` draws to a canvas and writes a file; its capability classification is
+decided with it.
+
+## A.5 Still open in Stage A
+
+Per-screen STATES and the `action_contract` for each `on_click` come from reading the 16 Screen
+composables; routes, args, substrate deps and the nav edges above are complete. Stage B does not
+start until A.5 closes — materializing from a partial inventory is how a screen acquires invented
+behaviour.

@@ -16,7 +16,7 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
 import kpt.core.base.network.annotation.ApiBinding
-import kpt.core.common.utils.Page
+import kpt.core.model.objects.clients.Page
 import kpt.core.database.center.entity.CenterAccounts
 import kpt.core.database.center.entity.CenterEntity
 import kpt.core.database.center.entity.CenterPayloadEntity

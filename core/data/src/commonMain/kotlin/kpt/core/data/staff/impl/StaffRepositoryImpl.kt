@@ -12,6 +12,7 @@ package kpt.core.data.staff.impl
 import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.data.annotation.FromStore
 import kpt.core.base.data.annotation.RepositoryBinding
+import kpt.core.base.store.screen.FetchPolicy
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.staff.StaffRepository
@@ -26,8 +27,10 @@ internal class StaffRepositoryImpl(
     @FromStore(AppStoreIds.Staff) private val store: Store<Int, List<StaffEntity>>,
 ) : StaffRepository {
 
-    // CACHE_FIRST_SWR is the asScreenStream default and is NOT overridden: offline with an empty
-    // cache must render this app's own Empty, not a blocking NoNetwork. The ttl is the declared
+    // NETWORK_WITH_CACHE, not the CACHE_FIRST_SWR default: SWR's read path is
+    // `cached(key, refresh = false)` and leaves fetching to a freshness-band gate that cannot fire
+    // until something HAS been fetched, so on a clean install nothing ever loads. Room is still
+    // served first, so the offline-first behaviour is unchanged. The ttl stays the declared
     // freshness bound — it drives the "updated N ago" indicator, never whether cache is served.
     override fun staffStream(officeId: Int, scope: CoroutineScope): ScreenDataStream<List<StaffEntity>> =
         store.asScreenStream(
@@ -35,6 +38,7 @@ internal class StaffRepositoryImpl(
             cacheKey = AppCacheKeys.Staff.forOffice(officeId),
             scope = scope,
             isEmpty = { it.isEmpty() },
+            fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
             ttl = AppStoreRegistry.Ttl.STAFF,
         )
 }

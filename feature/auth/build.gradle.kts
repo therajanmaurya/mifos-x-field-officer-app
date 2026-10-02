@@ -14,6 +14,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.kermit.logging)
             implementation(projects.core.data)
             implementation(projects.core.domain)
             implementation(projects.core.model)

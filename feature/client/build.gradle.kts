@@ -14,10 +14,13 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.kermit.logging)
             implementation(projects.core.data)
             implementation(projects.core.database)
             implementation(projects.core.model)
             implementation(projects.core.store)
+            // NavigationItem + @FeatureTab + toObjectNavigationRoute — the tab declaration seam.
+            implementation(projects.core.ui)
             implementation(libs.koin.compose.navigation)
             implementation(compose.ui)
             implementation(compose.foundation)
@@ -27,7 +30,11 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
         }
         commonTest.dependencies {
+            // screenDataStreamForTesting — the sanctioned test factory, so the fake repository hands
+            // back real ScreenDataStreams rather than a parallel fake of the state machine.
             implementation(projects.coreBase.store)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
         }
     }
 }

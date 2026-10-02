@@ -73,10 +73,32 @@ class ProjectPreferencesRepositoryTest {
         val repo = repo()
         repo.updateFineractUser(user)
 
+        // `authHeader` is the ready-formatted header for a direct consumer…
         assertEquals("Basic a2V5", repo.authHeader)
-        // The framework slot is what the network layer reads — it must not lag the user record.
-        assertEquals("Basic a2V5", repo.authToken)
+        // …while the FRAMEWORK slot holds the RAW credential. AuthHeaderBridge runs it through the
+        // access point's declared scheme (`auth: basic` → `AuthScheme.BASIC.format`), which prepends
+        // "Basic " itself, so storing a pre-prefixed value here put `Basic Basic <token>` on the wire
+        // and 401'd every authenticated call. This assertion previously encoded that defect.
+        assertEquals("a2V5", repo.authToken)
         assertTrue(repo.userData.value.isAuthenticated)
+        // Signing in must also UNLOCK. RootNavViewModel sends an authenticated-but-locked user to
+        // `UserLocked`, which this fork renders as sign-in — so leaving this false made the first
+        // sign-in after a sign-out (which sets isUnlocked = false) bounce back to the login screen.
+        assertTrue(repo.userData.value.isUnlocked)
+    }
+
+    @Test
+    fun signingInAfterASignOutReachesTheAuthenticatedState() = runTest {
+        val repo = repo()
+        repo.updateFineractUser(user)
+        repo.clearFineractUser()
+        repo.clearUserData() // what the Profile screen's sign-out does
+
+        repo.updateFineractUser(user)
+
+        // Both halves of RootNavViewModel's gate, in one place: the loop needed only one of them.
+        assertTrue(repo.userData.value.isAuthenticated)
+        assertTrue(repo.userData.value.isUnlocked)
     }
 
     @Test

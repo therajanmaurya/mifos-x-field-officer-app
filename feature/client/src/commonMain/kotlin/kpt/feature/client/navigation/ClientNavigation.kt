@@ -12,16 +12,33 @@ package kpt.feature.client.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
+import androidx.navigation.navigation
 import kotlinx.serialization.Serializable
 import kpt.core.base.ui.nav.FeatureDestination
 import kpt.core.base.ui.nav.composableWithStayTransitions
+import kpt.core.base.ui.nav.popBackStackSafely
+import kpt.feature.client.detail.ClientDetailScreen
 import kpt.feature.client.list.ClientListScreen
+
+/** The tab's graph. Mirrors `HomeDestination` — the tab points at the graph, not at a screen. */
+@Serializable
+data object ClientDestination
 
 @Serializable
 data object ClientListRoute
 
+/** Client detail. `clientId` is a type-safe route argument, not a SavedStateHandle default. */
+@Serializable
+data class ClientDetailRoute(val clientId: Int)
+
 fun NavController.navigateToClientList(navOptions: NavOptions? = null) =
     navigate(ClientListRoute, navOptions)
+
+fun NavController.navigateToClients(navOptions: NavOptions? = null) =
+    navigate(ClientDestination, navOptions)
+
+fun NavController.navigateToClientDetail(clientId: Int, navOptions: NavOptions? = null) =
+    navigate(ClientDetailRoute(clientId), navOptions)
 
 /**
  * The client list — a TOP-LEVEL destination on the authenticated graph, so it is annotated and
@@ -36,19 +53,55 @@ fun NavController.navigateToClientList(navOptions: NavOptions? = null) =
  * their screens across S3a–S3d; nested drill-downs stay nested and are NOT annotated — only
  * top-level entries are (spec §4).
  *
- * Client detail does not exist yet, so the row tap and create-client are passed as `null` rather than
- * as empty lambdas — the screen then omits the affordance entirely instead of rendering one that does
- * nothing. S3b supplies the detail route, S3c the create flow.
+ * Create-client does not exist yet, so it is passed as `null` rather than as an empty lambda — the
+ * screen then omits the FAB entirely instead of drawing one that does nothing. S3c supplies it.
  */
 @FeatureDestination
 fun NavGraphBuilder.clientListDestination(navController: NavController) {
     composableWithStayTransitions<ClientListRoute> {
         ClientListScreen(
-            // null, NOT an empty lambda. Client detail arrives in S3b and create-client in S3c; until
-            // then the row renders without a click and the FAB is not drawn at all. An empty lambda
-            // would ship a tap that silently does nothing.
-            onClientClick = null,
+            // Detail exists as of S3b, so rows are clickable. Create-client is still null — S3c —
+            // and null (not an empty lambda) means the FAB is not drawn rather than drawn inert.
+            onClientClick = navController::navigateToClientDetail,
             onCreateClient = null,
         )
+    }
+
+    // Nested drill-down: registered inside the feature graph and deliberately NOT annotated. Only
+    // TOP-LEVEL entries carry @FeatureDestination (spec §4) — annotating this one would register the
+    // detail screen as its own root entry.
+    composableWithStayTransitions<ClientDetailRoute> {
+        ClientDetailScreen(
+            onBackClick = navController::popBackStackSafely,
+            // Loans, savings, notes and documents arrive in S3d/S4/S5 — null until then.
+            onLoanClick = null,
+            onSavingsClick = null,
+            onNotesClick = null,
+            onDocumentsClick = null,
+        )
+    }
+}
+
+/**
+ * The client graph for the bottom-nav tab's INNER NavHost.
+ *
+ * Two NavHosts are in play and they want different things. [clientListDestination] registers the list
+ * on the OUTER authenticated graph, where another feature can push it full-screen. This graph is what
+ * the Clients TAB renders: the list is the tab's start destination, so the bottom bar stays visible and
+ * the tab keeps its own back stack, while the detail drill-down pushes on the OUTER controller and
+ * covers the bar — the standard affordance, and the shape `TabRegistry.extraInlineTabDestinations`
+ * documents.
+ *
+ * Not annotated: `@FeatureDestination` collects entries for the outer graph, and registering the same
+ * routes there twice is a duplicate-destination crash at NavHost build.
+ */
+fun NavGraphBuilder.clientTabGraph(outerNav: NavController) {
+    navigation<ClientDestination>(startDestination = ClientListRoute) {
+        composableWithStayTransitions<ClientListRoute> {
+            ClientListScreen(
+                onClientClick = outerNav::navigateToClientDetail,
+                onCreateClient = null,
+            )
+        }
     }
 }

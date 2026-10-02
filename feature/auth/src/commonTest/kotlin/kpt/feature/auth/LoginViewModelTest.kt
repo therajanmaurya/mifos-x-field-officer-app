@@ -141,8 +141,12 @@ class LoginViewModelTest {
         assertEquals("officer", prefs.fineractUser.value.username)
         assertEquals("a2V5", prefs.fineractUser.value.base64EncodedAuthenticationKey)
         assertTrue(prefs.fineractUser.value.isAuthenticated)
-        // The token the network layer reads must not lag the user record.
-        assertEquals("Basic a2V5", prefs.authToken)
+        // The token the network layer reads must not lag the user record — and it is the RAW
+        // credential, not a pre-formatted header: the access point declares `auth: basic`, so
+        // `AuthScheme.BASIC.format` adds the "Basic " prefix on the way to the wire. Storing one
+        // here produced `Authorization: Basic Basic <token>` and 401'd every authenticated call
+        // while sign-in itself (an anonymous request) kept working.
+        assertEquals("a2V5", prefs.authToken)
         assertTrue(loggedIn)
         job.cancel()
     }

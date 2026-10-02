@@ -12,11 +12,14 @@ package kpt.core.store.client
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
+import kpt.core.database.client.entity.ClientAccounts
 import kpt.core.database.client.entity.ClientEntity
+import kpt.core.model.objects.clients.ClientAddressEntity
 import kpt.core.model.objects.clients.ClientAddressResponse
 import kpt.core.model.objects.noncoreobjects.Identifier
 import kpt.core.model.objects.noncoreobjects.IdentifierTemplate
 import kpt.core.model.shared.CollateralItemResult
+import kpt.core.network.mifos.client.api.ClientAccountsApi
 import kpt.core.network.mifos.client.api.ClientApi
 import kpt.core.network.mifos.client.api.ClientIdentifierApi
 import kpt.core.network.mifos.client.dto.GetClientsClientIdAccountsResponse
@@ -122,4 +125,37 @@ fun provideGetClientIdentifierTemplateStore(
     dao = cache,
     keyOf = { key -> AppCacheKeys.ClientGetClientIdentifierTemplate.forKey(key.toString()) },
     fetch = { key -> clientIdentifierApi.getClientIdentifierTemplate(clientId = key) },
+)
+
+@StoreProvider(id = "clientGetAllAccountsOfClient", ttl = "12h")
+@CacheKey(fn = "forKey", key = "clientGetAllAccountsOfClient:{key}", params = ["key:String"])
+fun provideGetAllAccountsOfClientStore(
+    clientAccountsApi: ClientAccountsApi,
+    cache: ApiResponseCacheDao,
+): Store<Int, ClientAccounts> = cachedRead(
+    dao = cache,
+    keyOf = { key -> AppCacheKeys.ClientGetAllAccountsOfClient.forKey(key.toString()) },
+    fetch = { key -> clientAccountsApi.getAllAccountsOfClient(clientId = key) },
+)
+
+@StoreProvider(id = "clientGetClientAccounts", ttl = "12h")
+@CacheKey(fn = "forKey", key = "clientGetClientAccounts:{key}", params = ["key:String"])
+fun provideGetClientAccountsStore(
+    clientApi: ClientApi,
+    cache: ApiResponseCacheDao,
+): Store<Int, ClientAccounts> = cachedRead(
+    dao = cache,
+    keyOf = { key -> AppCacheKeys.ClientGetClientAccounts.forKey(key.toString()) },
+    fetch = { key -> clientApi.getClientAccounts(clientId = key) },
+)
+
+@StoreProvider(id = "clientGetClientAddresses", ttl = "12h")
+@CacheKey(fn = "forKey", key = "clientGetClientAddresses:{key}", params = ["key:String"])
+fun provideGetClientAddressesStore(
+    clientApi: ClientApi,
+    cache: ApiResponseCacheDao,
+): Store<Int, List<ClientAddressEntity>> = cachedRead(
+    dao = cache,
+    keyOf = { key -> AppCacheKeys.ClientGetClientAddresses.forKey(key.toString()) },
+    fetch = { key -> clientApi.getClientAddresses(clientId = key) },
 )

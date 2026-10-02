@@ -21,7 +21,18 @@
 # `from`/`to` edge is a contract with every installed device, and renumbering strands them.
 
 # Effective Room schema version. Owned outright by this fork — the template does not contribute to it.
-version: 1
+#
+# 13 -> 14 (2026-10-02): dropped six inverted FOREIGN KEY constraints (Client, Center, Group,
+# SavingsAccountTransaction, LoanTimeline, LoanWithAssociations). Each named its own embedded detail
+# table as the PARENT of its id, so SQLite refused every insert with `787 FOREIGN KEY constraint
+# failed` and the offline cache could never be written. Columns are unchanged; only the constraints
+# differ, which Room still treats as a schema change (its identity hash covers constraints).
+#
+# This row also closes a DRIFT that predates it: this file read `version: 1` while the generated
+# `ForkDatabaseConfig.VERSION` read 13. `syncForkConfig` only rewrites `version:` when it APPENDS a
+# template migration unit, so with no unit pending the two never reconciled, and the number here
+# described nothing. 14 is the real next version for both.
+version: 14
 
 # Units already folded into this fork's INITIAL schema. A fresh fork is created with the framework
 # tables in their current shape, so it needs no migration for them — it records them here instead.

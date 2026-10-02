@@ -41,31 +41,28 @@ class AppDatabaseTest {
     }
 
     @Test
-    fun databaseExposeAlertDao() {
+    fun databaseExposesClientDao() {
         startKoin { modules(testPlatformModule) }
         database = KoinPlatform.getKoin().get()
 
-        assertNotNull(database!!.alertDao)
+        assertNotNull(database!!.clientDao)
     }
 
     @Test
-    fun databaseExposeInterestRateSeriesDao() {
+    fun databaseExposesLoanDao() {
         startKoin { modules(testPlatformModule) }
         database = KoinPlatform.getKoin().get()
 
-        assertNotNull(database!!.interestRateSeriesDao)
+        assertNotNull(database!!.loanDao)
     }
 
     @Test
     fun databaseVersionIsCurrent() {
-        // Bumped to 13 in the v12→v13 change that added `framework_submit_drafts.attemptCount`, so
-        // OfflineSubmitSyncer can apply RetryPolicy backoff + the maxAttempts cap across restarts.
-        // Matching AutoMigration(12→13) + 13.json export. Update this constant when bumping
-        // AppDatabase.VERSION so the guardrail stays
-        // meaningful. The full in-place upgrade chain is closed: AutoMigration hops exist for every
-        // step up to 13 (incl. the 10→11 `cloud_todos` add that #274 originally omitted), so a v10
-        // device upgrades cleanly to v13.
-        assertEquals(13, AppDatabase.VERSION)
+        // 14: the 13→14 change dropped six inverted FOREIGN KEY constraints that made every insert
+        // fail with SQLite 787, so the offline cache could never be written (see
+        // `app-profile/migration-ledger.yaml`). Update this constant when bumping
+        // `AppDatabase.VERSION` so the guardrail stays meaningful.
+        assertEquals(14, AppDatabase.VERSION)
     }
 
     @Test

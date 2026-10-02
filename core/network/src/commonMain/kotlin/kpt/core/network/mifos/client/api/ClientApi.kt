@@ -19,7 +19,7 @@ import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.statement.HttpResponse
 import kpt.core.base.network.annotation.ApiBinding
-import kpt.core.common.utils.Page
+import kpt.core.model.objects.clients.Page
 import kpt.core.database.client.entity.AddressConfiguration
 import kpt.core.database.client.entity.AddressTemplate
 import kpt.core.database.client.entity.ClientAccounts

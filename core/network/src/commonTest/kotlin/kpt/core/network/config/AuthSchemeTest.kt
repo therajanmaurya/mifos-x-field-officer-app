@@ -55,10 +55,10 @@ class AuthSchemeTest {
     fun sign_in_and_sign_out_move_the_header_automatically() = runTest {
         val token = MutableStateFlow<String?>(null)
         val headers = RuntimeHeaderStore()
-        val key = AuthScheme.runtimeKeyFor("fineract")
+        val key = AuthScheme.runtimeKeyFor("mifos")
 
         AuthHeaderBridge(
-            points = listOf(point("fineract", AuthScheme.BASIC)),
+            points = listOf(point("mifos", AuthScheme.BASIC)),
             tokenSource = AuthTokenSource { token },
             headers = headers,
         ).start(TestScope(testScheduler))
@@ -91,12 +91,12 @@ class AuthSchemeTest {
 
     @Test
     fun the_declared_scheme_drives_the_generated_header() {
-        val fineract = AppAccessPoints.points.first { it.id == "fineract" }
+        val mifos = AppAccessPoints.points.first { it.id == "mifos" }
 
-        assertEquals(AuthScheme.BASIC, fineract.auth, "declared as auth: basic in app-profile")
+        assertEquals(AuthScheme.BASIC, mifos.auth, "declared as auth: basic in app-profile")
         // The Authorization spec is DERIVED from `auth:` — nobody wrote that row by hand.
-        val auth = fineract.headers.first { it.name == "Authorization" }
-        assertEquals(AuthScheme.runtimeKeyFor("fineract"), auth.runtimeKey)
+        val auth = mifos.headers.first { it.name == "Authorization" }
+        assertEquals(AuthScheme.runtimeKeyFor("mifos"), auth.runtimeKey)
         assertNull(auth.value, "no credential may be baked into the binary")
     }
 

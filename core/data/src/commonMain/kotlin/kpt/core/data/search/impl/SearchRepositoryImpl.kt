@@ -12,6 +12,7 @@ package kpt.core.data.search.impl
 import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.data.annotation.FromStore
 import kpt.core.base.data.annotation.RepositoryBinding
+import kpt.core.base.store.screen.FetchPolicy
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.search.SearchRepository
@@ -38,6 +39,7 @@ internal class SearchRepositoryImpl(
         ),
         scope = scope,
         isEmpty = { it.isEmpty() },
+        fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
         ttl = AppStoreRegistry.Ttl.SEARCH_SEARCH_RESOURCES,
     )
 }

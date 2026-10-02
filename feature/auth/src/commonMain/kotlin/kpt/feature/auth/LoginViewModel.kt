@@ -10,6 +10,7 @@
 package kpt.feature.auth
 
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.launch
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
@@ -64,7 +65,16 @@ class LoginViewModel(
                 is MutationResult.Applied -> onAuthenticated(result.value, username, password)
                 is MutationResult.Blocked ->
                     fail(if (result.reason == BlockReason.OFFLINE) LoginError.Offline else LoginError.Rejected)
-                is MutationResult.Failed -> fail(LoginError.Rejected)
+                is MutationResult.Failed -> {
+                    // The cause was being DISCARDED. A sign-in that fails for a transport reason —
+                    // a wrong base path, a serialization mismatch, a TLS error — looks identical on
+                    // screen to a wrong password, and with nothing in the log there is no way to
+                    // tell them apart from a device. Diagnosing the 2026-10-01 "Login failed"
+                    // (a 404 from a wrong `base_path`) took a packet-level probe for exactly this
+                    // reason. The message the user sees is unchanged.
+                    Logger.e(tag = TAG, throwable = result.cause) { "authenticate failed" }
+                    fail(LoginError.Rejected)
+                }
                 is MutationResult.Conflicted -> fail(LoginError.Rejected)
             }
         }
@@ -113,6 +123,10 @@ class LoginViewModel(
      * user-facing copy ("at least 5 characters"). Reading through the shared rules is what makes the
      * thresholds impossible to diverge again.
      */
+    private companion object {
+        const val TAG = "LoginViewModel"
+    }
+
     private fun validate(username: String, password: String): LoginError? = when {
         CredentialRules.username(username) is ValidationResult.Invalid -> LoginError.UsernameTooShort
         CredentialRules.password(password) is ValidationResult.Invalid -> LoginError.PasswordTooShort

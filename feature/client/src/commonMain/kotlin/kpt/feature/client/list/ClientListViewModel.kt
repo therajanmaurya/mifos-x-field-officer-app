@@ -10,6 +10,8 @@
 package kpt.feature.client.list
 
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kpt.core.base.store.screen.ScreenState
@@ -43,6 +45,9 @@ internal class ClientListViewModel(
     init {
         repository.clientsStream(viewModelScope).state
             .onEach { screenState -> mutableStateFlow.value = state.withClients(screenState) }
+            // A read that fails in the stream itself (not inside the Store) would otherwise cancel
+            // the ViewModel's scope silently and leave the screen on its last state forever.
+            .catch { Logger.e(tag = "ClientList", throwable = it) { "clientsStream failed" } }
             .launchIn(viewModelScope)
     }
 
