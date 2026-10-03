@@ -143,6 +143,19 @@ fun MifosOutlinedTextField(
     textStyle: TextStyle = LocalTextStyle.current,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    /**
+     * Soft-keyboard auto-capitalisation.
+     *
+     * This overload hardcoded [KeyboardCapitalization.Words], so EVERY field built from it
+     * capitalised the first letter of each word — including credential fields. Fineract usernames
+     * are case-sensitive, so a field officer typing `fieldofficer` on a real device got
+     * `Fieldofficer` from the IME and a "Login failed. Check your credentials" they could do nothing
+     * about. It never showed up in testing because `adb shell input text` bypasses the IME entirely.
+     *
+     * The default stays `Words` so no existing caller changes behaviour; credential fields pass
+     * [KeyboardCapitalization.None].
+     */
+    capitalization: KeyboardCapitalization = KeyboardCapitalization.Words,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     isPasswordToggleDisplayed: Boolean = keyboardType == KeyboardType.Password,
     clearIcon: ImageVector = Icons.Default.Clear,
@@ -225,13 +238,21 @@ fun MifosOutlinedTextField(
         },
         isError = isError,
         singleLine = singleLine,
-        visualTransformation = if (!isPasswordVisible && isPasswordToggleDisplayed) {
+        // Masking is derived from the FIELD'S KIND, never from whether the toggle is drawn.
+        //
+        // This read `!isPasswordVisible && isPasswordToggleDisplayed`, which ties the mask to the
+        // presence of a button. Any caller that hides the toggle — to hand the trailing slot to an
+        // error icon, for instance, which is exactly what the sign-in screen does on an invalid
+        // password — ALSO silently unmasked the field, printing the password in clear text at the
+        // moment the user is being told it is wrong. Caught on device 2026-10-03; no unit test saw
+        // it, because the characters were correct and only the rendering was not.
+        visualTransformation = if (!isPasswordVisible && keyboardType == KeyboardType.Password) {
             PasswordVisualTransformation()
         } else {
             VisualTransformation.None
         },
         keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Words,
+            capitalization = capitalization,
             keyboardType = keyboardType,
         ),
         maxLines = maxLines,

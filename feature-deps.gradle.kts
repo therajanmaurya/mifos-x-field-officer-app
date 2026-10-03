@@ -23,14 +23,14 @@
 // commonMain source set; it exists by the time this script is applied (after the `kotlin { }` block).
 
 dependencies {
-    // feature/auth — login. Included in settings.local.gradle.kts and picked up by
-    // :cmp-navigation:generateFeatureKoinBindings (which emits `includes(AuthModule)`), but without
+    // feature/signin — login. Included in settings.local.gradle.kts and picked up by
+    // :cmp-navigation:generateFeatureKoinBindings (which emits `includes(SignInModule)`), but without
     // this dependency cmp-navigation cannot resolve the symbol the generated aggregate references:
-    //   GeneratedFeatureKoinBindings.kt: Unresolved reference 'auth' / 'AuthModule'
+    //   GeneratedFeatureKoinBindings.kt: Unresolved reference 'signin' / 'SignInModule'
     //
     // The codegen derives the REGISTRATION from source; it cannot derive the BUILD EDGE. Both halves
     // are required for every fork feature.
-    "commonMainImplementation"(project(":feature:auth"))
+    "commonMainImplementation"(project(":feature:signin"))
 
     // feature/client — the client vertical (S3). Registration is three steps: this build
     // edge, the settings.local include, and @FeatureDestination on the graph builder.

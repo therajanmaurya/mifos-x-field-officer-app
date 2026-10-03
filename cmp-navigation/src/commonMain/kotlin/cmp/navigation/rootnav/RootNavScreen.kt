@@ -48,8 +48,8 @@ import kpt.core.base.ui.KptConnectivityBanner
 import kpt.core.base.ui.util.NonNullEnterTransitionProvider
 import kpt.core.base.ui.util.NonNullExitTransitionProvider
 import kpt.core.base.ui.util.RootTransitionProviders
-import kpt.feature.auth.LoginRoute
-import kpt.feature.auth.navigateToLogin
+import kpt.feature.signin.SignInRoute
+import kpt.feature.signin.navigateToSignIn
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -160,7 +160,7 @@ fun RootNavScreen(
         // screen reachable from sign-in — `currentRoute` stopped matching, the early return no longer
         // fired, and the effect ENTERED the composition fresh and ran again, even though `state` had
         // not changed. The result was a push immediately followed by a pop: measured on device at
-        // 20ms, ServerConfigRoute -> LoginRoute, with no crash and nothing in the log to explain it.
+        // 20ms, ServerConfigRoute -> SignInRoute, with no crash and nothing in the log to explain it.
         //
         // Re-entry re-runs a LaunchedEffect regardless of its key, so the guard has to be a condition
         // the effect evaluates, never a reason to remove the effect from the tree.
@@ -179,7 +179,7 @@ fun RootNavScreen(
             RootNavState.Auth,
             RootNavState.ShowOnboarding,
             RootNavState.UserLocked,
-            -> navController.navigateToLogin(rootNavOptions)
+            -> navController.navigateToSignIn(rootNavOptions)
             is RootNavState.UserUnlocked -> navController.navigateToAuthenticatedGraph(
                 navOptions = rootNavOptions,
             )
@@ -236,8 +236,8 @@ fun ClearFocus() {
  * `"kotlin.String"`, so the already-at-target comparison was silently comparing against that.
  *
  * Returning route OBJECTS removes the placeholder entirely. `Auth`, `ShowOnboarding` and `UserLocked`
- * all resolve to [LoginRoute], which is exactly what the original app did
- * (`6b66e8a43:RootNavScreen.kt` — `else -> LoginRoute`): it shipped no onboarding destination, and
+ * all resolve to [SignInRoute], which is exactly what the original app did
+ * (`6b66e8a43:RootNavScreen.kt` — `else -> SignInRoute`): it shipped no onboarding destination, and
  * passed `navigatePasscode = {}`, its passcode implementation being an Android-only library
  * (`libs/mifos-passcode`) with no multiplatform form.
  */
@@ -247,5 +247,5 @@ internal fun rootTargetRoute(state: RootNavState): Any = when (state) {
     RootNavState.Auth,
     RootNavState.ShowOnboarding,
     RootNavState.UserLocked,
-    -> LoginRoute
+    -> SignInRoute
 }

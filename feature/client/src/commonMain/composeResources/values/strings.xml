@@ -22,4 +22,9 @@
     <string name="feature_client_savings">Savings accounts</string>
     <string name="feature_client_no_accounts">No accounts yet</string>
     <string name="feature_client_tab">Clients</string>
+    <string name="feature_client_charges_title">Charges</string>
+    <!-- Its OWN string. The original reused the SAVINGS string here, so a charges screen
+         rendered "3 Savings Account" above a list of charges. -->
+    <string name="feature_client_charges_count">%1$d charges</string>
+    <string name="feature_client_charges_outstanding">Outstanding %1$s</string>
 </resources>

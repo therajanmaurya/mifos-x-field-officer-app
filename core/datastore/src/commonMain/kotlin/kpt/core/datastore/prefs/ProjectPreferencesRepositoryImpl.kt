@@ -91,7 +91,7 @@ class ProjectPreferencesRepositoryImpl(
             // `UserData.DEFAULT`). `clearUserData()` sets `isUnlocked = false` on sign-out — correct
             // for the template, which has an unlock screen — so without this line the FIRST sign-in
             // after a sign-out bounced straight back: observed on device 2026-10-01 as
-            // AuthenticatedGraphRoute → LoginRoute 52 ms apart, with a successful 200 in the log.
+            // AuthenticatedGraphRoute → SignInRoute 52 ms apart, with a successful 200 in the log.
             //
             // Provisional, and deliberately paired with the sign-out that clears it: when the
             // passcode/unlock flow is migrated (S7) this becomes that screen's job and this line goes.

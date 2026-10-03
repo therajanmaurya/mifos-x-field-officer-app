@@ -42,7 +42,7 @@ kotlin {
         }
         commonTest.dependencies {
             // ServerConfigViewModelTest builds a real ProjectPreferencesRepository over MapSettings
-            // and needs DispatcherManager — the same fakes feature/auth's LoginViewModelTest uses.
+            // and needs DispatcherManager — the same fakes feature/signin's SignInViewModelTest uses.
             implementation(projects.coreBase.common)
             implementation(projects.core.datastore)
             // `Settings` itself, not just MapSettings: core/datastore declares

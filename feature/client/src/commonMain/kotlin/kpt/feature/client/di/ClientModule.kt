@@ -9,6 +9,7 @@
  */
 package kpt.feature.client.di
 
+import kpt.feature.client.charges.ClientChargesViewModel
 import kpt.feature.client.detail.ClientDetailViewModel
 import kpt.feature.client.list.ClientListViewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -21,4 +22,5 @@ import org.koin.dsl.module
 val ClientModule = module {
     viewModelOf(::ClientListViewModel)
     viewModelOf(::ClientDetailViewModel)
+    viewModelOf(::ClientChargesViewModel)
 }

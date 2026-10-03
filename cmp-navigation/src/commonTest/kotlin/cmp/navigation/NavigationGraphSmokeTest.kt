@@ -16,7 +16,7 @@ import cmp.navigation.rootnav.RootNavNavigation
 import cmp.navigation.splash.SplashRoute
 import cmp.navigation.utils.toObjectNavigationRoute
 import kotlinx.serialization.serializer
-import kpt.feature.auth.LoginRoute
+import kpt.feature.signin.SignInRoute
 import kpt.feature.home.HomeRoute
 import kpt.feature.profile.ProfileRoute
 import kpt.feature.settings.NotificationRoute
@@ -67,7 +67,7 @@ class NavigationGraphSmokeTest {
         AuthenticatedGraphRoute,
         AuthenticatedNavbarRoute,
         // features
-        LoginRoute,
+        SignInRoute,
         HomeRoute,
         ProfileRoute,
         SettingsRoute,
@@ -86,7 +86,7 @@ class NavigationGraphSmokeTest {
         assertNotNull(serializer<SplashRoute>())
         assertNotNull(serializer<AuthenticatedGraphRoute>())
         assertNotNull(serializer<AuthenticatedNavbarRoute>())
-        assertNotNull(serializer<LoginRoute>())
+        assertNotNull(serializer<SignInRoute>())
         assertNotNull(serializer<HomeRoute>())
         assertNotNull(serializer<ProfileRoute>())
         assertNotNull(serializer<SettingsRoute>())

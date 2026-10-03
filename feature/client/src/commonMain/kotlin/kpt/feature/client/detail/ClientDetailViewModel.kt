@@ -78,6 +78,7 @@ internal class ClientDetailViewModel(
             is ClientDetailAction.SavingsClicked -> sendEvent(ClientDetailEvent.OpenSavings(action.savingsId))
             ClientDetailAction.NotesClicked -> sendEvent(ClientDetailEvent.OpenNotes(clientId))
             ClientDetailAction.DocumentsClicked -> sendEvent(ClientDetailEvent.OpenDocuments(clientId))
+            ClientDetailAction.ChargesClicked -> sendEvent(ClientDetailEvent.OpenCharges(clientId))
             ClientDetailAction.RetryClient -> clientStream.retry()
             ClientDetailAction.RetryAccounts -> accountsStream.retry()
         }
@@ -105,6 +106,7 @@ internal sealed interface ClientDetailAction {
     data class SavingsClicked(val savingsId: Int) : ClientDetailAction
     data object NotesClicked : ClientDetailAction
     data object DocumentsClicked : ClientDetailAction
+    data object ChargesClicked : ClientDetailAction
 
     /** Per-section retry: each read failed on its own, so each recovers on its own. */
     data object RetryClient : ClientDetailAction
@@ -116,4 +118,5 @@ internal sealed interface ClientDetailEvent {
     data class OpenSavings(val savingsId: Int) : ClientDetailEvent
     data class OpenNotes(val clientId: Int) : ClientDetailEvent
     data class OpenDocuments(val clientId: Int) : ClientDetailEvent
+    data class OpenCharges(val clientId: Int) : ClientDetailEvent
 }

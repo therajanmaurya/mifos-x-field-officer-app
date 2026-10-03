@@ -13,32 +13,32 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navOptions
 import cmp.navigation.authenticated.AuthenticatedGraphRoute
-import kpt.feature.auth.LoginRoute
-import kpt.feature.auth.loginDestination
+import kpt.feature.signin.SignInRoute
+import kpt.feature.signin.signInDestination
 import kpt.feature.settings.serverconfig.navigateToServerConfig
 import kpt.feature.settings.serverconfig.serverConfigDestination
 
 /**
  * Installs the unauthenticated entry destinations on the ROOT graph.
  *
- * The shell owns where sign-in sits, which is why `feature/auth` deliberately does NOT annotate
- * `loginDestination` with `@FeatureDestination`: that annotation registers onto the AUTHENTICATED
+ * The shell owns where sign-in sits, which is why `feature/signin` deliberately does NOT annotate
+ * `signInDestination` with `@FeatureDestination`: that annotation registers onto the AUTHENTICATED
  * graph, the one place the gate in front of it must not be. The feature owns the screen; this file
  * owns its placement.
  *
- * Before this existed, `loginDestination` had zero callers anywhere in the tree — `feature/auth`
+ * Before this existed, `signInDestination` had zero callers anywhere in the tree — `feature/signin`
  * compiled, was included in `settings.local.gradle.kts`, and was absent from the navigation graph,
  * so a logged-out user could not reach a login screen at all.
  */
 internal fun NavGraphBuilder.authNavGraph(navController: NavController) {
-    loginDestination(
+    signInDestination(
         onLoggedIn = {
             navController.navigate(
                 route = AuthenticatedGraphRoute,
                 navOptions = navOptions {
                     // Drop login off the back stack: pressing back from the authenticated graph must
                     // not return a signed-in user to the sign-in screen.
-                    popUpTo(LoginRoute) { inclusive = true }
+                    popUpTo(SignInRoute) { inclusive = true }
                     launchSingleTop = true
                 },
             )

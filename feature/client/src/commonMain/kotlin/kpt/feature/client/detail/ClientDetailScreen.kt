@@ -38,6 +38,8 @@ import kpt.core.database.client.entity.ClientAccounts
 import kpt.core.database.client.entity.ClientEntity
 import kpt.core.designsystem.icon.MifosIcons
 import kpt.feature.client.generated.resources.Res
+import androidx.compose.ui.draw.rotate
+import kpt.feature.client.generated.resources.feature_client_charges_title
 import kpt.feature.client.generated.resources.feature_client_detail_title
 import kpt.feature.client.generated.resources.feature_client_loans
 import kpt.feature.client.generated.resources.feature_client_savings
@@ -47,6 +49,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun ClientDetailScreen(
     onBackClick: () -> Unit,
+    onChargesClick: ((Int) -> Unit)?,
     onLoanClick: ((Int) -> Unit)?,
     onSavingsClick: ((Int) -> Unit)?,
     onNotesClick: ((Int) -> Unit)?,
@@ -59,6 +62,7 @@ internal fun ClientDetailScreen(
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
             when (event) {
+                is ClientDetailEvent.OpenCharges -> onChargesClick?.invoke(event.clientId)
                 is ClientDetailEvent.OpenLoan -> onLoanClick?.invoke(event.loanId)
                 is ClientDetailEvent.OpenSavings -> onSavingsClick?.invoke(event.savingsId)
                 is ClientDetailEvent.OpenNotes -> onNotesClick?.invoke(event.clientId)
@@ -71,6 +75,7 @@ internal fun ClientDetailScreen(
         state = state,
         onAction = { viewModel.actionChannel.trySend(it) },
         onBackClick = onBackClick,
+        chargesClickable = onChargesClick != null,
         loansClickable = onLoanClick != null,
         savingsClickable = onSavingsClick != null,
         modifier = modifier,
@@ -85,6 +90,7 @@ internal fun ClientDetailContent(
     onAction: (ClientDetailAction) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    chargesClickable: Boolean = true,
     loansClickable: Boolean = true,
     savingsClickable: Boolean = true,
 ) {
@@ -118,6 +124,12 @@ internal fun ClientDetailContent(
                 modifier = Modifier.fillMaxWidth().testTag(ClientDetailTestTags.IDENTITY),
             ) { client, _ -> ClientIdentity(client) }
 
+            // Charges — the first of the original's nine missing detail actions to land. Rendered
+            // only when a destination exists; `null` means the row is absent, never inert.
+            if (chargesClickable) {
+                ChargesAction(onClick = { onAction(ClientDetailAction.ChargesClicked) })
+            }
+
             ScreenContent(
                 state = state.accounts,
                 onRetry = { onAction(ClientDetailAction.RetryAccounts) },
@@ -130,6 +142,21 @@ internal fun ClientDetailContent(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ChargesAction(onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .testTag(ClientDetailTestTags.CHARGES)
+            .padding(vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(stringResource(Res.string.feature_client_charges_title), style = MaterialTheme.typography.bodyLarge)
+        Icon(MifosIcons.ArrowBack, contentDescription = null, modifier = Modifier.rotate(180f))
     }
 }
 
@@ -202,4 +229,5 @@ object ClientDetailTestTags {
     const val BACK = "client-detail:back"
     const val IDENTITY = "client-detail:identity"
     const val ACCOUNTS = "client-detail:accounts"
+    const val CHARGES = "client-detail:charges"
 }

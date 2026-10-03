@@ -17,6 +17,7 @@ import kotlinx.serialization.Serializable
 import kpt.core.base.ui.nav.FeatureDestination
 import kpt.core.base.ui.nav.composableWithStayTransitions
 import kpt.core.base.ui.nav.popBackStackSafely
+import kpt.feature.client.charges.ClientChargesScreen
 import kpt.feature.client.detail.ClientDetailScreen
 import kpt.feature.client.list.ClientListScreen
 
@@ -31,6 +32,16 @@ data object ClientListRoute
 @Serializable
 data class ClientDetailRoute(val clientId: Int)
 
+/**
+ * Charges levied on a client.
+ *
+ * Typed `clientId`, NOT the original's `resourceId: Int` + `resourceType: String`. Every caller of
+ * that route passed "clients", so the type parameter was a hole rather than flexibility; loan and
+ * savings charges get their own routes when those slices land.
+ */
+@Serializable
+data class ClientChargesRoute(val clientId: Int)
+
 fun NavController.navigateToClientList(navOptions: NavOptions? = null) =
     navigate(ClientListRoute, navOptions)
 
@@ -39,6 +50,9 @@ fun NavController.navigateToClients(navOptions: NavOptions? = null) =
 
 fun NavController.navigateToClientDetail(clientId: Int, navOptions: NavOptions? = null) =
     navigate(ClientDetailRoute(clientId), navOptions)
+
+fun NavController.navigateToClientCharges(clientId: Int, navOptions: NavOptions? = null) =
+    navigate(ClientChargesRoute(clientId), navOptions)
 
 /**
  * The client list — a TOP-LEVEL destination on the authenticated graph, so it is annotated and
@@ -73,12 +87,20 @@ fun NavGraphBuilder.clientListDestination(navController: NavController) {
     composableWithStayTransitions<ClientDetailRoute> {
         ClientDetailScreen(
             onBackClick = navController::popBackStackSafely,
-            // Loans, savings, notes and documents arrive in S3d/S4/S5 — null until then.
+            // Charges is live as of this slice. Loans, savings, notes and documents arrive in
+            // S3d/S4/S5 — null until then, so the affordance is absent rather than inert.
+            onChargesClick = navController::navigateToClientCharges,
             onLoanClick = null,
             onSavingsClick = null,
             onNotesClick = null,
             onDocumentsClick = null,
         )
+    }
+
+    // Charges list. Nested drill-down — NOT annotated: only TOP-LEVEL entries carry
+    // @FeatureDestination (spec §4), and annotating this would register it as its own root entry.
+    composableWithStayTransitions<ClientChargesRoute> {
+        ClientChargesScreen(onBackClick = navController::popBackStackSafely)
     }
 }
 
