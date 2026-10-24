@@ -31,6 +31,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kpt.core.model.utils.ServerConfig
 
 /**
  * The sign-out CHOICE. What each choice removes — both halves of the session, and with "clear data"
@@ -60,6 +61,7 @@ class ProfileViewModelTest {
             plainSettings = plain,
             secureSettings = secure,
             dispatcher = dispatchers,
+            defaultServerConfig = ServerConfig.LOCALHOST,
         )
     }
 

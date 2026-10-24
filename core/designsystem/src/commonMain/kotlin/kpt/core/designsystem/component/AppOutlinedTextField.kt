@@ -254,10 +254,16 @@ fun AppOutlinedTextField(
         } else {
             VisualTransformation.None
         },
-        keyboardOptions = KeyboardOptions(
+        // The CALLER's options (its imeAction above all), with this overload's own capitalization and
+        // keyboardType applied on top. Building a fresh KeyboardOptions here dropped the caller's
+        // imeAction, and `keyboardActions` was never passed on at all — so a field that declared
+        // `ImeAction.Search` + `onSearch` got the keyboard's default key and its action never ran.
+        // Measured on device 2026-10-24: Home search could only be run by tapping a scope chip.
+        keyboardOptions = keyboardOptions.copy(
             capitalization = capitalization,
             keyboardType = keyboardType,
         ),
+        keyboardActions = keyboardActions,
         maxLines = maxLines,
         interactionSource = interactionSource,
         shape = shape,

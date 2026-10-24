@@ -9,6 +9,10 @@
  */
 package kpt.core.data.di
 
+import kotlinx.coroutines.CoroutineScope
+import kpt.core.base.network.UnauthorizedHandler
+import kpt.core.data.auth.AuthCommandRepository
+import kpt.core.data.auth.impl.SignOutOnRejectedSession
 import kpt.core.datastore.prefs.ProjectPreferencesRepository
 import kpt.core.store.serverconfig.ServerConfigSource
 import kpt.core.store.session.SessionSource
@@ -31,4 +35,17 @@ val ProjectRepositoryModule = module {
     // core/datastore) — supplied here, as `DataModule` supplies `UserDataSource`.
     single<ServerConfigSource> { ServerConfigSource { get<ProjectPreferencesRepository>().serverConfig } }
     single<SessionSource> { SessionSource { get<ProjectPreferencesRepository>().fineractUser } }
+
+    // A rejected session (401 on a credentialed request) ends it — see SignOutOnRejectedSession.
+    // `restApi` picks this up for every REST client; the auth repository is resolved lazily because
+    // its own API client is one of them.
+    single<UnauthorizedHandler> {
+        val koin = getKoin()
+        val preferences = get<ProjectPreferencesRepository>()
+        SignOutOnRejectedSession(
+            auth = { koin.get<AuthCommandRepository>() },
+            session = { preferences.fineractUser.value },
+            scope = get<CoroutineScope>(),
+        )
+    }
 }

@@ -14,6 +14,7 @@ import kpt.core.base.common.manager.DispatcherManager
 import kpt.core.datastore.prefs.ProjectPreferencesRepository
 import kpt.core.datastore.prefs.ProjectPreferencesRepositoryImpl
 import kpt.core.datastore.prefs.UserPreferencesRepository
+import kpt.core.model.utils.ServerConfig
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -36,6 +37,7 @@ val ProjectDatastoreModule = module {
             plainSettings = get<Settings>(named("plain")),
             secureSettings = get<Settings>(named("secure")),
             dispatcher = get<DispatcherManager>(),
+            defaultServerConfig = get<ServerConfig>(named(ServerConfig.DEFAULT_QUALIFIER)),
         )
     }
 }

@@ -48,6 +48,7 @@ class ProjectPreferencesRepositoryTest {
         plainSettings = plain,
         secureSettings = secure,
         dispatcher = dispatchers,
+        defaultServerConfig = ServerConfig.LOCALHOST,
     )
 
     private val user = User(

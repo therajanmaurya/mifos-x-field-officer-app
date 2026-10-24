@@ -20,6 +20,9 @@ import kpt.core.model.utils.ServerConfig
  */
 interface ServerConfigRepository {
 
+    /** The server the app ships pointed at — what "Use defaults" restores. Derived from app-profile. */
+    val defaultConfig: ServerConfig
+
     /** Local-only (`CACHE_ONLY`): the configuration is a device preference with no network source. */
     fun serverConfigStream(scope: CoroutineScope): ScreenDataStream<ServerConfig>
 

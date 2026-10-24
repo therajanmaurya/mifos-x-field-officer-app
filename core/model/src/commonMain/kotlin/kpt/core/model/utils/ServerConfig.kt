@@ -23,22 +23,13 @@ data class ServerConfig(
     val tenant: String,
 ) {
     companion object {
-        /**
-         * REPOINTED 2026-10-22 to `sandbox.mifos.community` — operator decision.
-         *
-         * Must stay equal to the `mifos` access point in `app-profile/app.yaml`, which is the SoT;
-         * `ServerConfigAccessPointParityTest` fails if the two diverge. The previous value was
-         * `apis.mifos.community` + `/1.0/field/v1/` + tenant `mifos-bank-1` — the field-officer
-         * gateway, whose Fineract is down (502 on every path, including its own health endpoint).
-         * Sandbox is plain Fineract, so path AND tenant change with the host.
-         */
-        val DEFAULT = ServerConfig(
-            protocol = "https://",
-            endPoint = "sandbox.mifos.community",
-            apiPath = "/fineract-provider/api/v1/",
-            port = "443",
-            tenant = "default",
-        )
+        // No `DEFAULT` here, deliberately. The shipped server is DERIVED from the generated access point
+        // (`kpt.core.network.config.AppServerConfig.DEFAULT`, from `app-profile/app.yaml`) — a constant
+        // in this module could only ever be a second copy of it, and core/model cannot see core/network.
+        // Read it through `ServerConfigRepository.defaultConfig`, or inject it by [DEFAULT_QUALIFIER].
+
+        /** Koin qualifier of the shipped default, bound by core/network's `ProjectNetworkModule`. */
+        const val DEFAULT_QUALIFIER = "serverConfig.default"
 
         val LOCALHOST = ServerConfig(
             protocol = "http://",

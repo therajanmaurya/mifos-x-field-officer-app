@@ -22,6 +22,7 @@ import kpt.core.data.auth.impl.AuthCommandRepositoryImpl
 import kpt.core.data.infra.testMutationGateway
 import kpt.core.datastore.prefs.ProjectPreferencesRepositoryImpl
 import kpt.core.datastore.prefs.UserPreferencesRepositoryImpl
+import kpt.core.model.utils.ServerConfig
 import kpt.core.network.mifos.auth.api.AuthApi
 import kpt.core.model.auth.PostAuthenticationRequest
 import kpt.core.model.auth.PostAuthenticationResponse
@@ -56,6 +57,7 @@ class AuthCommandRepositoryTest {
             plainSettings = plain,
             secureSettings = secure,
             dispatcher = dispatchers,
+            defaultServerConfig = ServerConfig.LOCALHOST,
         )
     }
 

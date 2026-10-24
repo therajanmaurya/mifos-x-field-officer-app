@@ -47,10 +47,10 @@ import kpt.core.model.utils.ServerConfig
 class ServerConfigViewModel(
     private val repository: ServerConfigRepository,
 ) : BaseViewModel<ServerConfigState, ServerConfigEvent, ServerConfigAction>(
-    ServerConfigState(config = ServerConfig.DEFAULT),
+    ServerConfigState(config = repository.defaultConfig),
 ) {
 
-    /** The stored config has been loaded into the fields; until then a submit would write DEFAULT. */
+    /** The stored config has been loaded into the fields; until then a submit would write the default. */
     private var hydrated = false
 
     /** The user has changed a field; a late hydrate must never overwrite their input. */
@@ -76,7 +76,7 @@ class ServerConfigViewModel(
             is ServerConfigAction.ApiPathChanged -> edit { copy(apiPath = action.value) }
             is ServerConfigAction.PortChanged -> edit { copy(port = action.value) }
             is ServerConfigAction.TenantChanged -> edit { copy(tenant = action.value) }
-            ServerConfigAction.UseDefaults -> replace(ServerConfig.DEFAULT)
+            ServerConfigAction.UseDefaults -> replace(repository.defaultConfig)
             ServerConfigAction.UseLocalhost -> replace(ServerConfig.LOCALHOST)
             ServerConfigAction.Submit -> submit()
         }
@@ -151,7 +151,7 @@ sealed interface ServerConfigAction {
     data class PortChanged(val value: String) : ServerConfigAction
     data class TenantChanged(val value: String) : ServerConfigAction
 
-    /** Restores `ServerConfig.DEFAULT` — the original's `UseDefaultConfig`. */
+    /** Restores `ServerConfigRepository.defaultConfig` — the original's `UseDefaultConfig`. */
     data object UseDefaults : ServerConfigAction
 
     /** Not in the original; `ServerConfig.LOCALHOST` already exists in the substrate. */

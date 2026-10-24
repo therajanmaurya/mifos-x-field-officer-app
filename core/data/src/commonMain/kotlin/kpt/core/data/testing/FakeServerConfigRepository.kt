@@ -27,7 +27,8 @@ import kpt.core.model.utils.ServerConfig
  */
 @ExperimentalDataTestingApi
 class FakeServerConfigRepository(
-    initial: ServerConfig = ServerConfig.DEFAULT,
+    override val defaultConfig: ServerConfig = TEST_DEFAULT,
+    initial: ServerConfig = defaultConfig,
 ) : ServerConfigRepository {
 
     val saved = MutableStateFlow(initial)
@@ -41,5 +42,16 @@ class FakeServerConfigRepository(
         if (failSaves) return MutationResult.Failed(cause = IllegalStateException("save failed"), rolledBack = false)
         saved.value = config
         return MutationResult.Applied(value = Unit, synced = true)
+    }
+
+    companion object {
+        /** A shipped-default stand-in: tests must not depend on which server app-profile names. */
+        val TEST_DEFAULT = ServerConfig(
+            protocol = "https://",
+            endPoint = "fineract.example.org",
+            apiPath = "/fineract-provider/api/v1/",
+            port = "443",
+            tenant = "default",
+        )
     }
 }

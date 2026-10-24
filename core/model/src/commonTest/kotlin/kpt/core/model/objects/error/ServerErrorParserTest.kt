@@ -49,6 +49,13 @@ class ServerErrorParserTest {
     }
 
     @Test
+    fun aPermissionRefusalSaysWhatWasRefused() {
+        // Verbatim gateway 403 for the fieldofficer role (apis.mifos.community, 2026-10-24).
+        val ktor403 = """Client request(POST https://apis.mifos.community/1.0/field/v1/collectionsheet?command=generateCollectionSheet) invalid: 403 Forbidden. Text: "{"developerMessage":"The user associated with credentials passed on this request does not have sufficient privileges to perform this action.","httpStatusCode":"403","defaultUserMessage":"Insufficient privileges to perform this action.","userMessageGlobalisationCode":"error.msg.not.authorized","errors":[{"developerMessage":"User has no authority to READ collectionsheets","defaultUserMessage":"User has no authority to READ collectionsheets","userMessageGlobalisationCode":"error.msg.not.authorized","parameterName":"id","args":[]}]}""""
+        assertEquals("User has no authority to READ collectionsheets", RuntimeException(ktor403).serverErrorMessage())
+    }
+
+    @Test
     fun anythingThatIsNotAFineractBodyIsNull() {
         assertNull(RuntimeException("Unable to resolve host \"sandbox.mifos.community\"").serverErrorMessage())
         // A 500 carrying Spring's body, not Fineract's — no user message in it.

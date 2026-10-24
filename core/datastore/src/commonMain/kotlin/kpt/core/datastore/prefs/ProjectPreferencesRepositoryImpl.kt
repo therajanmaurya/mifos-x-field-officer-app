@@ -41,10 +41,12 @@ class ProjectPreferencesRepositoryImpl(
     val plainSettings: Settings,
     val secureSettings: Settings,
     val dispatcher: DispatcherManager,
+    /** The shipped server, used until the user saves one — derived from app-profile in core/network. */
+    defaultServerConfig: ServerConfig,
 ) : ProjectPreferencesRepository, UserPreferencesRepository by delegate {
 
     private val _serverConfig = MutableStateFlow(
-        plainSettings.decodeValueOrNull(serializer = ServerConfig.serializer(), key = SERVER_CONFIG) ?: ServerConfig.DEFAULT,
+        plainSettings.decodeValueOrNull(serializer = ServerConfig.serializer(), key = SERVER_CONFIG) ?: defaultServerConfig,
     )
     override val serverConfig: StateFlow<ServerConfig> = _serverConfig.asStateFlow()
 

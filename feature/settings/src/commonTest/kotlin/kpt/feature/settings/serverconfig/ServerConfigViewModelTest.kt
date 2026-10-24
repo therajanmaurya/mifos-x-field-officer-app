@@ -52,7 +52,7 @@ class ServerConfigViewModelTest {
         val model = newModel()
         model.actionChannel.trySend(ServerConfigAction.UseDefaults)
         runCurrent()
-        assertEquals(emptyMap(), model.stateFlow.value.failures, "ServerConfig.DEFAULT must pass its own rules")
+        assertEquals(emptyMap(), model.stateFlow.value.failures, "the default must pass its own rules")
         assertTrue(model.stateFlow.value.isValid)
     }
 
@@ -147,7 +147,7 @@ class ServerConfigViewModelTest {
      */
     @Test
     fun submitRepublishesFailuresEvenWhenNoFieldWasEdited() = runTest(dispatcher) {
-        val model = newModel(FakeServerConfigRepository(initial = ServerConfig.DEFAULT.copy(port = "0")))
+        val model = newModel(FakeServerConfigRepository(initial = FakeServerConfigRepository.TEST_DEFAULT.copy(port = "0")))
         assertEquals(emptyMap(), model.stateFlow.value.failures, "nothing validated yet")
 
         model.actionChannel.trySend(ServerConfigAction.Submit)
@@ -161,7 +161,7 @@ class ServerConfigViewModelTest {
 
     @Test
     fun theFieldsAreSeededWithTheStoredConfig() = runTest(dispatcher) {
-        val stored = ServerConfig.DEFAULT.copy(endPoint = "branch.example.org", tenant = "branch")
+        val stored = FakeServerConfigRepository.TEST_DEFAULT.copy(endPoint = "branch.example.org", tenant = "branch")
         assertEquals(stored, newModel(FakeServerConfigRepository(initial = stored)).stateFlow.value.config)
     }
 
@@ -175,6 +175,6 @@ class ServerConfigViewModelTest {
         runCurrent()
 
         assertEquals(ServerConfigEvent.SaveFailed, model.eventFlow.first())
-        assertEquals(ServerConfig.DEFAULT, prefs.saved.value)
+        assertEquals(FakeServerConfigRepository.TEST_DEFAULT, prefs.saved.value)
     }
 }

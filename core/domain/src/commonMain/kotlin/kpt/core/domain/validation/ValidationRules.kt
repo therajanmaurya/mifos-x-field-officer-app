@@ -65,7 +65,7 @@ object ServerConfigRules {
      * Tenant identifier.
      *
      * **DEVIATION from `897ffdac1:ValidateServerTenantUseCase.kt`**, which used `^[a-zA-Z0-9]+$`.
-     * That rule rejects the substrate's own shipped default — `ServerConfig.DEFAULT.tenant` is
+     * That rule rejects the shipped default tenant (`AppServerConfig.DEFAULT`), which is
      * `"mifos-bank-1"` — so the app could not save the configuration it ships with. Caught by
      * `ServerConfigViewModelTest.theDefaultConfigIsValid`, which asserts exactly that the presets
      * pass their own rules.

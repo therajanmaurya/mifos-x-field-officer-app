@@ -19,6 +19,7 @@ import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.serverconfig.ServerConfigRepository
 import kpt.core.datastore.prefs.ProjectPreferencesRepository
 import kpt.core.model.utils.ServerConfig
+import kpt.core.network.config.AppServerConfig
 import kpt.core.store.config.AppCacheKeys
 import kpt.core.store.config.AppStoreIds
 import org.mobilenativefoundation.store.store5.Store
@@ -29,6 +30,8 @@ internal class ServerConfigRepositoryImpl(
     private val preferences: ProjectPreferencesRepository,
     @FromStore(AppStoreIds.ServerConfig) private val store: Store<Unit, ServerConfig>,
 ) : ServerConfigRepository {
+
+    override val defaultConfig: ServerConfig = AppServerConfig.DEFAULT
 
     override fun serverConfigStream(scope: CoroutineScope): ScreenDataStream<ServerConfig> =
         store.asScreenStream(
