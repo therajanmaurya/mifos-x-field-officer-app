@@ -109,6 +109,8 @@ internal class ClientDetailsViewModel(
             is ClientDetailsAction.OnUpdateSignatureClick ->
                 sendEvent(ClientDetailsEvent.NavigateToUpdateSignature(clientId, action.name, action.accountNo))
 
+            ClientDetailsAction.OnActivateClick -> sendEvent(ClientDetailsEvent.NavigateToActivate(clientId))
+
             ClientDetailsAction.DismissDialog ->
                 mutableStateFlow.value = state.copy(dialogState = null)
 
@@ -218,6 +220,7 @@ internal sealed interface ClientDetailsEvent {
     data class NavigateToUpdateDetails(val clientId: Int) : ClientDetailsEvent
     data class NavigateToUpdatePhoto(val clientId: Int, val name: String, val accountNo: String) : ClientDetailsEvent
     data class NavigateToUpdateSignature(val clientId: Int, val name: String, val accountNo: String) : ClientDetailsEvent
+    data class NavigateToActivate(val clientId: Int) : ClientDetailsEvent
 }
 
 internal sealed interface ClientDetailsAction {
@@ -226,6 +229,9 @@ internal sealed interface ClientDetailsAction {
     data object OnNext : ClientDetailsAction
     data object DismissDialog : ClientDetailsAction
     data object OnUpdateDetailsClick : ClientDetailsAction
+
+    /** The original's bottom-bar "Activate Client", shown only while the client is not active. */
+    data object OnActivateClick : ClientDetailsAction
 
     /**
      * `hasStaff` and `staffId` come from the SCREEN, which holds the client the stream emitted.

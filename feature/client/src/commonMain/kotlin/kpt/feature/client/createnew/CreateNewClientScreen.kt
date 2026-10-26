@@ -44,11 +44,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.attafitamim.krop.core.crop.AspectRatio
 import com.attafitamim.krop.core.crop.ImageCropper
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.dataOrNull
+import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
+import kpt.core.base.ui.generated.resources.Res as BaseRes
+import kpt.core.base.ui.generated.resources.draft_save
+import kpt.core.base.ui.generated.resources.draft_saved
+import kpt.core.base.ui.generated.resources.draft_saved_offline
 import kpt.core.base.ui.screen.ScreenContent
+import kpt.core.base.ui.submit.FormDraftBanner
 import kpt.core.common.utils.DateHelper
 import kpt.core.designsystem.component.AppBottomSheet
 import kpt.core.designsystem.component.AppBottomSheetOptionItem
@@ -121,8 +129,6 @@ import kpt.feature.client.generated.resources.feature_client_postal_code
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * Create a new client — carried over from
@@ -168,6 +174,7 @@ internal fun CreateNewClientScreen(
     viewModel: CreateNewClientViewModel = koinViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val offeredDraft by viewModel.offeredDraft.collectAsStateWithLifecycle()
     val form by viewModel.form.collectAsStateWithLifecycle()
     val address by viewModel.address.collectAsStateWithLifecycle()
     val staffOptions by viewModel.staffOptions.collectAsStateWithLifecycle()
@@ -196,6 +203,7 @@ internal fun CreateNewClientScreen(
             onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
             modifier = modifier,
             scaffoldPadding = scaffoldPadding,
+            offeredDraft = offeredDraft,
         )
     }
 }
@@ -215,6 +223,7 @@ internal fun CreateNewClientContent(
      * or a preview; the production caller always passes the scaffold's own padding.
      */
     scaffoldPadding: PaddingValues = PaddingValues(),
+    offeredDraft: SavedFormDraft? = null,
 ) {
     ScreenContent(
         state = form,
@@ -231,6 +240,13 @@ internal fun CreateNewClientContent(
                 .padding(horizontal = KptTheme.spacing.md)
                 .testTag(CreateNewClientTestTags.FORM),
         ) {
+            offeredDraft?.let {
+                FormDraftBanner(
+                    failureReason = it.errorMessage,
+                    onResume = { onAction(CreateNewClientAction.ResumeDraft) },
+                    onDiscard = { onAction(CreateNewClientAction.DiscardDraft) },
+                )
+            }
             PhotoSection(state = state, onAction = onAction)
 
             IdentityFields(state = state, onAction = onAction)
@@ -755,6 +771,14 @@ private fun Dialogs(
             },
             showAsDialog = true,
             modifier = Modifier.testTag(CreateNewClientTestTags.FAILED_DIALOG),
+            // Kept offline automatically; a refusal can be kept and resumed later.
+            secondaryBtnText = stringResource(BaseRes.string.draft_save).takeIf { !dialog.draftSaved },
+            onSecondary = { onAction(CreateNewClientAction.SaveDraft) },
+            note = when {
+                !dialog.draftSaved -> null
+                dialog.offline -> stringResource(BaseRes.string.draft_saved_offline)
+                else -> stringResource(BaseRes.string.draft_saved)
+            },
         )
     }
 }

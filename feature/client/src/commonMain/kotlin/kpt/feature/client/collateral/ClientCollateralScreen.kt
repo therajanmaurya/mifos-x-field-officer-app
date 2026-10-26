@@ -27,8 +27,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
+import kpt.core.base.ui.generated.resources.Res as BaseRes
+import kpt.core.base.ui.generated.resources.draft_save
+import kpt.core.base.ui.generated.resources.draft_saved
+import kpt.core.base.ui.generated.resources.draft_saved_offline
 import kpt.core.base.ui.screen.ScreenContent
+import kpt.core.base.ui.submit.FormDraftBanner
 import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.component.AppTextFieldDropdown
@@ -81,6 +87,7 @@ internal fun ClientCollateralScreen(
     viewModel: ClientCollateralViewModel = koinViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val offeredDraft by viewModel.offeredDraft.collectAsStateWithLifecycle()
     val collaterals by viewModel.collaterals.collectAsStateWithLifecycle()
 
     EventsEffect(viewModel.eventFlow) { event ->
@@ -107,6 +114,7 @@ internal fun ClientCollateralScreen(
             state = state,
             collaterals = collaterals,
             onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
+            offeredDraft = offeredDraft,
             modifier = modifier.padding(scaffoldPadding),
         )
     }
@@ -119,6 +127,7 @@ internal fun ClientCollateralContent(
     collaterals: ScreenState<List<CollateralItem>>,
     onAction: (ClientCollateralAction) -> Unit,
     modifier: Modifier = Modifier,
+    offeredDraft: SavedFormDraft? = null,
 ) {
     Column(
         modifier = modifier
@@ -156,6 +165,13 @@ internal fun ClientCollateralContent(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = KptTheme.spacing.md),
             ) {
+                offeredDraft?.let {
+                    FormDraftBanner(
+                        failureReason = it.errorMessage,
+                        onResume = { onAction(ClientCollateralAction.ResumeDraft) },
+                        onDiscard = { onAction(ClientCollateralAction.DiscardDraft) },
+                    )
+                }
                 AppTextFieldDropdown(
                     value = selected.name,
                     onOptionSelected = { index, _ -> onAction(ClientCollateralAction.OptionChanged(index)) },
@@ -238,6 +254,13 @@ internal fun ClientCollateralContent(
             successMessage = stringResource(Res.string.feature_client_collateral_success_message),
             failureTitle = stringResource(Res.string.feature_client_collateral_failure_title),
             failureMessage = dialog.msg,
+            secondaryBtnText = stringResource(BaseRes.string.draft_save).takeIf { dialog.status == ResultStatus.FAILURE && !dialog.draftSaved },
+            onSecondary = { onAction(ClientCollateralAction.SaveDraft) },
+            note = when {
+                !dialog.draftSaved -> null
+                dialog.offline -> stringResource(BaseRes.string.draft_saved_offline)
+                else -> stringResource(BaseRes.string.draft_saved)
+            },
             modifier = Modifier.fillMaxSize().testTag(ClientCollateralTestTags.STATUS_DIALOG),
         )
     }

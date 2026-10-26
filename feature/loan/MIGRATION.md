@@ -1099,3 +1099,7 @@ Loan profile gains **Notes** (owner `loans`) and the summary gains **More loan i
 The profile status chip for an Approved / waiting-for-disbursal loan now shows the server's status ("Approved") instead of the original's "Unknown" (`anApprovedLoanNamesTheServersStatusRatherThanUnknown`). Device-verified on loan 1074, along with profile → Notes (`loans/1074/notes`).
 
 Pending loan summary (2026-10-26): a loan not yet disbursed now shows its **Requested Amount** (`principal`), or its **Approved Amount** once approved, in the Total Loan card. Every other figure, and Staff when no officer is set, reads "—" instead of blank. Repayment figures are still hidden until disbursal, as in the original. The card amount shrinks to fit one line instead of wrapping mid-number. Device-verified on loan 38: MX$50,000. Tests: `aPendingLoanShowsTheRequestedAmount`, `anApprovedLoanShowsTheApprovedAmountNotTheRequestedOne`, plus the dash assertions.
+
+## Create drafts (2026-10-26)
+
+Every create form here keeps a draft through core-base's `FormDraftSlot` (template: `submit/draft/`). An offline submit, or one that fails on the network, is kept automatically and replayed on reconnect. A refusal is kept only on **Save as draft**, as FAILED with the server's reason, and is not replayed. When the form opens on a slot that holds a draft, a Resume / Discard banner is shown. Drafts are listed in Settings › Sync & Drafts with an **Open** action that returns to the form.

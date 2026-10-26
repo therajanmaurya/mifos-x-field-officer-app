@@ -13,6 +13,7 @@ import kpt.feature.client.details.components.ClientDetailsActionItem
 
 /** Stable handles for UI tests and Maestro flows — see RULE-KMP-COMPOSE-UITEST-001. */
 internal object ClientDetailsTestTags {
+    const val ACTIVATE = "client-details:activate"
     const val SCREEN = "clientDetails:screen"
     const val HEADER = "clientDetails:header"
     const val UPDATE_PHOTO = "clientDetails:updatePhoto"

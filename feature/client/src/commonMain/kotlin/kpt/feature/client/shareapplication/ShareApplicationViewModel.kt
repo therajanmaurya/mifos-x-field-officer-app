@@ -16,17 +16,25 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.isOffline
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.common.utils.DateFormatPattern
 import kpt.core.data.savings.SavingsAccountRepository
 import kpt.core.data.savings.SavingsCommandRepository
-import kpt.core.model.utils.ApiDateFormatter
+import kpt.core.model.draft.CreateForm
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.savings.ShareAccountPayload
 import kpt.core.model.savings.ShareTemplate
+import kpt.core.model.utils.ApiDateFormatter
 
 /**
  * Open a SHARE account for a client — ported from
@@ -76,9 +84,25 @@ internal class ShareApplicationViewModel(
     private val repository: SavingsAccountRepository,
     private val commands: SavingsCommandRepository,
     savedStateHandle: SavedStateHandle,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<ShareApplicationState, ShareApplicationEvent, ShareApplicationAction>(
     ShareApplicationState(clientId = savedStateHandle.get<Int>(CLIENT_ID_KEY) ?: -1),
 ) {
+
+    /** This client's application that did not land — resumable here, listed in Sync & Drafts. */
+    private val formDraft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.SHARE.key, ownerId = state.clientId.toLong(),
+        ShareApplicationState.serializer(), ShareAccountPayload.serializer(),
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
+
+    private fun keepDraft(failure: String?) = formDraft.keep(
+        title = state.product?.label.orEmpty(),
+        state = state.copy(isSubmitting = false, step = ShareStep.DETAILS),
+        payload = state.toPayload(),
+        failure = failure,
+    )
 
     /**
      * The template, re-read whenever the chosen PRODUCT changes.
@@ -94,6 +118,12 @@ internal class ShareApplicationViewModel(
 
     override fun handleAction(action: ShareApplicationAction) {
         when (action) {
+            ShareApplicationAction.ResumeDraft -> formDraft.resume()?.let { mutableStateFlow.value = it }
+            ShareApplicationAction.DiscardDraft -> formDraft.discard()
+            ShareApplicationAction.SaveDraft -> {
+                keepDraft(failure = state.serverMessage ?: "Not accepted by the server.")
+                mutableStateFlow.value = state.copy(draftSaved = true)
+            }
             ShareApplicationAction.NavigateBack -> sendEvent(ShareApplicationEvent.NavigateBack)
 
             ShareApplicationAction.NextStep -> moveTo(state.step.next())
@@ -176,20 +206,26 @@ internal class ShareApplicationViewModel(
 
         mutableStateFlow.value = state.copy(isSubmitting = true, error = null, serverMessage = null)
         viewModelScope.launch {
-            when (val result = commands.createShareAccount(state.toPayload())) {
+            when (val result = commands.createShareAccount(state.toPayload()).offlineWhenUnsent()) {
                 is MutationResult.Applied -> {
+                    formDraft.clear()
                     mutableStateFlow.value = state.copy(isSubmitting = false)
                     sendEvent(ShareApplicationEvent.Created)
                 }
 
-                is MutationResult.Blocked -> mutableStateFlow.value = state.copy(
-                    isSubmitting = false,
-                    error = if (result.reason == BlockReason.OFFLINE) {
-                        ShareApplicationError.Offline
-                    } else {
-                        ShareApplicationError.Failed
-                    },
-                )
+                // Offline: kept automatically and sent on reconnect.
+                is MutationResult.Blocked -> {
+                    if (result.isOffline) keepDraft(failure = null)
+                    mutableStateFlow.value = state.copy(
+                        isSubmitting = false,
+                        error = if (result.reason == BlockReason.OFFLINE) {
+                            ShareApplicationError.Offline
+                        } else {
+                            ShareApplicationError.Failed
+                        },
+                        draftSaved = result.isOffline,
+                    )
+                }
 
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "create share account failed" }
@@ -239,6 +275,7 @@ internal enum class ShareStep {
 }
 
 /** One selectable option. The CHOICE is the option, so no index can go stale against its list. */
+@Serializable
 internal data class ShareOption(val id: Int, val label: String)
 
 internal data class ShareFieldErrors(
@@ -298,6 +335,8 @@ internal enum class ShareApplicationError {
     Failed,
 }
 
+/** Serializable so a draft restores the wizard as left; the transient fields are per-visit. */
+@Serializable
 internal data class ShareApplicationState(
     val clientId: Int = -1,
     val step: ShareStep = ShareStep.DETAILS,
@@ -312,13 +351,15 @@ internal data class ShareApplicationState(
     val lockInPeriod: String = "",
     val lockInPeriodType: ShareOption? = null,
     val isDividendAllowed: Boolean = false,
-    val productError: Boolean = false,
-    val savingsAccountError: Boolean = false,
-    val totalSharesError: Boolean = false,
-    val isSubmitting: Boolean = false,
-    val error: ShareApplicationError? = null,
+    @Transient val productError: Boolean = false,
+    @Transient val savingsAccountError: Boolean = false,
+    @Transient val totalSharesError: Boolean = false,
+    @Transient val isSubmitting: Boolean = false,
+    @Transient val error: ShareApplicationError? = null,
     /** Fineract's own words, when it gave any. Never rewritten. */
-    val serverMessage: String? = null,
+    @Transient val serverMessage: String? = null,
+    /** This create was kept as a draft (offline automatically, or "Save as draft"). */
+    @Transient val draftSaved: Boolean = false,
 ) {
     val canSubmit: Boolean get() = !isSubmitting
 }
@@ -329,6 +370,9 @@ internal sealed interface ShareApplicationEvent {
 }
 
 internal sealed interface ShareApplicationAction {
+    data object ResumeDraft : ShareApplicationAction
+    data object DiscardDraft : ShareApplicationAction
+    data object SaveDraft : ShareApplicationAction
     data object NavigateBack : ShareApplicationAction
     data object NextStep : ShareApplicationAction
     data object PreviousStep : ShareApplicationAction

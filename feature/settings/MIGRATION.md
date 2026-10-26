@@ -115,3 +115,7 @@ layer for it exists (`surveys` / `surveyGetSurvey` stores).
 ## Server config + sign-out (2026-10-25)
 
 The instance picker reads Supabase `app_server_config` through `ServerInstancesStore`. The DB is the source of truth and the bundled list is the fallback, with a loading shimmer, demo-account hints and a restart confirmation when signed in. **Sign out** is at the bottom of Settings, defaulting to "Sign out and clear data".
+
+## Sync & Drafts (2026-10-26)
+
+Create drafts get a readable title and subtitle, plus an **Open** action (`draftExtras` seam, routing in `cmp-navigation/drafts/CreateDraftRouting.kt`). Retry while online now sends straight away (template syncer fix).

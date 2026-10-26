@@ -10,6 +10,7 @@
 package kpt.core.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,9 +21,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.component.AppButton
@@ -48,6 +51,11 @@ fun AppStatusDialog(
     showAsDialog: Boolean = false,
     onDismissRequest: () -> Unit = {},
     modifier: Modifier = Modifier,
+    /** A second, quieter action under the button — e.g. "Save as draft" on a failed create. */
+    secondaryBtnText: String? = null,
+    onSecondary: (() -> Unit)? = null,
+    /** A line under the message — e.g. "Saved as a draft …" once it was kept. */
+    note: String? = null,
 ) {
     val (title, message, icon) = when (status) {
         ResultStatus.SUCCESS -> Triple(
@@ -70,7 +78,10 @@ fun AppStatusDialog(
                     .wrapContentHeight()
                     .padding(DesignToken.padding.large)
             } else {
-                modifier
+                // Inline it is drawn OVER the screen it reports on (callers pass fillMaxSize), so it
+                // needs its own surface — without one the form's table showed through the text
+                // (loan application preview, device 2026-10-26).
+                modifier.background(KptTheme.colorScheme.background)
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(DesignToken.padding.largeIncreasedExtra)
@@ -101,6 +112,15 @@ fun AppStatusDialog(
                 )
             }
 
+            note?.let {
+                Text(
+                    text = it,
+                    style = AppTypography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = DesignToken.padding.small).testTag(AppStatusDialogTestTags.NOTE),
+                )
+            }
+
             if (showButton) {
                 AppButton(
                     onClick = onConfirm,
@@ -114,6 +134,12 @@ fun AppStatusDialog(
                         .fillMaxWidth()
                         .padding(top = DesignToken.padding.small),
                 )
+                if (secondaryBtnText != null && onSecondary != null) {
+                    TextButton(
+                        onClick = onSecondary,
+                        modifier = Modifier.fillMaxWidth().testTag(AppStatusDialogTestTags.SECONDARY),
+                    ) { Text(secondaryBtnText, style = AppTypography.labelLarge) }
+                }
             } else {
                 Spacer(modifier = Modifier.height(DesignToken.spacing.large))
             }
@@ -152,4 +178,9 @@ private fun AppSuccessStatusDialogPreview() {
             failureMessage = "Operation Failed",
         )
     }
+}
+
+object AppStatusDialogTestTags {
+    const val SECONDARY = "status-dialog:secondary"
+    const val NOTE = "status-dialog:note"
 }

@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,8 +33,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.ScreenContent
+import kpt.core.base.ui.submit.FormDraftBanner
+import kpt.core.base.ui.submit.FormDraftFailure
 import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.component.AppTextFieldDropdown
@@ -60,6 +64,7 @@ import kpt.feature.client.generated.resources.feature_client_fdapp_interest_days
 import kpt.feature.client.generated.resources.feature_client_fdapp_interest_posting
 import kpt.feature.client.generated.resources.feature_client_fdapp_lock_in_period
 import kpt.feature.client.generated.resources.feature_client_fdapp_next
+import kpt.feature.client.generated.resources.feature_client_fdapp_no_products
 import kpt.feature.client.generated.resources.feature_client_fdapp_penal_applicable
 import kpt.feature.client.generated.resources.feature_client_fdapp_penal_interest
 import kpt.feature.client.generated.resources.feature_client_fdapp_product
@@ -96,6 +101,7 @@ internal fun FixedDepositApplicationScreen(
     viewModel: FixedDepositApplicationViewModel = koinViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val offeredDraft by viewModel.offeredDraft.collectAsStateWithLifecycle()
     val template by viewModel.template.collectAsStateWithLifecycle()
 
     EventsEffect(viewModel.eventFlow) { event ->
@@ -115,6 +121,7 @@ internal fun FixedDepositApplicationScreen(
             onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
             modifier = modifier,
             scaffoldPadding = scaffoldPadding,
+            offeredDraft = offeredDraft,
         )
     }
 }
@@ -127,6 +134,7 @@ internal fun FixedDepositApplicationContent(
     onAction: (FixedDepositApplicationAction) -> Unit,
     modifier: Modifier = Modifier,
     scaffoldPadding: PaddingValues = PaddingValues(),
+    offeredDraft: SavedFormDraft? = null,
 ) {
     Column(
         modifier = modifier
@@ -147,6 +155,13 @@ internal fun FixedDepositApplicationContent(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = KptTheme.spacing.md),
             ) {
+                offeredDraft?.let {
+                    FormDraftBanner(
+                        failureReason = it.errorMessage,
+                        onResume = { onAction(FixedDepositApplicationAction.ResumeDraft) },
+                        onDiscard = { onAction(FixedDepositApplicationAction.DiscardDraft) },
+                    )
+                }
                 when (state.step) {
                     FixedDepositStep.DETAILS -> DetailsPage(state, options, onAction)
                     FixedDepositStep.TERMS -> TermsPage(state, options, onAction)
@@ -158,19 +173,14 @@ internal fun FixedDepositApplicationContent(
 
                 state.error?.let { error ->
                     Spacer(Modifier.height(KptTheme.spacing.sm))
-                    Text(
-                        text = stringResource(error.message),
-                        style = AppTypography.bodySmall,
-                        color = KptTheme.colorScheme.error,
+                    FormDraftFailure(
+                        message = stringResource(error.message),
+                        serverReason = state.serverMessage,
+                        draftSaved = state.draftSaved,
+                        offline = error == FixedDepositError.Offline,
+                        onSaveDraft = { onAction(FixedDepositApplicationAction.SaveDraft) },
                         modifier = Modifier.testTag(FixedDepositApplicationTestTags.ERROR),
                     )
-                    state.serverMessage?.let {
-                        Text(
-                            text = it,
-                            style = AppTypography.bodySmall,
-                            color = KptTheme.colorScheme.error,
-                        )
-                    }
                 }
 
                 Spacer(Modifier.height(KptTheme.spacing.lg))
@@ -188,6 +198,16 @@ private fun DetailsPage(
     onAction: (FixedDepositApplicationAction) -> Unit,
 ) {
     val products = template.productOptions.orEmpty()
+    // Required: say so when the tenant has none, rather than an empty picker and a bare
+    // "required" error the officer can do nothing about (gateway, 2026-10-26).
+    if (products.isEmpty()) {
+        Text(
+            text = stringResource(Res.string.feature_client_fdapp_no_products),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.fillMaxWidth().testTag(FixedDepositApplicationTestTags.NO_PRODUCTS),
+        )
+    }
     OptionDropdown(
         value = state.product?.label.orEmpty(),
         label = stringResource(Res.string.feature_client_fdapp_product),
@@ -547,6 +567,7 @@ private val FixedDepositError.message: StringResource
     }
 
 internal object FixedDepositApplicationTestTags {
+    const val NO_PRODUCTS = "fd-application:no-products"
     const val SCREEN = "FixedDepositApplicationScreen"
     const val STEP_HEADER = "FixedDepositApplicationStepHeader"
     const val STEP_FOOTER = "FixedDepositApplicationStepFooter"

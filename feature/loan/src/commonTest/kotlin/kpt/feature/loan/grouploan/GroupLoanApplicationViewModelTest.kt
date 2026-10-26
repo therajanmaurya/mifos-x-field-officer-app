@@ -84,6 +84,7 @@ class GroupLoanApplicationViewModelTest {
         repository = repo,
         commands = commands,
         savedStateHandle = SavedStateHandle(mapOf("groupId" to 31)),
+        drafts = kpt.core.data.testing.FakeFormDraftRepository(),
     )
 
     /**

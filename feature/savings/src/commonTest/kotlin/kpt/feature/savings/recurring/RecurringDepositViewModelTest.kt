@@ -85,10 +85,12 @@ class RecurringDepositViewModelTest {
             template = MutableStateFlow(ScreenState.Content(template())),
         ),
         clientId: Int = 55,
+        drafts: kpt.core.data.testing.FakeFormDraftRepository = kpt.core.data.testing.FakeFormDraftRepository(),
     ) = RecurringDepositViewModel(
         repository = repo,
         commands = commands,
         savedStateHandle = SavedStateHandle(mapOf("clientId" to clientId)),
+        drafts = drafts,
     )
 
     /** Fill in everything the five steps require. */

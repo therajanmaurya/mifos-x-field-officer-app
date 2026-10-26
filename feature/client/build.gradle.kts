@@ -53,6 +53,8 @@ kotlin {
             // applications (S5e). Same edges as the original's `clientApplyNewApplicationRoute`.
             implementation(projects.feature.savings)
             implementation(projects.feature.groups)
+            // The pending client's "Activate Client" button (the original's `activateClient`).
+            implementation(projects.feature.activate)
             implementation(libs.koin.compose.navigation)
             implementation(compose.ui)
             implementation(compose.foundation)

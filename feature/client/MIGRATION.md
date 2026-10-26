@@ -980,3 +980,11 @@ the client was created with `datatables = null` regardless.
 The profile's group chip opens the group detail (client → groups dependency). The loan and deposit account lists format money with `CurrencyFormatter` ("MX$0" rather than "$0.0"). Add charge opens and correctly reports that the gateway has no client charge types.
 
 Bug fixed (2026-10-26): the profile's Group chip read the scalar `groupName`/`groupId`, which Fineract never sends, so every member showed "Group: N/A". It also defaulted `groupId` to 0, so with no group the chip would have opened group 0. It now reads `groups.first()` (`ClientProfileGroupChipUiTest`).
+
+## Create drafts (2026-10-26)
+
+Every create form here keeps a draft through core-base's `FormDraftSlot` (template: `submit/draft/`). An offline submit, or one that fails on the network, is kept automatically and replayed on reconnect. A refusal is kept only on **Save as draft**, as FAILED with the server's reason, and is not replayed. When the form opens on a slot that holds a draft, a Resume / Discard banner is shown. Drafts are listed in Settings › Sync & Drafts with an **Open** action that returns to the form.
+
+## Activate client + create group (2026-10-26)
+
+A pending client's details show **Activate Client** at the bottom, as in the original; `navigateToActivateClient` had no caller. `AppScaffold` dropped every `bottomBar`, and now forwards it. Activate failures show the server's reason. An online create group opens the new group, as the original did.

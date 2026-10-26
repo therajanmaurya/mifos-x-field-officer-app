@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
@@ -54,6 +55,9 @@ import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.domain.validation.ValidationFailure
 import kpt.core.model.utils.DemoCredentials
+import kpt.core.model.utils.ServerConfig
+import kpt.core.model.utils.ServerInstance
+import kpt.core.model.utils.baseUrl
 import kpt.feature.settings.generated.resources.Res
 import kpt.feature.settings.generated.resources.feature_settings_server_api_path
 import kpt.feature.settings.generated.resources.feature_settings_server_config_title
@@ -73,6 +77,10 @@ import kpt.feature.settings.generated.resources.feature_settings_server_error_to
 import kpt.feature.settings.generated.resources.feature_settings_server_instance_custom
 import kpt.feature.settings.generated.resources.feature_settings_server_instances_title
 import kpt.feature.settings.generated.resources.feature_settings_server_invalid
+import kpt.feature.settings.generated.resources.feature_settings_server_live_badge
+import kpt.feature.settings.generated.resources.feature_settings_server_live_tenant
+import kpt.feature.settings.generated.resources.feature_settings_server_live_title
+import kpt.feature.settings.generated.resources.feature_settings_server_live_user
 import kpt.feature.settings.generated.resources.feature_settings_server_port
 import kpt.feature.settings.generated.resources.feature_settings_server_protocol
 import kpt.feature.settings.generated.resources.feature_settings_server_save
@@ -166,6 +174,10 @@ fun ServerConfigScreen(
                 .testTag(ServerConfigTestTags.SCREEN),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            // Which server this session is on — read from the SAVED config, so editing the fields
+            // below never changes it until a switch is confirmed. Absent on sign-in (no session yet).
+            state.live?.let { LiveServerCard(it, state.liveInstance, state.liveUsername) }
+
             Text(
                 text = stringResource(Res.string.feature_settings_server_instances_title),
                 style = MaterialTheme.typography.titleSmall,
@@ -271,6 +283,7 @@ private fun InstancePicker(state: ServerConfigState, onSelect: (String) -> Unit)
                 name = instance.name,
                 detail = "${instance.config.endPoint} · ${instance.config.tenant}",
                 isDemo = instance.isDemo,
+                isLive = instance.id == state.liveInstance?.id,
                 selected = instance.id == selected?.id,
                 onClick = { onSelect(instance.id) },
                 modifier = Modifier.testTag(ServerConfigTestTags.INSTANCE_PREFIX + instance.id),
@@ -281,6 +294,7 @@ private fun InstancePicker(state: ServerConfigState, onSelect: (String) -> Unit)
                 name = stringResource(Res.string.feature_settings_server_instance_custom),
                 detail = "${state.config.endPoint} · ${state.config.tenant}",
                 isDemo = false,
+                isLive = state.live != null && state.liveInstance == null && state.live == state.config,
                 selected = true,
                 // intentional-noop: "Custom" is a status, not a choice — edit the fields below to change it.
                 onClick = {},
@@ -294,6 +308,7 @@ private fun InstanceRow(
     name: String,
     detail: String,
     isDemo: Boolean,
+    isLive: Boolean,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -321,18 +336,20 @@ private fun InstanceRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            if (isLive) {
+                Badge(
+                    text = stringResource(Res.string.feature_settings_server_live_badge),
+                    container = MaterialTheme.colorScheme.primaryContainer,
+                    content = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.testTag(ServerConfigTestTags.LIVE_BADGE),
+                )
+            }
             if (isDemo) {
-                Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = MaterialTheme.colorScheme.tertiaryContainer,
-                ) {
-                    Text(
-                        text = stringResource(Res.string.feature_settings_server_demo_badge),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                    )
-                }
+                Badge(
+                    text = stringResource(Res.string.feature_settings_server_demo_badge),
+                    container = MaterialTheme.colorScheme.tertiaryContainer,
+                    content = MaterialTheme.colorScheme.onTertiaryContainer,
+                )
             }
         }
     }
@@ -411,6 +428,8 @@ private fun ValidationFailure.message() = when (this) {
 /** Stable handles for the server-config screen — asserted by UI tests, never shown to a user. */
 object ServerConfigTestTags {
     const val SCREEN = "server-config:screen"
+    const val LIVE = "server-config:live"
+    const val LIVE_BADGE = "server-config:live-badge"
     const val BACK = "server-config:back"
     const val PROTOCOL = "server-config:protocol"
     const val ENDPOINT = "server-config:endpoint"
@@ -422,4 +441,56 @@ object ServerConfigTestTags {
     const val INSTANCES = "server-config:instances"
     const val SWITCH_CONFIRM = "server-config:switch-confirm"
     const val SAVE = "server-config:save"
+}
+
+@Composable
+private fun Badge(text: String, container: Color, content: Color, modifier: Modifier = Modifier) {
+    Surface(shape = MaterialTheme.shapes.small, color = container, modifier = modifier) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            color = content,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+        )
+    }
+}
+
+/** "Signed in to …": the session's server, its address and tenant, and who is signed in. */
+@Composable
+private fun LiveServerCard(live: ServerConfig, instance: ServerInstance?, username: String?) {
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.fillMaxWidth().testTag(ServerConfigTestTags.LIVE),
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = stringResource(Res.string.feature_settings_server_live_title),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            Text(
+                text = instance?.name ?: stringResource(Res.string.feature_settings_server_instance_custom),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            Text(
+                text = live.baseUrl(),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            Text(
+                text = stringResource(Res.string.feature_settings_server_live_tenant, live.tenant),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            username?.takeIf { it.isNotBlank() }?.let {
+                Text(
+                    text = stringResource(Res.string.feature_settings_server_live_user, it),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
+        }
+    }
 }

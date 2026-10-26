@@ -213,13 +213,16 @@ private fun Result(
             },
         )
 
-        ActivateResult.Failed -> stringResource(
-            when (state.type) {
-                ActivateType.Client -> Res.string.feature_activate_failed_to_activate_client
-                ActivateType.Center -> Res.string.feature_activate_failed_to_activate_center
-                ActivateType.Group -> Res.string.feature_activate_failed_to_activate_group
-            },
-        )
+        ActivateResult.Failed -> listOfNotNull(
+            stringResource(
+                when (state.type) {
+                    ActivateType.Client -> Res.string.feature_activate_failed_to_activate_client
+                    ActivateType.Center -> Res.string.feature_activate_failed_to_activate_center
+                    ActivateType.Group -> Res.string.feature_activate_failed_to_activate_group
+                },
+            ),
+            state.failureReason,
+        ).joinToString("\n")
 
         // No string for this in the original — it had no offline case, because its hand-rolled
         // error path could not tell "rejected" from "never sent". The gateway can.

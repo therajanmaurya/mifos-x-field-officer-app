@@ -9,6 +9,8 @@
  */
 package kpt.core.model.objects.account.loan
 
+import kotlinx.serialization.Serializable
+
 /**
  * A new INDIVIDUAL loan application, as the new-application wizard assembles it.
  *
@@ -28,6 +30,7 @@ package kpt.core.model.objects.account.loan
  * the declared format, so the pair is one decision and the type refuses to let a caller make half
  * of it. Build both with [kpt.core.model.utils.ApiDateFormatter].
  */
+@Serializable
 data class LoanApplicationInput(
     val clientId: Int,
     val productId: Int,

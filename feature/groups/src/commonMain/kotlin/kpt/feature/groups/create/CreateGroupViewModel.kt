@@ -15,15 +15,24 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kpt.core.base.store.mutation.BlockReason
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.emptyIfContent
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.failureReason
+import kpt.core.base.store.submit.draft.isOffline
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
 import kpt.core.common.utils.DateFormatPattern
 import kpt.core.data.group.GroupCommandRepository
 import kpt.core.data.office.OfficeRepository
+import kpt.core.model.draft.CreateForm
 import kpt.core.model.group.GroupPayload
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.office.Office
 import kpt.core.model.utils.ApiDateFormatter
 
@@ -70,7 +79,16 @@ import kpt.core.model.utils.ApiDateFormatter
 internal class CreateGroupViewModel(
     officeRepository: OfficeRepository,
     private val commands: GroupCommandRepository,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<CreateGroupState, CreateGroupEvent, CreateGroupAction>(CreateGroupState()) {
+
+    /** A create that did not land is kept here — resumable on this form, listed in Sync & Drafts. */
+    private val draft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.GROUP.key, ownerId = null,
+        CreateGroupState.serializer(), GroupPayload.serializer(),
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = draft.offered
 
     /** The offices a group may be opened in. */
     val offices: StateFlow<ScreenState<List<Office>>> =
@@ -109,6 +127,13 @@ internal class CreateGroupViewModel(
 
             CreateGroupAction.DismissError ->
                 mutableStateFlow.value = state.copy(error = null)
+
+            CreateGroupAction.ResumeDraft -> draft.resume()?.let { mutableStateFlow.value = it }
+            CreateGroupAction.DiscardDraft -> draft.discard()
+            CreateGroupAction.SaveDraft -> {
+                draft.keep(state.name, state, state.toPayload(), failure = state.failureReason)
+                mutableStateFlow.value = state.copy(draftSaved = true)
+            }
         }
     }
 
@@ -122,32 +147,37 @@ internal class CreateGroupViewModel(
 
         mutableStateFlow.value = state.copy(isSubmitting = true, error = null)
         viewModelScope.launch {
-            when (val result = commands.createGroup(state.toPayload())) {
+            when (val result = commands.createGroup(state.toPayload()).offlineWhenUnsent()) {
                 is MutationResult.Applied -> {
+                    draft.clear()
                     mutableStateFlow.value = state.copy(isSubmitting = false)
                     // `synced` is the truth of THIS write, not a stored preference — see the
                     // class KDoc.
-                    sendEvent(CreateGroupEvent.Created(synced = result.synced))
+                    sendEvent(
+                        CreateGroupEvent.Created(
+                            synced = result.synced,
+                            groupId = result.value.groupId ?: result.value.resourceId,
+                        ),
+                    )
                 }
 
-                is MutationResult.Blocked -> mutableStateFlow.value = state.copy(
-                    isSubmitting = false,
-                    error = if (result.reason == BlockReason.OFFLINE) {
-                        CreateGroupError.Offline
-                    } else {
-                        CreateGroupError.Failed
-                    },
-                )
+                // Offline: kept automatically and sent on reconnect — the officer already chose to submit.
+                is MutationResult.Blocked -> if (result.isOffline) {
+                    draft.keep(state.name, state.copy(isSubmitting = false), state.toPayload(), failure = null)
+                    mutableStateFlow.value = state.copy(isSubmitting = false, error = CreateGroupError.Offline, draftSaved = true)
+                } else {
+                    mutableStateFlow.value = state.copy(isSubmitting = false, error = CreateGroupError.Failed, failureReason = result.failureReason { it.serverErrorMessage() })
+                }
 
+                // Refused: the server's reason, and the choice to keep it (Save as draft) — never automatic,
+                // since resending a rejected create would only fail again.
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "create group failed" }
-                    mutableStateFlow.value =
-                        state.copy(isSubmitting = false, error = CreateGroupError.Failed)
+                    mutableStateFlow.value = state.copy(isSubmitting = false, error = CreateGroupError.Failed, failureReason = result.failureReason { it.serverErrorMessage() })
                 }
 
                 is MutationResult.Conflicted ->
-                    mutableStateFlow.value =
-                        state.copy(isSubmitting = false, error = CreateGroupError.Failed)
+                    mutableStateFlow.value = state.copy(isSubmitting = false, error = CreateGroupError.Failed, failureReason = result.failureReason { it.serverErrorMessage() })
             }
         }
     }
@@ -162,6 +192,7 @@ internal class CreateGroupViewModel(
 }
 
 /** One selectable office. The CHOICE carries its id, so no index can drift against a re-read. */
+@Serializable
 internal data class OfficeOption(val id: Int, val label: String)
 
 internal data class CreateGroupFieldErrors(
@@ -210,6 +241,8 @@ internal enum class CreateGroupError {
     Failed,
 }
 
+/** Serializable so a draft can restore the form as left; the transient fields are per-visit. */
+@Serializable
 internal data class CreateGroupState(
     val name: String = "",
     val office: OfficeOption? = null,
@@ -217,10 +250,13 @@ internal data class CreateGroupState(
     val submissionDateMillis: Long = 0L,
     val activationDateMillis: Long = 0L,
     val isActive: Boolean = false,
-    val nameError: Boolean = false,
-    val officeError: Boolean = false,
-    val isSubmitting: Boolean = false,
-    val error: CreateGroupError? = null,
+    @Transient val nameError: Boolean = false,
+    @Transient val officeError: Boolean = false,
+    @Transient val isSubmitting: Boolean = false,
+    @Transient val error: CreateGroupError? = null,
+    /** The server's reason when it refused the create — shown, and kept with a saved draft. */
+    @Transient val failureReason: String? = null,
+    @Transient val draftSaved: Boolean = false,
 ) {
     val canSubmit: Boolean get() = !isSubmitting
 }
@@ -234,13 +270,17 @@ internal sealed interface CreateGroupEvent {
      * [synced] says whether it reached Fineract or was queued locally — the distinction the
      * original decided from a stored preference instead of from the write.
      */
-    data class Created(val synced: Boolean) : CreateGroupEvent
+    /** [groupId] is the server's id — null when the write was queued offline and has none yet. */
+    data class Created(val synced: Boolean, val groupId: Int? = null) : CreateGroupEvent
 }
 
 internal sealed interface CreateGroupAction {
     data object NavigateBack : CreateGroupAction
     data object Submit : CreateGroupAction
     data object DismissError : CreateGroupAction
+    data object ResumeDraft : CreateGroupAction
+    data object DiscardDraft : CreateGroupAction
+    data object SaveDraft : CreateGroupAction
     data class UpdateName(val value: String) : CreateGroupAction
     data class UpdateOffice(val option: OfficeOption) : CreateGroupAction
     data class UpdateExternalId(val value: String) : CreateGroupAction

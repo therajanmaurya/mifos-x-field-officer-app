@@ -21,6 +21,7 @@ import kpt.core.data.center.CenterCommandRepository
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.data.group.GroupCommandRepository
 import kpt.core.model.objects.clients.ActivatePayload
+import kpt.core.model.objects.error.serverErrorMessage
 
 /**
  * Activate a client, centre or group — ported from
@@ -94,7 +95,9 @@ internal class ActivateViewModel(
 
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "activate ${state.type} failed" }
-                    state.copy(isSubmitting = false, result = ActivateResult.Failed)
+                    // The server's own reason (e.g. a 403 "Insufficient privileges"), as every other
+                    // write screen shows it — the generic line alone told the officer nothing.
+                    state.copy(isSubmitting = false, result = ActivateResult.Failed, failureReason = result.cause.serverErrorMessage())
                 }
 
                 is MutationResult.Conflicted ->
@@ -135,6 +138,8 @@ internal data class ActivateState(
     val type: ActivateType = ActivateType.Client,
     val isSubmitting: Boolean = false,
     val result: ActivateResult? = null,
+    /** The server's reason for a [ActivateResult.Failed], when it gave one. */
+    val failureReason: String? = null,
 )
 
 internal enum class ActivateResult { Succeeded, Offline, Failed }

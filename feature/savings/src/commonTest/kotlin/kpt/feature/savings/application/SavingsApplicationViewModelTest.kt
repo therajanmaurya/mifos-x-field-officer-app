@@ -84,10 +84,12 @@ class SavingsApplicationViewModelTest {
         ),
         ownerId: Int = 31,
         isGroup: Boolean = false,
+        drafts: kpt.core.data.testing.FakeFormDraftRepository = kpt.core.data.testing.FakeFormDraftRepository(),
     ) = SavingsApplicationViewModel(
         repository = repo,
         commands = commands,
         savedStateHandle = SavedStateHandle(mapOf("ownerId" to ownerId, "isGroup" to isGroup)),
+        drafts = drafts,
     )
 
     private fun TestScope.chooseProduct(vm: SavingsApplicationViewModel, id: Int = 7) {
@@ -443,5 +445,20 @@ class SavingsApplicationViewModelTest {
 
         assertTrue(!vm.stateFlow.value.templateError)
         assertEquals(1, vm.stateFlow.value.selectionId(SavingsField.COMPOUNDING_PERIOD))
+    }
+
+    @Test
+    fun `a group's and a client's drafts with the same id do not share a slot`() = runTest(dispatcher) {
+        // ownerKind is part of the slot: group 31's application is not client 31's.
+        val drafts = kpt.core.data.testing.FakeFormDraftRepository()
+        val offline = FakeSavingsCommandRepository(createResult = { MutationResult.Blocked(kpt.core.base.store.mutation.BlockReason.OFFLINE) })
+        listOf(false, true).forEach { group ->
+            val vm = viewModel(commands = offline, isGroup = group, drafts = drafts)
+            chooseProduct(vm)
+            advanceSteps(vm, 3)
+            vm.trySendAction(SavingsApplicationAction.OnSubmit)
+            advanceUntilIdle()
+        }
+        assertEquals(listOf("client:31", "group:31"), drafts.saved.value.map { it.slot }.sorted())
     }
 }

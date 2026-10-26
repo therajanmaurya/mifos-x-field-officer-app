@@ -9,6 +9,8 @@
  */
 package kpt.core.model.objects.account.saving
 
+import kotlinx.serialization.Serializable
+
 /**
  * Typed inputs for the three savings writes an officer performs in the field.
  *
@@ -85,6 +87,7 @@ data class SavingsTransactionInput(
  * One owner and one discriminator make that unexpressible — there is no second id to forget, and
  * the discriminator also selects which Fineract template endpoint the form reads.
  */
+@Serializable
 data class SavingsApplicationInput(
     val ownerId: Int,
     val isGroup: Boolean,
@@ -117,4 +120,5 @@ data class SavingsApplicationInput(
 )
 
 /** One charge on a savings application: which charge, and how much. */
+@Serializable
 data class SavingsChargeInput(val chargeId: Int, val amount: String)

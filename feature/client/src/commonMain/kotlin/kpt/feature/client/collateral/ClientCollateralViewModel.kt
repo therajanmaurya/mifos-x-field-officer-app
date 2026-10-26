@@ -16,14 +16,22 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.isOffline
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.data.client.ClientRepository
+import kpt.core.model.draft.CreateForm
 import kpt.core.model.objects.clients.CollateralPayload
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.shared.CollateralItem
 import kpt.core.model.utils.ApiDateFormatter
 import kpt.core.ui.components.ResultStatus
@@ -63,9 +71,23 @@ internal class ClientCollateralViewModel(
     repository: ClientRepository,
     private val commands: ClientCommandRepository,
     savedStateHandle: SavedStateHandle,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<ClientCollateralState, ClientCollateralEvent, ClientCollateralAction>(
     ClientCollateralState(id = savedStateHandle.get<Int>(CLIENT_ID_KEY) ?: -1),
 ) {
+
+    /** This client's ClientCollateral write that did not land — resumable here, listed in Sync & Drafts. */
+    private val formDraft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.COLLATERAL.key, ownerId = state.id.toLong(),
+        ClientCollateralState.serializer(), CollateralPayload.serializer(),
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
+
+    private var lastPayload: CollateralPayload? = null
+
+    private fun keepDraft(payload: CollateralPayload, failure: String?) =
+        formDraft.keep("Collateral × ${state.quantity}", state.copy(dialogState = null), payload, failure)
 
     private val stream = repository.collateralItemsStream(viewModelScope)
 
@@ -75,6 +97,13 @@ internal class ClientCollateralViewModel(
 
     override fun handleAction(action: ClientCollateralAction) {
         when (action) {
+            ClientCollateralAction.ResumeDraft -> formDraft.resume()?.let { mutableStateFlow.value = it }
+            ClientCollateralAction.DiscardDraft -> formDraft.discard()
+            ClientCollateralAction.SaveDraft -> lastPayload?.let { payload ->
+                val failed = state.dialogState as? ClientCollateralState.DialogState.ShowStatusDialog
+                keepDraft(payload, failure = failed?.msg ?: "Not accepted by the server.")
+                mutableStateFlow.value = state.copy(dialogState = failed?.copy(draftSaved = true))
+            }
             ClientCollateralAction.NavigateBack -> sendEvent(ClientCollateralEvent.NavigateBack)
             ClientCollateralAction.OnNext -> sendEvent(ClientCollateralEvent.NavigateNext)
             ClientCollateralAction.OnRetry -> stream.retry()
@@ -112,22 +141,31 @@ internal class ClientCollateralViewModel(
                 // takes it so the two cannot drift.
                 locale = ApiDateFormatter.LOCALE,
             )
-            when (val result = commands.createCollateral(state.id, payload)) {
-                is MutationResult.Applied -> mutableStateFlow.value = state.copy(
-                    isOverlayLoading = false,
-                    dialogState = ClientCollateralState.DialogState.ShowStatusDialog(ResultStatus.SUCCESS),
-                )
+            lastPayload = payload
+            when (val result = commands.createCollateral(state.id, payload).offlineWhenUnsent()) {
+                is MutationResult.Applied -> {
+                    formDraft.clear()
+                    mutableStateFlow.value = state.copy(
+                        isOverlayLoading = false,
+                        dialogState = ClientCollateralState.DialogState.ShowStatusDialog(ResultStatus.SUCCESS),
+                    )
+                }
                 // The TYPE catalog did not change, so this stream is not refreshed. What changed is
                 // the client's pledged collateral, which `clientCollateralStream` owns and the
                 // collateral-DETAIL screen re-reads when shown.
 
-                is MutationResult.Blocked -> mutableStateFlow.value = state.copy(
+                is MutationResult.Blocked -> {
+                    if (result.isOffline) keepDraft(payload, failure = null)
+                    mutableStateFlow.value = state.copy(
                     isOverlayLoading = false,
                     dialogState = ClientCollateralState.DialogState.ShowStatusDialog(
                         status = ResultStatus.FAILURE,
                         msg = if (result.reason == BlockReason.OFFLINE) OFFLINE_MSG else FAILED_MSG,
+                        offline = result.isOffline,
+                        draftSaved = result.isOffline,
                     ),
                 )
+                }
 
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "create collateral failed" }
@@ -160,16 +198,24 @@ internal class ClientCollateralViewModel(
     }
 }
 
+/** Serializable so a draft restores the form as left; the transient fields are per-visit. */
+@Serializable
 internal data class ClientCollateralState(
     val id: Int = -1,
     val quantity: String = "",
-    val quantityError: StringResource? = null,
+    @Transient val quantityError: StringResource? = null,
     val currentSelectedIndex: Int = 0,
-    val isOverlayLoading: Boolean = false,
-    val dialogState: DialogState? = null,
+    @Transient val isOverlayLoading: Boolean = false,
+    @Transient val dialogState: DialogState? = null,
 ) {
     sealed interface DialogState {
-        data class ShowStatusDialog(val status: ResultStatus, val msg: String = "") : DialogState
+        /** [draftSaved] = kept (offline automatically, or "Save as draft"), in Sync & Drafts. */
+        data class ShowStatusDialog(
+            val status: ResultStatus,
+            val msg: String = "",
+            val offline: Boolean = false,
+            val draftSaved: Boolean = false,
+        ) : DialogState
     }
 }
 
@@ -195,6 +241,9 @@ internal sealed interface ClientCollateralEvent {
 }
 
 internal sealed interface ClientCollateralAction {
+    data object ResumeDraft : ClientCollateralAction
+    data object DiscardDraft : ClientCollateralAction
+    data object SaveDraft : ClientCollateralAction
     data object NavigateBack : ClientCollateralAction
     data object OnRetry : ClientCollateralAction
     data object OnNext : ClientCollateralAction

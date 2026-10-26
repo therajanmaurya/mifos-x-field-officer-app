@@ -12,25 +12,32 @@ package kpt.feature.loan.newloan
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.emptyIfContent
 import kpt.core.base.store.screen.mapContent
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.isOffline
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.loan.LoanCommandRepository
 import kpt.core.data.loan.LoanRepository
+import kpt.core.model.draft.CreateForm
 import kpt.core.model.loan.LoanTemplate
 import kpt.core.model.objects.account.loan.LoanApplicationInput
 import kpt.core.model.objects.account.loan.RepaymentSchedule
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.utils.ApiDateFormatter
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * The new INDIVIDUAL loan application — carried over from
@@ -97,9 +104,30 @@ internal class NewLoanApplicationViewModel(
     private val repository: LoanRepository,
     private val commands: LoanCommandRepository,
     savedStateHandle: SavedStateHandle,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<NewLoanApplicationState, NewLoanApplicationEvent, NewLoanApplicationAction>(
     NewLoanApplicationState(clientId = savedStateHandle.get<Int>(CLIENT_ID_KEY) ?: -1),
 ) {
+
+    /**
+     * This client's application that did not land. The draft keeps the officer's INPUT only; the
+     * product template is fetched again on resume (it is the server's, and may have changed).
+     */
+    private val draft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.LOAN.key, ownerId = state.clientId.toLong(),
+        LoanFormSnapshot.serializer(), LoanApplicationInput.serializer(),
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = draft.offered
+
+    private var lastPayload: LoanApplicationInput? = null
+
+    private fun keepDraft(payload: LoanApplicationInput, failure: String?) = draft.keep(
+        title = state.selections[LoanField.PRODUCT]?.label.orEmpty(),
+        state = LoanFormSnapshot.of(state),
+        payload = payload,
+        failure = failure,
+    )
 
     private val productsStream = repository.loanProductsStream(viewModelScope)
 
@@ -122,6 +150,18 @@ internal class NewLoanApplicationViewModel(
 
             NewLoanApplicationAction.OnRetryTemplate ->
                 state.selectionId(LoanField.PRODUCT)?.let(::loadTemplate)
+
+            NewLoanApplicationAction.ResumeDraft -> draft.resume()?.let { restored ->
+                val productId = restored.selections[LoanField.PRODUCT]?.id ?: return@let
+                mutableStateFlow.value = state.copy(selections = restored.selections, template = null, schedule = null, step = LoanStep.DETAILS)
+                loadTemplate(productId, restore = restored)
+            }
+            NewLoanApplicationAction.DiscardDraft -> draft.discard()
+            NewLoanApplicationAction.SaveDraft -> lastPayload?.let { payload ->
+                val failed = state.dialogState as? NewLoanApplicationState.DialogState.Failed
+                keepDraft(payload, failure = failed?.msg ?: FAILED_MSG)
+                mutableStateFlow.value = state.copy(dialogState = failed?.copy(draftSaved = true))
+            }
 
             is NewLoanApplicationAction.OnProductSelected -> {
                 // Clearing the WHOLE map, not the six the original reset: every option list in it
@@ -175,7 +215,8 @@ internal class NewLoanApplicationViewModel(
         }
     }
 
-    private fun loadTemplate(productId: Int) {
+    /** [restore] = a resumed draft's input, which wins over the template's defaults. */
+    private fun loadTemplate(productId: Int, restore: LoanFormSnapshot? = null) {
         mutableStateFlow.value = state.copy(isLoadingTemplate = true, templateError = false)
 
         viewModelScope.launch {
@@ -188,12 +229,15 @@ internal class NewLoanApplicationViewModel(
                     isLoadingTemplate = false,
                     templateError = false,
                     template = template,
-                    numbers = template.defaultNumbers(),
+                    numbers = template.defaultNumbers() + restore?.numbers.orEmpty(),
                     // Prefilled by matching the template's OWN chosen value against its option
                     // list. `firstOrNull`, never `indexOfFirst` — a miss leaves the field unchosen
                     // instead of storing -1, which is what made the original's crash reachable
                     // without the officer touching anything.
-                    selections = state.selections + template.defaultSelections(),
+                    selections = state.selections + template.defaultSelections() + restore?.selections.orEmpty(),
+                    dates = state.dates + restore?.dates.orEmpty(),
+                    toggles = state.toggles + restore?.toggles.orEmpty(),
+                    externalId = restore?.externalId ?: state.externalId,
                 )
             }
         }
@@ -273,21 +317,31 @@ internal class NewLoanApplicationViewModel(
         }
 
         val payload = payload() ?: return
+        lastPayload = payload
         mutableStateFlow.value = state.copy(isSubmitting = true, dialogState = null)
 
         viewModelScope.launch {
-            when (val result = commands.createLoanAccount(payload)) {
-                is MutationResult.Applied -> mutableStateFlow.value = state.copy(
-                    isSubmitting = false,
-                    dialogState = NewLoanApplicationState.DialogState.Created,
-                )
+            when (val result = commands.createLoanAccount(payload).offlineWhenUnsent()) {
+                is MutationResult.Applied -> {
+                    draft.clear()
+                    mutableStateFlow.value = state.copy(
+                        isSubmitting = false,
+                        dialogState = NewLoanApplicationState.DialogState.Created,
+                    )
+                }
 
-                is MutationResult.Blocked -> mutableStateFlow.value = state.copy(
-                    isSubmitting = false,
-                    dialogState = NewLoanApplicationState.DialogState.Failed(
-                        if (result.reason == BlockReason.OFFLINE) OFFLINE_MSG else FAILED_MSG,
-                    ),
-                )
+                // Offline: kept automatically, sent on reconnect.
+                is MutationResult.Blocked -> {
+                    if (result.isOffline) keepDraft(payload, failure = null)
+                    mutableStateFlow.value = state.copy(
+                        isSubmitting = false,
+                        dialogState = NewLoanApplicationState.DialogState.Failed(
+                            if (result.reason == BlockReason.OFFLINE) OFFLINE_MSG else FAILED_MSG,
+                            offline = result.isOffline,
+                            draftSaved = result.isOffline,
+                        ),
+                    )
+                }
 
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "create loan failed" }
@@ -417,11 +471,21 @@ private fun LoanTemplate.defaultSelections(): Map<LoanField, LoanOption> = build
         ?.let { o -> o.id?.let { put(LoanField.INTEREST_METHOD, LoanOption(it, o.value.orEmpty())) } }
     interestCalculationPeriodTypeOptions.firstOrNull { it.value == interestCalculationPeriodType?.value }
         ?.let { o -> o.id?.let { put(LoanField.INTEREST_CALCULATION_PERIOD, LoanOption(it, o.value.orEmpty())) } }
-    transactionProcessingStrategyOptions.firstOrNull { it.code == transactionProcessingStrategyCode }
-        ?.let { o ->
-            o.id?.let { put(LoanField.REPAYMENT_STRATEGY, LoanOption(it, o.name.orEmpty(), o.code)) }
-        }
+    strategyOptions().firstOrNull { it.code == transactionProcessingStrategyCode }
+        ?.let { put(LoanField.REPAYMENT_STRATEGY, it) }
 }
+
+/**
+ * The repayment strategies, keyed by CODE — the only thing the payload sends. Current Fineract sends
+ * these with no `id`, and requiring one dropped every option: the field never drew, yet stayed
+ * required, so Terms' Next silently did nothing (gateway, device 2026-10-26). The position stands in
+ * for the id, which only identifies the row in the picker.
+ */
+internal fun LoanTemplate.strategyOptions(): List<LoanOption> =
+    transactionProcessingStrategyOptions.mapIndexedNotNull { index, o ->
+        val code = o.code ?: return@mapIndexedNotNull null
+        LoanOption(id = o.id ?: index, label = o.name ?: code, code = code)
+    }
 
 /** A selectable loan product. */
 internal data class LoanProductOption(val id: Int, val name: String)
@@ -434,6 +498,7 @@ internal fun LoanProductOption.asOption() = LoanOption(id = id, label = name)
  * [code] is populated only for the repayment strategy, which is the one option the payload
  * identifies by code rather than id — carrying both is what lets every dropdown share one type.
  */
+@Serializable
 internal data class LoanOption(val id: Int, val label: String, val code: String? = null)
 
 /** The dates the application collects. */
@@ -584,7 +649,8 @@ internal data class NewLoanApplicationState(
 
     sealed interface DialogState {
         data object Created : DialogState
-        data class Failed(val msg: String) : DialogState
+        /** [draftSaved] = kept (offline automatically, or "Save as draft"), in Sync & Drafts. */
+        data class Failed(val msg: String, val offline: Boolean = false, val draftSaved: Boolean = false) : DialogState
     }
 }
 
@@ -593,6 +659,9 @@ internal sealed interface NewLoanApplicationEvent {
 }
 
 internal sealed interface NewLoanApplicationAction {
+    data object ResumeDraft : NewLoanApplicationAction
+    data object DiscardDraft : NewLoanApplicationAction
+    data object SaveDraft : NewLoanApplicationAction
     data object NavigateBack : NewLoanApplicationAction
     data object OnRetryProducts : NewLoanApplicationAction
     data object OnRetryTemplate : NewLoanApplicationAction
@@ -609,4 +678,19 @@ internal sealed interface NewLoanApplicationAction {
     data class OnToggled(val toggle: LoanToggle, val selected: Boolean) : NewLoanApplicationAction
     data class OnDateChanged(val field: LoanDate, val millis: Long) : NewLoanApplicationAction
     data class OpenDatePicker(val field: LoanDate) : NewLoanApplicationAction
+}
+
+/** What a loan draft keeps: the officer's input across all four steps — not the server's template. */
+@Serializable
+internal data class LoanFormSnapshot(
+    val numbers: Map<LoanField, String> = emptyMap(),
+    val selections: Map<LoanField, LoanOption> = emptyMap(),
+    val dates: Map<LoanDate, Long> = emptyMap(),
+    val toggles: Map<LoanToggle, Boolean> = emptyMap(),
+    val externalId: String = "",
+) {
+    companion object {
+        fun of(state: NewLoanApplicationState) =
+            LoanFormSnapshot(state.numbers, state.selections, state.dates, state.toggles, state.externalId)
+    }
 }

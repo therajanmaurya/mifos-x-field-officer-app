@@ -154,6 +154,22 @@ class ActivateViewModelTest {
     }
 
     @Test
+    fun aRejectionCarriesTheServersReason() = runTest(dispatcher) {
+        // A 403 for an officer without ACTIVATE_CLIENT, as the gateway sent it (device, 2026-10-26).
+        val forbidden = RuntimeException(
+            """Client request(POST https://x/clients/3?command=activate) invalid: 403 Forbidden. Text: "{"developerMessage":"x","httpStatusCode":"403","defaultUserMessage":"Insufficient privileges to perform this action.","userMessageGlobalisationCode":"error.msg.not.authorized","errors":[]}"""",
+        )
+        val rejecting = FakeGroupCommands { MutationResult.Failed(cause = forbidden, rolledBack = false) }
+        val vm = ActivateViewModel(clients, centers, rejecting, SavedStateHandle(mapOf("id" to 7, "type" to Constants.ACTIVATE_GROUP)))
+
+        vm.actionChannel.trySend(ActivateAction.Submit(payload()))
+        testScheduler.advanceUntilIdle()
+
+        assertEquals(ActivateResult.Failed, vm.stateFlow.value.result)
+        assertEquals("Insufficient privileges to perform this action.", vm.stateFlow.value.failureReason)
+    }
+
+    @Test
     fun anOfflineBlockIsReportedAsOfflineAndStaysRetryable() = runTest(dispatcher) {
         val offline = FakeGroupCommands { MutationResult.Blocked(BlockReason.OFFLINE) }
         val vm = ActivateViewModel(

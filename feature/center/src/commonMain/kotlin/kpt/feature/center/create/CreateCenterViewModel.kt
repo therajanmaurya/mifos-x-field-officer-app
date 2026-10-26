@@ -10,22 +10,30 @@
 package kpt.feature.center.create
 
 import androidx.lifecycle.viewModelScope
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.isOffline
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
 import kpt.core.data.center.CenterCommandRepository
 import kpt.core.data.office.OfficeRepository
 import kpt.core.model.center.CenterPayload
+import kpt.core.model.draft.CreateForm
 import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.office.Office
 import kpt.core.model.utils.ApiDateFormatter
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * Ported from `6b66e8a43:feature/center/createCenter/CreateNewCenterViewModel.kt` + the form state its
@@ -45,6 +53,7 @@ import kotlin.time.ExperimentalTime
 internal class CreateCenterViewModel(
     offices: OfficeRepository,
     private val commands: CenterCommandRepository,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<CreateCenterState, CreateCenterEvent, CreateCenterAction>(
     CreateCenterState(activationDateMillis = Clock.System.now().toEpochMilliseconds()),
 ) {
@@ -55,6 +64,17 @@ internal class CreateCenterViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
 
     fun onRetry() = officesStream.retry()
+
+    /** A create that did not land is kept here — resumable on this form, listed in Sync & Drafts. */
+    private val draft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.CENTER.key, ownerId = null,
+        CreateCenterState.serializer(), CenterPayload.serializer(),
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = draft.offered
+
+    /** The payload of the last submit — what "Save as draft" keeps. */
+    private var lastPayload: CenterPayload? = null
 
     override fun handleAction(action: CreateCenterAction) {
         when (action) {
@@ -73,6 +93,13 @@ internal class CreateCenterViewModel(
                 if (created) sendEvent(CreateCenterEvent.Created)
             }
             CreateCenterAction.NavigateBack -> sendEvent(CreateCenterEvent.NavigateBack)
+            CreateCenterAction.ResumeDraft -> draft.resume()?.let { mutableStateFlow.value = it }
+            CreateCenterAction.DiscardDraft -> draft.discard()
+            CreateCenterAction.SaveDraft -> lastPayload?.let { payload ->
+                val reason = (state.dialog as? CreateCenterState.Dialog.Failed)?.serverMessage
+                draft.keep(state.name, state, payload, failure = reason ?: NOT_ACCEPTED)
+                mutableStateFlow.value = state.copy(draftSaved = true)
+            }
         }
     }
 
@@ -93,19 +120,26 @@ internal class CreateCenterViewModel(
             dateFormat = ApiDateFormatter.DATE_FORMAT,
             locale = ApiDateFormatter.LOCALE,
         )
+        lastPayload = payload
         viewModelScope.launch {
-            val dialog = when (val result = commands.createCenter(payload)) {
+            val result = commands.createCenter(payload).offlineWhenUnsent()
+            // Offline: kept automatically and sent on reconnect. Refused: kept only on "Save as draft".
+            if (result.isOffline) draft.keep(state.name, state.copy(isSubmitting = false), payload, failure = null)
+            if (result is MutationResult.Applied) draft.clear()
+            val dialog = when (result) {
                 is MutationResult.Applied -> CreateCenterState.Dialog.Created
                 is MutationResult.Blocked ->
                     if (result.reason == BlockReason.OFFLINE) CreateCenterState.Dialog.Offline else CreateCenterState.Dialog.Failed(null)
                 is MutationResult.Failed -> CreateCenterState.Dialog.Failed(result.cause.serverErrorMessage())
                 is MutationResult.Conflicted -> CreateCenterState.Dialog.Failed(null)
             }
-            mutableStateFlow.value = state.copy(isSubmitting = false, dialog = dialog)
+            mutableStateFlow.value = state.copy(isSubmitting = false, dialog = dialog, draftSaved = result.isOffline)
         }
     }
 
     private companion object {
+        /** A refusal with no server sentence — still FAILED, never replayed. */
+        const val NOT_ACCEPTED = "Not accepted by the server."
         const val STATE_TIMEOUT_MS = 5_000L
     }
 }
@@ -122,17 +156,21 @@ internal fun validateCenterName(name: String): CenterNameError? = when {
 
 private const val MIN_NAME_LENGTH = 4
 
+/** Serializable so a draft restores the form as left; the transient fields are per-visit. */
+@Serializable
 internal data class CreateCenterState(
     val name: String = "",
-    val nameError: CenterNameError? = null,
+    @Transient val nameError: CenterNameError? = null,
     val officeId: Int? = null,
     val officeName: String = "",
-    val officeMissing: Boolean = false,
+    @Transient val officeMissing: Boolean = false,
     val active: Boolean = false,
     val activationDateMillis: Long,
-    val datePickerOpen: Boolean = false,
-    val isSubmitting: Boolean = false,
-    val dialog: Dialog? = null,
+    @Transient val datePickerOpen: Boolean = false,
+    @Transient val isSubmitting: Boolean = false,
+    @Transient val dialog: Dialog? = null,
+    /** This create was kept as a draft (offline automatically, or "Save as draft"). */
+    @Transient val draftSaved: Boolean = false,
 ) {
     sealed interface Dialog {
         data object Created : Dialog
@@ -158,4 +196,7 @@ internal sealed interface CreateCenterAction {
     data object Submit : CreateCenterAction
     data object DismissDialog : CreateCenterAction
     data object NavigateBack : CreateCenterAction
+    data object ResumeDraft : CreateCenterAction
+    data object DiscardDraft : CreateCenterAction
+    data object SaveDraft : CreateCenterAction
 }

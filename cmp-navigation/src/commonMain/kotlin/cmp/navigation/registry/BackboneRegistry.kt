@@ -13,20 +13,21 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import cmp.navigation.authenticatednavbar.PendingFeatureScreen
+import cmp.navigation.drafts.rememberCreateDraftExtras
 import cmp.navigation.generated.resources.Res
 import cmp.navigation.generated.resources.home_dashboard_feature
 import kpt.core.base.ui.nav.popBackStackSafely
+import kpt.feature.about.navigation.navigateToAbout
+import kpt.feature.checkerinbox.navigation.navigateToCheckerInbox
+import kpt.feature.collectionsheet.navigation.navigateToIndividualCollectionSheet
 import kpt.feature.profile.identity.ProfileBody
+import kpt.feature.report.navigation.navigateToReports
 import kpt.feature.settings.SettingsBody
 import kpt.feature.settings.navigateToNotification
-import kpt.feature.about.navigation.navigateToAbout
-import kpt.feature.collectionsheet.navigation.navigateToIndividualCollectionSheet
-import kpt.feature.report.navigation.navigateToReports
-import kpt.feature.checkerinbox.navigation.navigateToCheckerInbox
 import kpt.feature.settings.navigateToSettings
 import kpt.feature.settings.navigateToSyncAndDrafts
-import kpt.feature.settings.serverconfig.navigateToServerConfig
 import kpt.feature.settings.notificationDestination
+import kpt.feature.settings.serverconfig.navigateToServerConfig
 import kpt.feature.settings.settingsDestination
 import kpt.feature.settings.syncAndDraftsDestination
 import org.jetbrains.compose.resources.stringResource
@@ -136,7 +137,11 @@ object BackboneRegistry {
      */
     val backboneDestinations: NavGraphBuilder.(NavController) -> Unit = { navController ->
         notificationDestination(onBackClick = { navController.popBackStackSafely() })
-        syncAndDraftsDestination(onBackClick = { navController.popBackStackSafely() })
+        syncAndDraftsDestination(
+            onBackClick = { navController.popBackStackSafely() },
+            // Names each create draft and reopens its form (fork routing; template screen unchanged).
+            draftExtras = { rememberCreateDraftExtras(navController) },
+        )
         // Settings inner content flows through the fork-owned `settingsBody` seam (WS01 / AC7); the
         // template `settingsDestination` shell forwards this opaque body, carrying no demo wiring.
         settingsDestination(settingsBody = { BackboneRegistry.settingsBody(navController) })

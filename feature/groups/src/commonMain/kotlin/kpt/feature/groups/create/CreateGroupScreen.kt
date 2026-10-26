@@ -32,14 +32,17 @@ import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.ScreenContent
-import kpt.core.model.office.Office
+import kpt.core.base.ui.submit.FormDraftBanner
+import kpt.core.base.ui.submit.FormDraftFailure
 import kpt.core.designsystem.component.AppOutlinedButton
 import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.component.AppTextFieldDropdown
 import kpt.core.designsystem.theme.AppTypography
+import kpt.core.model.office.Office
 import kpt.feature.groups.generated.resources.Res
 import kpt.feature.groups.generated.resources.feature_groups_create_active
 import kpt.feature.groups.generated.resources.feature_groups_create_back
@@ -83,17 +86,18 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun CreateGroupScreen(
     onNavigateBack: () -> Unit,
-    onCreated: (synced: Boolean) -> Unit,
+    onCreated: (synced: Boolean, groupId: Int?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CreateGroupViewModel = koinViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val offeredDraft by viewModel.offeredDraft.collectAsStateWithLifecycle()
     val offices by viewModel.offices.collectAsStateWithLifecycle()
 
     EventsEffect(viewModel.eventFlow) { event ->
         when (event) {
             CreateGroupEvent.NavigateBack -> onNavigateBack()
-            is CreateGroupEvent.Created -> onCreated(event.synced)
+            is CreateGroupEvent.Created -> onCreated(event.synced, event.groupId)
         }
     }
 
@@ -104,6 +108,7 @@ internal fun CreateGroupScreen(
         CreateGroupContent(
             state = state,
             offices = offices,
+            offeredDraft = offeredDraft,
             onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
             modifier = modifier,
             scaffoldPadding = scaffoldPadding,
@@ -117,6 +122,7 @@ internal fun CreateGroupContent(
     state: CreateGroupState,
     offices: ScreenState<List<Office>>,
     onAction: (CreateGroupAction) -> Unit,
+    offeredDraft: SavedFormDraft? = null,
     modifier: Modifier = Modifier,
     scaffoldPadding: PaddingValues = PaddingValues(),
 ) {
@@ -134,6 +140,13 @@ internal fun CreateGroupContent(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = KptTheme.spacing.md),
         ) {
+            offeredDraft?.let {
+                FormDraftBanner(
+                    failureReason = it.errorMessage,
+                    onResume = { onAction(CreateGroupAction.ResumeDraft) },
+                    onDiscard = { onAction(CreateGroupAction.DiscardDraft) },
+                )
+            }
             AppOutlinedTextField(
                 value = state.name,
                 onValueChange = { onAction(CreateGroupAction.UpdateName(it)) },
@@ -180,10 +193,12 @@ internal fun CreateGroupContent(
 
             state.error?.let { error ->
                 Spacer(Modifier.height(KptTheme.spacing.sm))
-                Text(
-                    text = stringResource(error.message),
-                    style = AppTypography.bodySmall,
-                    color = KptTheme.colorScheme.error,
+                FormDraftFailure(
+                    message = stringResource(error.message),
+                    serverReason = state.failureReason,
+                    draftSaved = state.draftSaved,
+                    offline = error == CreateGroupError.Offline,
+                    onSaveDraft = { onAction(CreateGroupAction.SaveDraft) },
                     modifier = Modifier.testTag(CreateGroupTestTags.ERROR),
                 )
             }

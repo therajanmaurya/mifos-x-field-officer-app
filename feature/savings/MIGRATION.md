@@ -324,3 +324,7 @@ chosen before the account exists) and is unchanged. See `feature/charge/MIGRATIO
 ## Audit pass (2026-10-25)
 
 The summary gains **More savings account info** (`feature/datatable`, `m_savings_account`). **Bug fixed:** a group savings account showed "Client name unavailable". Fineract sends `groupName` and a null `clientName`, so the store fetcher folds the group name in and the cached row keeps it. Verified on the device: Charges and Add charge open, and correctly report no charge types (the gateway has none for savings).
+
+## Create drafts (2026-10-26)
+
+Every create form here keeps a draft through core-base's `FormDraftSlot` (template: `submit/draft/`). An offline submit, or one that fails on the network, is kept automatically and replayed on reconnect. A refusal is kept only on **Save as draft**, as FAILED with the server's reason, and is not replayed. When the form opens on a slot that holds a draft, a Resume / Discard banner is shown. Drafts are listed in Settings › Sync & Drafts with an **Open** action that returns to the form.

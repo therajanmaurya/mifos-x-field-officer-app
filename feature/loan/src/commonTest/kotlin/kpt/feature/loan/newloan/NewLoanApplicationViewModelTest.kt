@@ -13,6 +13,13 @@ package kpt.feature.loan.newloan
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -24,6 +31,8 @@ import kotlinx.coroutines.test.setMain
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.SubmitOutboxStatus
+import kpt.core.data.testing.FakeFormDraftRepository
 import kpt.core.data.testing.FakeLoanCommandRepository
 import kpt.core.data.testing.FakeLoanRepository
 import kpt.core.data.testing.fineractRejection
@@ -42,13 +51,6 @@ import kpt.core.model.objects.template.loan.TermFrequencyTypeOptions
 import kpt.core.model.objects.template.loan.TermPeriodFrequencyType
 import kpt.core.model.objects.template.loan.TransactionProcessingStrategyOptions
 import kpt.core.model.utils.ApiDateFormatter
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 /**
  * The original walked from an empty form to submit with no validation, then crashed in the payload
@@ -104,10 +106,12 @@ class NewLoanApplicationViewModelTest {
             individualLoanTemplate = { template() },
         ),
         commands: FakeLoanCommandRepository = FakeLoanCommandRepository(),
+        drafts: FakeFormDraftRepository = FakeFormDraftRepository(),
     ) = NewLoanApplicationViewModel(
         repository = repo,
         commands = commands,
         savedStateHandle = SavedStateHandle(mapOf("clientId" to 77)),
+        drafts = drafts,
     )
 
     /** Choose a product and let its template land — the only order the screen permits. */
@@ -281,6 +285,29 @@ class NewLoanApplicationViewModelTest {
         advanceUntilIdle()
 
         assertEquals(setOf(LoanField.PRINCIPAL), vm.stateFlow.value.errors)
+    }
+
+    @Test
+    fun `strategies with no id still prefill and let Terms advance`() = runTest(dispatcher) {
+        // Current Fineract sends the strategies as {code, name} only (gateway, 2026-10-26). Requiring
+        // an id dropped them all, so the required field was never filled and Next did nothing.
+        val idLess = template().copy(
+            transactionProcessingStrategyOptions = listOf(
+                TransactionProcessingStrategyOptions(code = "creocore-strategy", name = "Creocore Unique"),
+                TransactionProcessingStrategyOptions(code = "mifos-standard-strategy", name = "Penalties, Fees, Interest, Principal order"),
+            ),
+        )
+        val vm = viewModel(
+            repo = FakeLoanRepository(
+                loanProducts = MutableStateFlow(ScreenState.Content(products)),
+                individualLoanTemplate = { idLess },
+            ),
+        )
+        chooseProduct(vm)
+
+        assertEquals("mifos-standard-strategy", vm.stateFlow.value.selectionCode(LoanField.REPAYMENT_STRATEGY))
+        advanceSteps(vm, 2)
+        assertEquals(LoanStep.SCHEDULE, vm.stateFlow.value.step)
     }
 
     @Test
@@ -591,5 +618,35 @@ class NewLoanApplicationViewModelTest {
             vm.trySendAction(NewLoanApplicationAction.OnNext)
             advanceUntilIdle()
         }
+    }
+
+    // ---- drafts ----
+
+    @Test
+    fun `an offline application is kept and resuming it restores the input over the template defaults`() = runTest(dispatcher) {
+        val drafts = FakeFormDraftRepository()
+        val offline = viewModel(
+            commands = FakeLoanCommandRepository(createLoanResult = { MutationResult.Blocked(BlockReason.OFFLINE) }),
+            drafts = drafts,
+        )
+        chooseProduct(offline)
+        offline.trySendAction(NewLoanApplicationAction.OnNumberChanged(LoanField.PRINCIPAL, "12345"))
+        advanceSteps(offline, 3)
+        offline.trySendAction(NewLoanApplicationAction.OnSubmit)
+        advanceUntilIdle()
+
+        val kept = drafts.saved.value.single()
+        assertEquals(SubmitOutboxStatus.PENDING, kept.status)
+        assertEquals("Individual Grameen", kept.draft.title)
+
+        val reopened = viewModel(drafts = drafts)
+        advanceUntilIdle()
+        reopened.trySendAction(NewLoanApplicationAction.ResumeDraft)
+        advanceUntilIdle()
+
+        // The template's default principal is 36,000; the officer had typed 12,345.
+        assertEquals("12345", reopened.stateFlow.value.numbers[LoanField.PRINCIPAL])
+        assertEquals(11, reopened.stateFlow.value.selections[LoanField.PRODUCT]?.id)
+        assertTrue(reopened.stateFlow.value.template != null, "the template is fetched again on resume")
     }
 }

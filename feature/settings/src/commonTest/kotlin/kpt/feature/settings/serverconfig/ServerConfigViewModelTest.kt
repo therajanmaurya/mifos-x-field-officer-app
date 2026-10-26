@@ -311,4 +311,31 @@ class ServerConfigViewModelTest {
         runCurrent()
         assertTrue(model.instances.value is ScreenState.Content)
     }
+
+    @Test
+    fun aSignedInSessionShowsTheLiveServerAndWhoIsSignedIn() = runTest(dispatcher) {
+        val model = newModel(session = signedIn)
+        val live = model.form.value.live
+
+        assertEquals(model.form.value.config, live, "live is the SAVED config")
+        assertEquals("officer", model.form.value.liveUsername)
+    }
+
+    @Test
+    fun editingTheFieldsNeverMovesTheLiveServer() = runTest(dispatcher) {
+        // Live is what the session runs on — a draft is not live until the switch is confirmed.
+        val model = newModel(session = signedIn)
+        val live = model.form.value.live
+
+        model.actionChannel.trySend(ServerConfigAction.InstanceSelected("localhost"))
+        runCurrent()
+
+        assertEquals(live, model.form.value.live)
+        assertTrue(model.form.value.config != live, "the draft moved")
+    }
+
+    @Test
+    fun signInsCopyOfTheScreenHasNoLiveServer() = runTest(dispatcher) {
+        assertEquals(null, newModel().form.value.live)
+    }
 }

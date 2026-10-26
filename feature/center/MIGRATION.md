@@ -108,3 +108,7 @@ The §7 deferrals are closed.
 ## Audit pass (2026-10-25)
 
 The detail screen is now one `LazyColumn` with the original's **meeting** fields (activation, next meeting, frequency) and the **summary** counts (`ReportGetCenterSummaryInfo`). The overflow gains **Add savings account** (group-owned savings application). Two bugs fixed: the groups section read every group instead of the centre's own (it now reads `groupMembers` of the centre-with-associations call), and `CenterInfo` decoded every count as 0 because the server's keys are lowercase (`activeclients`). The second fix has a `CenterInfoDecodeTest`.
+
+## Create drafts (2026-10-26)
+
+Every create form here keeps a draft through core-base's `FormDraftSlot` (template: `submit/draft/`). An offline submit, or one that fails on the network, is kept automatically and replayed on reconnect. A refusal is kept only on **Save as draft**, as FAILED with the server's reason, and is not replayed. When the form opens on a slot that holds a draft, a Resume / Discard banner is shown. Drafts are listed in Settings › Sync & Drafts with an **Open** action that returns to the form.

@@ -25,6 +25,7 @@ import kpt.core.data.session.SessionRepository
 import kpt.core.domain.validation.ServerConfigRules
 import kpt.core.domain.validation.ValidationFailure
 import kpt.core.domain.validation.ValidationResult
+import kpt.core.model.objects.users.User
 import kpt.core.model.utils.ServerConfig
 import kpt.core.model.utils.ServerInstance
 import kpt.core.model.utils.matching
@@ -79,9 +80,11 @@ class ServerConfigViewModel(
      * Settings (a session on the OLD server: changing it signs out, so confirm first). Eager, like
      * [stored]: submit reads it with no screen collecting.
      */
-    private val signedIn: StateFlow<Boolean> = session.sessionStream(viewModelScope).state
-        .map { (it as? ScreenState.Content)?.data?.isAuthenticated == true }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val signedInUser: StateFlow<User?> = session.sessionStream(viewModelScope).state
+        .map { state -> (state as? ScreenState.Content)?.data?.takeIf { it.isAuthenticated } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    private val signedIn: Boolean get() = signedInUser.value != null
 
     /** The instance list read — retained so [ServerConfigAction.RetryInstances] re-runs it. */
     private val instancesStream = repository.instancesStream(viewModelScope)
@@ -94,10 +97,13 @@ class ServerConfigViewModel(
         instancesStream.state.stateIn(viewModelScope, SharingStarted.Eagerly, ScreenState.Loading)
 
     /** What the screen renders: the draft over the stored config, with the instances to pick from. */
-    val form: StateFlow<ServerConfigState> = combine(stateFlow, stored, instances) { ui, saved, list ->
+    val form: StateFlow<ServerConfigState> = combine(stateFlow, stored, instances, signedInUser) { ui, saved, list, user ->
         ui.copy(
             config = ui.draft ?: saved ?: repository.defaultConfig,
             instances = (list as? ScreenState.Content<List<ServerInstance>>)?.data.orEmpty(),
+            // The server this session runs on — the SAVED config, never the draft being edited.
+            live = saved?.takeIf { user != null },
+            liveUsername = user?.username,
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ServerConfigState(config = repository.defaultConfig))
 
@@ -138,7 +144,7 @@ class ServerConfigViewModel(
         val switching = saved != null && saved != config
         // A signed-in officer changing server loses the session (it belongs to the old server) —
         // ask first. Signed out (from sign-in) there is nothing to lose: save directly.
-        if (switching && signedIn.value && !confirmed) {
+        if (switching && signedIn && !confirmed) {
             mutableStateFlow.value = state.copy(confirmingSwitch = true)
             return
         }
@@ -189,7 +195,13 @@ data class ServerConfigState(
     val instances: List<ServerInstance> = emptyList(),
     /** A signed-in officer asked to save a different server; the screen confirms the sign-out. */
     val confirmingSwitch: Boolean = false,
+    /** The server the current session is signed in to; null when nobody is signed in (sign-in's copy of this screen). */
+    val live: ServerConfig? = null,
+    val liveUsername: String? = null,
 ) {
+    /** The named instance the session runs on, or null for a custom server. */
+    val liveInstance: ServerInstance? get() = live?.let { instances.matching(it) }
+
     val isValid: Boolean get() = failures.isEmpty()
 
     /** The instance the fields match exactly, or null when the officer typed a custom server. */

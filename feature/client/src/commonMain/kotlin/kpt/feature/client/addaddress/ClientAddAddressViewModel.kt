@@ -16,14 +16,24 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kpt.core.base.store.mutation.BlockReason
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.failureReason
+import kpt.core.base.store.submit.draft.isOffline
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.data.client.ClientRepository
 import kpt.core.model.client.AddressTemplate
 import kpt.core.model.client.PostClientAddressRequest
+import kpt.core.model.draft.AddressDraftPayload
+import kpt.core.model.draft.CreateForm
+import kpt.core.model.objects.error.serverErrorMessage
 
 /**
  * Add a postal address to a client — ported from
@@ -74,9 +84,25 @@ internal class ClientAddAddressViewModel(
     repository: ClientRepository,
     private val commands: ClientCommandRepository,
     savedStateHandle: SavedStateHandle,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<ClientAddAddressState, ClientAddAddressEvent, ClientAddAddressAction>(
     ClientAddAddressState(clientId = savedStateHandle.get<Int>(CLIENT_ID_KEY) ?: -1),
 ) {
+
+    /** This client's address create that did not land — resumable here, listed in Sync & Drafts. */
+    private val draft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.ADDRESS.key, ownerId = state.clientId.toLong(),
+        ClientAddAddressState.serializer(), AddressDraftPayload.serializer(),
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = draft.offered
+
+    private fun keepDraft(failure: String?) = draft.keep(
+        title = listOf(state.addressLine1, state.city).filter { it.isNotBlank() }.joinToString(", "),
+        state = state.copy(isSubmitting = false),
+        payload = AddressDraftPayload(state.clientId, state.addressTypeId, state.toPayload()),
+        failure = failure,
+    )
 
     /**
      * Address type, state/province and country option lists.
@@ -90,6 +116,12 @@ internal class ClientAddAddressViewModel(
 
     override fun handleAction(action: ClientAddAddressAction) {
         when (action) {
+            ClientAddAddressAction.ResumeDraft -> draft.resume()?.let { mutableStateFlow.value = it }
+            ClientAddAddressAction.DiscardDraft -> draft.discard()
+            ClientAddAddressAction.SaveDraft -> {
+                keepDraft(failure = state.failureReason ?: "Not accepted by the server.")
+                mutableStateFlow.value = state.copy(draftSaved = true)
+            }
             ClientAddAddressAction.NavigateBack -> sendEvent(ClientAddAddressEvent.NavigateBack)
 
             is ClientAddAddressAction.UpdateAddressType ->
@@ -137,31 +169,29 @@ internal class ClientAddAddressViewModel(
                 clientId = state.clientId,
                 addressTypeId = state.addressTypeId,
                 addressPayload = state.toPayload(),
-            )
+            ).offlineWhenUnsent()
             when (result) {
                 is MutationResult.Applied -> {
+                    draft.clear()
                     mutableStateFlow.value = state.copy(isSubmitting = false)
                     sendEvent(ClientAddAddressEvent.Saved)
                 }
 
-                is MutationResult.Blocked -> mutableStateFlow.value = state.copy(
-                    isSubmitting = false,
-                    writeError = if (result.reason == BlockReason.OFFLINE) {
-                        AddAddressError.Offline
-                    } else {
-                        AddAddressError.Failed
-                    },
-                )
+                // Offline: kept automatically and sent on reconnect.
+                is MutationResult.Blocked -> if (result.isOffline) {
+                    keepDraft(failure = null)
+                    mutableStateFlow.value = state.copy(isSubmitting = false, writeError = AddAddressError.Offline, draftSaved = true)
+                } else {
+                    mutableStateFlow.value = state.copy(isSubmitting = false, writeError = AddAddressError.Failed, failureReason = result.failureReason { it.serverErrorMessage() })
+                }
 
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "create client address failed" }
-                    mutableStateFlow.value =
-                        state.copy(isSubmitting = false, writeError = AddAddressError.Failed)
+                    mutableStateFlow.value = state.copy(isSubmitting = false, writeError = AddAddressError.Failed, failureReason = result.failureReason { it.serverErrorMessage() })
                 }
 
                 is MutationResult.Conflicted ->
-                    mutableStateFlow.value =
-                        state.copy(isSubmitting = false, writeError = AddAddressError.Failed)
+                    mutableStateFlow.value = state.copy(isSubmitting = false, writeError = AddAddressError.Failed, failureReason = result.failureReason())
             }
         }
     }
@@ -231,6 +261,8 @@ internal enum class AddAddressError {
     Failed,
 }
 
+/** Serializable so a draft restores the form as left; the transient fields are per-visit. */
+@Serializable
 internal data class ClientAddAddressState(
     val clientId: Int = -1,
     val addressTypeId: Int = 0,
@@ -244,9 +276,12 @@ internal data class ClientAddAddressState(
     val countryId: Int = 0,
     val countryLabel: String = "",
     val postalCode: String = "",
-    val errors: AddressFieldErrors = AddressFieldErrors(),
-    val isSubmitting: Boolean = false,
-    val writeError: AddAddressError? = null,
+    @Transient val errors: AddressFieldErrors = AddressFieldErrors(),
+    @Transient val isSubmitting: Boolean = false,
+    @Transient val writeError: AddAddressError? = null,
+    /** The server's reason when it refused the create — shown, and kept with a saved draft. */
+    @Transient val failureReason: String? = null,
+    @Transient val draftSaved: Boolean = false,
 ) {
     /** The original's `enabled = isSubmitEnabled`, and off while a write is in flight. */
     val canSubmit: Boolean get() = areRequiredFieldsFilled && !isSubmitting
@@ -261,6 +296,9 @@ internal sealed interface ClientAddAddressAction {
     data object NavigateBack : ClientAddAddressAction
     data object Submit : ClientAddAddressAction
     data object DismissError : ClientAddAddressAction
+    data object ResumeDraft : ClientAddAddressAction
+    data object DiscardDraft : ClientAddAddressAction
+    data object SaveDraft : ClientAddAddressAction
     data class UpdateAddressType(val id: Int, val label: String) : ClientAddAddressAction
     data class UpdateStateProvince(val id: Int, val label: String) : ClientAddAddressAction
     data class UpdateCountry(val id: Int, val label: String) : ClientAddAddressAction

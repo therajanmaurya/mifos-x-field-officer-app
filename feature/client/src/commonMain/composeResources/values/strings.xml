@@ -471,4 +471,7 @@
     <string name="feature_client_document_preview_title">Document</string>
     <string name="feature_client_document_preview_failed">Could not load this document. Check your connection and try again.</string>
     <string name="feature_client_document_preview_none">No document is attached to this identifier.</string>
+    <string name="feature_client_activate_client">Activate Client</string>
+    <string name="feature_client_fdapp_no_products">No fixed deposit products are set up on this server, so a fixed deposit cannot be opened here.</string>
+    <string name="feature_client_shareapp_no_products">No share products are set up on this server, so a share account cannot be opened here.</string>
 </resources>

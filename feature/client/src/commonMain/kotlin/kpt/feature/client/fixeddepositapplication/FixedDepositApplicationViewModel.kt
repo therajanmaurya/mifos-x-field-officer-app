@@ -16,17 +16,25 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.isOffline
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.common.utils.DateFormatPattern
 import kpt.core.data.savings.SavingsAccountRepository
 import kpt.core.data.savings.SavingsCommandRepository
-import kpt.core.model.utils.ApiDateFormatter
+import kpt.core.model.draft.CreateForm
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.savings.FixedDepositPayload
 import kpt.core.model.savings.FixedDepositTemplate
+import kpt.core.model.utils.ApiDateFormatter
 
 /**
  * Open a FIXED DEPOSIT account for a client — ported from
@@ -81,6 +89,7 @@ internal class FixedDepositApplicationViewModel(
     repository: SavingsAccountRepository,
     private val commands: SavingsCommandRepository,
     savedStateHandle: SavedStateHandle,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<
     FixedDepositApplicationState,
     FixedDepositApplicationEvent,
@@ -89,12 +98,33 @@ internal class FixedDepositApplicationViewModel(
     FixedDepositApplicationState(clientId = savedStateHandle.get<Int>(CLIENT_ID_KEY) ?: -1),
 ) {
 
+    /** This client's application that did not land — resumable here, listed in Sync & Drafts. */
+    private val formDraft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.FIXED_DEPOSIT.key, ownerId = state.clientId.toLong(),
+        FixedDepositApplicationState.serializer(), FixedDepositPayload.serializer(),
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
+
+    private fun keepDraft(failure: String?) = formDraft.keep(
+        title = state.product?.label.orEmpty(),
+        state = state.copy(isSubmitting = false, step = FixedDepositStep.DETAILS),
+        payload = state.toPayload(),
+        failure = failure,
+    )
+
     val template: StateFlow<ScreenState<FixedDepositTemplate>> =
         repository.fixedDepositTemplateStream(state.clientId, null, viewModelScope).state
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
 
     override fun handleAction(action: FixedDepositApplicationAction) {
         when (action) {
+            FixedDepositApplicationAction.ResumeDraft -> formDraft.resume()?.let { mutableStateFlow.value = it }
+            FixedDepositApplicationAction.DiscardDraft -> formDraft.discard()
+            FixedDepositApplicationAction.SaveDraft -> {
+                keepDraft(failure = state.serverMessage ?: "Not accepted by the server.")
+                mutableStateFlow.value = state.copy(draftSaved = true)
+            }
             FixedDepositApplicationAction.NavigateBack ->
                 sendEvent(FixedDepositApplicationEvent.NavigateBack)
 
@@ -182,20 +212,26 @@ internal class FixedDepositApplicationViewModel(
 
         mutableStateFlow.value = state.copy(isSubmitting = true, error = null, serverMessage = null)
         viewModelScope.launch {
-            when (val result = commands.createFixedDepositAccount(state.toPayload())) {
+            when (val result = commands.createFixedDepositAccount(state.toPayload()).offlineWhenUnsent()) {
                 is MutationResult.Applied -> {
+                    formDraft.clear()
                     mutableStateFlow.value = state.copy(isSubmitting = false)
                     sendEvent(FixedDepositApplicationEvent.Created)
                 }
 
-                is MutationResult.Blocked -> mutableStateFlow.value = state.copy(
-                    isSubmitting = false,
-                    error = if (result.reason == BlockReason.OFFLINE) {
-                        FixedDepositError.Offline
-                    } else {
-                        FixedDepositError.Failed
-                    },
-                )
+                // Offline: kept automatically and sent on reconnect.
+                is MutationResult.Blocked -> {
+                    if (result.isOffline) keepDraft(failure = null)
+                    mutableStateFlow.value = state.copy(
+                        isSubmitting = false,
+                        error = if (result.reason == BlockReason.OFFLINE) {
+                            FixedDepositError.Offline
+                        } else {
+                            FixedDepositError.Failed
+                        },
+                        draftSaved = result.isOffline,
+                    )
+                }
 
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "create fixed deposit failed" }
@@ -240,6 +276,7 @@ internal enum class FixedDepositStep {
 }
 
 /** One selectable option. The CHOICE carries its id, so no index can drift against a re-read. */
+@Serializable
 internal data class FixedDepositOption(val id: Int, val label: String)
 
 internal data class FixedDepositFieldErrors(
@@ -328,6 +365,8 @@ internal enum class FixedDepositError {
     Failed,
 }
 
+/** Serializable so a draft restores the wizard as left; the transient fields are per-visit. */
+@Serializable
 internal data class FixedDepositApplicationState(
     val clientId: Int = -1,
     val step: FixedDepositStep = FixedDepositStep.DETAILS,
@@ -347,13 +386,15 @@ internal data class FixedDepositApplicationState(
     val transferInterestToSavings: Boolean = false,
     val penalInterestApplicable: Boolean = false,
     val penalInterest: String = "",
-    val productError: Boolean = false,
-    val depositAmountError: Boolean = false,
-    val depositPeriodError: Boolean = false,
-    val depositPeriodTypeError: Boolean = false,
-    val isSubmitting: Boolean = false,
-    val error: FixedDepositError? = null,
-    val serverMessage: String? = null,
+    @Transient val productError: Boolean = false,
+    @Transient val depositAmountError: Boolean = false,
+    @Transient val depositPeriodError: Boolean = false,
+    @Transient val depositPeriodTypeError: Boolean = false,
+    @Transient val isSubmitting: Boolean = false,
+    @Transient val error: FixedDepositError? = null,
+    @Transient val serverMessage: String? = null,
+    /** This create was kept as a draft (offline automatically, or "Save as draft"). */
+    @Transient val draftSaved: Boolean = false,
 )
 
 internal sealed interface FixedDepositApplicationEvent {
@@ -362,6 +403,9 @@ internal sealed interface FixedDepositApplicationEvent {
 }
 
 internal sealed interface FixedDepositApplicationAction {
+    data object ResumeDraft : FixedDepositApplicationAction
+    data object DiscardDraft : FixedDepositApplicationAction
+    data object SaveDraft : FixedDepositApplicationAction
     data object NavigateBack : FixedDepositApplicationAction
     data object NextStep : FixedDepositApplicationAction
     data object PreviousStep : FixedDepositApplicationAction

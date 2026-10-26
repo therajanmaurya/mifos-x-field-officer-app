@@ -12,25 +12,32 @@ package kpt.feature.savings.application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.emptyIfContent
 import kpt.core.base.store.screen.mapContent
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.isOffline
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.savings.SavingsAccountRepository
 import kpt.core.data.savings.SavingsCommandRepository
-import kpt.core.model.savings.SavingProductsTemplate
+import kpt.core.model.draft.CreateForm
 import kpt.core.model.objects.account.saving.SavingsApplicationInput
 import kpt.core.model.objects.account.saving.SavingsChargeInput
+import kpt.core.model.objects.error.serverErrorMessage
+import kpt.core.model.savings.SavingProductsTemplate
 import kpt.core.model.utils.ApiDateFormatter
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * The new savings application — ported from `6b66e8a43:feature/savings/savingsAccountv2/`
@@ -91,12 +98,34 @@ internal class SavingsApplicationViewModel(
     private val repository: SavingsAccountRepository,
     private val commands: SavingsCommandRepository,
     savedStateHandle: SavedStateHandle,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<SavingsApplicationState, SavingsApplicationEvent, SavingsApplicationAction>(
     SavingsApplicationState(
         ownerId = savedStateHandle.get<Int>(OWNER_ID_KEY) ?: -1,
         isGroup = savedStateHandle.get<Boolean>(IS_GROUP_KEY) == true,
     ),
 ) {
+
+    /**
+     * This owner's application that did not land — the officer's input (the template is re-fetched).
+     * The owner KIND is part of the slot: client 7's and group 7's applications are different drafts.
+     */
+    private val formDraft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.SAVINGS.key, ownerId = state.ownerId.toLong(),
+        SavingsFormSnapshot.serializer(), SavingsApplicationInput.serializer(),
+        ownerKind = if (state.isGroup) "group" else "client",
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
+
+    private var lastInput: SavingsApplicationInput? = null
+
+    private fun keepDraft(input: SavingsApplicationInput, failure: String?) = formDraft.keep(
+        title = state.selections[SavingsField.PRODUCT]?.label.orEmpty(),
+        state = SavingsFormSnapshot.of(state),
+        payload = input,
+        failure = failure,
+    )
 
     private val productsStream = repository.savingsProductsStream(viewModelScope)
 
@@ -116,6 +145,17 @@ internal class SavingsApplicationViewModel(
 
     override fun handleAction(action: SavingsApplicationAction) {
         when (action) {
+            SavingsApplicationAction.ResumeDraft -> formDraft.resume()?.let { restored ->
+                val productId = restored.selections[SavingsField.PRODUCT]?.id ?: return@let
+                mutableStateFlow.value = state.copy(selections = restored.selections, template = null, step = SavingsStep.DETAILS)
+                loadTemplate(productId, restore = restored)
+            }
+            SavingsApplicationAction.DiscardDraft -> formDraft.discard()
+            SavingsApplicationAction.SaveDraft -> lastInput?.let { input ->
+                val failed = state.dialogState as? ApplicationDialog.Failed
+                keepDraft(input, failure = failed?.msg ?: "Not accepted by the server.")
+                mutableStateFlow.value = state.copy(dialogState = failed?.copy(draftSaved = true))
+            }
             SavingsApplicationAction.NavigateBack ->
                 sendEvent(SavingsApplicationEvent.NavigateBack)
 
@@ -180,7 +220,8 @@ internal class SavingsApplicationViewModel(
         }
     }
 
-    private fun loadTemplate(productId: Int) {
+    /** [restore] = a resumed draft's input, which wins over the template's defaults. */
+    private fun loadTemplate(productId: Int, restore: SavingsFormSnapshot? = null) {
         mutableStateFlow.value = state.copy(isLoadingTemplate = true, templateError = false)
 
         viewModelScope.launch {
@@ -198,7 +239,12 @@ internal class SavingsApplicationViewModel(
                     isLoadingTemplate = false,
                     templateError = false,
                     template = template,
-                    selections = state.selections + template.defaultSelections(),
+                    selections = state.selections + template.defaultSelections() + restore?.selections.orEmpty(),
+                    numbers = state.numbers + restore?.numbers.orEmpty(),
+                    toggles = state.toggles + restore?.toggles.orEmpty(),
+                    charges = restore?.charges ?: state.charges,
+                    externalId = restore?.externalId ?: state.externalId,
+                    submittedOn = restore?.submittedOn ?: state.submittedOn,
                 )
             }
         }
@@ -271,7 +317,12 @@ internal class SavingsApplicationViewModel(
                 },
             )
 
-            mutableStateFlow.value = when (val result = commands.createSavingsAccount(input)) {
+            lastInput = input
+            val result = commands.createSavingsAccount(input).offlineWhenUnsent()
+            // Offline: kept automatically and sent on reconnect.
+            if (result.isOffline) keepDraft(input, failure = null)
+            if (result is MutationResult.Applied) formDraft.clear()
+            mutableStateFlow.value = when (result) {
                 is MutationResult.Applied ->
                     state.copy(isSubmitting = false, dialogState = ApplicationDialog.Created)
 
@@ -280,6 +331,7 @@ internal class SavingsApplicationViewModel(
                     dialogState = ApplicationDialog.Failed(
                         offline = result.reason == BlockReason.OFFLINE,
                         msg = null,
+                        draftSaved = result.isOffline,
                     ),
                 )
 
@@ -348,9 +400,11 @@ internal data class SavingsProductOption(val id: Int, val name: String)
 internal fun SavingsProductOption.asOption() = SavingsOption(id = id, label = name)
 
 /** One dropdown choice. */
+@Serializable
 internal data class SavingsOption(val id: Int, val label: String)
 
 /** A charge the officer attached, before it becomes a payload row. */
+@Serializable
 internal data class SavingsChargeRow(val chargeId: Int, val label: String, val amount: String)
 
 /** The checkboxes. */
@@ -416,7 +470,8 @@ internal enum class SavingsStep {
 
 internal sealed interface ApplicationDialog {
     data object Created : ApplicationDialog
-    data class Failed(val offline: Boolean, val msg: String?) : ApplicationDialog
+    /** [draftSaved] = kept (offline automatically, or "Save as draft"), in Sync & Drafts. */
+    data class Failed(val offline: Boolean, val msg: String?, val draftSaved: Boolean = false) : ApplicationDialog
 }
 
 @OptIn(ExperimentalTime::class)
@@ -461,6 +516,9 @@ internal sealed interface SavingsApplicationEvent {
 }
 
 internal sealed interface SavingsApplicationAction {
+    data object ResumeDraft : SavingsApplicationAction
+    data object DiscardDraft : SavingsApplicationAction
+    data object SaveDraft : SavingsApplicationAction
     data object NavigateBack : SavingsApplicationAction
     data object Done : SavingsApplicationAction
     data object OnRetryProducts : SavingsApplicationAction
@@ -482,4 +540,21 @@ internal sealed interface SavingsApplicationAction {
     data class OnDateChanged(val millis: Long) : SavingsApplicationAction
     data class OnChargeAdded(val charge: SavingsChargeRow) : SavingsApplicationAction
     data class OnChargeRemoved(val index: Int) : SavingsApplicationAction
+}
+
+/** What a savings draft keeps: the officer's input across the steps — not the server's template. */
+@Serializable
+internal data class SavingsFormSnapshot(
+    val numbers: Map<SavingsField, String> = emptyMap(),
+    val selections: Map<SavingsField, SavingsOption> = emptyMap(),
+    val toggles: Map<SavingsToggle, Boolean> = emptyMap(),
+    val charges: List<SavingsChargeRow> = emptyList(),
+    val externalId: String = "",
+    val submittedOn: Long? = null,
+) {
+    companion object {
+        fun of(state: SavingsApplicationState) = SavingsFormSnapshot(
+            state.numbers, state.selections, state.toggles, state.charges, state.externalId, state.submittedOn,
+        )
+    }
 }

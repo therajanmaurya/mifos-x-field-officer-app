@@ -26,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,10 +41,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
+import kpt.core.base.ui.generated.resources.Res as BaseRes
+import kpt.core.base.ui.generated.resources.draft_save
+import kpt.core.base.ui.generated.resources.draft_saved
+import kpt.core.base.ui.generated.resources.draft_saved_offline
 import kpt.core.base.ui.screen.ScreenContent
+import kpt.core.base.ui.submit.FormDraftBanner
 import kpt.core.common.utils.DateHelper
 import kpt.core.designsystem.component.AppDatePickerTextField
 import kpt.core.designsystem.component.AppOutlinedTextField
@@ -94,6 +103,7 @@ import kpt.feature.savings.generated.resources.feature_savings_rd_recurring_freq
 import kpt.feature.savings.generated.resources.feature_savings_rd_recurring_frequency_type
 import kpt.feature.savings.generated.resources.feature_savings_rd_step_interest
 import kpt.feature.savings.generated.resources.feature_savings_rd_title
+import kpt.feature.savings.generated.resources.feature_savings_recurring_no_products
 import kpt.feature.savings.generated.resources.feature_savings_select_date
 import kpt.feature.savings.generated.resources.feature_savings_step_charges
 import kpt.feature.savings.generated.resources.feature_savings_step_details
@@ -109,8 +119,6 @@ import kpt.feature.savings.generated.resources.feature_savings_summary_submitted
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * The new recurring-deposit application wizard — see [RecurringDepositViewModel] for the unguarded
@@ -131,6 +139,7 @@ internal fun RecurringDepositScreen(
     viewModel: RecurringDepositViewModel = koinViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val offeredDraft by viewModel.offeredDraft.collectAsStateWithLifecycle()
     val template by viewModel.template.collectAsStateWithLifecycle()
 
     EventsEffect(viewModel.eventFlow) { event ->
@@ -145,6 +154,7 @@ internal fun RecurringDepositScreen(
         template = template,
         onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
         modifier = modifier,
+        offeredDraft = offeredDraft,
     )
 }
 
@@ -155,6 +165,7 @@ internal fun RecurringDepositContent(
     template: ScreenState<RecurringDepositForm>,
     onAction: (RecurringDepositAction) -> Unit,
     modifier: Modifier = Modifier,
+    offeredDraft: SavedFormDraft? = null,
 ) {
     AppScaffold(
         title = stringResource(Res.string.feature_savings_rd_title),
@@ -163,6 +174,14 @@ internal fun RecurringDepositContent(
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             StepHeader(state.step)
+            offeredDraft?.let {
+                FormDraftBanner(
+                    failureReason = it.errorMessage,
+                    onResume = { onAction(RecurringDepositAction.ResumeDraft) },
+                    onDiscard = { onAction(RecurringDepositAction.DiscardDraft) },
+                    modifier = Modifier.padding(horizontal = KptTheme.spacing.md),
+                )
+            }
 
             ScreenContent(
                 state = template,
@@ -218,6 +237,13 @@ internal fun RecurringDepositContent(
                 else -> dialog.msg ?: stringResource(Res.string.feature_savings_rd_failed)
             },
             modifier = Modifier.fillMaxSize().testTag(RecurringDepositTestTags.STATUS_DIALOG),
+            secondaryBtnText = stringResource(BaseRes.string.draft_save).takeIf { !dialog.draftSaved },
+            onSecondary = { onAction(RecurringDepositAction.SaveDraft) },
+            note = when {
+                !dialog.draftSaved -> null
+                dialog.offline -> stringResource(BaseRes.string.draft_saved_offline)
+                else -> stringResource(BaseRes.string.draft_saved)
+            },
         )
     }
 }
@@ -231,6 +257,16 @@ private fun DetailsPage(
 ) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Gap()
+        // The product is REQUIRED, so its absence is said, not hidden: a tenant with no recurring
+        // deposit products drew no field at all, and Next silently did nothing (gateway, 2026-10-26).
+        if (form.products.isEmpty()) {
+            Text(
+                text = stringResource(Res.string.feature_savings_recurring_no_products),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.fillMaxWidth().testTag(RecurringDepositTestTags.NO_PRODUCTS),
+            )
+        }
         Dropdown(RecurringField.PRODUCT, Res.string.feature_savings_product, form.products, state, onAction)
         Dropdown(RecurringField.FIELD_OFFICER, Res.string.feature_savings_field_officer, form.fieldOfficers, state, onAction)
 
@@ -623,6 +659,7 @@ internal fun RecurringDepositState.errorFor(field: RecurringField): String? = wh
 
 /** Stable handles for UI tests and Maestro flows — see RULE-KMP-COMPOSE-UITEST-001. */
 internal object RecurringDepositTestTags {
+    const val NO_PRODUCTS = "recurring-deposit:no-products"
     const val SCREEN = "recurringDeposit:screen"
     const val CONTENT = "recurringDeposit:content"
     const val STEP_HEADER = "recurringDeposit:stepHeader"

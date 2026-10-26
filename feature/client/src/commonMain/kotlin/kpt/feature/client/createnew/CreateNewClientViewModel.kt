@@ -25,6 +25,8 @@ import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.name
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +41,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlinx.serialization.Serializable
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenDataStream
@@ -47,23 +50,26 @@ import kpt.core.base.store.screen.combineScreenStates
 import kpt.core.base.store.screen.dataOrNull
 import kpt.core.base.store.screen.emptyIfContent
 import kpt.core.base.store.screen.mapContent
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.datatable.DataTable
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.common.utils.FileKitUtil
 import kpt.core.data.client.ClientCommandRepository
-import kpt.core.model.objects.noncoreobjects.DocumentUpload
 import kpt.core.data.client.ClientRepository
 import kpt.core.data.office.OfficeRepository
 import kpt.core.data.staff.StaffRepository
 import kpt.core.model.client.ClientPayload
 import kpt.core.model.client.Options
-import kpt.core.model.staff.Staff
+import kpt.core.model.datatable.DataTable
+import kpt.core.model.draft.CreateForm
 import kpt.core.model.objects.clients.Address
+import kpt.core.model.objects.error.serverErrorMessage
+import kpt.core.model.objects.noncoreobjects.DocumentUpload
+import kpt.core.model.staff.Staff
 import kpt.core.model.utils.ApiDateFormatter
 import kpt.core.ui.util.getMimeTypeFromPlatformFile
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * Create a new client — ported from `6b66e8a43:feature/client/createNewClient/`
@@ -195,9 +201,27 @@ internal class CreateNewClientViewModel(
     offices: OfficeRepository,
     private val staff: StaffRepository,
     private val commands: ClientCommandRepository,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<CreateNewClientState, CreateNewClientEvent, CreateNewClientAction>(
     CreateNewClientState(),
 ) {
+
+    /** A create that did not land is kept here — resumable on this form, listed in Sync & Drafts. */
+    private val draft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.CLIENT.key, ownerId = null,
+        ClientFormSnapshot.serializer(), ClientPayload.serializer(),
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = draft.offered
+
+    /** The payload of the last submit — what "Save as draft" keeps. */
+    private var lastPayload: ClientPayload? = null
+
+    private fun keepDraft(payload: ClientPayload, failure: String?) {
+        val name = listOf(state.text(CreateClientField.FIRST_NAME), state.text(CreateClientField.LAST_NAME))
+            .filter { it.isNotBlank() }.joinToString(" ")
+        draft.keep(name, ClientFormSnapshot.of(state), payload, failure)
+    }
 
     private val templateStream = clients.clientsTemplateStream(viewModelScope)
     private val officesStream = offices.officesStream(viewModelScope)
@@ -323,6 +347,14 @@ internal class CreateNewClientViewModel(
     override fun handleAction(action: CreateNewClientAction) {
         when (action) {
             CreateNewClientAction.NavigateBack -> sendEvent(CreateNewClientEvent.NavigateBack)
+
+            CreateNewClientAction.ResumeDraft -> draft.resume()?.let { mutableStateFlow.value = it.applyTo(state) }
+            CreateNewClientAction.DiscardDraft -> draft.discard()
+            CreateNewClientAction.SaveDraft -> lastPayload?.let { payload ->
+                val failed = state.dialog as? CreateClientDialog.Failed
+                keepDraft(payload, failure = failed?.message ?: NOT_ACCEPTED)
+                mutableStateFlow.value = state.copy(dialog = failed?.copy(draftSaved = true))
+            }
 
             CreateNewClientAction.OnRetry -> {
                 templateStream.retry()
@@ -492,14 +524,20 @@ internal class CreateNewClientViewModel(
 
         viewModelScope.launch {
             val payload = state.toPayload(formOptions, hasAddressBlock)
-            when (val result = commands.createClient(payload)) {
-                is MutationResult.Applied -> onCreated(result.value.clientId)
+            lastPayload = payload
+            when (val result = commands.createClient(payload).offlineWhenUnsent()) {
+                is MutationResult.Applied -> {
+                    draft.clear()
+                    onCreated(result.value.clientId)
+                }
 
                 is MutationResult.Blocked -> mutableStateFlow.value = state.copy(
                     isSubmitting = false,
                     dialog = if (result.reason == BlockReason.OFFLINE) {
-                        // NOT "waiting for checker approval" — see the class KDoc.
-                        CreateClientDialog.Failed(offline = true, message = null)
+                        // NOT "waiting for checker approval" — see the class KDoc. Kept as a draft
+                        // automatically; it is sent on reconnect.
+                        keepDraft(payload, failure = null)
+                        CreateClientDialog.Failed(offline = true, message = null, draftSaved = true)
                     } else {
                         CreateClientDialog.Failed(offline = false, message = null)
                     },
@@ -640,6 +678,7 @@ internal enum class CreateClientFieldError { Required, AlphabetsOnly, InvalidPho
 internal enum class ClientDateField { ACTIVATION, DATE_OF_BIRTH }
 
 /** One dropdown choice — the id travels WITH the label, which is the dropdown fix. */
+@Serializable
 internal data class ClientOption(val id: Int, val label: String)
 
 /** The option sets the form needs before it can be filled in. */
@@ -693,8 +732,11 @@ internal sealed interface CreateClientDialog {
     /** [photoFailed] is true when the client exists but its photo did not upload. */
     data class Created(val clientId: Int, val photoFailed: Boolean) : CreateClientDialog
 
-    /** [message] is the server's own refusal when there is one. */
-    data class Failed(val offline: Boolean, val message: String?) : CreateClientDialog
+    /**
+     * [message] is the server's own refusal when there is one. [draftSaved] = the create was kept
+     * (offline automatically, or "Save as draft") and is in Settings › Sync & Drafts.
+     */
+    data class Failed(val offline: Boolean, val message: String?, val draftSaved: Boolean = false) : CreateClientDialog
 }
 
 @OptIn(ExperimentalTime::class)
@@ -861,6 +903,9 @@ internal sealed interface CreateNewClientAction {
     /** One datatable field — [value] in the encoding [validateDataTables] documents. */
     data class DataTableValueChanged(val field: DataTableField, val value: String) : CreateNewClientAction
     data object NavigateBack : CreateNewClientAction
+    data object ResumeDraft : CreateNewClientAction
+    data object DiscardDraft : CreateNewClientAction
+    data object SaveDraft : CreateNewClientAction
     data object OnRetry : CreateNewClientAction
     data object OnSubmit : CreateNewClientAction
     data object CloseDatePicker : CreateNewClientAction
@@ -907,3 +952,46 @@ private const val NOON_OFFSET_MS = 12 * 60 * 60 * 1000L
 @OptIn(ExperimentalTime::class)
 internal fun CreateNewClientState.activationDateOr(form: CreateClientForm?): Long =
     activationDate ?: form?.serverActivationDate ?: Clock.System.now().toEpochMilliseconds()
+
+/**
+ * What a client draft keeps of the form: every typed field, every pick, the datatable entries and the
+ * dates and toggles — not the photo (bytes in a draft row) nor any per-visit flag.
+ */
+@Serializable
+internal data class ClientFormSnapshot(
+    val texts: Map<CreateClientField, String> = emptyMap(),
+    val choices: Map<CreateClientField, ClientOption> = emptyMap(),
+    val dataTables: List<DataTableEntry> = emptyList(),
+    val isActive: Boolean = false,
+    val activationDate: Long? = null,
+    val dateOfBirth: Long? = null,
+    val isAddressActive: Boolean = false,
+) {
+    @Serializable
+    internal data class DataTableEntry(val table: String, val column: String, val value: String)
+
+    fun applyTo(state: CreateNewClientState) = state.copy(
+        texts = texts,
+        choices = choices,
+        dataTableValues = dataTables.associate { DataTableField(it.table, it.column) to it.value },
+        isActive = isActive,
+        activationDate = activationDate,
+        dateOfBirth = dateOfBirth,
+        isAddressActive = isAddressActive,
+    )
+
+    companion object {
+        fun of(state: CreateNewClientState) = ClientFormSnapshot(
+            texts = state.texts,
+            choices = state.choices,
+            dataTables = state.dataTableValues.map { (field, value) -> DataTableEntry(field.table, field.column, value) },
+            isActive = state.isActive,
+            activationDate = state.activationDate,
+            dateOfBirth = state.dateOfBirth,
+            isAddressActive = state.isAddressActive,
+        )
+    }
+}
+
+/** A refusal with no server sentence — still FAILED, never replayed. */
+private const val NOT_ACCEPTED = "Not accepted by the server."

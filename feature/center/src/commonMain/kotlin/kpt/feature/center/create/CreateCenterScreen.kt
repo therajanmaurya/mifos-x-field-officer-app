@@ -31,10 +31,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
+import kpt.core.base.ui.generated.resources.Res as BaseRes
+import kpt.core.base.ui.generated.resources.draft_save
+import kpt.core.base.ui.generated.resources.draft_saved
+import kpt.core.base.ui.generated.resources.draft_saved_offline
 import kpt.core.base.ui.screen.ScreenContent
+import kpt.core.base.ui.submit.FormDraftBanner
+import kpt.core.base.ui.submit.FormDraftTestTags
 import kpt.core.common.utils.DateHelper
 import kpt.core.designsystem.component.AppButton
 import kpt.core.designsystem.component.AppDatePickerTextField
@@ -62,8 +71,6 @@ import kpt.feature.center.generated.resources.feature_center_select_office
 import kpt.feature.center.generated.resources.feature_center_submit
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /** Ported from `6b66e8a43:feature/center/createCenter/CreateNewCenterScreen.kt` — see [CreateCenterViewModel]. */
 @Composable
@@ -73,6 +80,7 @@ internal fun CreateCenterScreen(
     viewModel: CreateCenterViewModel = koinViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val offeredDraft by viewModel.offeredDraft.collectAsStateWithLifecycle()
     val offices by viewModel.offices.collectAsStateWithLifecycle()
 
     EventsEffect(viewModel.eventFlow) { event ->
@@ -87,6 +95,7 @@ internal fun CreateCenterScreen(
         offices = offices,
         onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
         onRetry = viewModel::onRetry,
+        offeredDraft = offeredDraft,
     )
 }
 
@@ -99,6 +108,7 @@ internal fun CreateCenterContent(
     onAction: (CreateCenterAction) -> Unit,
     modifier: Modifier = Modifier,
     onRetry: () -> Unit = {},
+    offeredDraft: SavedFormDraft? = null,
 ) {
     AppScaffold(
         title = stringResource(Res.string.feature_center_create_new_center),
@@ -114,6 +124,13 @@ internal fun CreateCenterContent(
                 modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(KptTheme.spacing.md),
                 verticalArrangement = Arrangement.spacedBy(KptTheme.spacing.sm),
             ) {
+                offeredDraft?.let {
+                    FormDraftBanner(
+                        failureReason = it.errorMessage,
+                        onResume = { onAction(CreateCenterAction.ResumeDraft) },
+                        onDiscard = { onAction(CreateCenterAction.DiscardDraft) },
+                    )
+                }
                 AppOutlinedTextField(
                     value = state.name,
                     onValueChange = { onAction(CreateCenterAction.NameChanged(it)) },
@@ -183,7 +200,7 @@ internal fun CreateCenterContent(
         val failed = stringResource(Res.string.feature_center_failed_to_create_center)
         val text = when (dialog) {
             CreateCenterState.Dialog.Created -> stringResource(Res.string.feature_center_center_created_successfully)
-            CreateCenterState.Dialog.Offline -> stringResource(Res.string.feature_center_create_offline)
+            CreateCenterState.Dialog.Offline -> stringResource(BaseRes.string.draft_saved_offline)
             is CreateCenterState.Dialog.Failed -> dialog.serverMessage?.let { "$failed\n$it" } ?: failed
         }
         AlertDialog(
@@ -191,7 +208,18 @@ internal fun CreateCenterContent(
             confirmButton = {
                 TextButton(onClick = { onAction(CreateCenterAction.DismissDialog) }) { Text(stringResource(Res.string.feature_center_ok)) }
             },
-            text = { Text(text) },
+            // A refused create can be kept and resumed later (Settings › Sync & Drafts).
+            dismissButton = if (dialog is CreateCenterState.Dialog.Failed && !state.draftSaved) {
+                {
+                    TextButton(
+                        onClick = { onAction(CreateCenterAction.SaveDraft) },
+                        modifier = Modifier.testTag(FormDraftTestTags.SAVE),
+                    ) { Text(stringResource(BaseRes.string.draft_save)) }
+                }
+            } else {
+                null
+            },
+            text = { Text(if (dialog is CreateCenterState.Dialog.Failed && state.draftSaved) "$text\n\n${stringResource(BaseRes.string.draft_saved)}" else text) },
             modifier = Modifier.testTag(CreateCenterTestTags.DIALOG),
         )
     }

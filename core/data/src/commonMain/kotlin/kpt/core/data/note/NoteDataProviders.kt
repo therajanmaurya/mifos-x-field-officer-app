@@ -32,7 +32,7 @@ import kpt.core.model.note.NoteDraft
  */
 @DataProvider(qualifier = NOTE_OUTBOX_QUALIFIER)
 fun provideNoteOutbox(dao: DraftDao): SubmitOutbox<NoteDraft> =
-    RoomSubmitOutbox(dao = dao, serializer = NoteDraft.serializer())
+    RoomSubmitOutbox(dao = dao, serializer = NoteDraft.serializer(), ownsFormKey = { it == NOTE_FORM_KEY })
 
 /**
  * Eager: watches connectivity from Koin start and replays pending notes once the app is BOTH

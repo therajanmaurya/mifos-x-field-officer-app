@@ -177,4 +177,5 @@
     <string name="feature_savings_application_no_products_title">No savings products</string>
     <string name="feature_savings_application_no_products">This office has no savings products set up yet, so there is nothing to apply for. An administrator has to add one first.</string>
     <string name="feature_savings_application_retry">Retry</string>
+    <string name="feature_savings_recurring_no_products">No recurring deposit products are set up on this server, so a recurring deposit cannot be opened here.</string>
 </resources>

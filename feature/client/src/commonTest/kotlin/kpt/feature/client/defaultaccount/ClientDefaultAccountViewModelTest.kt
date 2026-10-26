@@ -65,6 +65,7 @@ class ClientDefaultAccountViewModelTest {
         repository,
         commands,
         SavedStateHandle(mapOf("clientId" to clientId)),
+        kpt.core.data.testing.FakeFormDraftRepository(),
     )
 
     private fun accounts(vararg ids: Long) = ClientTemplateOptions(

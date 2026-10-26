@@ -11,11 +11,18 @@
 
 package kpt.feature.center.create
 
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -24,9 +31,11 @@ import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.screenDataStreamForTesting
+import kpt.core.base.store.submit.SubmitOutboxStatus
 import kpt.core.data.center.CenterCommandRepository
 import kpt.core.data.office.OfficeRepository
 import kpt.core.data.testing.ExperimentalDataTestingApi
+import kpt.core.data.testing.FakeFormDraftRepository
 import kpt.core.data.testing.fineractRejection
 import kpt.core.model.center.CenterPayload
 import kpt.core.model.center.PostCentersCenterIdRequest
@@ -35,12 +44,6 @@ import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.responses.SaveResponse
 import kpt.core.model.office.Office
 import kpt.core.model.utils.ApiDateFormatter
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalDataTestingApi::class)
 class CreateCenterViewModelTest {
@@ -68,8 +71,50 @@ class CreateCenterViewModelTest {
         override suspend fun activateCenter(centerId: Int, activatePayload: ActivatePayload?) = error("unused")
     }
 
+    private val drafts = FakeFormDraftRepository()
+
     private fun vm(result: () -> MutationResult<SaveResponse> = { MutationResult.Applied(SaveResponse(), synced = true) }) =
-        FakeCommands(result).let { it to CreateCenterViewModel(offices, it) }
+        FakeCommands(result).let { it to CreateCenterViewModel(offices, it, drafts) }
+
+    private fun TestScope.submitNorthMarket(vm: CreateCenterViewModel) {
+        vm.trySendAction(CreateCenterAction.NameChanged("North Market"))
+        vm.trySendAction(CreateCenterAction.OfficeSelected(1, "Head Office"))
+        vm.trySendAction(CreateCenterAction.Submit); runCurrent()
+    }
+
+    @Test
+    fun anOfflineCreateIsKeptAsAPendingDraftAndSaysSo() = runTest(dispatcher) {
+        val (_, vm) = vm { MutationResult.Blocked(BlockReason.OFFLINE) }
+        submitNorthMarket(vm)
+
+        assertEquals(SubmitOutboxStatus.PENDING, drafts.saved.value.single().status)
+        assertTrue(vm.stateFlow.value.draftSaved)
+    }
+
+    @Test
+    fun aRefusedCreateIsKeptOnSaveAsDraftWithTheServersReason() = runTest(dispatcher) {
+        val (_, vm) = vm { MutationResult.Failed(fineractRejection("Center name already exists"), rolledBack = false) }
+        submitNorthMarket(vm)
+        assertTrue(drafts.saved.value.isEmpty(), "not kept until asked")
+
+        vm.trySendAction(CreateCenterAction.SaveDraft); runCurrent()
+
+        val kept = drafts.saved.value.single()
+        assertEquals(SubmitOutboxStatus.FAILED, kept.status)
+        assertEquals("Center name already exists", kept.errorMessage)
+    }
+
+    @Test
+    fun aResumedDraftRestoresNameAndOffice() = runTest(dispatcher) {
+        submitNorthMarket(vm { MutationResult.Blocked(BlockReason.OFFLINE) }.second)
+        val (_, reopened) = vm()
+        runCurrent()
+
+        reopened.trySendAction(CreateCenterAction.ResumeDraft); runCurrent()
+
+        assertEquals("North Market", reopened.stateFlow.value.name)
+        assertEquals("Head Office", reopened.stateFlow.value.officeName)
+    }
 
     @Test
     fun theOriginalsNameRulesHold() {

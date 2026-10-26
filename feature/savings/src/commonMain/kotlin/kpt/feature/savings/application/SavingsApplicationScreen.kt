@@ -28,13 +28,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
+import kpt.core.base.ui.generated.resources.Res as BaseRes
+import kpt.core.base.ui.generated.resources.draft_save
+import kpt.core.base.ui.generated.resources.draft_saved
+import kpt.core.base.ui.generated.resources.draft_saved_offline
 import kpt.core.base.ui.screen.DefaultEmptyContent
 import kpt.core.base.ui.screen.ScreenContent
 import kpt.core.base.ui.screen.ScreenStateCta
 import kpt.core.base.ui.screen.ScreenStateEmpty
+import kpt.core.base.ui.submit.FormDraftBanner
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.theme.AppTypography
 import kpt.core.designsystem.theme.DesignToken
@@ -64,8 +72,6 @@ import kpt.feature.savings.generated.resources.feature_savings_submit
 import kpt.feature.savings.generated.resources.feature_savings_succeeded
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * The new savings application wizard — ported from
@@ -87,6 +93,7 @@ internal fun SavingsApplicationScreen(
     viewModel: SavingsApplicationViewModel = koinViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val offeredDraft by viewModel.offeredDraft.collectAsStateWithLifecycle()
     val products by viewModel.products.collectAsStateWithLifecycle()
 
     EventsEffect(viewModel.eventFlow) { event ->
@@ -102,6 +109,7 @@ internal fun SavingsApplicationScreen(
         products = products,
         onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
         modifier = modifier,
+        offeredDraft = offeredDraft,
     )
 }
 
@@ -112,6 +120,7 @@ internal fun SavingsApplicationContent(
     products: ScreenState<List<SavingsProductOption>>,
     onAction: (SavingsApplicationAction) -> Unit,
     modifier: Modifier = Modifier,
+    offeredDraft: SavedFormDraft? = null,
 ) {
     AppScaffold(
         // Named for the OWNER, so an officer who opened this from group detail can see that it is
@@ -130,6 +139,14 @@ internal fun SavingsApplicationContent(
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             StepHeader(state.step)
+            offeredDraft?.let {
+                FormDraftBanner(
+                    failureReason = it.errorMessage,
+                    onResume = { onAction(SavingsApplicationAction.ResumeDraft) },
+                    onDiscard = { onAction(SavingsApplicationAction.DiscardDraft) },
+                    modifier = Modifier.padding(horizontal = KptTheme.spacing.md),
+                )
+            }
 
             ScreenContent(
                 state = products,
@@ -203,6 +220,13 @@ internal fun SavingsApplicationContent(
             },
             modifier = Modifier.fillMaxSize()
                 .testTag(SavingsApplicationTestTags.STATUS_DIALOG),
+            secondaryBtnText = stringResource(BaseRes.string.draft_save).takeIf { !dialog.draftSaved },
+            onSecondary = { onAction(SavingsApplicationAction.SaveDraft) },
+            note = when {
+                !dialog.draftSaved -> null
+                dialog.offline -> stringResource(BaseRes.string.draft_saved_offline)
+                else -> stringResource(BaseRes.string.draft_saved)
+            },
         )
     }
 }

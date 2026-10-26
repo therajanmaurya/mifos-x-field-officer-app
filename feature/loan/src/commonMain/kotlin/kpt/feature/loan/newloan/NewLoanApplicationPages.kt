@@ -190,9 +190,7 @@ internal fun TermsPage(
         Dropdown(
             field = LoanField.REPAYMENT_STRATEGY,
             label = Res.string.feature_loan_repayment_strategy,
-            options = template.transactionProcessingStrategyOptions.mapNotNull { o ->
-                LoanOption(id = o.id ?: return@mapNotNull null, label = o.name.orEmpty(), code = o.code)
-            },
+            options = template.strategyOptions(),
             state = state,
             onAction = onAction,
         )
@@ -212,7 +210,9 @@ internal fun SchedulePage(
     state: NewLoanApplicationState,
     onAction: (NewLoanApplicationAction) -> Unit,
 ) {
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+    // NOT verticalScroll: the schedule table is a LazyColumn that takes the remaining height, and an
+    // unbounded parent collapsed it to zero — the step showed only its summary bar (device, 2026-10-26).
+    Column(Modifier.fillMaxSize()) {
         FieldGap()
 
         when {
@@ -257,7 +257,8 @@ internal fun PreviewPage(
     state: NewLoanApplicationState,
     onAction: (NewLoanApplicationAction) -> Unit,
 ) {
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+    // Same as the schedule step: the table scrolls itself and needs a bounded height to fill.
+    Column(Modifier.fillMaxSize()) {
         FieldGap()
 
         val schedule = state.schedule

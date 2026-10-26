@@ -17,11 +17,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,13 +37,13 @@ import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.ScreenContent
-import kpt.core.model.client.Client
 import kpt.core.designsystem.component.AppBasicDialog
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.component.AppTextButton
 import kpt.core.designsystem.component.BasicDialogState
 import kpt.core.designsystem.theme.AppTypography
 import kpt.core.designsystem.theme.DesignToken
+import kpt.core.model.client.Client
 import kpt.core.ui.components.AppDefaultListingComponentFromStringResources
 import kpt.core.ui.components.AppRowCard
 import kpt.core.ui.components.AppStatusDialog
@@ -54,6 +56,7 @@ import kpt.feature.client.details.components.clientDetailsActionItems
 import kpt.feature.client.generated.resources.Res
 import kpt.feature.client.generated.resources.arrow_downward
 import kpt.feature.client.generated.resources.arrow_up
+import kpt.feature.client.generated.resources.feature_client_activate_client
 import kpt.feature.client.generated.resources.feature_client_confirm_text
 import kpt.feature.client.generated.resources.feature_client_details_account_no
 import kpt.feature.client.generated.resources.feature_client_details_activation_date
@@ -114,6 +117,7 @@ internal fun ClientDetailsScreen(
     onUpdateDetails: ((Int) -> Unit)? = null,
     onUpdatePhoto: ((Int, String, String) -> Unit)? = null,
     onUpdateSignature: ((Int, String, String) -> Unit)? = null,
+    onActivate: ((Int) -> Unit)? = null,
     viewModel: ClientDetailsViewModel = koinViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
@@ -127,6 +131,7 @@ internal fun ClientDetailsScreen(
                 onUpdatePhoto?.invoke(event.clientId, event.name, event.accountNo)
             is ClientDetailsEvent.NavigateToUpdateSignature ->
                 onUpdateSignature?.invoke(event.clientId, event.name, event.accountNo)
+            is ClientDetailsEvent.NavigateToActivate -> onActivate?.invoke(event.clientId)
 
             is ClientDetailsEvent.OnActionClick -> when (event.action) {
                 ClientDetailsActionItem.ApplyNewApplication -> onApplyNewApplication?.invoke(event.clientId)
@@ -153,6 +158,24 @@ internal fun ClientDetailsScreen(
         // Dispatched, not called directly: the ViewModel owns the event, which is the
         // path `ClientDetailsAction.NavigateBack` already declared and nothing reached.
         onBackPressed = { viewModel.trySendAction(ClientDetailsAction.NavigateBack) },
+        // The original's bottom bar: a client that is not active (pending) gets "Activate Client".
+        // Without it a client created un-activated could never be activated — the activate route
+        // existed with no caller (device, 2026-10-26).
+        bottomBar = {
+            val pending = (client as? ScreenState.Content)?.data?.active == false
+            if (pending && onActivate != null) {
+                Button(
+                    onClick = { viewModel.trySendAction(ClientDetailsAction.OnActivateClick) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(horizontal = KptTheme.spacing.md, vertical = KptTheme.spacing.sm)
+                        .testTag(ClientDetailsTestTags.ACTIVATE),
+                ) {
+                    Text(stringResource(Res.string.feature_client_activate_client))
+                }
+            }
+        },
     ) { scaffoldPadding ->
         ClientDetailsContent(
             state = state,

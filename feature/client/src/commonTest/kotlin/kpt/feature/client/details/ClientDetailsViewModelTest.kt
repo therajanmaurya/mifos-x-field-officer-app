@@ -72,6 +72,17 @@ class ClientDetailsViewModelTest {
     }
 
     @Test
+    fun activateOpensTheActivateScreenForThisClient() = runTest(dispatcher) {
+        // The original's pending-client bottom bar; the activate route had no caller before this.
+        val vm = viewModel()
+        vm.eventFlow.test {
+            vm.actionChannel.trySend(ClientDetailsAction.OnActivateClick)
+            assertEquals(ClientDetailsEvent.NavigateToActivate(42), awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun tappingAssignStaffOnAnUnstaffedClientNavigates() = runTest(dispatcher) {
         val vm = viewModel()
         vm.eventFlow.test {

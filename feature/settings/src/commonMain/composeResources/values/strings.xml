@@ -118,4 +118,9 @@
     <string name="feature_settings_sign_out_confirm_clear">Sign out and clear</string>
     <string name="feature_settings_sign_out_cancel">Cancel</string>
     <string name="feature_settings_sign_out_row_description">End your session on this device</string>
+    <string name="feature_settings_server_live_title">Currently signed in to</string>
+    <string name="feature_settings_server_live_badge">Live</string>
+    <string name="feature_settings_server_live_tenant">Tenant: %1$s</string>
+    <string name="feature_settings_server_live_user">Signed in as %1$s</string>
+    <string name="feature_settings_sync_drafts_open">Open</string>
 </resources>

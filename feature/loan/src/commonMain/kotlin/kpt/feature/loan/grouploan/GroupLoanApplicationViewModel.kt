@@ -12,24 +12,31 @@ package kpt.feature.loan.grouploan
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.emptyIfContent
 import kpt.core.base.store.screen.mapContent
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.isOffline
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.loan.LoanCommandRepository
 import kpt.core.data.loan.LoanRepository
+import kpt.core.model.draft.CreateForm
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.model.objects.template.loan.GroupLoanTemplate
 import kpt.core.model.utils.ApiDateFormatter
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * Apply for a GROUP loan — ported from
@@ -97,9 +104,23 @@ internal class GroupLoanApplicationViewModel(
     private val repository: LoanRepository,
     private val commands: LoanCommandRepository,
     savedStateHandle: SavedStateHandle,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<GroupLoanApplicationState, GroupLoanApplicationEvent, GroupLoanApplicationAction>(
     GroupLoanApplicationState(groupId = savedStateHandle.get<Int>(GROUP_ID_KEY) ?: -1),
 ) {
+
+    /** This group's application that did not land — the officer's input; the template is re-fetched. */
+    private val formDraft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.GROUP_LOAN.key, ownerId = state.groupId.toLong(),
+        GroupLoanFormSnapshot.serializer(), GroupLoanPayload.serializer(),
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
+
+    private var lastPayload: GroupLoanPayload? = null
+
+    private fun keepDraft(payload: GroupLoanPayload, failure: String?) =
+        formDraft.keep(state.product?.name.orEmpty(), GroupLoanFormSnapshot.of(state), payload, failure)
 
     private val productsStream = repository.loanProductsStream(viewModelScope)
 
@@ -125,6 +146,18 @@ internal class GroupLoanApplicationViewModel(
             GroupLoanApplicationAction.OnRetryProducts -> productsStream.retry()
             GroupLoanApplicationAction.CloseDialog ->
                 mutableStateFlow.value = state.copy(dialogState = null)
+
+            GroupLoanApplicationAction.ResumeDraft -> formDraft.resume()?.let { restored ->
+                val product = restored.product ?: return@let
+                mutableStateFlow.value = state.copy(product = product)
+                loadTemplate(product.id, restore = restored)
+            }
+            GroupLoanApplicationAction.DiscardDraft -> formDraft.discard()
+            GroupLoanApplicationAction.SaveDraft -> lastPayload?.let { payload ->
+                val failed = state.dialogState as? GroupLoanApplicationState.DialogState.Failed
+                keepDraft(payload, failure = failed?.msg ?: FAILED_MSG)
+                mutableStateFlow.value = state.copy(dialogState = failed?.copy(draftSaved = true))
+            }
 
             is GroupLoanApplicationAction.OnProductSelected -> {
                 mutableStateFlow.value = state.copy(product = action.product)
@@ -162,7 +195,8 @@ internal class GroupLoanApplicationViewModel(
         }
     }
 
-    private fun loadTemplate(productId: Int) {
+    /** [restore] = a resumed draft's input, which wins over the template's defaults. */
+    private fun loadTemplate(productId: Int, restore: GroupLoanFormSnapshot? = null) {
         mutableStateFlow.value = state.copy(isLoadingTemplate = true, templateError = false)
 
         viewModelScope.launch {
@@ -179,9 +213,12 @@ internal class GroupLoanApplicationViewModel(
                     // changes — see the header for the five placeholders this replaces. Any
                     // selection the officer had made is dropped with them, because the options
                     // themselves came from the previous product's template.
-                    numbers = template.defaultNumbers(),
-                    selections = emptyMap(),
+                    numbers = template.defaultNumbers() + restore?.numbers.orEmpty(),
+                    selections = restore?.selections.orEmpty(),
                     errors = emptySet(),
+                    calculateExactDays = restore?.calculateExactDays ?: state.calculateExactDays,
+                    submittedOn = restore?.submittedOn ?: state.submittedOn,
+                    expectedDisbursement = restore?.expectedDisbursement ?: state.expectedDisbursement,
                 )
             }
         }
@@ -272,20 +309,30 @@ internal class GroupLoanApplicationViewModel(
                 // day-of-week value.
             )
 
-            when (val result = commands.createGroupLoanAccount(payload)) {
-                is MutationResult.Applied -> mutableStateFlow.value = state.copy(
-                    isSubmitting = false,
-                    dialogState = GroupLoanApplicationState.DialogState.Created(
-                        loanId = result.value.id,
-                    ),
-                )
+            lastPayload = payload
+            when (val result = commands.createGroupLoanAccount(payload).offlineWhenUnsent()) {
+                is MutationResult.Applied -> {
+                    formDraft.clear()
+                    mutableStateFlow.value = state.copy(
+                        isSubmitting = false,
+                        dialogState = GroupLoanApplicationState.DialogState.Created(
+                            loanId = result.value.id,
+                        ),
+                    )
+                }
 
-                is MutationResult.Blocked -> mutableStateFlow.value = state.copy(
-                    isSubmitting = false,
-                    dialogState = GroupLoanApplicationState.DialogState.Failed(
-                        if (result.reason == BlockReason.OFFLINE) OFFLINE_MSG else FAILED_MSG,
-                    ),
-                )
+                // Offline: kept automatically, sent on reconnect.
+                is MutationResult.Blocked -> {
+                    if (result.isOffline) keepDraft(payload, failure = null)
+                    mutableStateFlow.value = state.copy(
+                        isSubmitting = false,
+                        dialogState = GroupLoanApplicationState.DialogState.Failed(
+                            if (result.reason == BlockReason.OFFLINE) OFFLINE_MSG else FAILED_MSG,
+                            offline = result.isOffline,
+                            draftSaved = result.isOffline,
+                        ),
+                    )
+                }
 
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "create group loan failed" }
@@ -336,9 +383,11 @@ private fun GroupLoanTemplate.defaultNumbers(): Map<GroupLoanField, String> = bu
 }
 
 /** A selectable loan product. */
+@Serializable
 internal data class LoanProductOption(val id: Int, val name: String)
 
 /** One dropdown choice: the id the payload needs, and the label the dropdown shows. */
+@Serializable
 internal data class GroupLoanOption(val id: Int, val label: String)
 
 /** The two dates the application collects. */
@@ -441,7 +490,8 @@ internal data class GroupLoanApplicationState(
     sealed interface DialogState {
         /** [loanId] is Fineract's new loan id, shown so the officer can find it. */
         data class Created(val loanId: Int?) : DialogState
-        data class Failed(val msg: String) : DialogState
+        /** [draftSaved] = kept (offline automatically, or "Save as draft"), in Sync & Drafts. */
+        data class Failed(val msg: String, val offline: Boolean = false, val draftSaved: Boolean = false) : DialogState
     }
 }
 
@@ -450,6 +500,9 @@ internal sealed interface GroupLoanApplicationEvent {
 }
 
 internal sealed interface GroupLoanApplicationAction {
+    data object ResumeDraft : GroupLoanApplicationAction
+    data object DiscardDraft : GroupLoanApplicationAction
+    data object SaveDraft : GroupLoanApplicationAction
     data object NavigateBack : GroupLoanApplicationAction
     data object OnRetryProducts : GroupLoanApplicationAction
     data object OnRetryTemplate : GroupLoanApplicationAction
@@ -465,4 +518,21 @@ internal sealed interface GroupLoanApplicationAction {
     data class OnExactDaysToggled(val selected: Boolean) : GroupLoanApplicationAction
     data class OnDateChanged(val field: GroupLoanDate, val millis: Long) : GroupLoanApplicationAction
     data class OpenDatePicker(val field: GroupLoanDate) : GroupLoanApplicationAction
+}
+
+/** What a group loan draft keeps: the officer's input — not the server's template. */
+@Serializable
+internal data class GroupLoanFormSnapshot(
+    val product: LoanProductOption? = null,
+    val numbers: Map<GroupLoanField, String> = emptyMap(),
+    val selections: Map<GroupLoanField, GroupLoanOption> = emptyMap(),
+    val calculateExactDays: Boolean = false,
+    val submittedOn: Long? = null,
+    val expectedDisbursement: Long? = null,
+) {
+    companion object {
+        fun of(state: GroupLoanApplicationState) = GroupLoanFormSnapshot(
+            state.product, state.numbers, state.selections, state.calculateExactDays, state.submittedOn, state.expectedDisbursement,
+        )
+    }
 }

@@ -86,10 +86,12 @@ fun NavGraphBuilder.groupsListDestination(navController: NavController) {
     composableWithPushTransitions<CreateGroupRoute> {
         CreateGroupScreen(
             onNavigateBack = navController::popBackStackSafely,
-            // Pop on success whether the write reached Fineract or was queued — the list behind
-            // re-reads either way. `synced` is carried so a future caller can tell them apart;
-            // this one does not need to.
-            onCreated = { navController.popBackStackSafely() },
+            // The original's `onGroupCreated`: pop, and when the write reached Fineract open the new
+            // group. A queued (offline) create has no server id yet, so it only pops.
+            onCreated = { synced, groupId ->
+                navController.popBackStackSafely()
+                if (synced && groupId != null) navController.navigateToGroupsDetail(groupId)
+            },
         )
     }
 

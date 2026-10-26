@@ -31,3 +31,4 @@ object AppInitializers {
         onAppStart.forEach { it() }
     }
 }
+

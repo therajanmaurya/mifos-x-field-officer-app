@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,8 +32,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.ScreenContent
+import kpt.core.base.ui.submit.FormDraftBanner
+import kpt.core.base.ui.submit.FormDraftFailure
 import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.component.AppTextFieldDropdown
@@ -52,6 +56,7 @@ import kpt.feature.client.generated.resources.feature_client_shareapp_external_i
 import kpt.feature.client.generated.resources.feature_client_shareapp_lock_in_period
 import kpt.feature.client.generated.resources.feature_client_shareapp_min_active_period
 import kpt.feature.client.generated.resources.feature_client_shareapp_next
+import kpt.feature.client.generated.resources.feature_client_shareapp_no_products
 import kpt.feature.client.generated.resources.feature_client_shareapp_product
 import kpt.feature.client.generated.resources.feature_client_shareapp_savings_account
 import kpt.feature.client.generated.resources.feature_client_shareapp_step_of
@@ -88,6 +93,7 @@ internal fun ShareApplicationScreen(
     viewModel: ShareApplicationViewModel = koinViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val offeredDraft by viewModel.offeredDraft.collectAsStateWithLifecycle()
     val template by viewModel.template.collectAsStateWithLifecycle()
 
     EventsEffect(viewModel.eventFlow) { event ->
@@ -107,6 +113,7 @@ internal fun ShareApplicationScreen(
             onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
             modifier = modifier,
             scaffoldPadding = scaffoldPadding,
+            offeredDraft = offeredDraft,
         )
     }
 }
@@ -119,6 +126,7 @@ internal fun ShareApplicationContent(
     onAction: (ShareApplicationAction) -> Unit,
     modifier: Modifier = Modifier,
     scaffoldPadding: PaddingValues = PaddingValues(),
+    offeredDraft: SavedFormDraft? = null,
 ) {
     Column(
         modifier = modifier
@@ -139,6 +147,13 @@ internal fun ShareApplicationContent(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = KptTheme.spacing.md),
             ) {
+                offeredDraft?.let {
+                    FormDraftBanner(
+                        failureReason = it.errorMessage,
+                        onResume = { onAction(ShareApplicationAction.ResumeDraft) },
+                        onDiscard = { onAction(ShareApplicationAction.DiscardDraft) },
+                    )
+                }
                 when (state.step) {
                     ShareStep.DETAILS -> DetailsPage(state, options, onAction)
                     ShareStep.TERMS -> TermsPage(state, options, onAction)
@@ -148,20 +163,14 @@ internal fun ShareApplicationContent(
 
                 state.error?.let { error ->
                     Spacer(Modifier.height(KptTheme.spacing.sm))
-                    Text(
-                        text = stringResource(error.message),
-                        style = AppTypography.bodySmall,
-                        color = KptTheme.colorScheme.error,
+                    FormDraftFailure(
+                        message = stringResource(error.message),
+                        serverReason = state.serverMessage,
+                        draftSaved = state.draftSaved,
+                        offline = error == ShareApplicationError.Offline,
+                        onSaveDraft = { onAction(ShareApplicationAction.SaveDraft) },
                         modifier = Modifier.testTag(ShareApplicationTestTags.ERROR),
                     )
-                    // Fineract's own words, unedited.
-                    state.serverMessage?.let {
-                        Text(
-                            text = it,
-                            style = AppTypography.bodySmall,
-                            color = KptTheme.colorScheme.error,
-                        )
-                    }
                 }
 
                 Spacer(Modifier.height(KptTheme.spacing.lg))
@@ -179,6 +188,15 @@ private fun DetailsPage(
     onAction: (ShareApplicationAction) -> Unit,
 ) {
     val products = template.productOptions
+    // Required: say so when the tenant has none (gateway, 2026-10-26), as the deposit wizards do.
+    if (products.isEmpty()) {
+        Text(
+            text = stringResource(Res.string.feature_client_shareapp_no_products),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.fillMaxWidth().testTag(ShareApplicationTestTags.NO_PRODUCTS),
+        )
+    }
     AppTextFieldDropdown(
         value = state.product?.label.orEmpty(),
         onOptionSelected = { index, label ->
@@ -363,6 +381,7 @@ private val ShareApplicationError.message: StringResource
     }
 
 internal object ShareApplicationTestTags {
+    const val NO_PRODUCTS = "share-application:no-products"
     const val SCREEN = "ShareApplicationScreen"
     const val STEP_HEADER = "ShareApplicationStepHeader"
     const val STEP_FOOTER = "ShareApplicationStepFooter"

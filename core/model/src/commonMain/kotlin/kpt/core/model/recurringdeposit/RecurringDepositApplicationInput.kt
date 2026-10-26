@@ -9,6 +9,8 @@
  */
 package kpt.core.model.recurringdeposit
 
+import kotlinx.serialization.Serializable
+
 /**
  * A new recurring-deposit application.
  *
@@ -30,6 +32,7 @@ package kpt.core.model.recurringdeposit
  * `loanProductSelected: Int = -1` and **no guard** — `get(-1)` throws, so submitting before
  * choosing a product crashed. Here the product is a value the form must have.
  */
+@Serializable
 data class RecurringDepositApplicationInput(
     val clientId: Int,
     val productId: Int,
@@ -73,4 +76,5 @@ data class RecurringDepositApplicationInput(
 )
 
 /** One charge on a recurring-deposit application. */
+@Serializable
 data class RecurringDepositChargeInput(val chargeId: Int, val amount: String)

@@ -64,7 +64,9 @@ fun AppScaffold(
                 )
             }
         },
-        bottomBar = {},
+        // Forwarded: this used to pass `{}`, silently dropping every caller's bottom bar (a pending
+        // client's "Activate Client" never drew — device, 2026-10-26).
+        bottomBar = bottomBar,
         floatingActionButton = {
             floatingActionButtonContent?.let { content ->
                 FloatingActionButton(

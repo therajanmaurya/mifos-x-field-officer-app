@@ -31,15 +31,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.ScreenContent
-import kpt.core.model.client.AddressTemplate
-import kpt.core.model.client.Options
+import kpt.core.base.ui.submit.FormDraftBanner
+import kpt.core.base.ui.submit.FormDraftFailure
 import kpt.core.designsystem.component.AppOutlinedButton
 import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.component.AppTextFieldDropdown
 import kpt.core.designsystem.theme.AppTypography
+import kpt.core.model.client.AddressTemplate
+import kpt.core.model.client.Options
 import kpt.feature.client.generated.resources.Res
 import kpt.feature.client.generated.resources.feature_client_addaddress_city_error
 import kpt.feature.client.generated.resources.feature_client_addaddress_country_error
@@ -96,6 +99,7 @@ internal fun ClientAddAddressScreen(
     viewModel: ClientAddAddressViewModel = koinViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val offeredDraft by viewModel.offeredDraft.collectAsStateWithLifecycle()
     val template by viewModel.template.collectAsStateWithLifecycle()
 
     EventsEffect(viewModel.eventFlow) { event ->
@@ -115,6 +119,7 @@ internal fun ClientAddAddressScreen(
             onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
             modifier = modifier,
             scaffoldPadding = scaffoldPadding,
+            offeredDraft = offeredDraft,
         )
     }
 }
@@ -127,6 +132,7 @@ internal fun ClientAddAddressContent(
     onAction: (ClientAddAddressAction) -> Unit,
     modifier: Modifier = Modifier,
     scaffoldPadding: PaddingValues = PaddingValues(),
+    offeredDraft: SavedFormDraft? = null,
 ) {
     ScreenContent(
         state = template,
@@ -140,6 +146,7 @@ internal fun ClientAddAddressContent(
             state = state,
             template = options,
             onAction = onAction,
+            offeredDraft = offeredDraft,
         )
     }
 }
@@ -150,6 +157,7 @@ private fun AddressForm(
     template: AddressTemplate,
     onAction: (ClientAddAddressAction) -> Unit,
     modifier: Modifier = Modifier,
+    offeredDraft: SavedFormDraft? = null,
 ) {
     Column(
         modifier = modifier
@@ -157,6 +165,13 @@ private fun AddressForm(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = KptTheme.spacing.md),
     ) {
+        offeredDraft?.let {
+            FormDraftBanner(
+                failureReason = it.errorMessage,
+                onResume = { onAction(ClientAddAddressAction.ResumeDraft) },
+                onDiscard = { onAction(ClientAddAddressAction.DiscardDraft) },
+            )
+        }
         OptionDropdown(
             value = state.addressTypeLabel,
             label = stringResource(Res.string.feature_client_address_type),
@@ -238,10 +253,12 @@ private fun AddressForm(
 
         state.writeError?.let { error ->
             Spacer(Modifier.height(KptTheme.spacing.sm))
-            Text(
-                text = stringResource(error.message),
-                style = AppTypography.bodySmall,
-                color = KptTheme.colorScheme.error,
+            FormDraftFailure(
+                message = stringResource(error.message),
+                serverReason = state.failureReason,
+                draftSaved = state.draftSaved,
+                offline = error == AddAddressError.Offline,
+                onSaveDraft = { onAction(ClientAddAddressAction.SaveDraft) },
                 modifier = Modifier.testTag(ClientAddAddressTestTags.WRITE_ERROR),
             )
         }

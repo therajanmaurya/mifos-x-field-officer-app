@@ -23,6 +23,7 @@ import kpt.core.base.ui.nav.popBackStackSafely
 import kpt.core.common.utils.Constants
 import kpt.core.model.objects.charge.ChargeResource
 import kpt.core.model.objects.searchrecord.RecordType
+import kpt.feature.activate.navigation.navigateToActivateClient
 import kpt.feature.charge.navigation.navigateToAddCharge
 import kpt.feature.charge.navigation.navigateToCharges
 import kpt.feature.client.addaddress.ClientAddAddressScreen
@@ -557,6 +558,8 @@ fun NavGraphBuilder.clientListDestination(navController: NavController) {
             // this row is permanently absent rather than pending.
             onCreateStandingInstructions = null,
             onUpdateSignature = navController::navigateToClientSignature,
+            // The original's `activateClient` → feature/activate (was a route with no caller).
+            onActivate = navController::navigateToActivateClient,
         )
     }
 

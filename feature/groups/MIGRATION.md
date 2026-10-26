@@ -128,3 +128,7 @@ center's ~790-line one were the same walk written twice; it is one implementatio
 The three remaining group-detail edges are live: **Loan accounts**, **Savings accounts** and **Group clients** sections (store `GroupGetGroupAccounts` / `GroupGetGroupWithAssociations`), loan and savings rows opening their summaries, and **Notes** in the overflow (`feature/note`, owner `groups`). Member rows are display-only: client → groups already exists, and groups → client would make a cycle. Device-verified: MARIPOSAS MONARCAS (1 loan, 6 clients), Arin Savings (savings 39 with the group name in its header), and a note added and listed on the server under group 2.
 
 Group clients now open the client profile (2026-10-26). feature/client depends on feature/groups, so this edge navigates by route NAME (`clientProfileRoute`). `ClientProfileRouteNameTest` (feature/client) pins that name to `ClientProfileRoute` so a rename fails the build, not the tap. Device-verified: MARIPOSAS MONARCAS → member → profile → Group chip → back to the group.
+
+## Create drafts (2026-10-26)
+
+Every create form here keeps a draft through core-base's `FormDraftSlot` (template: `submit/draft/`). An offline submit, or one that fails on the network, is kept automatically and replayed on reconnect. A refusal is kept only on **Save as draft**, as FAILED with the server's reason, and is not replayed. When the form opens on a slot that holds a draft, a Resume / Discard banner is shown. Drafts are listed in Settings › Sync & Drafts with an **Open** action that returns to the form.

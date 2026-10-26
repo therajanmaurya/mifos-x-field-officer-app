@@ -17,16 +17,24 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.mapContent
+import kpt.core.base.store.submit.draft.FormDraftRepository
+import kpt.core.base.store.submit.draft.FormDraftSlot
+import kpt.core.base.store.submit.draft.SavedFormDraft
+import kpt.core.base.store.submit.draft.isOffline
+import kpt.core.base.store.submit.draft.offlineWhenUnsent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.data.client.ClientRepository
 import kpt.core.model.client.SavingAccountOption
+import kpt.core.model.draft.CreateForm
 import kpt.core.model.objects.clients.UpdateSavingsAccountRequest
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.ui.components.ResultStatus
 
 /**
@@ -110,9 +118,23 @@ internal class ClientDefaultAccountViewModel(
     repository: ClientRepository,
     private val commands: ClientCommandRepository,
     savedStateHandle: SavedStateHandle,
+    drafts: FormDraftRepository,
 ) : BaseViewModel<ClientDefaultAccountState, ClientDefaultAccountEvent, ClientDefaultAccountAction>(
     ClientDefaultAccountState(clientId = savedStateHandle.get<Int>(CLIENT_ID_KEY) ?: -1),
 ) {
+
+    /** This client's ClientDefaultAccount write that did not land — resumable here, listed in Sync & Drafts. */
+    private val formDraft = FormDraftSlot(
+        drafts, viewModelScope, CreateForm.DEFAULT_ACCOUNT.key, ownerId = state.clientId.toLong(),
+        ClientDefaultAccountState.serializer(), UpdateSavingsAccountRequest.serializer(),
+    )
+
+    val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
+
+    private var lastPayload: UpdateSavingsAccountRequest? = null
+
+    private fun keepDraft(payload: UpdateSavingsAccountRequest, failure: String?) =
+        formDraft.keep("Default savings account", state.copy(dialogState = null), payload, failure)
 
     private val templateStream = repository.clientTemplateStream(state.clientId, viewModelScope)
     private val clientStream = repository.clientStream(state.clientId, viewModelScope)
@@ -142,6 +164,13 @@ internal class ClientDefaultAccountViewModel(
 
     override fun handleAction(action: ClientDefaultAccountAction) {
         when (action) {
+            ClientDefaultAccountAction.ResumeDraft -> formDraft.resume()?.let { mutableStateFlow.value = it }
+            ClientDefaultAccountAction.DiscardDraft -> formDraft.discard()
+            ClientDefaultAccountAction.SaveDraft -> lastPayload?.let { payload ->
+                val failed = state.dialogState as? ClientDefaultAccountState.DialogState.ShowStatusDialog
+                keepDraft(payload, failure = failed?.msg ?: "Not accepted by the server.")
+                mutableStateFlow.value = state.copy(dialogState = failed?.copy(draftSaved = true))
+            }
             ClientDefaultAccountAction.NavigateBack ->
                 sendEvent(ClientDefaultAccountEvent.NavigateBack)
 
@@ -177,12 +206,12 @@ internal class ClientDefaultAccountViewModel(
         mutableStateFlow.value = state.copy(isSubmitting = true, dialogState = null)
 
         viewModelScope.launch {
-            val result = commands.updateSavingsAccount(
-                clientId = state.clientId,
-                payload = UpdateSavingsAccountRequest(savingsAccountId = accountId),
-            )
+            val payload = UpdateSavingsAccountRequest(savingsAccountId = accountId)
+            lastPayload = payload
+            val result = commands.updateSavingsAccount(clientId = state.clientId, payload = payload).offlineWhenUnsent()
             when (result) {
                 is MutationResult.Applied -> {
+                    formDraft.clear()
                     mutableStateFlow.value = state.copy(
                         isSubmitting = false,
                         dialogState = ClientDefaultAccountState.DialogState.ShowStatusDialog(
@@ -196,13 +225,18 @@ internal class ClientDefaultAccountViewModel(
                     clientStream.refresh(forceFresh = true)
                 }
 
-                is MutationResult.Blocked -> mutableStateFlow.value = state.copy(
+                is MutationResult.Blocked -> {
+                    if (result.isOffline) keepDraft(payload, failure = null)
+                    mutableStateFlow.value = state.copy(
                     isSubmitting = false,
                     dialogState = ClientDefaultAccountState.DialogState.ShowStatusDialog(
                         status = ResultStatus.FAILURE,
                         msg = if (result.reason == BlockReason.OFFLINE) OFFLINE_MSG else FAILED_MSG,
+                        offline = result.isOffline,
+                        draftSaved = result.isOffline,
                     ),
                 )
+                }
 
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "update default account failed" }
@@ -267,15 +301,23 @@ internal fun List<SavingAccountOption>.selectionFor(
  * [selectedAccountId] replaces `currentSelectedIndex`; `null` means "the officer has not chosen
  * yet", which is how the server's current default gets to win the first render.
  */
+/** Serializable so a draft restores the form as left; the transient fields are per-visit. */
+@Serializable
 internal data class ClientDefaultAccountState(
     val clientId: Int = -1,
     val selectedAccountId: Long? = null,
-    val isSubmitting: Boolean = false,
-    val dialogState: DialogState? = null,
+    @Transient val isSubmitting: Boolean = false,
+    @Transient val dialogState: DialogState? = null,
 ) {
     /** One case, where the original had three — the other two described the read. */
     sealed interface DialogState {
-        data class ShowStatusDialog(val status: ResultStatus, val msg: String = "") : DialogState
+        /** [draftSaved] = kept (offline automatically, or "Save as draft"), in Sync & Drafts. */
+        data class ShowStatusDialog(
+            val status: ResultStatus,
+            val msg: String = "",
+            val offline: Boolean = false,
+            val draftSaved: Boolean = false,
+        ) : DialogState
     }
 }
 
@@ -287,6 +329,9 @@ internal sealed interface ClientDefaultAccountEvent {
 }
 
 internal sealed interface ClientDefaultAccountAction {
+    data object ResumeDraft : ClientDefaultAccountAction
+    data object DiscardDraft : ClientDefaultAccountAction
+    data object SaveDraft : ClientDefaultAccountAction
     data object NavigateBack : ClientDefaultAccountAction
     data object OnRetry : ClientDefaultAccountAction
     data object OnNext : ClientDefaultAccountAction
