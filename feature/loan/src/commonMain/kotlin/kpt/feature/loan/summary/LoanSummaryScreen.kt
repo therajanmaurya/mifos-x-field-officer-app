@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
@@ -88,6 +90,8 @@ import kpt.feature.loan.generated.resources.feature_loan_status_closed
 import kpt.feature.loan.generated.resources.feature_loan_status_overpaid
 import kpt.feature.loan.generated.resources.feature_loan_status_pending_approval
 import kpt.feature.loan.generated.resources.feature_loan_summary
+import kpt.feature.loan.generated.resources.feature_loan_summary_approved_amount
+import kpt.feature.loan.generated.resources.feature_loan_summary_requested_amount
 import kpt.feature.loan.generated.resources.feature_loan_total_loan
 import kpt.feature.loan.generated.resources.feature_loan_transactions
 import kpt.feature.loan.generated.resources.feature_loan_transfer_funds
@@ -228,7 +232,13 @@ private fun SummaryBody(
 
         Row {
             InfoCard(
-                titleText = stringResource(Res.string.feature_loan_total_loan),
+                titleText = stringResource(
+                    when (loan.status) {
+                        LoanSummaryStatus.PENDING -> Res.string.feature_loan_summary_requested_amount
+                        LoanSummaryStatus.AWAITING_DISBURSAL -> Res.string.feature_loan_summary_approved_amount
+                        else -> Res.string.feature_loan_total_loan
+                    },
+                ),
                 infoText = loan.totalLoan,
                 modifier = Modifier.fillMaxWidth(HALF),
             )
@@ -490,10 +500,13 @@ private fun InfoCard(titleText: String, infoText: String, modifier: Modifier) {
                 color = KptTheme.colorScheme.onSurface,
             )
             Spacer(Modifier.height(DesignToken.spacing.medium))
-            Text(
+            // One line, shrinking to fit: a half-width card wrapped "MX$50,000" mid-number (device,
+            // 2026-10-26), and a split figure reads as two numbers.
+            BasicText(
                 text = infoText,
-                style = AppTypography.headlineSmallEmphasized,
-                color = KptTheme.colorScheme.onSurfaceVariant,
+                style = AppTypography.headlineSmallEmphasized.copy(color = KptTheme.colorScheme.onSurfaceVariant),
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(maxFontSize = AppTypography.headlineSmallEmphasized.fontSize),
             )
         }
     }

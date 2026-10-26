@@ -138,31 +138,52 @@ class LoanSummaryViewModelTest {
     // ---- the disbursement gate ----
 
     @Test
-    fun aPendingLoansFiguresAreBLANKNotZero() = runTest(dispatcher) {
+    fun aPendingLoansFiguresAreADashNotZero() = runTest(dispatcher) {
         // `shouldInflateLoanSummary` — the original's rule, kept. A loan that has never disbursed
         // has a summary block full of zeroes and projections, and "Amount Paid: ₹0.00" beside
-        // "Outstanding: ₹0.00" reads as a loan that has been paid off.
+        // "Outstanding: ₹0.00" reads as a loan that has been paid off. Shown as "—" rather than
+        // blank: a screen of empty cards read as broken (device, 2026-10-26).
         val vm = viewModel()
         loanState.value = ScreenState.Content(loan(LoanStatus(pendingApproval = true)))
 
         val content = ui(vm)
 
-        assertEquals("", content.totalLoan)
-        assertEquals("", content.amountPaid)
-        assertEquals("", content.outstanding)
-        assertEquals("", content.principalDisbursed)
-        assertEquals("", content.interestCharged)
+        assertEquals("—", content.amountPaid)
+        assertEquals("—", content.outstanding)
+        assertEquals("—", content.principalDisbursed)
+        assertEquals("—", content.interestCharged)
         // And the disbursement DATE, for the same reason — an expected date shown as an actual one
         // tells the officer money has moved when it has not.
-        assertEquals("", content.disbursedOn)
+        assertEquals("—", content.disbursedOn)
     }
 
     @Test
-    fun anAwaitingDisbursalLoansFiguresAreAlsoBlank() = runTest(dispatcher) {
+    fun aPendingLoanShowsTheRequestedAmount() = runTest(dispatcher) {
+        // The one figure a loan has from submission: what was asked for.
+        val vm = viewModel()
+        loanState.value = ScreenState.Content(
+            loan(LoanStatus(pendingApproval = true)).copy(principal = 50_000.0, approvedPrincipal = 50_000.0),
+        )
+        val total = ui(vm).totalLoan
+        assertTrue(total.contains("50,000"), "pending totalLoan was $total")
+    }
+
+    @Test
+    fun anApprovedLoanShowsTheApprovedAmountNotTheRequestedOne() = runTest(dispatcher) {
+        val vm = viewModel()
+        loanState.value = ScreenState.Content(
+            loan(LoanStatus(waitingForDisbursal = true)).copy(principal = 50_000.0, approvedPrincipal = 40_000.0),
+        )
+        val total = ui(vm).totalLoan
+        assertTrue(total.contains("40,000"), "approved totalLoan was $total")
+    }
+
+    @Test
+    fun anAwaitingDisbursalLoansFiguresAreAlsoADash() = runTest(dispatcher) {
         val vm = viewModel()
         loanState.value = ScreenState.Content(loan(LoanStatus(waitingForDisbursal = true)))
 
-        assertEquals("", ui(vm).outstanding)
+        assertEquals("—", ui(vm).outstanding)
     }
 
     @Test

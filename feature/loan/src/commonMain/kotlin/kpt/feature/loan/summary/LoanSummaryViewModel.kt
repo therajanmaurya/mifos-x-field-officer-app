@@ -83,15 +83,24 @@ internal class LoanSummaryViewModel(
             val code = loan.currency?.code
             val places = loan.currency?.decimalPlaces
 
-            fun money(value: Double?) = value?.let { CurrencyFormatter.format(it, code, places) }.orEmpty()
+            // Before disbursal a figure is "—", not blank: the server sends no `summary` then, and a
+            // screen of empty cards read as broken (loan 38, device 2026-10-26).
+            val absent = if (status.showsFigures) "" else NOT_YET
+            fun money(value: Double?) = value?.let { CurrencyFormatter.format(it, code, places) } ?: absent
 
             LoanSummaryUi(
                 clientName = loan.clientName.orEmpty(),
                 accountNo = loan.accountNo.orEmpty(),
                 loanProductName = loan.loanProductName.orEmpty(),
-                loanOfficerName = loan.loanOfficerName.orEmpty(),
+                loanOfficerName = loan.loanOfficerName?.takeIf { it.isNotBlank() } ?: absent,
                 status = status,
-                totalLoan = money(figures?.totalExpectedRepayment),
+                // A pending loan has no repayment total yet, so the card shows what was asked for —
+                // and once approved, what was approved. Its label says which (`totalLoanBasis`).
+                totalLoan = when (status) {
+                    LoanSummaryStatus.PENDING -> money(loan.principal)
+                    LoanSummaryStatus.AWAITING_DISBURSAL -> money(loan.approvedPrincipal ?: loan.principal)
+                    else -> money(figures?.totalExpectedRepayment)
+                },
                 amountPaid = money(figures?.totalRepayment),
                 outstanding = money(figures?.totalOutstanding),
                 overdue = money(figures?.totalOverdue),
@@ -113,7 +122,7 @@ internal class LoanSummaryViewModel(
                     ?.takeIf { status.showsFigures }
                     ?.let { parts -> parts.filterNotNull().takeIf { it.size >= DATE_PARTS } }
                     ?.let { DateHelper.getDateAsString(it) }
-                    .orEmpty(),
+                    ?: absent,
             )
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
@@ -149,6 +158,7 @@ internal class LoanSummaryViewModel(
         const val LOAN_ID_KEY = "loanId"
         const val STATE_TIMEOUT_MS = 5_000L
         const val DATE_PARTS = 3
+        const val NOT_YET = "—"
     }
 }
 

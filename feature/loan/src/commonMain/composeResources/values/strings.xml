@@ -354,4 +354,6 @@
     -->
     <string name="feature_loan_application_no_products_title">No loan products</string>
     <string name="feature_loan_application_no_products">This office has no loan products set up yet, so there is nothing to apply for. An administrator has to add one first.</string>
+    <string name="feature_loan_summary_requested_amount">Requested Amount</string>
+    <string name="feature_loan_summary_approved_amount">Approved Amount</string>
 </resources>
