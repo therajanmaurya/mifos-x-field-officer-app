@@ -241,4 +241,38 @@ class SignInViewModelTest {
         runCurrent()
         assertNull(model.stateFlow.value.error, "the accept/reject edge must sit exactly on the shared constant")
     }
+
+    @Test
+    fun anUnreachableServerSaysSoAndDoesNotCountTowardTheLockout() = runTest(dispatcher) {
+        // Measured on device 2026-10-25: a server with broken TLS told the officer to check their
+        // credentials and burned a lockout attempt per tap.
+        class SSLHandshakeException : RuntimeException("connection closed")
+        val model = signInViewModel(FakeAuth(MutationResult.Failed(SSLHandshakeException(), rolledBack = false)))
+        submitValid(model)
+        runCurrent()
+        assertEquals(SignInError.Unreachable, model.stateFlow.value.error)
+        assertEquals(0, model.stateFlow.value.failedAttempts)
+    }
+
+    @Test
+    fun aServerRejectionStillCountsTowardTheLockout() = runTest(dispatcher) {
+        val model = signInViewModel(FakeAuth(MutationResult.Failed(RuntimeException("HTTP 401 Unauthorized"), rolledBack = false)))
+        submitValid(model)
+        runCurrent()
+        assertEquals(SignInError.Rejected, model.stateFlow.value.error)
+        assertEquals(1, model.stateFlow.value.failedAttempts)
+    }
+
+    @Test
+    fun aDemoServerOffersItsPublishedSignInsAndFillsThePickedOne() = runTest(dispatcher) {
+        // FakeServerConfigRepository's default IS its demo instance (two roles).
+        val model = signInViewModel(FakeAuth(MutationResult.Applied(response(true), synced = true)))
+        runCurrent()
+        val accounts = model.stateFlow.value.demoAccounts
+        assertEquals(listOf("demo", "boss"), accounts.map { it.username })
+        model.actionChannel.trySend(SignInAction.UseDemoAccount(accounts[1]))
+        runCurrent()
+        assertEquals("boss", model.stateFlow.value.username)
+        assertEquals("boss-pass", model.stateFlow.value.password)
+    }
 }

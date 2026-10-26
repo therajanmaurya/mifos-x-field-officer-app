@@ -15,6 +15,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kpt.feature.settings.signout.SignOutAction
+import kpt.feature.settings.signout.SignOutDialog
+import kpt.feature.settings.signout.SignOutViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * The STATEFUL settings body — the fork's replacement for the template's
@@ -56,6 +61,8 @@ fun SettingsBody(
     onBackClick: () -> Unit,
     onSyncAndDraftsClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onServerConfigClick: (() -> Unit)? = null,
+    signOutViewModel: SignOutViewModel = koinViewModel(),
 ) {
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
@@ -65,6 +72,8 @@ fun SettingsBody(
         onThemeCardClick = { showThemeDialog = true },
         onLanguageCardClick = { showLanguageDialog = true },
         onSyncAndDraftsClick = onSyncAndDraftsClick,
+        onServerConfigClick = onServerConfigClick,
+        onSignOutClick = { signOutViewModel.trySendAction(SignOutAction.Requested) },
         modifier = modifier,
     )
 
@@ -73,5 +82,9 @@ fun SettingsBody(
     }
     if (showLanguageDialog) {
         LanguageDialog(onDismiss = { showLanguageDialog = false })
+    }
+    val signOut by signOutViewModel.stateFlow.collectAsStateWithLifecycle()
+    if (signOut.confirming) {
+        SignOutDialog(state = signOut, onAction = { signOutViewModel.trySendAction(it) })
     }
 }

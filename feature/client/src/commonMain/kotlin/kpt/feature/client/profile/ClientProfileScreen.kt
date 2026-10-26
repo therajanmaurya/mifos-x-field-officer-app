@@ -205,9 +205,15 @@ internal fun ClientProfileContent(
                 accountNo = clientEntity.accountNo
                     ?: stringResource(Res.string.feature_client_string_not_available),
                 office = clientEntity.officeName ?: stringResource(Res.string.feature_client_office_na),
-                groupName = clientEntity.groupName ?: stringResource(Res.string.feature_client_group_na),
+                // Fineract names the client's group in `groups`, never in the scalar `groupName` /
+                // `groupId` — so every member read "Group: N/A" (device, 2026-10-26), and `groupId`'s
+                // default of 0 would have opened group 0. The scalars stay as the fallback.
+                groupName = (clientEntity.groups?.firstOrNull()?.name ?: clientEntity.groupName)
+                    ?: stringResource(Res.string.feature_client_group_na),
                 onGroupClick = {
-                    clientEntity.groupId?.let { onAction(ClientProfileAction.OnGroupClick(it)) }
+                    (clientEntity.groups?.firstOrNull()?.id ?: clientEntity.groupId)
+                        ?.takeIf { it > 0 }
+                        ?.let { onAction(ClientProfileAction.OnGroupClick(it)) }
                 },
                 onClick = { onAction(ClientProfileAction.NavigateToClientDetailsScreen) },
                 modifier = Modifier.testTag(ClientProfileTestTags.PROFILE_CARD),

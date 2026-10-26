@@ -158,7 +158,6 @@ internal fun ClientCollateralContent(
             ) {
                 AppTextFieldDropdown(
                     value = selected.name,
-                    onValueChanged = {},
                     onOptionSelected = { index, _ -> onAction(ClientCollateralAction.OptionChanged(index)) },
                     options = items.map { it.name },
                     label = stringResource(Res.string.feature_client_collateral_choose_type),

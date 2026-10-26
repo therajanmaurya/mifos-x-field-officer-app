@@ -538,7 +538,6 @@ private fun OptionDropdown(
                     Res.string.feature_client_not_available
                 },
             ),
-        onValueChanged = {},
         // By INDEX into the list this dropdown was given, then resolved to that list's own option
         // — never to a position held in state, which is how a product change left a stale index
         // selecting a different option on the loan screens.

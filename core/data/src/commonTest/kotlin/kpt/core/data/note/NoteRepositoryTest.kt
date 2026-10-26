@@ -9,6 +9,8 @@
  */
 package kpt.core.data.note
 
+import kpt.core.store.note.NOTE_CLIENT_RESOURCE
+import kpt.core.store.note.NoteKey
 import kotlinx.coroutines.test.runTest
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.infra.testMutationGateway
@@ -37,10 +39,13 @@ class NoteRepositoryTest {
     private var nextId = 10L
     private var listFetches = 0
 
+    /** Each note's owner type on the server (note 1 is a client note). */
+    private val serverType = mutableMapOf(1L to "clients")
+
     private val api = object : NoteApi {
         override suspend fun retrieveListNotes(resourceType: String, resourceId: Long): List<NoteDto> {
             listFetches++
-            return server.filter { it.clientId == resourceId }
+            return server.filter { it.clientId == resourceId && serverType[it.id] == resourceType }
         }
 
         override suspend fun addNewNote(
@@ -50,6 +55,7 @@ class NoteRepositoryTest {
             idempotencyKey: String,
         ): CreateNoteResponseDto {
             val id = nextId++
+            serverType[id] = resourceType
             server += NoteDto(id = id, clientId = resourceId, note = noteRequestDto.note, createdByUsername = "mifos", createdOn = "2026-10-23")
             return CreateNoteResponseDto(clientId = resourceId, resourceId = id)
         }
@@ -74,10 +80,10 @@ class NoteRepositoryTest {
 
     @Test
     fun theListReadReplacesTheClientsRows() = runTest {
-        stores.notesStore.fresh(7L)
+        stores.notesStore.fresh(NoteKey(NOTE_CLIENT_RESOURCE, 7L))
         server.clear()
 
-        stores.notesStore.fresh(7L)
+        stores.notesStore.fresh(NoteKey(NOTE_CLIENT_RESOURCE, 7L))
 
         // The old insert-only writer kept a note deleted on the server in the table forever.
         assertEquals(emptyList(), stores.rowsOf(7L))
@@ -97,7 +103,7 @@ class NoteRepositoryTest {
 
     @Test
     fun anUpdateLandsInTheTable() = runTest {
-        stores.notesStore.fresh(7L)
+        stores.notesStore.fresh(NoteKey(NOTE_CLIENT_RESOURCE, 7L))
 
         commands.updateNote("clients", 7L, 1L, NoteRequestDto(note = "Visited twice"))
 
@@ -106,7 +112,7 @@ class NoteRepositoryTest {
 
     @Test
     fun aDeleteRemovesTheRowWithoutARefetch() = runTest {
-        stores.notesStore.fresh(7L)
+        stores.notesStore.fresh(NoteKey(NOTE_CLIENT_RESOURCE, 7L))
         val fetchesBefore = listFetches
 
         commands.deleteNote("clients", 7L, 1L)
@@ -137,11 +143,12 @@ class NoteRepositoryTest {
     }
 
     @Test
-    fun aNonClientNoteReachesTheServerButNoTable() = runTest {
-        // Only client notes have a store; nothing reads a group's notes back.
+    fun aGroupNoteIsRecordedUnderTheGroupNotTheClientWithTheSameId() = runTest {
+        // Every owner shares the Note table, keyed (resourceType, owner id): group 7 is not client 7.
         commands.addNewNote("groups", 7L, NoteRequestDto(note = "Group met"), "k-1")
 
         assertEquals(2, server.size)
-        assertEquals(emptyList(), stores.table.value)
+        assertEquals(listOf("Group met"), stores.rowsOf(7L, resourceType = "groups").map { it.noteContent })
+        assertTrue(stores.rowsOf(7L).none { it.noteContent == "Group met" }, "not in client 7's notes")
     }
 }

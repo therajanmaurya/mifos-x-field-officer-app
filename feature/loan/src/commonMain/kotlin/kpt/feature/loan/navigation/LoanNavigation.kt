@@ -19,6 +19,7 @@ import kpt.core.base.ui.nav.popBackStackSafely
 import kpt.core.common.utils.Constants
 import kpt.core.model.objects.charge.ChargeResource
 import kpt.feature.charge.navigation.navigateToCharges
+import kpt.feature.datatable.navigation.navigateToDataTableList
 import kpt.feature.document.navigation.navigateToDocumentList
 import kpt.feature.loan.approval.LoanApprovalScreen
 import kpt.feature.loan.disbursement.LoanDisbursementScreen
@@ -36,6 +37,7 @@ import kpt.feature.loan.summary.LoanSummaryMenuItem
 import kpt.feature.loan.summary.LoanSummaryScreen
 import kpt.feature.loan.transactions.LoanTransactionsScreen
 import kpt.feature.loan.transfer.LoanTransferScreen
+import kpt.feature.note.navigation.navigateToNotes
 
 /**
  * A loan account's profile. `loanId` is required — the original's route defaulted it, so a missing
@@ -183,6 +185,9 @@ fun NavGraphBuilder.loanDestinations(navController: NavController) {
                     // the original passed `Constants.ENTITY_TYPE_LOANS` to the same screen.
                     LoanProfileActionItem.Documents ->
                         navController.navigateToDocumentList(Constants.ENTITY_TYPE_LOANS, loanId)
+                    // The original's `navigateToNotes(loanId)` — the generic note module, owner `loans`.
+                    LoanProfileActionItem.Notes ->
+                        navController.navigateToNotes(Constants.ENTITY_TYPE_LOANS, loanId)
                     // Unreachable: only the items in `PORTED_DETAILS` are drawn as rows.
                     else -> Unit
                 }
@@ -259,9 +264,9 @@ fun NavGraphBuilder.loanDestinations(navController: NavController) {
                         navController.navigateToCharges(ChargeResource.LOAN, loanId)
                     LoanSummaryMenuItem.Documents ->
                         navController.navigateToDocumentList(Constants.ENTITY_TYPE_LOANS, loanId)
-                    // Unreachable: only `SUMMARY_MENU_ITEMS` entries are drawn. `MoreInfo` needs
-                    // the loan data-table screen.
-                    LoanSummaryMenuItem.MoreInfo -> Unit
+                    // The loan's datatables — the original's "More Loan Info" (`DATA_TABLE_NAME_LOANS`).
+                    LoanSummaryMenuItem.MoreInfo ->
+                        navController.navigateToDataTableList(Constants.DATA_TABLE_NAME_LOANS, loanId)
                 }
             },
             availableMenuItems = SUMMARY_MENU_ITEMS,
@@ -294,6 +299,7 @@ private val PORTED_DETAILS = listOf(
     LoanProfileActionItem.Charges,
     LoanProfileActionItem.Reschedules,
     LoanProfileActionItem.Documents,
+    LoanProfileActionItem.Notes,
 )
 
 /**
@@ -311,12 +317,12 @@ private val PORTED_ACTIONS = setOf(
 /**
  * The SUMMARY's overflow entries that have somewhere to go, in the original's order.
  *
- * `MoreInfo` needs the loan data-table screen, `Documents` the loan document list and `Charges` the
- * loan charges list — none ported. An entry with no destination is not drawn, and when NONE are the
- * overflow icon itself is not drawn either: a menu button that opens an empty menu is the same dead
- * control as a dead row.
+ * All five are live (MoreInfo — the loan's datatables — since 2026-10-25). An entry with no
+ * destination is not drawn, and when NONE are the overflow icon itself is not drawn either: a menu
+ * button that opens an empty menu is the same dead control as a dead row.
  */
 private val SUMMARY_MENU_ITEMS = listOf(
+    LoanSummaryMenuItem.MoreInfo,
     LoanSummaryMenuItem.Transactions,
     LoanSummaryMenuItem.RepaymentSchedule,
     LoanSummaryMenuItem.Charges,

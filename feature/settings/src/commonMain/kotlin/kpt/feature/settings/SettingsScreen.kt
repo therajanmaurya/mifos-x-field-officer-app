@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kpt.core.base.designsystem.component.AppCard
 import kpt.core.base.ui.AppInfo
+import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.icon.KptIcons
 import kpt.core.designsystem.theme.spacing
 import kpt.core.ui.scaffold.KptScaffold
@@ -41,8 +42,14 @@ import kpt.feature.settings.generated.resources.feature_settings_change_theme_pl
 import kpt.feature.settings.generated.resources.feature_settings_change_theme_text
 import kpt.feature.settings.generated.resources.feature_settings_rate_app_row
 import kpt.feature.settings.generated.resources.feature_settings_rate_app_row_description
+import kpt.feature.settings.generated.resources.feature_settings_server_config_row
+import kpt.feature.settings.generated.resources.feature_settings_server_config_row_description
+import kpt.feature.settings.generated.resources.feature_settings_sign_out
+import kpt.feature.settings.generated.resources.feature_settings_sign_out_row_description
 import kpt.feature.settings.generated.resources.feature_settings_sync_drafts_row
 import kpt.feature.settings.generated.resources.feature_settings_sync_drafts_row_description
+import kpt.feature.settings.generated.resources.feature_settings_title
+import kpt.feature.settings.signout.SignOutTestTags
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -65,10 +72,12 @@ internal fun SettingsScreenContent(
     modifier: Modifier = Modifier,
     onFooterLongClick: (() -> Unit)? = null,
     onRateAppClick: (() -> Unit)? = null,
+    onServerConfigClick: (() -> Unit)? = null,
+    onSignOutClick: (() -> Unit)? = null,
 ) {
     val sp = MaterialTheme.spacing
     KptScaffold(
-        title = "Settings",
+        title = stringResource(Res.string.feature_settings_title),
         onNavigationIconClick = onBackClick,
         // TestTags.Settings.SCREEN existed as a constant but was applied by NO composable, so
         // SettingsScreenUiTest asserted a tag that was never set and could not have passed even
@@ -86,10 +95,32 @@ internal fun SettingsScreenContent(
             ThemeCard(onClick = onThemeCardClick)
             LanguageCard(onClick = onLanguageCardClick)
             SyncAndDraftsCard(onClick = onSyncAndDraftsClick)
+            // The original's ENDPOINT (Instance URL) and SERVER_CONFIG rows edited the same server two
+            // ways; the Server config screen's instance picker now covers both. Null = no server choice.
+            onServerConfigClick?.let {
+                SettingsRowCard(
+                    icon = AppIcons.Update,
+                    title = stringResource(Res.string.feature_settings_server_config_row),
+                    contentDescription = stringResource(Res.string.feature_settings_server_config_row_description),
+                    accentColor = MaterialTheme.colorScheme.tertiary,
+                    onClick = it,
+                )
+            }
             // Absent, not disabled, when review is unreachable. `canRequestReview` is false on a
             // target with neither a native review flow nor a configured store listing, and a
             // greyed-out row there would advertise a capability the build genuinely does not have.
             onRateAppClick?.let { RateAppCard(onClick = it) }
+            // Last: the one action that ends the session. Null on a build with no sign-in.
+            onSignOutClick?.let {
+                SettingsRowCard(
+                    icon = AppIcons.Logout,
+                    title = stringResource(Res.string.feature_settings_sign_out),
+                    contentDescription = stringResource(Res.string.feature_settings_sign_out_row_description),
+                    accentColor = MaterialTheme.colorScheme.error,
+                    onClick = it,
+                    modifier = Modifier.testTag(SignOutTestTags.ROW),
+                )
+            }
             Spacer(modifier = Modifier.fillMaxWidth().padding(sp.sm))
             VersionLabel(onLongClick = onFooterLongClick)
         }
@@ -140,7 +171,8 @@ internal fun VersionLabel(onLongClick: (() -> Unit)?, modifier: Modifier = Modif
         modifier
             .fillMaxWidth()
             .combinedClickable(
-                onClick = { /* no-op short-tap */ },
+                // intentional-noop: this row acts on long-press only; combinedClickable requires an onClick.
+                onClick = {},
                 onLongClick = onLongClick,
             )
     } else {

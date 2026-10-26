@@ -25,11 +25,9 @@ import kpt.core.model.utils.ServerConfig
  */
 interface ProjectPreferencesRepository : UserPreferencesRepository {
 
-    /** Which Fineract instance this install talks to — protocol, host, port and tenant. */
-    val serverConfig: StateFlow<ServerConfig>
-
-    /** Resolved base URL for [serverConfig], the value the network layer reads. */
-    val instanceUrl: String
+    // The server this install talks to is NOT a preference here: it is the main runtime network
+    // config, owned and persisted by core-base `NetworkConfigRepository` (read through core/data's
+    // `ServerConfigRepository`). A second copy here is how the screen and the client once disagreed.
 
     /**
      * The signed-in Fineract user. Distinct from [userData], which is the framework's device-level
@@ -44,8 +42,6 @@ interface ProjectPreferencesRepository : UserPreferencesRepository {
      * second copy in preferences could disagree with the user record it came from.
      */
     val authHeader: String
-
-    suspend fun updateServerConfig(serverConfig: ServerConfig)
 
     suspend fun updateFineractUser(user: User)
 

@@ -32,7 +32,9 @@ fun AppFilePickerBottomSheet(
     onGalleryClick: () -> Unit,
     onFilesClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onMoreClick: () -> Unit,
+    // Null = no "More" option. The original's More did nothing in every caller; an option drawn
+    // without an action is a dead clickable, so it renders only when there is something to do.
+    onMoreClick: (() -> Unit)? = null,
 ) {
     AppBottomSheet(
         onDismiss = onDismiss,
@@ -57,11 +59,13 @@ fun AppFilePickerBottomSheet(
                 icon = AppIcons.PickDocument,
                 onClick = onFilesClick,
             )
-            AppBottomSheetOptionItem(
-                label = stringResource(Res.string.file_picker_bottom_sheet_more),
-                icon = AppIcons.MoreHoriz,
-                onClick = onMoreClick,
-            )
+            onMoreClick?.let {
+                AppBottomSheetOptionItem(
+                    label = stringResource(Res.string.file_picker_bottom_sheet_more),
+                    icon = AppIcons.MoreHoriz,
+                    onClick = it,
+                )
+            }
         }
     }
 }
@@ -71,9 +75,9 @@ fun AppFilePickerBottomSheet(
 fun PreviewAppFilePickerBottomSheet() {
     KptTheme {
         AppFilePickerBottomSheet(
-            {},
-            {},
-            {},
-        ) {}
+            onDismiss = {},
+            onGalleryClick = {},
+            onFilesClick = {},
+        )
     }
 }

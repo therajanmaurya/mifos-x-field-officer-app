@@ -252,9 +252,12 @@ private fun AccountCard(
                 Text(text = it, style = AppTypography.bodySmall, color = KptTheme.colorScheme.secondary)
             }
 
-            // The status chip. Label and colour come from the SAME derived status the button uses.
+            // The status chip. Label and colour come from the SAME derived status the button uses —
+            // except that UNKNOWN names the server's own status: the original's "Unknown" covered
+            // Approved / waiting-for-disbursal and read as broken on a live loan (device, 2026-10-25).
             Text(
-                text = stringResource(status.labelRes()),
+                text = account.status?.value?.takeIf { status == LoanProfileStatus.UNKNOWN }
+                    ?: stringResource(status.labelRes()),
                 style = AppTypography.labelMedium,
                 color = status.color(),
                 modifier = Modifier.testTag(LoanProfileTestTags.STATUS),

@@ -130,7 +130,6 @@ internal fun NewCollectionSheetContent(
 
                 AppTextFieldDropdown(
                     value = state.office?.label.orEmpty(),
-                    onValueChanged = {},
                     // The OPTION is dispatched, resolved from the same list that supplied the labels.
                     onOptionSelected = { index, label ->
                         officeList.getOrNull(index)?.let { onAction(NewCollectionSheetAction.SelectOffice(Choice(it.id, label))) }
@@ -147,7 +146,6 @@ internal fun NewCollectionSheetContent(
                 )
                 AppTextFieldDropdown(
                     value = state.staff?.label.orEmpty(),
-                    onValueChanged = {},
                     onOptionSelected = { index, label ->
                         staff.getOrNull(index)?.id?.let { onAction(NewCollectionSheetAction.SelectStaff(Choice(it, label))) }
                     },

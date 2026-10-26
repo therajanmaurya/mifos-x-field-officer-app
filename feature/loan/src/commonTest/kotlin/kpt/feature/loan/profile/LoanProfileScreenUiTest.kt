@@ -16,11 +16,12 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runComposeUiTest
+import kotlin.test.Test
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.designsystem.theme.KptTheme
+import kpt.core.model.objects.account.loan.loanWithAssociations.LoanStatus
 import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
 import kpt.feature.loan.profile.components.LoanProfileActionItem
-import kotlin.test.Test
 
 /**
  * The RENDERED proof of "absent, never inert" on this screen — the rule the whole port turns on,
@@ -157,5 +158,23 @@ class LoanProfileScreenUiTest {
         onNodeWithTag(LoanProfileTestTags.CARD).assertIsDisplayed()
         onNodeWithText("Asha").assertIsDisplayed()
         onNodeWithText("Unknown").assertIsDisplayed()
+    }
+
+    @Test
+    fun anApprovedLoanNamesTheServersStatusRatherThanUnknown() = runComposeUiTest {
+        // Approved / waiting-for-disbursal derives to UNKNOWN; the chip shows what the server calls it.
+        val approved = LoanWithAssociations(id = 7, clientName = "Asha", status = LoanStatus(value = "Approved", waitingForDisbursal = true))
+        setContent {
+            KptTheme {
+                LoanProfileContent(
+                    loan = ScreenState.Content(approved),
+                    status = ScreenState.Content(approved.status.toProfileStatus()),
+                    onAction = {},
+                    onBackPressed = {},
+                )
+            }
+        }
+        onNodeWithText("Approved").assertIsDisplayed()
+        onNodeWithText("Unknown").assertDoesNotExist()
     }
 }

@@ -3,8 +3,12 @@
 > Written at Phase 9 T3 per `FEATURE_LAYER_MIGRATION_SPEC.md` §7. Consumed by Phase 10 (S1).
 > Original reference: `6b66e8a43`. Deleted `core/domain` reference: `897ffdac1`.
 
-**Status:** audit complete; port not started. The module as it stands was **authored, not ported**
-(spec §1) — this ledger is the gap list S1 T3 closes.
+**Status:** complete — ported from the original `login/` in S1 T3 (re-checked against source
+2026-10-24): the username rule is 4 again via `CredentialRules.MIN_USERNAME_LENGTH` and the copy
+carries no number; the three missing strings are present; the brand mark is
+`feature_signin_brand_mark.png`; the raw password is never persisted
+(`AuthCommandRepositoryTest.theRawPasswordIsNeverPersisted`). Device-verified signing in to the
+gateway as `fieldofficer`. The text below is the Phase 9 audit that S1 T3 closed, kept as the record.
 
 ---
 
@@ -136,3 +140,7 @@ existing code.
 
 Fix (T3): the ViewModel consumes `kpt.core.domain.validation.CredentialRules`, whose thresholds are
 preserved verbatim from `897ffdac1`, and the copy stops naming a number.
+
+## Server picker + demo accounts (2026-10-25)
+
+The same server-config screen opens from sign-in. Demo-role chips fill the credentials, and an unreachable server (TLS or DNS) shows `SignInError.Unreachable` instead of "wrong credentials", so it no longer counts toward lockout.

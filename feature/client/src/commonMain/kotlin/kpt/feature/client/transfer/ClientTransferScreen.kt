@@ -169,7 +169,6 @@ internal fun ClientTransferContent(
 
             AppTextFieldDropdown(
                 value = selected.name ?: "",
-                onValueChanged = {},
                 onOptionSelected = { index, _ -> onAction(ClientTransferAction.OptionChanged(index)) },
                 options = officeList.map { it.name ?: "" },
                 label = stringResource(Res.string.feature_client_transfer_choose_office),

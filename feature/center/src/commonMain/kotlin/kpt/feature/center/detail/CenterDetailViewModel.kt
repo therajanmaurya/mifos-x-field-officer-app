@@ -20,9 +20,10 @@ import kpt.core.base.store.screen.emptyIfContent
 import kpt.core.base.store.screen.mapContent
 import kpt.core.base.ui.viewmodel.BaseViewModel
 import kpt.core.data.center.CenterRepository
-import kpt.core.data.group.GroupRepository
 import kpt.core.model.center.Center
+import kpt.core.model.center.CenterWithAssociations
 import kpt.core.model.group.Group
+import kpt.core.model.objects.groups.CenterInfo
 
 /**
  * Center detail — ports BOTH `6b66e8a43:feature/center/centerDetails/CenterDetailsViewModel.kt` and
@@ -48,7 +49,6 @@ import kpt.core.model.group.Group
  */
 internal class CenterDetailViewModel(
     centerRepository: CenterRepository,
-    groupRepository: GroupRepository,
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<Unit, CenterDetailEvent, CenterDetailAction>(Unit) {
 
@@ -60,7 +60,21 @@ internal class CenterDetailViewModel(
     private val centerId: Int = savedStateHandle.get<Int>(CENTER_ID_KEY) ?: 0
 
     private val centerStream = centerRepository.centersStream(viewModelScope)
-    private val groupStream = groupRepository.groupsStream(viewModelScope)
+    private val meetingStream = centerRepository.centerWithMeetingStream(centerId, viewModelScope)
+    private val summaryStream = centerRepository.centerSummaryStream(centerId, viewModelScope)
+
+    /**
+     * Activation date, next meeting and meeting frequency — the original's first block, from the
+     * center-with-calendar read. Separate from [center]: the list entity carries neither.
+     */
+    val meeting: StateFlow<ScreenState<CenterWithAssociations>> = meetingStream.state
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
+
+    /** The original's "Summary info" counts. Empty when the report returns no row for the center. */
+    val summary: StateFlow<ScreenState<CenterInfo>> = summaryStream.state
+        .emptyIfContent { it.isEmpty() }
+        .mapContent { rows, _ -> rows.first() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
 
     /**
      * The center's own fields. `stateIn(… WhileSubscribed …)`, not an `init{}` collector — see
@@ -97,8 +111,11 @@ internal class CenterDetailViewModel(
      * two screens could be folded into one. A groups failure must not blank the center's details,
      * and `CenterDetailViewModelTest` asserts that in both directions.
      */
-    val groups: StateFlow<ScreenState<List<Group>>> = groupStream.state
-        .mapContent { groups, _ -> groups.filter { it.centerId == centerId } }
+    // From the centre's OWN read (`centers/{id}?associations=groupMembers`), not the groups list
+    // filtered by `centerId`: Fineract's `groups` list never carries `centerId` (measured on the
+    // gateway 2026-10-25 — null on all 8 groups), so that filter matched nothing for every centre.
+    val groups: StateFlow<ScreenState<List<Group>>> = meetingStream.state
+        .mapContent { center, _ -> center.groupMembers }
         .emptyIfContent { it.isEmpty() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
 
@@ -111,6 +128,14 @@ internal class CenterDetailViewModel(
             // which Fineract's command requires. Centre activation was logged as unsurfaced in
             // CAPABILITY_GAPS; this closes it.
             CenterDetailAction.ActivateClicked -> sendEvent(CenterDetailEvent.Activate(centerId))
+
+            // The original's overflow "Add savings account" for the centre.
+            CenterDetailAction.AddSavingsAccountClicked -> sendEvent(CenterDetailEvent.OpenAddSavingsAccount(centerId))
+
+            CenterDetailAction.RetryCenter -> centerStream.retry()
+            CenterDetailAction.RetryGroups -> meetingStream.retry()
+            CenterDetailAction.RetryMeeting -> meetingStream.retry()
+            CenterDetailAction.RetrySummary -> summaryStream.retry()
         }
     }
 }
@@ -119,6 +144,11 @@ internal sealed interface CenterDetailAction {
     data class GroupClicked(val groupId: Int) : CenterDetailAction
     data object BackClicked : CenterDetailAction
     data object ActivateClicked : CenterDetailAction
+    data object AddSavingsAccountClicked : CenterDetailAction
+    data object RetryCenter : CenterDetailAction
+    data object RetryGroups : CenterDetailAction
+    data object RetryMeeting : CenterDetailAction
+    data object RetrySummary : CenterDetailAction
 }
 
 /** Must match `CenterDetailRoute.centerId` — type-safe nav keys the handle by property name. */
@@ -133,4 +163,7 @@ internal sealed interface CenterDetailEvent {
 
     /** Open the shared activate screen for this centre. */
     data class Activate(val centerId: Int) : CenterDetailEvent
+
+    /** Open the savings application for this centre (a centre is a Fineract group). */
+    data class OpenAddSavingsAccount(val centerId: Int) : CenterDetailEvent
 }

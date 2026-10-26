@@ -9,15 +9,12 @@
  */
 package kpt.feature.client.navigation
 
-import co.touchlab.kermit.Logger
-import kpt.core.model.objects.searchrecord.RecordType
-import kpt.feature.searchrecord.navigation.searchRecordDestination
-import kpt.feature.searchrecord.navigation.navigateToSearchRecord
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import co.touchlab.kermit.Logger
 import kotlinx.serialization.Serializable
 import kpt.core.base.ui.nav.FeatureDestination
 import kpt.core.base.ui.nav.composableWithPushTransitions
@@ -25,6 +22,7 @@ import kpt.core.base.ui.nav.composableWithStayTransitions
 import kpt.core.base.ui.nav.popBackStackSafely
 import kpt.core.common.utils.Constants
 import kpt.core.model.objects.charge.ChargeResource
+import kpt.core.model.objects.searchrecord.RecordType
 import kpt.feature.charge.navigation.navigateToAddCharge
 import kpt.feature.charge.navigation.navigateToCharges
 import kpt.feature.client.addaddress.ClientAddAddressScreen
@@ -56,6 +54,7 @@ import kpt.feature.client.shareapplication.ShareApplicationScreen
 import kpt.feature.client.signature.ClientSignatureScreen
 import kpt.feature.client.staff.ClientStaffScreen
 import kpt.feature.client.transfer.ClientTransferScreen
+import kpt.feature.groups.navigation.navigateToGroupsDetail
 import kpt.feature.loan.navigation.navigateToLoanProfile
 import kpt.feature.loan.navigation.navigateToLoanRepayment
 import kpt.feature.loan.navigation.navigateToNewLoanApplication
@@ -65,6 +64,8 @@ import kpt.feature.savings.navigation.navigateToRecurringDepositApplication
 import kpt.feature.savings.navigation.navigateToSavingsApplication
 import kpt.feature.savings.navigation.navigateToSavingsApproval
 import kpt.feature.savings.navigation.navigateToSavingsSummary
+import kpt.feature.searchrecord.navigation.navigateToSearchRecord
+import kpt.feature.searchrecord.navigation.searchRecordDestination
 
 /** The tab's graph. Mirrors `HomeDestination` — the tab points at the graph, not at a screen. */
 @Serializable
@@ -408,7 +409,8 @@ fun NavGraphBuilder.clientListDestination(navController: NavController) {
             onViewAssociatedAccounts = navController::navigateToClientGeneral,
             // Blocked on Google Maps — see `client-pinpoint-blocked-on-maps-key`.
             onPinpointLocation = null,
-            onNavigateToGroupDetails = null,
+            // The original's `navigateToGroupDetails` — group detail (feature/groups) has landed.
+            onNavigateToGroupDetails = navController::navigateToGroupsDetail,
         )
     }
 

@@ -30,8 +30,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.AppTheme
 import kpt.core.designsystem.theme.DesignToken
+import kpt.core.ui.generated.resources.Res
+import kpt.core.ui.generated.resources.core_ui_fab_create
+import kpt.core.ui.generated.resources.core_ui_fab_create_center
+import kpt.core.ui.generated.resources.core_ui_fab_create_client
+import kpt.core.ui.generated.resources.core_ui_fab_create_group
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 enum class FabType {
@@ -70,13 +77,14 @@ fun FabItem(
         modifier = modifier.size(DesignToken.sizes.imageDp48),
     ) {
         when (fabButton) {
+            // A spoken label, not the enum's name: TalkBack read "CLIENT" / "CENTER" in every locale.
             is FabButton.DrawableFab -> Icon(
                 painter = painterResource(fabButton.iconRes),
-                contentDescription = fabButton.fabType.name,
+                contentDescription = stringResource(fabButton.fabType.labelRes()),
             )
             is FabButton.VectorFab -> Icon(
                 imageVector = fabButton.iconRes,
-                contentDescription = fabButton.fabType.name,
+                contentDescription = stringResource(fabButton.fabType.labelRes()),
             )
         }
     }
@@ -127,7 +135,7 @@ fun MultiFloatingActionButton(
         ) {
             Icon(
                 imageVector = AppIcons.Add,
-                contentDescription = "mainFabIcon",
+                contentDescription = stringResource(Res.string.core_ui_fab_create),
             )
         }
     }
@@ -161,4 +169,10 @@ private fun SelectionModeTopAppBarWithActionsPreview() {
             },
         )
     }
+}
+
+private fun FabType.labelRes(): StringResource = when (this) {
+    FabType.CLIENT -> Res.string.core_ui_fab_create_client
+    FabType.CENTER -> Res.string.core_ui_fab_create_center
+    FabType.GROUP -> Res.string.core_ui_fab_create_group
 }

@@ -19,7 +19,9 @@ import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.screenDataStreamForTesting
 import kpt.core.data.serverconfig.ServerConfigRepository
+import kpt.core.model.utils.DemoCredentials
 import kpt.core.model.utils.ServerConfig
+import kpt.core.model.utils.ServerInstance
 
 /**
  * Test double for [ServerConfigRepository]: [saved] is the persisted preference, so a test reads
@@ -29,9 +31,16 @@ import kpt.core.model.utils.ServerConfig
 class FakeServerConfigRepository(
     override val defaultConfig: ServerConfig = TEST_DEFAULT,
     initial: ServerConfig = defaultConfig,
+    instanceList: List<ServerInstance> = TEST_INSTANCES,
 ) : ServerConfigRepository {
 
     val saved = MutableStateFlow(initial)
+
+    /** The instance list's state — set to Loading / Error to exercise the screen's other states. */
+    val instancesState = MutableStateFlow<ScreenState<List<ServerInstance>>>(ScreenState.Content(instanceList))
+
+    override fun instancesStream(scope: CoroutineScope): ScreenDataStream<List<ServerInstance>> =
+        screenDataStreamForTesting(instancesState)
 
     var failSaves: Boolean = false
 
@@ -52,6 +61,17 @@ class FakeServerConfigRepository(
             apiPath = "/fineract-provider/api/v1/",
             port = "443",
             tenant = "default",
+        )
+
+        /** A demo instance at [TEST_DEFAULT] plus a non-demo one, so both shapes are exercised. */
+        val TEST_INSTANCES = listOf(
+            ServerInstance(
+                "test",
+                "Test server",
+                TEST_DEFAULT,
+                listOf(DemoCredentials("Officer", "demo", "demo-pass"), DemoCredentials("Supervisor", "boss", "boss-pass")),
+            ),
+            ServerInstance("localhost", "Localhost", ServerConfig.LOCALHOST),
         )
     }
 }

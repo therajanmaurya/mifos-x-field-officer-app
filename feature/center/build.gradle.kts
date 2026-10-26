@@ -25,6 +25,7 @@ kotlin {
             implementation(projects.feature.activate)
             // Group rows in a center open the group detail, owned by feature/groups (no reverse edge).
             implementation(projects.feature.groups)
+            implementation(projects.feature.savings)
             implementation(libs.koin.compose.navigation)
             implementation(compose.ui)
             implementation(compose.foundation)

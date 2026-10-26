@@ -13,6 +13,7 @@ import kpt.feature.settings.ConflictInboxViewModel
 import kpt.feature.settings.SettingsViewModel
 import kpt.feature.settings.SyncAndDraftsViewModel
 import kpt.feature.settings.serverconfig.ServerConfigViewModel
+import kpt.feature.settings.signout.SignOutViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -23,4 +24,5 @@ val SettingsModule = module {
     // core-base StoreModule, included via appStoreModule).
     viewModelOf(::ConflictInboxViewModel)
     viewModelOf(::ServerConfigViewModel)
+    viewModelOf(::SignOutViewModel)
 }

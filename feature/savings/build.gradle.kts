@@ -28,6 +28,7 @@ kotlin {
             // feature/charge — the summary's "Charges" entry opens the ONE charge module, scoped
             // to the account. One-directional, like document.
             implementation(projects.feature.charge)
+            implementation(projects.feature.datatable)
             implementation(libs.koin.compose.navigation)
             implementation(compose.ui)
             implementation(compose.foundation)

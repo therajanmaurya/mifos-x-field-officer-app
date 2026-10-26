@@ -9,8 +9,10 @@
  */
 package kpt.core.network.config
 
-import kpt.core.base.network.AccessPoint
+import kpt.core.base.network.NetworkConfig
+import kpt.core.base.network.toNetworkConfig
 import kpt.core.model.utils.ServerConfig
+import kpt.core.model.utils.serverConfigOf
 
 /**
  * The server the app ships pointed at, as the server-config SCREEN describes one — DERIVED from the
@@ -33,22 +35,23 @@ object AppServerConfig {
     /** The header that carries Fineract's tenant on [ACCESS_POINT]. */
     const val TENANT_HEADER = "Fineract-Platform-TenantId"
 
-    val DEFAULT: ServerConfig = AppAccessPoints.points.single { it.id == ACCESS_POINT }.toServerConfig()
+    /** The shipped server as the screen shows it — the declared main access point's config. */
+    val DEFAULT: ServerConfig = AppAccessPoints.points.single { it.id == ACCESS_POINT }.toNetworkConfig().toServerConfig()
+
+    /** This app's id in the shared `app_config` instance list's `supportedApps` (see [InstanceConfigLoader]). */
+    const val APP_ID = "field-officer"
 }
 
-private val ORIGIN = Regex("^(https?://)([^/:]+)(?::(\\d+))?/?$")
+/**
+ * A runtime network config as the screen's five fields: its URL split into protocol / host / port /
+ * API path, and the tenant from its [AppServerConfig.TENANT_HEADER] value.
+ */
+fun NetworkConfig.toServerConfig(): ServerConfig = requireNotNull(
+    serverConfigOf(
+        url = baseUrl,
+        tenant = headers.entries.firstOrNull { it.key.equals(AppServerConfig.TENANT_HEADER, ignoreCase = true) }?.value.orEmpty(),
+    ),
+) { "network config '$id' base URL '$baseUrl' is not scheme://host[:port][/path]" }
 
-/** Splits an access point back into the screen's five fields. */
-internal fun AccessPoint.toServerConfig(tenantHeader: String = AppServerConfig.TENANT_HEADER): ServerConfig {
-    val (protocol, host, port) = requireNotNull(ORIGIN.find(baseUrl)) {
-        "access point '$id' base_url '$baseUrl' is not an origin (scheme://host[:port]/)"
-    }.destructured
-    val path = basePath.trim('/')
-    return ServerConfig(
-        protocol = protocol,
-        endPoint = host,
-        apiPath = if (path.isEmpty()) "/" else "/$path/",
-        port = port.ifEmpty { if (protocol == "https://") "443" else "80" },
-        tenant = headers.firstOrNull { it.name.equals(tenantHeader, ignoreCase = true) }?.value.orEmpty(),
-    )
-}
+/** The header values a [ServerConfig] sets on its network config — the tenant. */
+fun ServerConfig.networkHeaders(): Map<String, String> = mapOf(AppServerConfig.TENANT_HEADER to tenant.trim())

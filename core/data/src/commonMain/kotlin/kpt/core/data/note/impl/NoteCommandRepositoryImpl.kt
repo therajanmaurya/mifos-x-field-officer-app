@@ -18,13 +18,13 @@ import kpt.core.base.store.mutation.MutationPolicy
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.note.NoteCommandRepository
 import kpt.core.data.note.NoteSubmitException
-import kpt.core.model.objects.note.Note
 import kpt.core.model.note.NoteDraft
-import kpt.core.network.mifos.note.api.NoteApi
+import kpt.core.model.objects.note.Note
 import kpt.core.model.objects.note.NoteRequestDto
+import kpt.core.network.mifos.note.api.NoteApi
 import kpt.core.store.config.AppStoreIds
-import kpt.core.store.note.NOTE_CLIENT_RESOURCE
 import kpt.core.store.note.NoteItemKey
+import kpt.core.store.note.NoteKey
 import org.mobilenativefoundation.store.core5.ExperimentalStoreApi
 import org.mobilenativefoundation.store.store5.MutableStore
 import org.mobilenativefoundation.store.store5.Store
@@ -45,8 +45,8 @@ import org.mobilenativefoundation.store.store5.impl.extensions.fresh
  *   order and attribution), which only the server assigns; neither response carries them, so a
  *   locally composed row would sort last and show no author.
  *
- * Only `clients` notes have a table (see [NOTE_CLIENT_RESOURCE]); a write on any other resource
- * type reaches the server and records nothing locally, because no read observes it.
+ * Every owner (`clients`, `groups`) shares the `Note` table, keyed (resourceType, owner id), so a
+ * write is recorded locally whichever owner it is on.
  *
  * `OnlineRequired`, as before: `localApply` runs only with the server's result.
  */
@@ -54,7 +54,7 @@ import org.mobilenativefoundation.store.store5.impl.extensions.fresh
 internal class NoteCommandRepositoryImpl(
     private val noteApi: NoteApi,
     private val gateway: MutationGateway,
-    @FromStore(AppStoreIds.ClientNotes) private val notesStore: Store<Long, List<Note>>,
+    @FromStore(AppStoreIds.Notes) private val notesStore: Store<NoteKey, List<Note>>,
     @FromStore(AppStoreIds.NoteItem) private val itemStore: MutableStore<NoteItemKey, Note>,
 ) : NoteCommandRepository {
 
@@ -86,8 +86,8 @@ internal class NoteCommandRepositoryImpl(
                 payload = noteId,
                 endpoint = { noteApi.deleteNote(resourceType = resourceType, resourceId = resourceId, noteId = it) },
                 localApply = { response ->
-                    if (response != null && resourceType == NOTE_CLIENT_RESOURCE) {
-                        itemStore.clear(NoteItemKey(clientId = resourceId, noteId = noteId))
+                    if (response != null) {
+                        itemStore.clear(NoteItemKey(resourceType = resourceType, resourceId = resourceId, noteId = noteId))
                     }
                 },
             ),
@@ -147,7 +147,7 @@ internal class NoteCommandRepositoryImpl(
      *
      * Matches on TEXT within the client, which is the only identity a create has before the server
      * assigns one. Deliberately conservative in the one direction that matters: on any doubt — the
-     * read fails, the list is unreachable, the resource has no notes table — it returns false and
+     * read fails or the list is unreachable — it returns false and
      * the note is sent. A duplicate note is recoverable by deleting one; a silently dropped note is
      * not, and dropping it would defeat the outbox this whole path exists to serve.
      *
@@ -156,9 +156,8 @@ internal class NoteCommandRepositoryImpl(
      * free-text observations, and an exact repeat of a queued one is far rarer than a replay.
      */
     private suspend fun alreadyOnServer(draft: NoteDraft): Boolean {
-        if (draft.resourceType != NOTE_CLIENT_RESOURCE) return false
         return orFalse {
-            notesStore.fresh(draft.resourceId).any { it.noteContent?.trim() == draft.text.trim() }
+            notesStore.fresh(NoteKey(draft.resourceType, draft.resourceId)).any { it.noteContent?.trim() == draft.text.trim() }
         }
     }
 
@@ -171,11 +170,9 @@ internal class NoteCommandRepositoryImpl(
      * The row arrives with the list's next read instead.
      */
     private suspend fun ingest(resourceType: String, resourceId: Long) {
-        if (resourceType == NOTE_CLIENT_RESOURCE) {
-            orFalse {
-                notesStore.fresh(resourceId)
-                true
-            }
+        orFalse {
+            notesStore.fresh(NoteKey(resourceType, resourceId))
+            true
         }
     }
 

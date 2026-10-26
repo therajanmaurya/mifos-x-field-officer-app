@@ -13,6 +13,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,6 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.icon.AppIcons
+import kpt.core.model.utils.DemoCredentials
 import kpt.core.ui.components.AppProgressIndicatorOverlay
 import kpt.feature.signin.BuildKonfig
 import kpt.feature.signin.generated.resources.Res
@@ -64,11 +68,13 @@ import kpt.feature.signin.generated.resources.feature_signin_cd_logo
 import kpt.feature.signin.generated.resources.feature_signin_cd_password_error
 import kpt.feature.signin.generated.resources.feature_signin_cd_username_error
 import kpt.feature.signin.generated.resources.feature_signin_consent
+import kpt.feature.signin.generated.resources.feature_signin_demo_credentials
 import kpt.feature.signin.generated.resources.feature_signin_enter_credentials
 import kpt.feature.signin.generated.resources.feature_signin_error_biometric_failed
 import kpt.feature.signin.generated.resources.feature_signin_error_login_failed
 import kpt.feature.signin.generated.resources.feature_signin_error_offline
 import kpt.feature.signin.generated.resources.feature_signin_error_password_length
+import kpt.feature.signin.generated.resources.feature_signin_error_unreachable
 import kpt.feature.signin.generated.resources.feature_signin_error_username_length
 import kpt.feature.signin.generated.resources.feature_signin_locked_out
 import kpt.feature.signin.generated.resources.feature_signin_login
@@ -207,6 +213,11 @@ internal fun SignInContent(
                     tenant = state.instanceTenant,
                     onClick = onUpdateServerConfig,
                 )
+                // A public demo instance's published sign-ins, one chip per role — tap to fill. Absent on
+                // a real server.
+                if (state.demoAccounts.isNotEmpty()) {
+                    DemoAccounts(accounts = state.demoAccounts, onPick = { onAction(SignInAction.UseDemoAccount(it)) })
+                }
 
                 LogoTile()
 
@@ -392,6 +403,30 @@ private fun LockoutNotice(locked: Boolean, attemptsRemaining: Int) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun DemoAccounts(accounts: List<DemoCredentials>, onPick: (DemoCredentials) -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth().testTag(SignInTestTags.DEMO_CREDENTIALS),
+    ) {
+        Text(
+            text = stringResource(Res.string.feature_signin_demo_credentials),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
+            accounts.forEach { account ->
+                SuggestionChip(
+                    onClick = { onPick(account) },
+                    label = { Text(account.role) },
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun InstanceChip(
     host: String,
@@ -489,7 +524,7 @@ private fun TitleBlock() {
  */
 private val SignInError.isTransportError: Boolean
     get() = when (this) {
-        SignInError.Rejected, SignInError.Offline -> true
+        SignInError.Rejected, SignInError.Offline, SignInError.Unreachable -> true
         // LockedOut renders as an in-flow banner, not a transient snackbar: a message that
         // disappears cannot tell you when the lock clears.
         SignInError.LockedOut -> false
@@ -505,6 +540,7 @@ private val SignInError.message: StringResource
         SignInError.PasswordTooShort -> Res.string.feature_signin_error_password_length
         SignInError.Rejected -> Res.string.feature_signin_error_login_failed
         SignInError.Offline -> Res.string.feature_signin_error_offline
+        SignInError.Unreachable -> Res.string.feature_signin_error_unreachable
         SignInError.LockedOut -> Res.string.feature_signin_locked_out
         SignInError.BiometricFailed -> Res.string.feature_signin_error_biometric_failed
     }

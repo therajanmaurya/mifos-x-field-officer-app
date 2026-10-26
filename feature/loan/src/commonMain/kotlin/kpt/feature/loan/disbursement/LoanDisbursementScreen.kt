@@ -238,7 +238,6 @@ private fun DisbursementForm(
 
         AppTextFieldDropdown(
             value = state.paymentTypeName,
-            onValueChanged = {},
             // The chosen OPTION is dispatched. The original resolved
             // `paymentTypeOptions[index].id` at selection time — an index into a list whose
             // nameless entries had already shifted it.

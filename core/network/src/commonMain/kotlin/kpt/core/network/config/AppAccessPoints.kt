@@ -38,12 +38,19 @@ object AppAccessPoints {
             basePath = "1.0/field/v1/",
             loggableHost = "apis.mifos.community",
             auth = AuthScheme.BASIC,
+            isMain = true,
             headers = listOf(
                 HeaderSpec(name = "Fineract-Platform-TenantId", value = "mifos-bank-1"),
                 HeaderSpec(name = "Content-Type", value = "application/json"),
                 HeaderSpec(name = "Accept", value = "application/json"),
                 HeaderSpec(name = "Authorization", runtimeKey = "mifos.auth"),
             ),
+        ),
+        AccessPoint(
+            id = "lwmswhoxvvoagzkqxiyd",
+            kind = AccessPointKind.SUPABASE,
+            baseUrl = "https://lwmswhoxvvoagzkqxiyd.supabase.co",
+            loggableHost = "lwmswhoxvvoagzkqxiyd.supabase.co",
         ),
     )
     // syncForkConfig:access-points:end

@@ -52,6 +52,7 @@ kotlin {
             // feature/savings — the apply-new chooser opens the savings and recurring-deposit
             // applications (S5e). Same edges as the original's `clientApplyNewApplicationRoute`.
             implementation(projects.feature.savings)
+            implementation(projects.feature.groups)
             implementation(libs.koin.compose.navigation)
             implementation(compose.ui)
             implementation(compose.foundation)

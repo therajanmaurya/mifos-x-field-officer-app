@@ -9,39 +9,58 @@
  */
 package kpt.feature.settings.serverconfig
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kpt.core.base.ui.screen.ScreenContent
 import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.domain.validation.ValidationFailure
+import kpt.core.model.utils.DemoCredentials
 import kpt.feature.settings.generated.resources.Res
 import kpt.feature.settings.generated.resources.feature_settings_server_api_path
 import kpt.feature.settings.generated.resources.feature_settings_server_config_title
+import kpt.feature.settings.generated.resources.feature_settings_server_demo_account
+import kpt.feature.settings.generated.resources.feature_settings_server_demo_badge
+import kpt.feature.settings.generated.resources.feature_settings_server_demo_credentials
+import kpt.feature.settings.generated.resources.feature_settings_server_details_title
 import kpt.feature.settings.generated.resources.feature_settings_server_endpoint
 import kpt.feature.settings.generated.resources.feature_settings_server_error_api_path_leading
 import kpt.feature.settings.generated.resources.feature_settings_server_error_api_path_trailing
@@ -51,15 +70,19 @@ import kpt.feature.settings.generated.resources.feature_settings_server_error_pr
 import kpt.feature.settings.generated.resources.feature_settings_server_error_required
 import kpt.feature.settings.generated.resources.feature_settings_server_error_tenant
 import kpt.feature.settings.generated.resources.feature_settings_server_error_too_short
+import kpt.feature.settings.generated.resources.feature_settings_server_instance_custom
+import kpt.feature.settings.generated.resources.feature_settings_server_instances_title
 import kpt.feature.settings.generated.resources.feature_settings_server_invalid
 import kpt.feature.settings.generated.resources.feature_settings_server_port
 import kpt.feature.settings.generated.resources.feature_settings_server_protocol
 import kpt.feature.settings.generated.resources.feature_settings_server_save
 import kpt.feature.settings.generated.resources.feature_settings_server_save_failed
 import kpt.feature.settings.generated.resources.feature_settings_server_saved
+import kpt.feature.settings.generated.resources.feature_settings_server_switch_cancel
+import kpt.feature.settings.generated.resources.feature_settings_server_switch_confirm
+import kpt.feature.settings.generated.resources.feature_settings_server_switch_message
+import kpt.feature.settings.generated.resources.feature_settings_server_switch_title
 import kpt.feature.settings.generated.resources.feature_settings_server_tenant
-import kpt.feature.settings.generated.resources.feature_settings_server_use_defaults
-import kpt.feature.settings.generated.resources.feature_settings_server_use_localhost
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -81,7 +104,8 @@ fun ServerConfigScreen(
     modifier: Modifier = Modifier,
     viewModel: ServerConfigViewModel = koinViewModel(),
 ) {
-    val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val state by viewModel.form.collectAsStateWithLifecycle()
+    val instances by viewModel.instances.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val savedMessage = stringResource(Res.string.feature_settings_server_saved)
     val invalidMessage = stringResource(Res.string.feature_settings_server_invalid)
@@ -105,6 +129,23 @@ fun ServerConfigScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        // Pinned, not at the end of the scroll: picking an instance is one tap, and Save must not be
+        // a scroll away from it on a phone where the five fields push it off-screen.
+        bottomBar = {
+            Surface(tonalElevation = 3.dp, shadowElevation = 3.dp) {
+                Button(
+                    onClick = { viewModel.actionChannel.trySend(ServerConfigAction.Submit) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .imePadding()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .testTag(ServerConfigTestTags.SAVE),
+                ) {
+                    Text(stringResource(Res.string.feature_settings_server_save))
+                }
+            }
+        },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.feature_settings_server_config_title)) },
@@ -125,6 +166,31 @@ fun ServerConfigScreen(
                 .testTag(ServerConfigTestTags.SCREEN),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            Text(
+                text = stringResource(Res.string.feature_settings_server_instances_title),
+                style = MaterialTheme.typography.titleSmall,
+            )
+            // The list loads through its store: progress until it lands, the framework's error /
+            // no-network state with a retry when nothing is cached. The fields below never wait on it.
+            ScreenContent(
+                state = instances,
+                onRetry = { viewModel.actionChannel.trySend(ServerConfigAction.RetryInstances) },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp).testTag(ServerConfigTestTags.INSTANCES),
+            ) { _, _ ->
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    InstancePicker(
+                        state = state,
+                        onSelect = { viewModel.actionChannel.trySend(ServerConfigAction.InstanceSelected(it)) },
+                    )
+                    state.selectedInstance?.takeIf { it.isDemo }?.let { DemoCredentialsHint(it.demoAccounts) }
+                }
+            }
+
+            Text(
+                text = stringResource(Res.string.feature_settings_server_details_title),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(top = 8.dp),
+            )
             Field(
                 value = state.config.protocol,
                 onChange = { viewModel.actionChannel.trySend(ServerConfigAction.ProtocolChanged(it)) },
@@ -162,26 +228,142 @@ fun ServerConfigScreen(
                 tag = ServerConfigTestTags.TENANT,
             )
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(
-                    onClick = { viewModel.actionChannel.trySend(ServerConfigAction.UseDefaults) },
-                    modifier = Modifier.weight(1f).testTag(ServerConfigTestTags.USE_DEFAULTS),
-                ) {
-                    Text(stringResource(Res.string.feature_settings_server_use_defaults))
+        }
+    }
+
+    if (state.confirmingSwitch) {
+        AlertDialog(
+            onDismissRequest = { viewModel.actionChannel.trySend(ServerConfigAction.SwitchCancelled) },
+            title = { Text(stringResource(Res.string.feature_settings_server_switch_title)) },
+            text = {
+                Text(
+                    stringResource(
+                        Res.string.feature_settings_server_switch_message,
+                        state.selectedInstance?.name ?: state.config.endPoint,
+                    ),
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { viewModel.actionChannel.trySend(ServerConfigAction.SwitchConfirmed) },
+                    modifier = Modifier.testTag(ServerConfigTestTags.SWITCH_CONFIRM),
+                ) { Text(stringResource(Res.string.feature_settings_server_switch_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.actionChannel.trySend(ServerConfigAction.SwitchCancelled) }) {
+                    Text(stringResource(Res.string.feature_settings_server_switch_cancel))
                 }
-                OutlinedButton(
-                    onClick = { viewModel.actionChannel.trySend(ServerConfigAction.UseLocalhost) },
-                    modifier = Modifier.weight(1f).testTag(ServerConfigTestTags.USE_LOCALHOST),
+            },
+        )
+    }
+}
+
+/**
+ * The named servers as one-tap choices — selecting one fills all five fields. "Custom" is not a
+ * choice: it is what the list shows when the fields match no instance (the officer typed their own).
+ */
+@Composable
+private fun InstancePicker(state: ServerConfigState, onSelect: (String) -> Unit) {
+    val selected = state.selectedInstance
+    Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        state.instances.forEach { instance ->
+            InstanceRow(
+                name = instance.name,
+                detail = "${instance.config.endPoint} · ${instance.config.tenant}",
+                isDemo = instance.isDemo,
+                selected = instance.id == selected?.id,
+                onClick = { onSelect(instance.id) },
+                modifier = Modifier.testTag(ServerConfigTestTags.INSTANCE_PREFIX + instance.id),
+            )
+        }
+        if (selected == null) {
+            InstanceRow(
+                name = stringResource(Res.string.feature_settings_server_instance_custom),
+                detail = "${state.config.endPoint} · ${state.config.tenant}",
+                isDemo = false,
+                selected = true,
+                // intentional-noop: "Custom" is a status, not a choice — edit the fields below to change it.
+                onClick = {},
+            )
+        }
+    }
+}
+
+@Composable
+private fun InstanceRow(
+    name: String,
+    detail: String,
+    isDemo: Boolean,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .selectable(selected = selected, onClick = onClick, role = Role.RadioButton),
+        border = BorderStroke(
+            width = if (selected) 2.dp else 1.dp,
+            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+        ),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            RadioButton(selected = selected, onClick = null)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = name, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = detail,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            if (isDemo) {
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.tertiaryContainer,
                 ) {
-                    Text(stringResource(Res.string.feature_settings_server_use_localhost))
+                    Text(
+                        text = stringResource(Res.string.feature_settings_server_demo_badge),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                    )
                 }
             }
+        }
+    }
+}
 
-            Button(
-                onClick = { viewModel.actionChannel.trySend(ServerConfigAction.Submit) },
-                modifier = Modifier.fillMaxWidth().testTag(ServerConfigTestTags.SAVE),
-            ) {
-                Text(stringResource(Res.string.feature_settings_server_save))
+/** The selected demo instance's PUBLISHED sign-ins, one line per role — so a tester knows what to type. */
+@Composable
+private fun DemoCredentialsHint(accounts: List<DemoCredentials>) {
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        modifier = Modifier.fillMaxWidth().testTag(ServerConfigTestTags.DEMO_HINT),
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Icon(AppIcons.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = stringResource(Res.string.feature_settings_server_demo_credentials),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+                accounts.forEach {
+                    Text(
+                        text = stringResource(Res.string.feature_settings_server_demo_account, it.role, it.username, it.password),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
+                }
             }
         }
     }
@@ -235,7 +417,9 @@ object ServerConfigTestTags {
     const val API_PATH = "server-config:api-path"
     const val PORT = "server-config:port"
     const val TENANT = "server-config:tenant"
-    const val USE_DEFAULTS = "server-config:use-defaults"
-    const val USE_LOCALHOST = "server-config:use-localhost"
+    const val INSTANCE_PREFIX = "server-config:instance:"
+    const val DEMO_HINT = "server-config:demo-hint"
+    const val INSTANCES = "server-config:instances"
+    const val SWITCH_CONFIRM = "server-config:switch-confirm"
     const val SAVE = "server-config:save"
 }

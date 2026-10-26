@@ -214,7 +214,6 @@ private fun RescheduleForm(
 
         AppTextFieldDropdown(
             value = state.reason?.name.orEmpty(),
-            onValueChanged = {},
             onOptionSelected = { index, _ ->
                 state.reasons.getOrNull(index)
                     ?.let { onAction(LoanRescheduleFormAction.OnReasonSelected(it)) }

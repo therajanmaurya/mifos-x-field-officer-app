@@ -42,9 +42,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.vinceglb.filekit.FileKit
-import io.github.vinceglb.filekit.dialogs.openFileSaver
-import io.github.vinceglb.filekit.write
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -63,6 +60,7 @@ import kpt.core.model.report.ReportOption
 import kpt.core.model.report.ReportParameter
 import kpt.core.model.report.ReportParameterType
 import kpt.core.ui.components.AppEmptyCard
+import kpt.feature.report.ui.saveReportCsv
 import kpt.feature.report.generated.resources.Res
 import kpt.feature.report.generated.resources.feature_report_all_option
 import kpt.feature.report.generated.resources.feature_report_back_to_parameters
@@ -97,13 +95,11 @@ internal fun ReportRunScreen(
     EventsEffect(viewModel.eventFlow) { event ->
         when (event) {
             ReportRunEvent.NavigateBack -> onNavigateBack()
-            // The platform's own save dialog: no storage permission, and it works on every target —
-            // the original wrote to a hardcoded Android path and was TODO() on the rest.
+            // A save dialog on Android / desktop / iOS (no storage permission), a browser download on the
+            // web — see saveReportCsv. The original wrote to a hardcoded Android path and was TODO() elsewhere.
             is ReportRunEvent.ExportCsv -> {
-                val saved = runCatching {
-                    FileKit.openFileSaver(suggestedName = event.fileName, extension = "csv")
-                        ?.also { it.write(event.csv.encodeToByteArray()) } != null
-                }.getOrDefault(false)
+                val saved = runCatching { saveReportCsv(event.fileName, event.csv.encodeToByteArray()) }
+                    .getOrDefault(false)
                 viewModel.trySendAction(ReportRunAction.ExportFinished(saved))
             }
             is ReportRunEvent.ShowMessage -> snackbar.showSnackbar(
@@ -205,7 +201,6 @@ private fun ParameterForm(
                     val choices = if (parameter.allowAll) listOf(ReportOption(ALL, all)) + loaded else loaded
                     AppTextFieldDropdown(
                         value = choices.firstOrNull { it.id == value }?.label.orEmpty(),
-                        onValueChanged = {},
                         onOptionSelected = { index, _ ->
                             choices.getOrNull(index)?.let { onAction(ReportRunAction.ValueChanged(parameter.name, it.id)) }
                         },

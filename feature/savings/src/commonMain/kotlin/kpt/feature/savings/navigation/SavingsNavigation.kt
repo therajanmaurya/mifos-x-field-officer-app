@@ -17,9 +17,10 @@ import kpt.core.base.ui.nav.FeatureDestination
 import kpt.core.base.ui.nav.composableWithPushTransitions
 import kpt.core.base.ui.nav.popBackStackSafely
 import kpt.core.common.utils.Constants
-import kpt.core.model.savings.SavingAccountDepositType
 import kpt.core.model.objects.charge.ChargeResource
+import kpt.core.model.savings.SavingAccountDepositType
 import kpt.feature.charge.navigation.navigateToCharges
+import kpt.feature.datatable.navigation.navigateToDataTableList
 import kpt.feature.document.navigation.navigateToDocumentList
 import kpt.feature.savings.application.SavingsApplicationScreen
 import kpt.feature.savings.recurring.RecurringDepositScreen
@@ -144,6 +145,8 @@ fun NavGraphBuilder.savingsDestination(navController: NavController) {
             // The ONE charge module, scoped to this account — `savingsaccounts/{id}/charges`,
             // which deposit accounts share (they are savings accounts underneath in Fineract).
             onCharges = { accountId -> navController.navigateToCharges(ChargeResource.SAVINGS, accountId) },
+            // The account's datatables — the original's "More savings account info".
+            onMoreInfo = { accountId -> navController.navigateToDataTableList(Constants.DATA_TABLE_NAME_SAVINGS, accountId) },
             onApprove = navController::navigateToSavingsApproval,
             onActivate = navController::navigateToSavingsActivation,
             onTransaction = { accountType, accountId, kind ->

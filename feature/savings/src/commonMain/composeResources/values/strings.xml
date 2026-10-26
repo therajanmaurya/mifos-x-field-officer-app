@@ -26,6 +26,7 @@
     <string name="feature_savings_activate">Activate Savings</string>
     <string name="feature_savings_closed">Savings account closed</string>
     <string name="feature_savings_documents">Documents</string>
+    <string name="feature_savings_more_savings_account_info">More savings account info</string>
     <string name="feature_savings_charges">Charges</string>
     <string name="feature_savings_transaction_id">Transaction Id</string>
     <string name="feature_savings_date">Date</string>

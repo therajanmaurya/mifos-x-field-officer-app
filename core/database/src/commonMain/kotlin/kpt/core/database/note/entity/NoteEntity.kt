@@ -9,6 +9,7 @@
  */
 package kpt.core.database.note.entity
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 import kpt.core.base.database.annotation.DbEntity
@@ -26,7 +27,12 @@ data class NoteEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long? = null,
 
+    /** The owner's id — a client, group, … per [resourceType]. Kept as `clientId` (the column's name since v1). */
     val clientId: Long? = null,
+
+    /** Fineract's owner path (`clients`, `groups`, …). Added in v18; every older row is a client note. */
+    @ColumnInfo(defaultValue = "clients")
+    val resourceType: String = "clients",
 
     val noteContent: String? = null,
 

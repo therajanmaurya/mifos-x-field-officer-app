@@ -9,6 +9,10 @@
  */
 package kpt.feature.groups.detail
 
+import kpt.core.model.loan.LoanAccount
+import kpt.core.model.group.GroupWithAssociations
+import kpt.core.model.group.GroupAccounts
+import kpt.core.model.client.Client
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
@@ -137,5 +141,49 @@ class GroupsDetailViewModelTest {
         // The tap must NOT post from here — doing so would activate with a date the officer was
         // never asked for, which is the defect this move fixed.
         assertEquals(emptyList(), commands.activations)
+    }
+
+    @Test
+    fun theGroupsClientsAndAccountsComeFromTheirOwnReads() = runTest(dispatcher) {
+        val repo = FakeGroupRepository()
+        val vm = viewModel(repo)
+        repo.membersState.value = ScreenState.Content(
+            GroupWithAssociations(id = 7, clientMembers = listOf(Client(id = 3, displayName = "Asha"))),
+        )
+        repo.accountsState.value = ScreenState.Content(
+            GroupAccounts(loanAccounts = listOf(LoanAccount(id = 11, productName = "Group loan"))),
+        )
+
+        vm.members.test {
+            assertEquals(listOf("Asha"), assertIs<ScreenState.Content<List<Client>>>(expectMostRecentItemOrLoading()).data.map { it.displayName })
+            cancelAndIgnoreRemainingEvents()
+        }
+        vm.accounts.test {
+            assertEquals(listOf(11), assertIs<ScreenState.Content<GroupAccounts>>(expectMostRecentItemOrLoading()).data.loanAccounts.map { it.id })
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun eachRowAndTheNotesEntryOpenTheirDestination() = runTest(dispatcher) {
+        val vm = viewModel(FakeGroupRepository())
+        vm.eventFlow.test {
+            vm.trySendAction(GroupsDetailAction.NotesClicked)
+            assertEquals(GroupsDetailEvent.OpenNotes(7), awaitItem())
+            vm.trySendAction(GroupsDetailAction.LoanClicked(11))
+            assertEquals(GroupsDetailEvent.OpenLoan(11), awaitItem())
+            vm.trySendAction(GroupsDetailAction.SavingsClicked(12, "recurring_deposit"))
+            assertEquals(GroupsDetailEvent.OpenSavings(12, "recurring_deposit"), awaitItem())
+            vm.trySendAction(GroupsDetailAction.ClientClicked(3))
+            assertEquals(GroupsDetailEvent.OpenClient(3), awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    /** Skips the initial Loading if a later state is already there. */
+    private suspend fun <T> app.cash.turbine.ReceiveTurbine<ScreenState<T>>.expectMostRecentItemOrLoading(): ScreenState<T> {
+        var item = awaitItem()
+        while (item is ScreenState.Loading) item = awaitItem()
+        return item
     }
 }

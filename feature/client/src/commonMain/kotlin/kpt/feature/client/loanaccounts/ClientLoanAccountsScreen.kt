@@ -46,12 +46,13 @@ import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.RefreshableScreenContent
-import kpt.core.model.loan.LoanAccount
+import kpt.core.common.utils.CurrencyFormatter
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.component.FloatingActionButtonContent
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.AppTypography
 import kpt.core.designsystem.theme.DesignToken
+import kpt.core.model.loan.LoanAccount
 import kpt.core.ui.components.Actions
 import kpt.core.ui.components.AppActionsLoanListingComponent
 import kpt.core.ui.components.AppEmptyCard
@@ -273,7 +274,9 @@ private fun LoanAccountCard(
     onAction: (ClientLoanAccountsAction) -> Unit,
 ) {
     val notAvailable = stringResource(Res.string.feature_client_loan_accounts_not_available)
-    val symbol = loan.currency?.displaySymbol.orEmpty()
+    // The app's one money format ("MX$900.00"), as the loan and savings summaries show it — this card
+    // glued the symbol to a raw Double and read "$0.0" (device, 2026-10-25).
+    val money: (Double) -> String = { CurrencyFormatter.format(it, loan.currency?.code, loan.currency?.decimalPlaces) }
 
     // `id` is what both destinations need. A card whose loan has no id cannot be opened, so it
     // offers no actions rather than sending `0` — the original passed `loan.id ?: 0`, and loan 0
@@ -290,11 +293,11 @@ private fun LoanAccountCard(
     AppActionsLoanListingComponent(
         accountNo = loan.accountNo ?: notAvailable,
         loanProduct = loan.productName ?: notAvailable,
-        originalLoan = loan.originalLoan?.let { symbol + it } ?: notAvailable,
+        originalLoan = loan.originalLoan?.let(money) ?: notAvailable,
         // A pending loan has no amounts yet, so the original showed "N/A" rather than a formatted
         // zero on both of these — kept, for the same reason the summary blanks its figures.
-        amountPaid = loan.amountPaid.forPendingAware(loan, symbol, notAvailable),
-        loanBalance = loan.loanBalance.forPendingAware(loan, symbol, notAvailable),
+        amountPaid = loan.amountPaid.forPendingAware(loan, money, notAvailable),
+        loanBalance = loan.loanBalance.forPendingAware(loan, money, notAvailable),
         type = loan.loanType?.value ?: notAvailable,
         status = loan.status?.value ?: notAvailable,
         menuList = menu,
@@ -319,11 +322,11 @@ private fun LoanAccountCard(
  */
 private fun Double?.forPendingAware(
     loan: LoanAccount,
-    symbol: String,
+    money: (Double) -> String,
     notAvailable: String,
 ): String = when {
     loan.status?.pendingApproval == true -> notAvailable
-    else -> symbol + (this ?: 0.0)
+    else -> money(this ?: 0.0)
 }
 
 @Composable

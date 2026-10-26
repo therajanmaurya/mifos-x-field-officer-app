@@ -248,10 +248,13 @@ internal fun AuthenticatedNavbarNavigationScreenContent(
                 // Search, reached from the top bar's magnifier rather than from a tab.
                 searchDestination(
                     onBackClick = { navController.popBackStackSafely() },
-                    // Three of the five entity types have a ported destination; the other two
-                    // rows are not clickable. This is also the ONLY path into `feature/loan` in
-                    // the running app — see `navigateToSearchResult`.
-                    onResultClick = navController::navigateToSearchResult,
+                    // Both on the OUTER controller: search sits in this INNER (bottom-bar) host, but every
+                    // destination it opens — the five entity details and the three create forms — is a
+                    // feature destination registered on the outer graph (`FeatureRegistry`). On the
+                    // inner controller `navigate()` threw "Destination … cannot be found" and crashed
+                    // the app (device, 2026-10-25: the FAB's Create centre).
+                    onResultClick = outerNavController::navigateToSearchResult,
+                    onCreate = outerNavController::navigateToCreate,
                 )
 
                 // Profile is no longer a BOTTOM-NAV tab (the original has none — the account surface is the

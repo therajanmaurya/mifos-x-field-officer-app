@@ -34,7 +34,8 @@ maps `FullParameterList` in `core/store/report/ReportParameterMapping.kt`), `par
 - **CSV export was Android-only and broke on commas.** It wrote to a hardcoded
   `/storage/emulated/0/Download/MifosReports` behind a storage permission, was `TODO()` on desktop, and
   joined raw values with "," (a client named "Das, A." split into two columns; nulls written as `null`).
-  Now one RFC 4180 writer and the platform save dialog on every target. Tested (`ReportCsvTest`).
+  Now one RFC 4180 writer, the save dialog on Android/desktop/iOS and a browser download on the web
+  (`saveReportCsv`, one `actual` per platform). Tested (`ReportCsvTest`).
 - **A report listed once per parameter.** `reportCategoryList` returns one row per report-parameter;
   the original showed a 4-parameter report 4 times. Distinct by report id now.
 - **A child select kept a value from the old parent** (an officer of the previous office); changing a

@@ -56,7 +56,8 @@ class AddEditNoteViewModelTest {
     private fun viewModel(clientId: Int = 7, noteId: Long? = null): AddEditNoteViewModel {
         val handle = SavedStateHandle(
             buildMap<String, Any> {
-                put("clientId", clientId)
+                put("resourceType", "clients")
+                put("resourceId", clientId)
                 noteId?.let { put("noteId", it) }
             },
         )

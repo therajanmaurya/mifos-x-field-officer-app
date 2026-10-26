@@ -9,10 +9,10 @@
  */
 package kpt.core.network.config
 
-import kpt.core.base.network.AccessPoint
+import kpt.core.base.network.NetworkConfig
 import kpt.core.base.network.AccessPointKind
-import kpt.core.base.network.HeaderSpec
 import kpt.core.model.utils.ServerConfig
+import kpt.core.model.utils.baseUrl
 import kpt.core.model.utils.getInstanceUrl
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -56,29 +56,34 @@ class AppServerConfigTest {
         assertTrue(tenant.isNotBlank() && tenant.all { it.isLetterOrDigit() || it == '-' || it == '_' }, tenant)
     }
 
-    private fun point(baseUrl: String, basePath: String = "", tenant: String? = null) = AccessPoint(
+    private fun config(baseUrl: String, tenant: String? = null) = NetworkConfig(
         id = "x",
         kind = AccessPointKind.REST,
         baseUrl = baseUrl,
-        basePath = basePath,
-        loggableHost = "h",
-        headers = listOfNotNull(tenant?.let { HeaderSpec(name = AppServerConfig.TENANT_HEADER, value = it) }),
+        headers = listOfNotNull(tenant?.let { AppServerConfig.TENANT_HEADER to it }).toMap(),
     )
 
     @Test
     fun portsAndPathsSplitTheWayTheScreenShowsThem() {
         assertEquals(
             ServerConfig("http://", "localhost", "/fineract-provider/api/v1/", "8080", "default"),
-            point("http://localhost:8080/", "/fineract-provider/api/v1", "default").toServerConfig(),
+            config("http://localhost:8080/fineract-provider/api/v1/", "default").toServerConfig(),
         )
         // No explicit port → the scheme's; no path → "/"; no tenant header → blank (the screen flags it).
-        assertEquals(ServerConfig("https://", "h.example", "/", "443", ""), point("https://h.example").toServerConfig())
-        assertEquals("80", point("http://h.example/").toServerConfig().port)
+        assertEquals(ServerConfig("https://", "h.example", "/", "443", ""), config("https://h.example").toServerConfig())
+        assertEquals("80", config("http://h.example/").toServerConfig().port)
     }
 
     @Test
-    fun aBaseUrlCarryingAPathIsRefusedNotMisread() {
-        // base_url is the ORIGIN only; a path there would be silently dropped from the screen's fields.
-        assertFailsWith<IllegalArgumentException> { point("https://h.example/fineract-provider/").toServerConfig() }
+    fun aConfigRoundTripsThroughTheScreensFields() {
+        val other = ServerConfig("https://", "branch.example.org", "/fineract-provider/api/v1/", "8443", "branch-7")
+        assertEquals(other, config(other.baseUrl(), "branch-7").toServerConfig())
+        assertEquals(mapOf(AppServerConfig.TENANT_HEADER to "branch-7"), other.networkHeaders())
+        assertEquals(AppServerConfig.DEFAULT.baseUrl(), AppAccessPoints.points.single { it.isMain }.effectiveUrl)
+    }
+
+    @Test
+    fun aMalformedUrlIsRefusedNotMisread() {
+        assertFailsWith<IllegalArgumentException> { config("ftp://h.example/").toServerConfig() }
     }
 }

@@ -2,7 +2,8 @@
 
 **Source:** `6b66e8a43:feature/center` — 17 `.kt` (5 screens, 5 ViewModels)
 **Landed:** out of slice order, ahead of S6 — the dashboard's Centers TAB needed a destination
-**Status:** read paths complete. Three write surfaces deferred (§7).
+**Status:** complete — read paths, create, and offline download (§8, which closes the §7 deferrals).
+Open: the list has no pull-to-refresh yet (§7).
 
 ---
 
@@ -103,3 +104,7 @@ The §7 deferrals are closed.
   named and the walk continues. The center is marked downloaded (`sync`), and the list writer now keeps
   that flag across refreshes — before, every list refresh reset it (`KeepDownloadedFlag.kt`).
 - **Group rows in a center open the group** — `onGroupClick` was null until feature/groups landed.
+
+## Audit pass (2026-10-25)
+
+The detail screen is now one `LazyColumn` with the original's **meeting** fields (activation, next meeting, frequency) and the **summary** counts (`ReportGetCenterSummaryInfo`). The overflow gains **Add savings account** (group-owned savings application). Two bugs fixed: the groups section read every group instead of the centre's own (it now reads `groupMembers` of the centre-with-associations call), and `CenterInfo` decoded every count as 0 because the server's keys are lowercase (`activeclients`). The second fix has a `CenterInfoDecodeTest`.

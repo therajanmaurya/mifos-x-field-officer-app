@@ -12,8 +12,16 @@ package kpt.core.data.group
 import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.model.group.Group
+import kpt.core.model.group.GroupAccounts
+import kpt.core.model.group.GroupWithAssociations
 
 interface GroupRepository {
     /** Groups the officer services. */
     fun groupsStream(scope: CoroutineScope): ScreenDataStream<List<Group>>
+
+    /** One group with its member clients (`groups/{id}?associations=all`) — the detail's Clients section. */
+    fun groupWithMembersStream(groupId: Int, scope: CoroutineScope): ScreenDataStream<GroupWithAssociations>
+
+    /** The group's loan and savings accounts (`groups/{id}/accounts`) — the detail's Accounts section. */
+    fun groupAccountsStream(groupId: Int, scope: CoroutineScope): ScreenDataStream<GroupAccounts>
 }

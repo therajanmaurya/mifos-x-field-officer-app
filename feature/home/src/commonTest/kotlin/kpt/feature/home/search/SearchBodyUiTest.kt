@@ -140,15 +140,15 @@ class SearchBodyUiTest {
 
     @Test
     fun aResultWithNoPortedDestinationIsNOTClickable() = runComposeUiTest {
-        // CENTER alone now. SAVING became live in S5a when the savings summary landed — this list
-        // shrinks by one each time a vertical lands, which is the point of gating on it rather than
-        // on whether a callback was supplied (RULE-IMPL-DEAD-CLICKABLE-001).
+        // Every type Fineract's search returns is ported now (CENTER was last, 2026-10-25), so the
+        // rule is pinned with a type that has no destination — the gate is the destination, never
+        // whether a callback was supplied (RULE-IMPL-DEAD-CLICKABLE-001).
         var tapped = 0
         setContent {
             AppTheme {
                 SearchBodyContent(
                     results = ScreenState.Content(
-                        listOf(entity(1, "Centre A").copy(entityType = "CENTER")),
+                        listOf(entity(1, "Share A").copy(entityType = "SHARE")),
                     ),
                     state = SearchState(query = "a"),
                     onAction = {},
@@ -158,6 +158,23 @@ class SearchBodyUiTest {
         }
         onNodeWithTag(TestTags.Home.searchResult(1)).performClick()
         assertEquals(0, tapped, "an unported entity type must not be tappable")
+    }
+
+    @Test
+    fun aCentreResultIsClickableNowCentreDetailExists() = runComposeUiTest {
+        var tapped = 0
+        setContent {
+            AppTheme {
+                SearchBodyContent(
+                    results = ScreenState.Content(listOf(entity(1, "Centre A").copy(entityType = "CENTER"))),
+                    state = SearchState(query = "a"),
+                    onAction = {},
+                    onResultClick = { tapped++ },
+                )
+            }
+        }
+        onNodeWithTag(TestTags.Home.searchResult(1)).performClick()
+        assertEquals(1, tapped)
     }
 
     @Test

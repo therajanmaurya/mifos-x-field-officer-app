@@ -97,6 +97,9 @@ internal class SavingsSummaryViewModel(
             SavingsSummaryAction.DocumentsClicked ->
                 sendEvent(SavingsSummaryEvent.OpenDocuments(accountId))
 
+            SavingsSummaryAction.MoreInfoClicked ->
+                sendEvent(SavingsSummaryEvent.OpenMoreInfo(accountId))
+
             SavingsSummaryAction.ChargesClicked ->
                 sendEvent(SavingsSummaryEvent.OpenCharges(accountId))
 
@@ -279,6 +282,9 @@ internal sealed interface SavingsSummaryEvent {
     /** The generic document list, scoped to this savings account. */
     data class OpenDocuments(val accountId: Int) : SavingsSummaryEvent
 
+    /** The account's datatables — the original's \"More savings account info\". */
+    data class OpenMoreInfo(val accountId: Int) : SavingsSummaryEvent
+
     /** The ONE charge module (`feature/charge`), scoped to this savings account. */
     data class OpenCharges(val accountId: Int) : SavingsSummaryEvent
 
@@ -294,6 +300,7 @@ internal sealed interface SavingsSummaryAction {
     data object ApproveClicked : SavingsSummaryAction
     data object ActivateClicked : SavingsSummaryAction
     data object DocumentsClicked : SavingsSummaryAction
+    data object MoreInfoClicked : SavingsSummaryAction
     data object ChargesClicked : SavingsSummaryAction
     data class TransactionClicked(val transaction: SavingsTransactionRow) : SavingsSummaryAction
 }

@@ -78,3 +78,7 @@ therefore prevented client-side: `submitDraft` re-reads the resource's notes bef
 CREATE and skips the POST when an identical text is already there. Fails open — an unreadable list
 sends the note rather than dropping it. 5 tests in `core/data` `NoteDraftReplayTest`, RED-proved.
 Tracked as `idempotency-key-ignored-by-gateway` in `CAPABILITY_GAPS.yaml`.
+
+## Owner-generic notes (2026-10-25, DB v18)
+
+Notes are keyed `(resourceType, resourceId)`, not just a client id: `NoteListRoute` / `AddEditNoteRoute` take the owner type, `NoteEntity.resourceType` defaults to `clients` (migration `fork-note-resource-type`, 17 → 18), and group 7's notes are not client 7's (`aGroupNoteIsRecordedUnderTheGroupNotTheClientWithTheSameId`). Groups and loans now open it; `navigateToClientNotes` keeps the client callers.

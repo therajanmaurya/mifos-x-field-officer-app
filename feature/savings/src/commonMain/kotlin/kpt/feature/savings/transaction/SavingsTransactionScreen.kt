@@ -174,7 +174,6 @@ internal fun SavingsTransactionContent(
                 Spacer(Modifier.height(KptTheme.spacing.md))
                 AppTextFieldDropdown(
                     value = state.paymentType?.name.orEmpty(),
-                    onValueChanged = {},
                     onOptionSelected = { index, _ ->
                         state.paymentTypes.getOrNull(index)
                             ?.let { onAction(SavingsTransactionAction.OnPaymentTypeSelected(it)) }

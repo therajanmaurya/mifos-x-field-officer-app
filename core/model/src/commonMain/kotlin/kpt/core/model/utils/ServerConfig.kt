@@ -25,11 +25,8 @@ data class ServerConfig(
     companion object {
         // No `DEFAULT` here, deliberately. The shipped server is DERIVED from the generated access point
         // (`kpt.core.network.config.AppServerConfig.DEFAULT`, from `app-profile/app.yaml`) — a constant
-        // in this module could only ever be a second copy of it, and core/model cannot see core/network.
-        // Read it through `ServerConfigRepository.defaultConfig`, or inject it by [DEFAULT_QUALIFIER].
-
-        /** Koin qualifier of the shipped default, bound by core/network's `ProjectNetworkModule`. */
-        const val DEFAULT_QUALIFIER = "serverConfig.default"
+        // in this module could only ever be a second copy of it. Read it through
+        // `ServerConfigRepository.defaultConfig`.
 
         val LOCALHOST = ServerConfig(
             protocol = "http://",
@@ -44,3 +41,52 @@ data class ServerConfig(
 fun ServerConfig.getInstanceUrl(): String {
     return "$protocol$endPoint$apiPath"
 }
+
+/**
+ * The full URL this config names — the one requests resolve against. The port is written only when it
+ * is not the scheme's default, so a config split from a declared URL rebuilds EXACTLY that URL.
+ */
+fun ServerConfig.baseUrl(): String {
+    val defaultPort = if (protocol == "https://") "443" else "80"
+    val port = port.trim().takeIf { it.isNotEmpty() && it != defaultPort }?.let { ":$it" }.orEmpty()
+    val path = apiPath.trim().trim('/').let { if (it.isEmpty()) "/" else "/$it/" }
+    return "$protocol${endPoint.trim()}$port$path"
+}
+
+private val URL_PARTS = Regex("^(https?://)([^/:]+)(?::(\\d+))?(/.*)?$")
+
+/**
+ * Splits a full server URL (`https://host[:port][/path]`) and a tenant into a [ServerConfig] — the
+ * original's Instance URL dialog took exactly these two. Null when [url] is not an http(s) URL.
+ */
+fun serverConfigOf(url: String, tenant: String): ServerConfig? {
+    val (protocol, host, port, path) = URL_PARTS.find(url.trim())?.destructured ?: return null
+    val apiPath = path.trim('/')
+    return ServerConfig(
+        protocol = protocol,
+        endPoint = host,
+        apiPath = if (apiPath.isEmpty()) "/" else "/$apiPath/",
+        port = port.ifEmpty { if (protocol == "https://") "443" else "80" },
+        tenant = tenant.trim(),
+    )
+}
+
+/**
+ * A server the officer picks by name instead of typing five fields. [demoAccounts] is non-empty for a
+ * PUBLIC demo instance — the Mifos community publishes those sign-ins, so showing them is the point.
+ */
+data class ServerInstance(
+    val id: String,
+    val name: String,
+    val config: ServerConfig,
+    val demoAccounts: List<DemoCredentials> = emptyList(),
+) {
+    val isDemo: Boolean get() = demoAccounts.isNotEmpty()
+}
+
+/** One published sign-in of a demo [ServerInstance] — [role] says what it can do. Never a real account. */
+@Serializable
+data class DemoCredentials(val role: String, val username: String, val password: String)
+
+/** The instance whose config is exactly [config], or null for a custom server. */
+fun List<ServerInstance>.matching(config: ServerConfig): ServerInstance? = firstOrNull { it.config == config }

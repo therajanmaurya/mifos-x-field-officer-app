@@ -36,7 +36,8 @@ fun LoanWithAssociationsDto.toDomain(): LoanWithAssociations = LoanWithAssociati
     accountNo = this.accountNo,
     status = this.status?.toDomain(),
     clientId = this.clientId.toInt(),
-    clientName = this.clientName,
+    // The owner's name: a group loan has no client, so the summary's header shows the group.
+    clientName = this.clientName ?: this.group?.name,
     loanProductId = this.loanProductId.toInt(),
     loanProductName = this.loanProductName,
     loanProductDescription = this.loanProductDescription,

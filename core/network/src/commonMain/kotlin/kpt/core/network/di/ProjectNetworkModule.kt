@@ -11,9 +11,6 @@ package kpt.core.network.di
 
 import kpt.core.base.network.SupabaseConfigClient
 import kpt.core.base.network.SupabaseExtrasProvider
-import kpt.core.model.utils.ServerConfig
-import kpt.core.network.config.AppServerConfig
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -77,12 +74,6 @@ import org.koin.dsl.module
  */
 val ProjectNetworkModule = module {
     // Intentionally empty on the template — a fork adds its own non-derivable network singles here.
-
-    // The shipped server, as the server-config screen describes one — derived from the generated
-    // `mifos` access point (see AppServerConfig). core/datastore needs it as the stored preference's
-    // fallback but cannot see this module, so it is injected by qualifier.
-    single(named(ServerConfig.DEFAULT_QUALIFIER)) { AppServerConfig.DEFAULT }
-
     // ── Supabase modules beyond Postgrest ────────────────────────────────────────────────────────
     // BOUND, not merely documented. SupabaseClientFactory resolves this with `getOrNull`, so an
     // absent binding and a binding that returns `{}` behave identically — but a live binding puts the

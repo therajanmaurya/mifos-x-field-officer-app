@@ -37,12 +37,13 @@ import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.RefreshableScreenContent
+import kpt.core.common.utils.CurrencyFormatter
 import kpt.core.common.utils.DateHelper
-import kpt.core.model.savings.SavingsAccount
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.component.FloatingActionButtonContent
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.AppTypography
+import kpt.core.model.savings.SavingsAccount
 import kpt.core.ui.components.Actions
 import kpt.core.ui.components.AppActionsSavingsListingComponent
 import kpt.core.ui.components.AppEmptyCard
@@ -262,7 +263,7 @@ private fun DepositAccountList(
                 savingsProduct = productLabel,
                 savingsProductName = account.productName.orEmpty(),
                 balance = account.accountBalance
-                    ?.let { "${account.currency?.displaySymbol.orEmpty()} $it".trim() }
+                    ?.let { CurrencyFormatter.format(it, account.currency?.code, account.currency?.decimalPlaces) }
                     ?: notAvailable,
                 lastActive = account.lastActiveTransactionDate
                     ?.let { DateHelper.getDateAsString(it) }

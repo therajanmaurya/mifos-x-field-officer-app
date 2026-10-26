@@ -103,7 +103,6 @@ fun AddChargeBottomSheet(
 
                 AppTextFieldDropdown(
                     value = selectedChargeName,
-                    onValueChanged = {},
                     onOptionSelected = onChargeSelected,
                     options = chargeOptions,
                     label = stringResource(Res.string.name),

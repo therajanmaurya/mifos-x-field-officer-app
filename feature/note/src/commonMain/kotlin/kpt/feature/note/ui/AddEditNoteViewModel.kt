@@ -73,7 +73,8 @@ internal class AddEditNoteViewModel(
     ),
 ) {
 
-    private val clientId: Int = savedStateHandle.get<Int>(CLIENT_ID_KEY) ?: 0
+    private val resourceType: String = savedStateHandle.get<String>(RESOURCE_TYPE_KEY) ?: Constants.ENTITY_TYPE_CLIENTS
+    private val resourceId: Int = savedStateHandle.get<Int>(RESOURCE_ID_KEY) ?: 0
 
     /** `null` means ADD. Read once; the original branched on it in four separate places. */
     private val noteId: Long? = savedStateHandle.get<Long>(NOTE_ID_KEY)
@@ -114,7 +115,7 @@ internal class AddEditNoteViewModel(
     private fun loadExistingNote(id: Long) {
         viewModelScope.launch {
             runCatching {
-                repository.notesStream(clientId.toLong(), viewModelScope).state
+                repository.notesStream(resourceType, resourceId.toLong(), viewModelScope).state
                     .first { it !is ScreenState.Loading }
             }.onSuccess { screenState ->
                 val existing = (screenState as? ScreenState.Content)
@@ -149,17 +150,17 @@ internal class AddEditNoteViewModel(
     fun onDiscardDismissed() = _formState.update { it.copy(showDiscardConfirmation = false) }
 
     private fun draftPayload() = NoteDraft(
-        resourceId = clientId.toLong(),
+        resourceId = resourceId.toLong(),
         text = _formState.value.text.trim(),
         noteId = noteId,
-        // Clients today. Centres and groups reach the same editor when those features land, and the
-        // type travels ON the draft so a replay does not have to re-derive it from UI context.
-        resourceType = Constants.ENTITY_TYPE_CLIENTS,
+        // The type travels ON the draft so a replay does not have to re-derive it from UI context.
+        resourceType = resourceType,
         idempotencyKey = idempotencyKey,
     )
 
     private companion object {
-        const val CLIENT_ID_KEY = "clientId"
+        const val RESOURCE_TYPE_KEY = "resourceType"
+        const val RESOURCE_ID_KEY = "resourceId"
         const val NOTE_ID_KEY = "noteId"
         const val TAG = "AddEditNoteViewModel"
     }
@@ -170,14 +171,18 @@ internal class AddEditNoteViewModel(
  *
  * Read from the handle rather than from the ViewModel's own fields because
  * [BaseMutationViewModel]'s constructor runs FIRST — the mode is a super-constructor argument, so
- * `clientId`/`noteId` do not exist yet.
+ * `resourceId`/`noteId` do not exist yet.
  *
- * An edit keys on the note; a new note keys on the client. So "new note on client 7" and "edit of
+ * An edit keys on the note; a new note keys on its owner. So "new note on client 7" and "edit of
  * note 12" are separate slots, and two officers' worth of offline work never collapses into one.
+ * A client keeps the pre-v18 `client:<id>:new` form, so a note queued before the change still finds
+ * its slot; other owners are `<resourceType>:<id>:new`.
  */
 private fun SavedStateHandle.uniqueKey(): String {
-    val client = get<Int>("clientId") ?: 0
-    return get<Long>("noteId")?.let { "note:$it" } ?: "client:$client:new"
+    val type = get<String>("resourceType") ?: Constants.ENTITY_TYPE_CLIENTS
+    val owner = get<Int>("resourceId") ?: 0
+    return get<Long>("noteId")?.let { "note:$it" }
+        ?: if (type == Constants.ENTITY_TYPE_CLIENTS) "client:$owner:new" else "$type:$owner:new"
 }
 
 /** The editable body. Submit lifecycle lives in [BaseMutationViewModel]'s `uiState`, not here. */

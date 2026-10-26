@@ -45,4 +45,17 @@
     <string name="feature_center_center_created_successfully">Center created successfully</string>
     <string name="feature_center_failed_to_create_center">Failed to create center</string>
     <string name="feature_center_create_offline">You are offline. Connect to create a center.</string>
+    <string name="feature_center_more_options">More options</string>
+    <string name="feature_center_add_savings_account">Add savings account</string>
+    <string name="feature_center_summary_info">Summary info</string>
+    <string name="feature_center_next_meeting_on">Next meeting on</string>
+    <string name="feature_center_unassigned">Unassigned</string>
+    <string name="feature_center_meeting_frequency">Meeting frequency</string>
+    <string name="feature_center_active_client">Active clients</string>
+    <string name="feature_center_active_group_loan">Active group loans</string>
+    <string name="feature_center_active_client_loans">Active client loans</string>
+    <string name="feature_center_active_group_borrowers">Active group borrowers</string>
+    <string name="feature_center_active_client_borrowers">Active client borrowers</string>
+    <string name="feature_center_overdue_group_loans">Overdue group loans</string>
+    <string name="feature_center_overdue_client_loans">Overdue client loans</string>
 </resources>

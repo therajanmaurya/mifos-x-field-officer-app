@@ -16,5 +16,6 @@ asks for, run it, read the result as a table, and export it as CSV.
 The form is generated from the report's own `FullParameterList` metadata (`ReportParameter`: variable,
 label, display type, default, select-all, parent) — no parameter name is hardcoded here. The catalogue
 and each report's parameters are cached for offline browsing; running a report always asks the server.
-CSV export goes through the platform's save dialog (FileKit), so it needs no storage permission.
+CSV export is `saveReportCsv` (FileKit): the platform save dialog on Android, desktop and iOS (no storage
+permission), a browser download on the web.
 Previews render in `desktopTest` (`ReportPreviewScreenshotTest`).

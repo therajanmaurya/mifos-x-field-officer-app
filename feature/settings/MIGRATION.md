@@ -111,3 +111,7 @@ questions and response options. Its ONLY consumers are the three survey screens 
 classified unreachable in feature/client's ledger. Porting the sync would download data no screen reads:
 an inert control. It lands with the survey screens, if they are ever given an entry point. The data
 layer for it exists (`surveys` / `surveyGetSurvey` stores).
+
+## Server config + sign-out (2026-10-25)
+
+The instance picker reads Supabase `app_server_config` through `ServerInstancesStore`. The DB is the source of truth and the bundled list is the fallback, with a loading shimmer, demo-account hints and a restart confirmation when signed in. **Sign out** is at the bottom of Settings, defaulting to "Sign out and clear data".

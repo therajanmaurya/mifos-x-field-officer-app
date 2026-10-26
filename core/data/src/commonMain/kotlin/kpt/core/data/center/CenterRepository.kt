@@ -12,12 +12,27 @@ package kpt.core.data.center
 import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.model.center.Center
+import kpt.core.model.center.CenterWithAssociations
 import kpt.core.model.objects.databaseobjects.CollectionSheet
+import kpt.core.model.objects.groups.CenterInfo
 import kpt.core.model.shared.Payload
 
 interface CenterRepository {
     /** Centers the officer services. Replaces the legacy CenterList + CenterDetails pair. */
     fun centersStream(scope: CoroutineScope): ScreenDataStream<List<Center>>
+
+    /**
+     * One center with its group members and collection-meeting calendar — the detail's meeting rows
+     * (next meeting, frequency) and activation date.
+     */
+    fun centerWithMeetingStream(centerId: Int, scope: CoroutineScope): ScreenDataStream<CenterWithAssociations>
+
+    /**
+     * The center's summary counts (`runreports/GroupSummaryCounts`) — active clients, loans and
+     * borrowers, overdue loans. Its own stream: a role without report access (Fineract 403) fails
+     * this section only, never the center's details.
+     */
+    fun centerSummaryStream(centerId: Int, scope: CoroutineScope): ScreenDataStream<List<CenterInfo>>
 
     /**
      * The center's collection sheet for the meeting [payload] selects. Fineract's

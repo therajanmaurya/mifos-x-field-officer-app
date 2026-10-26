@@ -9,6 +9,8 @@
  */
 package kpt.core.data.center
 
+import kpt.core.store.report.GetCenterSummaryInfoKey
+import kpt.core.model.objects.groups.CenterInfo
 import kpt.core.model.client.ClientStatus
 import kpt.core.model.center.CenterPayload
 import kpt.core.model.center.Center
@@ -146,7 +148,11 @@ class CenterRepositoryTest {
         api.getCollectionSheet(key.centerId, Payload())
     }
 
-    private val repository = CenterRepositoryImpl(listStore, sheetStore)
+    private val summaryStore = keyedReadStore(MutableStateFlow<Map<GetCenterSummaryInfoKey, List<CenterInfo>>>(emptyMap())) { _: GetCenterSummaryInfoKey ->
+        emptyList<CenterInfo>()
+    }
+
+    private val repository = CenterRepositoryImpl(listStore, sheetStore, recordStore, summaryStore)
     private fun commands(isOnline: Boolean = true) =
         CenterCommandRepositoryImpl(api, testMutationGateway(isOnline), recordStore, itemStore, sheetStore)
 

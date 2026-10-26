@@ -2,7 +2,10 @@
 
 **Source:** `6b66e8a43:feature/groups` — 13 `.kt` (4 screens, 4 ViewModels)
 **Landed:** out of slice order, ahead of S6 — the dashboard's Groups TAB needed a destination
-**Status:** read paths complete; activation shipped. Three write surfaces deferred (§7).
+**Status:** read paths, activation and offline download complete, device-verified on the gateway
+(2026-10-24). Create (`create/`, `CreateGroupRoute`) landed 2026-10-22 but has **no tests and no
+device verification** — both owed before it counts as done. The §7 rows for create and sync are
+superseded by those two.
 
 > Module name is `groups` (plural) while its sibling is `center` (singular). That asymmetry is the
 > ORIGINAL's and is kept deliberately — renaming would break every path reference in this ledger
@@ -119,3 +122,9 @@ selection bar downloads each group's clients and their ACTIVE loans and savings 
 repayment or deposit needs) through the stores the screens read. The group is marked downloaded, and
 the group list writer keeps that flag across refreshes. The original's ~550-line ViewModel and the
 center's ~790-line one were the same walk written twice; it is one implementation now (core/data).
+
+## Audit pass (2026-10-25)
+
+The three remaining group-detail edges are live: **Loan accounts**, **Savings accounts** and **Group clients** sections (store `GroupGetGroupAccounts` / `GroupGetGroupWithAssociations`), loan and savings rows opening their summaries, and **Notes** in the overflow (`feature/note`, owner `groups`). Member rows are display-only: client → groups already exists, and groups → client would make a cycle. Device-verified: MARIPOSAS MONARCAS (1 loan, 6 clients), Arin Savings (savings 39 with the group name in its header), and a note added and listed on the server under group 2.
+
+Group clients now open the client profile (2026-10-26). feature/client depends on feature/groups, so this edge navigates by route NAME (`clientProfileRoute`). `ClientProfileRouteNameTest` (feature/client) pins that name to `ClientProfileRoute` so a rename fails the build, not the tap. Device-verified: MARIPOSAS MONARCAS → member → profile → Group chip → back to the group.

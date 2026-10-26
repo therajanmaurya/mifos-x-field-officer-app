@@ -1091,3 +1091,9 @@ savings; see `feature/charge/MIGRATION.md`.
 
 `feature/loan` now depends on `feature/charge` (one-directional).
 
+
+## Audit pass (2026-10-25)
+
+Loan profile gains **Notes** (owner `loans`) and the summary gains **More loan info** (`feature/datatable`, `m_loan`). Verified on the device: 15 loan data tables listed, and a charge added from the summary (SEGURO, loan 38; the server rounded it to the currency's 0 decimal places). **Bug fixed:** every GROUP loan failed to decode ("Something went wrong") because `LoanWithAssociationsDto.clientId` was required. A group loan carries `group` instead; `clientId` now defaults to 0 and the summary header shows the group's name (`GroupLoanDecodeTest`). Still open: a pending loan's summary blanks every figure, including the requested principal.
+
+The profile status chip for an Approved / waiting-for-disbursal loan now shows the server's status ("Approved") instead of the original's "Unknown" (`anApprovedLoanNamesTheServersStatusRatherThanUnknown`). Device-verified on loan 1074, along with profile → Notes (`loans/1074/notes`).

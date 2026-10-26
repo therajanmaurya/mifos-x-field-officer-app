@@ -53,4 +53,8 @@
     <string name="feature_groups_create_error_office_required">Office is required</string>
     <string name="feature_groups_create_error_offline">No connection — the group was not created.</string>
     <string name="feature_groups_create_error_failed">Could not create the group.</string>
+    <string name="feature_groups_loan_accounts">Loan accounts</string>
+    <string name="feature_groups_savings_accounts">Savings accounts</string>
+    <string name="feature_groups_group_clients">Group clients</string>
+    <string name="feature_groups_notes">Notes</string>
 </resources>

@@ -324,7 +324,6 @@ private fun ChargesPage(
         if (form.charges.isNotEmpty()) {
             AppTextFieldDropdown(
                 value = picked?.label.orEmpty(),
-                onValueChanged = {},
                 onOptionSelected = { index, _ -> picked = form.charges.getOrNull(index) },
                 options = form.charges.map { it.label },
                 label = stringResource(Res.string.feature_savings_charge_select),
@@ -554,7 +553,6 @@ private fun Dropdown(
     Gap()
     AppTextFieldDropdown(
         value = state.selections[field]?.label.orEmpty(),
-        onValueChanged = {},
         onOptionSelected = { index, _ ->
             options.getOrNull(index)
                 ?.let { onAction(RecurringDepositAction.OnOptionSelected(field, it)) }

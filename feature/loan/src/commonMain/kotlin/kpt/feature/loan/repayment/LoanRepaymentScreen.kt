@@ -283,7 +283,6 @@ private fun RepaymentForm(
                 .heightIn(min = DesignToken.sizes.inputHeight)
                 .testTag(LoanRepaymentTestTags.PAYMENT_TYPE),
             value = state.paymentTypeName,
-            onValueChanged = {},
             // The OPTION is dispatched, not its index. The original resolved
             // `paymentTypeOptions?.get(index)?.id ?: 0` here, and `0` is not a payment type.
             onOptionSelected = { index, _ ->

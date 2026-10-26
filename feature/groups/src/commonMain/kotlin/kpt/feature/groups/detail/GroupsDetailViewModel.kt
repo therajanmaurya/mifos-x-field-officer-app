@@ -21,7 +21,9 @@ import kpt.core.base.store.screen.mapContent
 import kpt.core.base.ui.viewmodel.BaseViewModel
 import kpt.core.data.group.GroupCommandRepository
 import kpt.core.data.group.GroupRepository
+import kpt.core.model.client.Client
 import kpt.core.model.group.Group
+import kpt.core.model.group.GroupAccounts
 
 /**
  * Group detail — ported from `6b66e8a43:feature/groups/groupDetails/GroupDetailsViewModel.kt`.
@@ -31,9 +33,10 @@ import kpt.core.model.group.Group
  * The two screens look alike and are not. A center's detail exists to reach its GROUPS, so the port
  * folded the original's separate `centerGroupList` into it. A group's detail is a leaf — the
  * original's six overflow entries (add loan, add savings, documents, group clients, more info,
- * notes) all led OUT of `feature/groups` into features that are not ported. So this screen shows a
- * group's fields and its one working write, and the six are absent rather than drawn inert
- * (RULE-IMPL-DEAD-CLICKABLE-001). They are tracked in CAPABILITY_GAPS, not hidden here.
+ * notes) lead OUT of `feature/groups`. All six are live (2026-10-25): the overflow carries add loan,
+ * add savings, documents, more info and notes; the group's clients and its loan / savings accounts
+ * are expandable sections on the screen, each row opening its own detail — as the original drew
+ * the accounts.
  *
  * ## Activate
  *
@@ -78,6 +81,18 @@ internal class GroupsDetailViewModel(
      * group an officer opens this screen to activate. Measured on device 2026-10-20: group "Ankit"
      * rendered "Inactive" and offered no button, because two predicates disagreed on null.
      */
+    private val membersStream = repository.groupWithMembersStream(groupId, viewModelScope)
+    private val accountsStream = repository.groupAccountsStream(groupId, viewModelScope)
+
+    /** The group's member clients — its own loading / error states, beside the fields. */
+    val members: StateFlow<ScreenState<List<Client>>> = membersStream.state
+        .mapContent { group, _ -> group.clientMembers }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
+
+    /** The group's loan and savings accounts. */
+    val accounts: StateFlow<ScreenState<GroupAccounts>> = accountsStream.state
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
+
     val canActivate: StateFlow<Boolean> = group.map { g ->
         (g as? ScreenState.Content)?.data?.let { it.active != true } == true
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), false)
@@ -98,6 +113,16 @@ internal class GroupsDetailViewModel(
 
             GroupsDetailAction.AddSavingsAccountClicked ->
                 sendEvent(GroupsDetailEvent.OpenAddSavingsAccount(groupId))
+
+            GroupsDetailAction.NotesClicked -> sendEvent(GroupsDetailEvent.OpenNotes(groupId))
+            is GroupsDetailAction.LoanClicked -> sendEvent(GroupsDetailEvent.OpenLoan(action.loanId))
+            is GroupsDetailAction.SavingsClicked ->
+                sendEvent(GroupsDetailEvent.OpenSavings(action.accountId, action.depositTypeEndpoint))
+            is GroupsDetailAction.ClientClicked -> sendEvent(GroupsDetailEvent.OpenClient(action.clientId))
+
+            GroupsDetailAction.Retry -> stream.retry()
+            GroupsDetailAction.RetryMembers -> membersStream.retry()
+            GroupsDetailAction.RetryAccounts -> accountsStream.retry()
         }
     }
 
@@ -127,6 +152,13 @@ internal sealed interface GroupsDetailAction {
     data object DataTablesClicked : GroupsDetailAction
     data object AddLoanAccountClicked : GroupsDetailAction
     data object AddSavingsAccountClicked : GroupsDetailAction
+    data object NotesClicked : GroupsDetailAction
+    data class LoanClicked(val loanId: Int) : GroupsDetailAction
+    data class SavingsClicked(val accountId: Int, val depositTypeEndpoint: String) : GroupsDetailAction
+    data class ClientClicked(val clientId: Int) : GroupsDetailAction
+    data object Retry : GroupsDetailAction
+    data object RetryMembers : GroupsDetailAction
+    data object RetryAccounts : GroupsDetailAction
 }
 
 internal sealed interface GroupsDetailEvent {
@@ -151,4 +183,16 @@ internal sealed interface GroupsDetailEvent {
      * so this path created an application against client 0. See `SavingsApplicationViewModel`.
      */
     data class OpenAddSavingsAccount(val groupId: Int) : GroupsDetailEvent
+
+    /** The group's notes — the original's `loadNotes(groupId, "groups")` edge. */
+    data class OpenNotes(val groupId: Int) : GroupsDetailEvent
+
+    /** One of the group's loans — the original's `loadLoanAccountSummary`. */
+    data class OpenLoan(val loanId: Int) : GroupsDetailEvent
+
+    /** One of the group's savings accounts, at its deposit type's endpoint — `loadSavingsAccountSummary`. */
+    data class OpenSavings(val accountId: Int, val depositTypeEndpoint: String) : GroupsDetailEvent
+
+    /** A member client — the original's "Group clients" entry. */
+    data class OpenClient(val clientId: Int) : GroupsDetailEvent
 }

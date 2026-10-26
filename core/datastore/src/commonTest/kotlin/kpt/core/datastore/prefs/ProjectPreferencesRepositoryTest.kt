@@ -18,8 +18,6 @@ import kotlinx.coroutines.test.runTest
 import kpt.core.base.common.manager.DispatcherManager
 import kpt.core.model.objects.users.User
 import kpt.core.model.user.DarkThemeConfig
-import kpt.core.model.utils.ServerConfig
-import kpt.core.model.utils.getInstanceUrl
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -48,7 +46,6 @@ class ProjectPreferencesRepositoryTest {
         plainSettings = plain,
         secureSettings = secure,
         dispatcher = dispatchers,
-        defaultServerConfig = ServerConfig.LOCALHOST,
     )
 
     private val user = User(
@@ -58,16 +55,6 @@ class ProjectPreferencesRepositoryTest {
         isAuthenticated = true,
         officeId = 3,
     )
-
-    @Test
-    fun serverConfigSurvivesARestart() = runTest {
-        repo().updateServerConfig(ServerConfig.LOCALHOST)
-
-        // A fresh instance reads from the store, which is what a relaunch does.
-        val reloaded = repo()
-        assertEquals(ServerConfig.LOCALHOST, reloaded.serverConfig.value)
-        assertEquals(ServerConfig.LOCALHOST.getInstanceUrl(), reloaded.instanceUrl)
-    }
 
     @Test
     fun signingInDerivesTheAuthHeaderAndSyncsTheFrameworkToken() = runTest {
@@ -121,10 +108,8 @@ class ProjectPreferencesRepositoryTest {
 
     @Test
     fun forkKeysAreNamespacedSoTheyCannotCollideWithAFrameworkPreference() = runTest {
-        repo().updateServerConfig(ServerConfig.LOCALHOST)
         repo().updateFineractUser(user)
 
-        assertTrue(plain.keys.any { it.startsWith("fineract.") }, "server config key not namespaced")
         assertTrue(secure.keys.any { it.startsWith("fineract.") }, "user key not namespaced")
     }
 }

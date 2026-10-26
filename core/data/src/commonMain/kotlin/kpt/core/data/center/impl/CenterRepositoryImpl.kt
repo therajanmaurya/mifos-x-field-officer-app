@@ -18,12 +18,15 @@ import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.center.CenterRepository
 import kpt.core.model.center.Center
+import kpt.core.model.center.CenterWithAssociations
 import kpt.core.model.objects.databaseobjects.CollectionSheet
+import kpt.core.model.objects.groups.CenterInfo
 import kpt.core.model.shared.Payload
 import kpt.core.store.center.CenterCollectionSheetKey
 import kpt.core.store.config.AppCacheKeys
 import kpt.core.store.config.AppStoreIds
 import kpt.core.store.config.AppStoreRegistry
+import kpt.core.store.report.GetCenterSummaryInfoKey
 import org.mobilenativefoundation.store.store5.Store
 import org.mobilenativefoundation.store.store5.impl.extensions.fresh
 import org.mobilenativefoundation.store.store5.impl.extensions.get
@@ -33,6 +36,10 @@ internal class CenterRepositoryImpl(
     @FromStore(AppStoreIds.Centers) private val store: Store<Unit, List<Center>>,
     @FromStore(AppStoreIds.CenterCollectionSheet)
     private val sheetStore: Store<CenterCollectionSheetKey, CollectionSheet>,
+    @FromStore(AppStoreIds.CenterGetCenterWithGroupMembersAndCollectionMeetingCalendar)
+    private val withMeetingStore: Store<Int, CenterWithAssociations>,
+    @FromStore(AppStoreIds.ReportGetCenterSummaryInfo)
+    private val summaryStore: Store<GetCenterSummaryInfoKey, List<CenterInfo>>,
 ) : CenterRepository {
 
     // NETWORK_WITH_CACHE, not the CACHE_FIRST_SWR default: SWR's read path is
@@ -66,5 +73,26 @@ internal class CenterRepositoryImpl(
         throw cancellation
     } catch (_: Exception) {
         null
+    }
+
+    override fun centerWithMeetingStream(centerId: Int, scope: CoroutineScope): ScreenDataStream<CenterWithAssociations> =
+        withMeetingStore.asScreenStream(
+            key = centerId,
+            cacheKey = AppCacheKeys.CenterGetCenterWithGroupMembersAndCollectionMeetingCalendar.forKey(centerId.toString()),
+            scope = scope,
+            fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
+            ttl = AppStoreRegistry.Ttl.CENTER_GET_CENTER_WITH_GROUP_MEMBERS_AND_COLLECTION_MEETING_CALENDAR,
+        )
+
+    override fun centerSummaryStream(centerId: Int, scope: CoroutineScope): ScreenDataStream<List<CenterInfo>> {
+        // `genericResultSet = false` — the original's call, and the shape `CenterInfo` decodes.
+        val key = GetCenterSummaryInfoKey(centerId = centerId, genericResultSet = false)
+        return summaryStore.asScreenStream(
+            key = key,
+            cacheKey = AppCacheKeys.ReportGetCenterSummaryInfo.forKey("${key.centerId}:${key.genericResultSet}"),
+            scope = scope,
+            fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
+            ttl = AppStoreRegistry.Ttl.REPORT_GET_CENTER_SUMMARY_INFO,
+        )
     }
 }

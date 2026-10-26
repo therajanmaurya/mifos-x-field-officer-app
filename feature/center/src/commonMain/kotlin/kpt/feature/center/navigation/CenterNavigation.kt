@@ -23,6 +23,7 @@ import kpt.feature.center.create.CreateCenterScreen
 import kpt.feature.center.detail.CenterDetailScreen
 import kpt.feature.center.list.CenterListScreen
 import kpt.feature.groups.navigation.navigateToGroupsDetail
+import kpt.feature.savings.navigation.navigateToSavingsApplication
 
 /** The tab's graph. Mirrors `ClientDestination` — the tab points at the graph, not at a screen. */
 @Serializable
@@ -84,6 +85,12 @@ fun NavGraphBuilder.centerListDestination(navController: NavController) {
             // Group detail is owned by feature/groups; live now that it has landed.
             onGroupClick = { groupId -> navController.navigateToGroupsDetail(groupId) },
             onActivate = navController::navigateToActivateCenter,
+            // The original's "Add savings account". A centre is a Fineract GROUP (level 1), so the
+            // application goes as a group one. The original passed the centre's id as a CLIENT id
+            // (`navigateToAddSavingsAccount(0, centerId, false)`), creating it against a client.
+            onAddSavingsAccount = { centerId ->
+                navController.navigateToSavingsApplication(ownerId = centerId, isGroup = true)
+            },
         )
     }
 }

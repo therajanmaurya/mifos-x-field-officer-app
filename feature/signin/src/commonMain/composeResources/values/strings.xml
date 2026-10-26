@@ -36,6 +36,8 @@
         than a port (ledger §5).
     -->
     <string name="feature_signin_error_offline">You are offline. Signing in needs a connection.</string>
+    <string name="feature_signin_error_unreachable">Could not reach the server. Check the server in settings and try again.</string>
+    <string name="feature_signin_demo_credentials">Demo server. Tap a role to fill its sign-in</string>
 
     <!-- Server-config entry point, reached from login (S1 T4). -->
     <string name="feature_signin_update_server_config">Update server configuration</string>

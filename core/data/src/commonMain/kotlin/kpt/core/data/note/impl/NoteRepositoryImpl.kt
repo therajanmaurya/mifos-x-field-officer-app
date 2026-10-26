@@ -20,11 +20,12 @@ import kpt.core.model.objects.note.Note
 import kpt.core.store.config.AppCacheKeys
 import kpt.core.store.config.AppStoreIds
 import kpt.core.store.config.AppStoreRegistry
+import kpt.core.store.note.NoteKey
 import org.mobilenativefoundation.store.store5.Store
 
 @RepositoryBinding(binds = NoteRepository::class)
 internal class NoteRepositoryImpl(
-    @FromStore(AppStoreIds.ClientNotes) private val store: Store<Long, List<Note>>,
+    @FromStore(AppStoreIds.Notes) private val store: Store<NoteKey, List<Note>>,
 ) : NoteRepository {
 
     // NETWORK_WITH_CACHE, not the CACHE_FIRST_SWR default: SWR's read path is
@@ -32,13 +33,13 @@ internal class NoteRepositoryImpl(
     // until something HAS been fetched, so on a clean install nothing ever loads. Room is still
     // served first, so the offline-first behaviour is unchanged. The ttl stays the declared
     // freshness bound — it drives the "updated N ago" indicator, never whether cache is served.
-    override fun notesStream(resourceId: Long, scope: CoroutineScope): ScreenDataStream<List<Note>> =
+    override fun notesStream(resourceType: String, resourceId: Long, scope: CoroutineScope): ScreenDataStream<List<Note>> =
         store.asScreenStream(
-            key = resourceId,
-            cacheKey = AppCacheKeys.ClientNotes.forClient(resourceId),
+            key = NoteKey(resourceType, resourceId),
+            cacheKey = AppCacheKeys.Notes.forOwner(resourceType, resourceId),
             scope = scope,
             // No `isEmpty`: an empty list is real content (see ChargeRepositoryImpl.chargesStream).
             fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
-            ttl = AppStoreRegistry.Ttl.CLIENT_NOTES,
+            ttl = AppStoreRegistry.Ttl.NOTES,
         )
 }

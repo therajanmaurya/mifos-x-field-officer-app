@@ -48,6 +48,8 @@
     <!-- Sync &amp; Drafts screen (template-level draft/sync inventory) -->
     <string name="feature_settings_sync_drafts_row">Sync &amp; Drafts</string>
     <string name="feature_settings_sync_drafts_row_description">View and manage drafts and pending syncs</string>
+    <string name="feature_settings_server_config_row">Server config</string>
+    <string name="feature_settings_server_config_row_description">Pick the server instance, or edit its details</string>
     <string name="feature_settings_rate_app_row">Rate this app</string>
     <string name="feature_settings_rate_app_row_description">Open the store listing to rate this app</string>
     <string name="feature_settings_sync_drafts_title">Sync &amp; Drafts</string>
@@ -84,9 +86,17 @@
     <string name="feature_settings_server_api_path">API path</string>
     <string name="feature_settings_server_port">Port</string>
     <string name="feature_settings_server_tenant">Tenant</string>
-    <string name="feature_settings_server_use_defaults">Use defaults</string>
-    <string name="feature_settings_server_use_localhost">Use localhost</string>
     <string name="feature_settings_server_save">Save</string>
+    <string name="feature_settings_server_instances_title">Server instance</string>
+    <string name="feature_settings_server_instance_custom">Custom server</string>
+    <string name="feature_settings_server_details_title">Details</string>
+    <string name="feature_settings_server_demo_badge">Demo</string>
+    <string name="feature_settings_server_demo_credentials">Demo instance. Sign in with any of these:</string>
+    <string name="feature_settings_server_demo_account">%1$s: %2$s / %3$s</string>
+    <string name="feature_settings_server_switch_title">Switch server?</string>
+    <string name="feature_settings_server_switch_message">The app will sign you out and return to sign-in, so you can sign in again on %1$s. Data saved on this device is kept.</string>
+    <string name="feature_settings_server_switch_confirm">Switch and sign out</string>
+    <string name="feature_settings_server_switch_cancel">Cancel</string>
     <string name="feature_settings_server_saved">Server configuration saved</string>
     <string name="feature_settings_server_invalid">Fix the highlighted fields first</string>
     <string name="feature_settings_server_save_failed">Could not save the server configuration. Try again.</string>
@@ -98,4 +108,14 @@
     <string name="feature_settings_server_error_api_path_leading">Must start with /</string>
     <string name="feature_settings_server_error_api_path_trailing">Must end with /</string>
     <string name="feature_settings_server_error_tenant">Letters and digits only</string>
+    <string name="feature_settings_sign_out">Sign out</string>
+    <string name="feature_settings_sign_out_keep_data">Sign out only</string>
+    <string name="feature_settings_sign_out_keep_data_detail">Your session ends. Cached clients, loans and documents, and any work not yet synced, stay on this device for your next sign-in.</string>
+    <string name="feature_settings_sign_out_clear_data">Sign out and clear data</string>
+    <string name="feature_settings_sign_out_clear_data_detail">Also deletes everything this app stored on this device, including work not yet synced. Use this before handing the device to someone else.</string>
+    <string name="feature_settings_sign_out_failed">Could not clear the data on this device. You are still signed in; try again.</string>
+    <string name="feature_settings_sign_out_confirm">Sign out</string>
+    <string name="feature_settings_sign_out_confirm_clear">Sign out and clear</string>
+    <string name="feature_settings_sign_out_cancel">Cancel</string>
+    <string name="feature_settings_sign_out_row_description">End your session on this device</string>
 </resources>

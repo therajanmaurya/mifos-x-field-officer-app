@@ -146,7 +146,6 @@ internal fun CreateGroupContent(
 
             AppTextFieldDropdown(
                 value = state.office?.label.orEmpty(),
-                onValueChanged = { },
                 // The id comes from the SAME list that supplied the label.
                 onOptionSelected = { index, label ->
                     officeList.getOrNull(index)?.let {

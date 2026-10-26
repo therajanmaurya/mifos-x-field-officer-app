@@ -104,7 +104,6 @@ private fun DataTableFieldInput(
 
         ColumnType.CODELOOKUP, ColumnType.CODEVALUE -> AppTextFieldDropdown(
             value = column.columnValues.firstOrNull { it.id?.toString() == value }?.value.orEmpty(),
-            onValueChanged = {},
             // The code value's ID is what Fineract stores — the label is only for the officer.
             onOptionSelected = { index, _ -> column.columnValues.getOrNull(index)?.id?.let { onChange(it.toString()) } },
             options = column.columnValues.map { it.value.orEmpty() },

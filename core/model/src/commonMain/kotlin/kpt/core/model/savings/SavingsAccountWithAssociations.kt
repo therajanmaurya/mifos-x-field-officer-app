@@ -27,6 +27,8 @@ data class SavingsAccountWithAssociations(
     val accountNo: String? = null,
     val clientId: Int? = null,
     val clientName: String? = null,
+    /** A GROUP account's owner (`groupName`) — Fineract leaves `clientName` null on one. Wire-only: not a column. */
+    val groupName: String? = null,
     val savingsProductId: Int? = null,
     val savingsProductName: String? = null,
     val fieldOfficerId: Int? = null,

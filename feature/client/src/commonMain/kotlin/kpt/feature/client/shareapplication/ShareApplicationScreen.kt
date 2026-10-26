@@ -181,7 +181,6 @@ private fun DetailsPage(
     val products = template.productOptions
     AppTextFieldDropdown(
         value = state.product?.label.orEmpty(),
-        onValueChanged = { },
         onOptionSelected = { index, label ->
             products.getOrNull(index)?.id?.let {
                 onAction(ShareApplicationAction.UpdateProduct(ShareOption(it, label)))
@@ -197,7 +196,6 @@ private fun DetailsPage(
     val savings = template.savingsAccountOptions.orEmpty()
     AppTextFieldDropdown(
         value = state.savingsAccount?.label.orEmpty(),
-        onValueChanged = { },
         onOptionSelected = { index, label ->
             savings.getOrNull(index)?.id?.let {
                 onAction(ShareApplicationAction.UpdateSavingsAccount(ShareOption(it, label)))

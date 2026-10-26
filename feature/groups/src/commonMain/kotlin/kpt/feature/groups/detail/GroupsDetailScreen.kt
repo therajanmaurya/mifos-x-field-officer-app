@@ -38,9 +38,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.screen.ScreenContent
-import kpt.core.model.group.Group
 import kpt.core.designsystem.component.AppMenuDropDownItem
 import kpt.core.designsystem.icon.AppIcons
+import kpt.core.model.client.Client
+import kpt.core.model.group.Group
+import kpt.core.model.group.GroupAccounts
 import kpt.feature.groups.generated.resources.Res
 import kpt.feature.groups.generated.resources.feature_groups_account_no
 import kpt.feature.groups.generated.resources.feature_groups_activate
@@ -51,9 +53,13 @@ import kpt.feature.groups.generated.resources.feature_groups_center
 import kpt.feature.groups.generated.resources.feature_groups_detail_title
 import kpt.feature.groups.generated.resources.feature_groups_documents
 import kpt.feature.groups.generated.resources.feature_groups_external_id
+import kpt.feature.groups.generated.resources.feature_groups_group_clients
+import kpt.feature.groups.generated.resources.feature_groups_loan_accounts
 import kpt.feature.groups.generated.resources.feature_groups_more_group_info
 import kpt.feature.groups.generated.resources.feature_groups_more_options
+import kpt.feature.groups.generated.resources.feature_groups_notes
 import kpt.feature.groups.generated.resources.feature_groups_office
+import kpt.feature.groups.generated.resources.feature_groups_savings_accounts
 import kpt.feature.groups.generated.resources.feature_groups_staff
 import kpt.feature.groups.generated.resources.feature_groups_status_active
 import kpt.feature.groups.generated.resources.feature_groups_status_inactive
@@ -69,6 +75,11 @@ internal object GroupsDetailTestTags {
     const val ADD_LOAN_ACCOUNT = "groups:detail:add-loan-account"
     const val ADD_SAVINGS_ACCOUNT = "groups:detail:add-savings-account"
     const val OVERFLOW = "groups:detail:overflow"
+    const val NOTES = "groups:detail:notes"
+    const val ACCOUNTS = "groups:detail:accounts"
+    const val LOAN_ACCOUNTS = "groups:detail:loan-accounts"
+    const val SAVINGS_ACCOUNTS = "groups:detail:savings-accounts"
+    const val CLIENTS = "groups:detail:clients"
 }
 
 @Composable
@@ -83,10 +94,16 @@ internal fun GroupsDetailScreen(
     onDataTables: ((Int) -> Unit)? = null,
     onAddLoanAccount: ((Int) -> Unit)? = null,
     onAddSavingsAccount: ((Int) -> Unit)? = null,
+    onNotes: ((Int) -> Unit)? = null,
+    onOpenLoan: ((Int) -> Unit)? = null,
+    onOpenSavings: ((accountId: Int, depositTypeEndpoint: String) -> Unit)? = null,
+    onOpenClient: ((Int) -> Unit)? = null,
     viewModel: GroupsDetailViewModel = koinViewModel(),
 ) {
     val group by viewModel.group.collectAsStateWithLifecycle()
     val canActivate by viewModel.canActivate.collectAsStateWithLifecycle()
+    val members by viewModel.members.collectAsStateWithLifecycle()
+    val accounts by viewModel.accounts.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
@@ -99,6 +116,10 @@ internal fun GroupsDetailScreen(
                     onAddLoanAccount?.invoke(event.groupId)
                 is GroupsDetailEvent.OpenAddSavingsAccount ->
                     onAddSavingsAccount?.invoke(event.groupId)
+                is GroupsDetailEvent.OpenNotes -> onNotes?.invoke(event.groupId)
+                is GroupsDetailEvent.OpenLoan -> onOpenLoan?.invoke(event.loanId)
+                is GroupsDetailEvent.OpenSavings -> onOpenSavings?.invoke(event.accountId, event.depositTypeEndpoint)
+                is GroupsDetailEvent.OpenClient -> onOpenClient?.invoke(event.clientId)
             }
         }
     }
@@ -111,6 +132,12 @@ internal fun GroupsDetailScreen(
         canOpenDataTables = onDataTables != null,
         canAddLoanAccount = onAddLoanAccount != null,
         canAddSavingsAccount = onAddSavingsAccount != null,
+        canOpenNotes = onNotes != null,
+        members = members,
+        accounts = accounts,
+        canOpenLoan = onOpenLoan != null,
+        canOpenSavings = onOpenSavings != null,
+        canOpenClient = onOpenClient != null,
         onAction = { viewModel.actionChannel.trySend(it) },
         modifier = modifier,
     )
@@ -125,6 +152,12 @@ internal fun GroupsDetailContent(
     canOpenDataTables: Boolean = false,
     canAddLoanAccount: Boolean = false,
     canAddSavingsAccount: Boolean = false,
+    canOpenNotes: Boolean = false,
+    members: ScreenState<List<Client>> = ScreenState.Loading,
+    accounts: ScreenState<GroupAccounts> = ScreenState.Loading,
+    canOpenLoan: Boolean = false,
+    canOpenSavings: Boolean = false,
+    canOpenClient: Boolean = false,
     onAction: (GroupsDetailAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -147,6 +180,7 @@ internal fun GroupsDetailContent(
                         canAddSavingsAccount = canAddSavingsAccount,
                         canOpenDocuments = canOpenDocuments,
                         canOpenDataTables = canOpenDataTables,
+                        canOpenNotes = canOpenNotes,
                         onAction = onAction,
                     )
                 },
@@ -166,10 +200,68 @@ internal fun GroupsDetailContent(
         ) {
             ScreenContent(
                 state = group,
-                onRetry = { },
+                onRetry = { onAction(GroupsDetailAction.Retry) },
                 modifier = Modifier.fillMaxWidth(),
             ) { loaded, _ ->
                 GroupFields(loaded)
+            }
+
+            // The original's Accounts section (loan + savings cards), and the group's clients.
+            // Each loads on its own, so a slow accounts read never hides the group's fields.
+            ScreenContent(
+                state = accounts,
+                onRetry = { onAction(GroupsDetailAction.RetryAccounts) },
+                modifier = Modifier.fillMaxWidth().testTag(GroupsDetailTestTags.ACCOUNTS),
+                refreshingIndicator = null,
+            ) { loaded, _ ->
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (loaded.loanAccounts.isNotEmpty()) {
+                        ExpandableSection(
+                            title = stringResource(Res.string.feature_groups_loan_accounts),
+                            count = loaded.loanAccounts.size,
+                            tag = GroupsDetailTestTags.LOAN_ACCOUNTS,
+                        ) {
+                            loaded.loanAccounts.forEach { account ->
+                                LoanAccountRow(
+                                    account,
+                                    if (canOpenLoan) { id -> onAction(GroupsDetailAction.LoanClicked(id)) } else null,
+                                )
+                            }
+                        }
+                    }
+                    if (loaded.savingsAccounts.isNotEmpty()) {
+                        ExpandableSection(
+                            title = stringResource(Res.string.feature_groups_savings_accounts),
+                            count = loaded.savingsAccounts.size,
+                            tag = GroupsDetailTestTags.SAVINGS_ACCOUNTS,
+                        ) {
+                            loaded.savingsAccounts.forEach { account ->
+                                SavingsAccountRow(
+                                    account,
+                                    if (canOpenSavings) { id, endpoint -> onAction(GroupsDetailAction.SavingsClicked(id, endpoint)) } else null,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            ScreenContent(
+                state = members,
+                onRetry = { onAction(GroupsDetailAction.RetryMembers) },
+                modifier = Modifier.fillMaxWidth(),
+                refreshingIndicator = null,
+            ) { clients, _ ->
+                if (clients.isNotEmpty()) {
+                    ExpandableSection(
+                        title = stringResource(Res.string.feature_groups_group_clients),
+                        count = clients.size,
+                        tag = GroupsDetailTestTags.CLIENTS,
+                    ) {
+                        clients.forEach { client ->
+                            ClientRow(client, if (canOpenClient) { id -> onAction(GroupsDetailAction.ClientClicked(id)) } else null)
+                        }
+                    }
+                }
             }
 
             // The write error sits BESIDE the fields, not instead of them: a failed activation does
@@ -207,9 +299,8 @@ internal fun GroupsDetailContent(
  * in S5c — exactly as designed: a row appears the slice its destination lands, and nothing in this
  * function needed editing to reveal it beyond its own flag.
  *
- * The remaining two are ABSENT, not inert: Group Clients (the associate-clients list is unported)
- * and Notes (`feature/note` is still client-only — generalising it needs a Room schema change on a
- * shared table).
+ * Notes joined on 2026-10-25 with `feature/note` generalised to any owner. Group Clients is not a
+ * menu row here: the members are on the screen as an expandable section, like the accounts.
  *
  * The icon itself is absent when NO item is available, rather than opening an empty menu.
  */
@@ -219,9 +310,10 @@ private fun OverflowMenu(
     canAddSavingsAccount: Boolean,
     canOpenDocuments: Boolean,
     canOpenDataTables: Boolean,
+    canOpenNotes: Boolean,
     onAction: (GroupsDetailAction) -> Unit,
 ) {
-    if (!canAddLoanAccount && !canAddSavingsAccount && !canOpenDocuments && !canOpenDataTables) {
+    if (!canAddLoanAccount && !canAddSavingsAccount && !canOpenDocuments && !canOpenDataTables && !canOpenNotes) {
         return
     }
 
@@ -275,6 +367,16 @@ private fun OverflowMenu(
                     onAction(GroupsDetailAction.DataTablesClicked)
                 },
                 modifier = Modifier.testTag(GroupsDetailTestTags.DATA_TABLES),
+            )
+        }
+        if (canOpenNotes) {
+            AppMenuDropDownItem(
+                option = stringResource(Res.string.feature_groups_notes),
+                onClick = {
+                    expanded = false
+                    onAction(GroupsDetailAction.NotesClicked)
+                },
+                modifier = Modifier.testTag(GroupsDetailTestTags.NOTES),
             )
         }
     }

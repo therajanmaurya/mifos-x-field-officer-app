@@ -62,8 +62,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun NoteListScreen(
     onBackClick: () -> Unit,
-    onAddNote: (Int) -> Unit,
-    onEditNote: (Int, Long) -> Unit,
+    onAddNote: (resourceType: String, resourceId: Int) -> Unit,
+    onEditNote: (resourceType: String, resourceId: Int, noteId: Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: NoteListViewModel = koinViewModel(),
 ) {
@@ -74,8 +74,8 @@ internal fun NoteListScreen(
         viewModel.eventFlow.collect { event ->
             when (event) {
                 NoteListEvent.NavigateBack -> onBackClick()
-                is NoteListEvent.NavigateToAdd -> onAddNote(event.clientId)
-                is NoteListEvent.NavigateToEdit -> onEditNote(event.clientId, event.noteId)
+                is NoteListEvent.NavigateToAdd -> onAddNote(event.resourceType, event.resourceId)
+                is NoteListEvent.NavigateToEdit -> onEditNote(event.resourceType, event.resourceId, event.noteId)
             }
         }
     }

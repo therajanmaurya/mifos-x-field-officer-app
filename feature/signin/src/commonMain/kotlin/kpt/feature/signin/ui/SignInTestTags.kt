@@ -14,6 +14,7 @@ object SignInTestTags {
     const val SCREEN = "signin:screen"
     const val USERNAME = "signin:username"
     const val PASSWORD = "signin:password"
+    const val DEMO_CREDENTIALS = "signin:demo-credentials"
     const val SUBMIT = "signin:submit"
     const val ERROR = "signin:error"
     const val PROGRESS = "signin:progress"

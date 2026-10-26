@@ -254,7 +254,6 @@ private fun PaymentEditorSheet(
             val types = view.paymentTypes
             AppTextFieldDropdown(
                 value = types.firstOrNull { it.id == editor.paymentTypeId }?.name.orEmpty(),
-                onValueChanged = {},
                 onOptionSelected = { index, _ ->
                     types.getOrNull(index)?.let { type -> change { it.copy(paymentTypeId = type.id) } }
                 },

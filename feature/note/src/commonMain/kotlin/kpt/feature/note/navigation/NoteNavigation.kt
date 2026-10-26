@@ -9,6 +9,7 @@
  */
 package kpt.feature.note.navigation
 
+import kpt.core.common.utils.Constants
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -22,20 +23,14 @@ import kpt.feature.note.ui.NoteListScreen
  * Notes attached to a client — ported from
  * `6b66e8a43:feature/note/src/commonMain/kotlin/com/mifos/feature/note/navigation/NoteNavigation.kt`.
  *
- * ## Why `clientId` and not `(resourceId, resourceType)`
+ * ## The owner is `(resourceType, resourceId)`
  *
  * The original routes carried `resourceId: Int` + `resourceType: String?` so one screen could serve
- * clients, groups, loans and savings. MEASURED at `6b66e8a43`: `navigateToNoteScreen` has exactly
- * two call sites, both in `ClientNavigation.kt`, and both pass `Constants.ENTITY_TYPE_CLIENTS`. No
- * other resource type can reach this screen, so the parameter was a hole rather than flexibility —
- * the same shape as the charges route (`ClientChargesRoute`) and the same conclusion.
- *
- * This also makes the migrated substrate a FAITHFUL match rather than a narrowing:
- * `NoteRepository.notesStream(resourceId)` is keyed on a client (`AppStoreIds.ClientNotes`,
- * `Note.clientId`) and carries no resource type. Had any caller passed a group or a loan, that
- * would have been a real gap to close in `core/store` before this feature could ship.
- *
- * Group and loan notes get their own routes if and when those slices need them.
+ * any owner, and it WAS used that way: client navigation passed `clients`, and the group graph wired
+ * `loadNotes = navController::navigateToNoteScreen` (a method reference, which a text search for
+ * call sites misses — an earlier note here said "two call sites, both clients", and was wrong).
+ * So the routes carry the owner again, the `notes` store is keyed by it, and the `Note` table has a
+ * `resourceType` column (v18). [navigateToClientNotes] stays for the client callers.
  *
  * ## Why nothing here is annotated
  *
@@ -44,7 +39,7 @@ import kpt.feature.note.ui.NoteListScreen
  * on the authenticated graph.
  */
 @Serializable
-data class NoteListRoute(val clientId: Int)
+data class NoteListRoute(val resourceType: String, val resourceId: Int)
 
 /**
  * Add or edit one note.
@@ -53,16 +48,20 @@ data class NoteListRoute(val clientId: Int)
  * places inside the ViewModel; here it is read once into `editEnabled`.
  */
 @Serializable
-data class AddEditNoteRoute(val clientId: Int, val noteId: Long?)
+data class AddEditNoteRoute(val resourceType: String, val resourceId: Int, val noteId: Long?)
+
+/** One owner's notes — [resourceType] is Fineract's path (`clients`, `groups`). */
+fun NavController.navigateToNotes(resourceType: String, resourceId: Int, navOptions: NavOptions? = null) =
+    navigate(NoteListRoute(resourceType, resourceId), navOptions)
 
 fun NavController.navigateToClientNotes(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(NoteListRoute(clientId), navOptions)
+    navigateToNotes(Constants.ENTITY_TYPE_CLIENTS, clientId, navOptions)
 
-fun NavController.navigateToAddNote(clientId: Int) =
-    navigate(AddEditNoteRoute(clientId, noteId = null))
+fun NavController.navigateToAddNote(resourceType: String, resourceId: Int) =
+    navigate(AddEditNoteRoute(resourceType, resourceId, noteId = null))
 
-fun NavController.navigateToEditNote(clientId: Int, noteId: Long) =
-    navigate(AddEditNoteRoute(clientId, noteId))
+fun NavController.navigateToEditNote(resourceType: String, resourceId: Int, noteId: Long) =
+    navigate(AddEditNoteRoute(resourceType, resourceId, noteId))
 
 /**
  * Register both note destinations into the caller's graph.

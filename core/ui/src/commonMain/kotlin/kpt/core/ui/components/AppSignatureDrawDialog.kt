@@ -125,6 +125,8 @@ fun AppSignatureDrawDialog(
                         showGrid = true,
                     ),
                     state = signatureState,
+                    // intentional-noop: the pad is read through `signatureState` (clear / undo / redo /
+                    // export below), so the per-stroke callback has nothing to do.
                     onSignatureUpdate = {},
                 )
             }

@@ -190,7 +190,6 @@ internal fun GroupLoanApplicationContent(
                 // auto-loaded the first product's template while leaving `productId` at 0.
                 AppTextFieldDropdown(
                     value = state.product?.name.orEmpty(),
-                    onValueChanged = {},
                     onOptionSelected = { index, _ ->
                         productOptions.getOrNull(index)
                             ?.let { onAction(GroupLoanApplicationAction.OnProductSelected(it)) }
@@ -358,7 +357,6 @@ private fun Dropdown(
     Spacer(Modifier.height(KptTheme.spacing.md))
     AppTextFieldDropdown(
         value = state.selections[field]?.label.orEmpty(),
-        onValueChanged = {},
         onOptionSelected = { index, _ ->
             options.getOrNull(index)
                 ?.let { onAction(GroupLoanApplicationAction.OnOptionSelected(field, it)) }

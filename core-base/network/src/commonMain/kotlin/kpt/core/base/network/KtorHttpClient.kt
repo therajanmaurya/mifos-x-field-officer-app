@@ -295,10 +295,12 @@ fun setupDefaultHttpClient(
         multiUrlProvider != null -> install(DynamicBaseUrlPlugin) {
             multiConfigProvider = multiUrlProvider
             this.urlType = urlType
+            staticBaseUrl = baseUrl
         }
 
         dynamicUrlProvider != null -> install(DynamicBaseUrlPlugin) {
             configProvider = dynamicUrlProvider
+            staticBaseUrl = baseUrl
         }
     }
 

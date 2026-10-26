@@ -471,7 +471,6 @@ private fun OptionDropdown(
 ) {
     AppTextFieldDropdown(
         value = value,
-        onValueChanged = { },
         onOptionSelected = onSelected,
         options = labels,
         label = label,

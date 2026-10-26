@@ -11,6 +11,8 @@
 
 package kpt.feature.groups.testing
 
+import kpt.core.model.group.GroupWithAssociations
+import kpt.core.model.group.GroupAccounts
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,6 +45,16 @@ internal class FakeGroupRepository(
 
     override fun groupsStream(scope: CoroutineScope): ScreenDataStream<List<Group>> =
         screenDataStreamForTesting(state, refreshTrigger = refreshes)
+
+    /** Members / accounts — Loading until a test sets them. */
+    val membersState = MutableStateFlow<ScreenState<GroupWithAssociations>>(ScreenState.Loading)
+    val accountsState = MutableStateFlow<ScreenState<GroupAccounts>>(ScreenState.Loading)
+
+    override fun groupWithMembersStream(groupId: Int, scope: CoroutineScope): ScreenDataStream<GroupWithAssociations> =
+        screenDataStreamForTesting(membersState)
+
+    override fun groupAccountsStream(groupId: Int, scope: CoroutineScope): ScreenDataStream<GroupAccounts> =
+        screenDataStreamForTesting(accountsState)
 }
 
 /**

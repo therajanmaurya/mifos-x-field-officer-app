@@ -25,6 +25,7 @@ import kpt.feature.report.navigation.navigateToReports
 import kpt.feature.checkerinbox.navigation.navigateToCheckerInbox
 import kpt.feature.settings.navigateToSettings
 import kpt.feature.settings.navigateToSyncAndDrafts
+import kpt.feature.settings.serverconfig.navigateToServerConfig
 import kpt.feature.settings.notificationDestination
 import kpt.feature.settings.settingsDestination
 import kpt.feature.settings.syncAndDraftsDestination
@@ -84,6 +85,7 @@ object BackboneRegistry {
         SettingsBody(
             onBackClick = { navController.popBackStackSafely() },
             onSyncAndDraftsClick = { navController.navigateToSyncAndDrafts() },
+            onServerConfigClick = { navController.navigateToServerConfig() },
         )
     }
 
@@ -94,12 +96,10 @@ object BackboneRegistry {
      * `homeBody`). WS01 / AC7.
      */
     val profileBody: @Composable (NavController) -> Unit = { _ ->
-        // Signed-in officer identity + sign-out (S2). Another seam that was EMPTY.
-        //
-        // Sign-out needs no navigation callback: clearing the session flips
-        // `UserData.isAuthenticated` to false, RootNavViewModel emits `RootNavState.Auth`, and the
-        // root effect routes to sign-in. Navigating here as well would race the state machine.
-        ProfileBody(onSignedOut = {})
+        // Signed-in officer identity (S2). Another seam that was EMPTY. Sign-out lives at the bottom of
+        // Settings; it needs no navigation callback — clearing the session flips
+        // `UserData.isAuthenticated`, and RootNavViewModel routes to sign-in.
+        ProfileBody()
     }
 
     /**

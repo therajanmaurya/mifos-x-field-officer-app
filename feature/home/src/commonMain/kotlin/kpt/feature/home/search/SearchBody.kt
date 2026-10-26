@@ -10,6 +10,7 @@
 package kpt.feature.home.search
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
@@ -121,10 +123,12 @@ internal fun SearchBodyContent(
             modifier = Modifier.fillMaxWidth().testTag(TestTags.Home.SEARCH_FIELD),
         )
 
+        // Scrolls rather than squeezing: four chips do not fit a phone's width, and the last one
+        // wrapped mid-word ("Savin / gs", device 2026-10-25) — a longer translation is worse.
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.testTag(TestTags.Home.SEARCH_FILTERS),
+            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).testTag(TestTags.Home.SEARCH_FILTERS),
         ) {
             SearchFilter.entries.forEach { filter ->
                 FilterChip(
@@ -135,7 +139,7 @@ internal fun SearchBodyContent(
                         val next = if (state.filter == filter) null else filter
                         onAction(SearchAction.FilterChanged(next))
                     },
-                    label = { Text(stringResource(filter.labelRes())) },
+                    label = { Text(stringResource(filter.labelRes()), maxLines = 1, softWrap = false) },
                 )
             }
         }
@@ -184,8 +188,8 @@ internal fun SearchBodyContent(
  *
  * Three of the five now exist: `CLIENT` → the client profile, `GROUP` → group detail, `LOAN` → the
  * loan account SUMMARY (which is the screen the original's search opened — not the loan profile;
- * see `LoanSummaryViewModel` for why those are different). `CENTER` and `SAVING` are still
- * unported, so those rows stay un-clickable rather than all five becoming live together. That is
+ * see `LoanSummaryViewModel` for why those are different). `SAVING` (S5a) and `CENTER` (2026-10-25)
+ * followed, so all five are live — each became clickable the slice its destination landed. That is
  * also what makes `feature/loan` reachable at all: it is registered but, until this tap, nothing
  * in the running app navigated to any loan screen.
  */
@@ -221,6 +225,8 @@ private val PORTED_SEARCH_ENTITIES = setOf(
     Constants.SEARCH_ENTITY_LOAN,
     // S5a — the savings summary landed, so a SAVING hit now has somewhere to go.
     Constants.SEARCH_ENTITY_SAVING,
+    // Centre detail landed (feature/center) — the original's fifth search destination.
+    Constants.SEARCH_ENTITY_CENTER,
 )
 
 private fun SearchFilter.labelRes() = when (this) {

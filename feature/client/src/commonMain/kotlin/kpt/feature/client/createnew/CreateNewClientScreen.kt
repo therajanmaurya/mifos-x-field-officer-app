@@ -600,7 +600,6 @@ private fun ClientDropdown(
     FieldGap()
     AppTextFieldDropdown(
         value = state.choice(field)?.label.orEmpty(),
-        onValueChanged = {},
         onOptionSelected = { index, _ ->
             options.getOrNull(index)
                 ?.let { onAction(CreateNewClientAction.OnOptionSelected(field, it)) }

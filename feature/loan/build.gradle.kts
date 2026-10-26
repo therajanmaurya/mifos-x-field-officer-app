@@ -29,6 +29,8 @@ kotlin {
             // feature/charge — the profile's "Charges" row and the summary's "Charges" menu entry
             // open the ONE charge module, scoped to the loan. One-directional, like document.
             implementation(projects.feature.charge)
+            implementation(projects.feature.datatable)
+            implementation(projects.feature.note)
             implementation(libs.koin.compose.navigation)
             implementation(compose.ui)
             implementation(compose.foundation)

@@ -65,7 +65,9 @@ class AppDatabaseTest {
         // 15: added `document_contents` (document file bytes) — an additive AutoMigration.
         // 16: `Charges` re-keyed to (resourceType, resourceId, id) so client / loan / savings
         // charges sharing an id coexist (a plain AutoMigration recreate).
-        assertEquals(16, AppDatabase.VERSION)
+        // 17: added `server_instances` (the server picker's instance list) — an additive AutoMigration.
+        // 18: `Note.resourceType` (default 'clients') — notes for any owner. Additive AutoMigration.
+        assertEquals(18, AppDatabase.VERSION)
     }
 
     @Test

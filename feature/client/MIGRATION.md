@@ -974,3 +974,9 @@ code lookup), NOT NULL columns required, sent in `ClientPayload.datatables` with
 (`createnew/ClientDataTables.kt`). The original's form was inert — every field hardwired to
 `value = ""` / `onValueChange = {}` — and its payload list started `null`, so `?.add` never added and
 the client was created with `datatables = null` regardless.
+
+## Audit pass (2026-10-25)
+
+The profile's group chip opens the group detail (client → groups dependency). The loan and deposit account lists format money with `CurrencyFormatter` ("MX$0" rather than "$0.0"). Add charge opens and correctly reports that the gateway has no client charge types.
+
+Bug fixed (2026-10-26): the profile's Group chip read the scalar `groupName`/`groupId`, which Fineract never sends, so every member showed "Group: N/A". It also defaulted `groupId` to 0, so with no group the chip would have opened group 0. It now reads `groups.first()` (`ClientProfileGroupChipUiTest`).

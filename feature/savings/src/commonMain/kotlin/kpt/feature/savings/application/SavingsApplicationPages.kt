@@ -97,7 +97,6 @@ internal fun SavingsDetailsPage(
         // on screen and the terms on the next step cannot disagree.
         AppTextFieldDropdown(
             value = state.selections[SavingsField.PRODUCT]?.label.orEmpty(),
-            onValueChanged = {},
             onOptionSelected = { index, _ ->
                 productOptions.getOrNull(index)
                     ?.let { onAction(SavingsApplicationAction.OnProductSelected(it)) }
@@ -223,7 +222,6 @@ internal fun SavingsChargesPage(
         if (options.isNotEmpty()) {
             AppTextFieldDropdown(
                 value = picked?.label.orEmpty(),
-                onValueChanged = {},
                 onOptionSelected = { index, _ -> picked = options.getOrNull(index) },
                 options = options.map { it.label },
                 label = stringResource(Res.string.feature_savings_charge_select),
@@ -379,7 +377,6 @@ private fun SavingsDropdown(
     SavingsFieldGap()
     AppTextFieldDropdown(
         value = state.selections[field]?.label.orEmpty(),
-        onValueChanged = {},
         onOptionSelected = { index, _ ->
             options.getOrNull(index)
                 ?.let { onAction(SavingsApplicationAction.OnOptionSelected(field, it)) }

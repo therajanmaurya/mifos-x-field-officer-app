@@ -32,6 +32,10 @@ buildkonfig {
         // access point declaring `anon_key_env:`/`api_key_env:`, plus every `network.build_config_fields`
         // entry. DO NOT HAND-EDIT — declare the key in app-profile and re-run `./gradlew syncForkConfig`.
         // Values are read at BUILD time from the env var or local.properties, so no secret is committed.
+        buildConfigField(
+            STRING, "SUPABASE_ANON_KEY",
+            System.getenv("SUPABASE_ANON_KEY") ?: localProps.getProperty("SUPABASE_ANON_KEY", ""),
+        )
         // syncForkConfig:buildkonfig:end
     }
 }

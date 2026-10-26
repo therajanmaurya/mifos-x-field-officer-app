@@ -216,7 +216,6 @@ private fun TransferForm(
         // identical to one whose office genuinely had no clients.
         AppTextFieldDropdown(
             value = state.office?.name.orEmpty(),
-            onValueChanged = {},
             onOptionSelected = { index, _ ->
                 state.offices.getOrNull(index)?.let {
                     onAction(LoanTransferAction.OnOfficeSelected(it))
@@ -234,7 +233,6 @@ private fun TransferForm(
 
         AppTextFieldDropdown(
             value = state.client?.displayName.orEmpty(),
-            onValueChanged = {},
             onOptionSelected = { index, _ ->
                 state.clients.getOrNull(index)?.let {
                     onAction(LoanTransferAction.OnClientSelected(it))
@@ -252,7 +250,6 @@ private fun TransferForm(
 
         AppTextFieldDropdown(
             value = state.accountType?.value.orEmpty(),
-            onValueChanged = {},
             onOptionSelected = { index, _ ->
                 state.accountTypes.getOrNull(index)?.let {
                     onAction(LoanTransferAction.OnAccountTypeSelected(it))
@@ -270,7 +267,6 @@ private fun TransferForm(
 
         AppTextFieldDropdown(
             value = state.account?.accountNo.orEmpty(),
-            onValueChanged = {},
             onOptionSelected = { index, _ ->
                 state.accounts.getOrNull(index)?.let {
                     onAction(LoanTransferAction.OnAccountSelected(it))

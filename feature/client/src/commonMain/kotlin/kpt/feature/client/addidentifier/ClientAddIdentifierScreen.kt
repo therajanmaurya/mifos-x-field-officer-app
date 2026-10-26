@@ -194,7 +194,6 @@ private fun IdentifierFields(
     val types = template.allowedDocumentTypes.orEmpty()
     AppTextFieldDropdown(
         value = state.documentTypeLabel,
-        onValueChanged = { },
         // Resolved from the SAME list that supplied the label — never an index into another.
         onOptionSelected = { index, label ->
             types.getOrNull(index)?.id?.let { onAction(ClientAddIdentifierAction.UpdateDocumentType(it, label)) }
@@ -230,7 +229,6 @@ private fun IdentifierFields(
     val statusLabels = IdentifierStatus.values.map { identifierStatusLabel(it) }
     AppTextFieldDropdown(
         value = IdentifierStatus.values.indexOf(state.status).let { statusLabels.getOrNull(it) }.orEmpty(),
-        onValueChanged = { },
         onOptionSelected = { index, _ ->
             IdentifierStatus.values.getOrNull(index)?.let { onAction(ClientAddIdentifierAction.UpdateStatus(it)) }
         },

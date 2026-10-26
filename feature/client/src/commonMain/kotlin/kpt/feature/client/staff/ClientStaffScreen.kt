@@ -139,7 +139,6 @@ internal fun ClientStaffContent(
                 Spacer(Modifier.height(DesignToken.padding.largeIncreased))
                 AppTextFieldDropdown(
                     value = selected.displayName,
-                    onValueChanged = {},
                     onOptionSelected = { index, _ -> onAction(ClientStaffAction.OptionChanged(index)) },
                     options = staffOptions.map { it.displayName },
                     label = stringResource(Res.string.feature_client_choose_staff),

@@ -35,9 +35,13 @@ object AppUrlTypes {
     /** `mifos` — REST access point. */
     val MIFOS: UrlType = UrlType("MIFOS")
 
+    /** `lwmswhoxvvoagzkqxiyd` — Supabase access point. */
+    val LWMSWHOXVVOAGZKQXIYD: UrlType = UrlType("LWMSWHOXVVOAGZKQXIYD")
+
     /** Every declared endpoint type, in app-profile order. */
     val all: List<UrlType> = listOf(
         MIFOS,
+        LWMSWHOXVVOAGZKQXIYD,
     )
     // syncForkConfig:url-types:end
 }

@@ -26,7 +26,10 @@ import kpt.feature.groups.create.CreateGroupScreen
 import kpt.feature.groups.detail.GroupsDetailScreen
 import kpt.feature.groups.list.GroupsListScreen
 import kpt.feature.loan.navigation.navigateToGroupLoanApplication
+import kpt.feature.loan.navigation.navigateToLoanSummary
+import kpt.feature.note.navigation.navigateToNotes
 import kpt.feature.savings.navigation.navigateToSavingsApplication
+import kpt.feature.savings.navigation.navigateToSavingsSummary
 
 /** The tab's graph. Mirrors `ClientDestination` — the tab points at the graph, not at a screen. */
 @Serializable
@@ -63,13 +66,10 @@ fun NavController.navigateToCreateGroup(navOptions: NavOptions? = null) =
  * an annotated destination anywhere else is silently skipped — a clean build and a screen that does
  * not exist in the app.
  *
- * ## What is NOT here
+ * ## Writes from this list
  *
- * `CreateNewGroup` and `SyncGroupDialog` from `6b66e8a43` are not in this slice.
- * `GroupCommandRepository.createGroup` exists, but create needs an office/staff/center picker whose
- * templates are not ported, and a create form that cannot populate its pickers is worse than none.
- * Tracked in CAPABILITY_GAPS. Activation — the group write that DOES have a complete path — is
- * ported, on the detail screen.
+ * `CreateNewGroup` → [CreateGroupRoute] (the list's create action). `SyncGroupDialog` became the
+ * list's multi-select "Download for offline use". Activation lives on the detail screen.
  */
 @FeatureDestination
 fun NavGraphBuilder.groupsListDestination(navController: NavController) {
@@ -116,6 +116,15 @@ fun NavGraphBuilder.groupsListDestination(navController: NavController) {
             onAddSavingsAccount = { groupId ->
                 navController.navigateToSavingsApplication(ownerId = groupId, isGroup = true)
             },
+            // The original's `loadNotes = navigateToNoteScreen` with the group as owner.
+            onNotes = { groupId -> navController.navigateToNotes(Constants.ENTITY_TYPE_GROUPS, groupId) },
+            // The original's `loadLoanAccountSummary` / `loadSavingsAccountSummary`.
+            onOpenLoan = navController::navigateToLoanSummary,
+            onOpenSavings = { accountId, endpoint -> navController.navigateToSavingsSummary(accountId, endpoint) },
+            // A member row opens that client's profile. feature/client depends on feature/groups (the
+            // profile's Group chip opens this screen), so this edge goes by the route's NAME rather than
+            // its class — `ClientProfileRouteNameTest` (feature/client) pins the name to the class.
+            onOpenClient = { clientId -> navController.navigate(clientProfileRoute(clientId)) },
         )
     }
 }
@@ -143,3 +152,11 @@ fun NavGraphBuilder.groupsTabGraph(outerNav: NavController) {
         }
     }
 }
+
+/**
+ * `ClientProfileRoute(clientId)` by name — the class lives in feature/client, which depends on this
+ * module. Type-safe routes register as `<serial name>/{clientId}`, so this string matches it.
+ */
+const val CLIENT_PROFILE_ROUTE_NAME = "kpt.feature.client.navigation.ClientProfileRoute"
+
+fun clientProfileRoute(clientId: Int): String = "$CLIENT_PROFILE_ROUTE_NAME/$clientId"

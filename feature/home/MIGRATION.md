@@ -92,3 +92,7 @@ the one thing here that can be silently lost.
 discrepancies between this ledger and the disk were found and are now recorded in §7: the three
 `components/` files exist as behaviour but not as files, and `MultiFloatingActionButton` migrated
 into `core/ui` with zero consumers. Neither is a silent drop any more.
+
+## Audit pass (2026-10-25)
+
+Search: centre results open the centre detail, and the **create FAB** (client / centre / group) is ported. **Bug fixed:** results and creates navigated on the INNER bottom-bar controller, where no feature destination is registered, so Create centre crashed the app. Both now go on `outerNavController`. Verified on the device: all three creates and all three result types open with no crash. The filter chips scroll instead of wrapping ("Savin / gs"), and the FAB items announce "Create client" etc. instead of the enum name.

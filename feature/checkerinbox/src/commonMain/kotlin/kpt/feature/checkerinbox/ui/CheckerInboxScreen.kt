@@ -417,7 +417,6 @@ private fun NameDropdown(label: String, all: String, value: String?, names: List
     val choices = listOf(all) + names
     AppTextFieldDropdown(
         value = value ?: all,
-        onValueChanged = {},
         onOptionSelected = { index, _ -> onPick(if (index == 0) null else names[index - 1]) },
         options = choices,
         label = label,

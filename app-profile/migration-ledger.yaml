@@ -46,7 +46,16 @@
 # addresses them, every list refetches on open, and the logout purge removes them. A spec to delete
 # them would need `execSQL`, which commonMain cannot reach while core/database targets web. The
 # destructive fallback must still not fire: it would drop pending offline drafts with the cache.
-version: 16
+#
+# 16 -> 17 (2026-10-25): added `server_instances` — the server picker's instance list (Supabase
+# `app_server_config`, this app's rows) as the local source of truth for the `serverInstances` store,
+# so it follows network -> database -> store -> data like every other read and works offline on
+# sign-in. Purely additive: a plain AutoMigration (no spec).
+#
+# 17 -> 18 (2026-10-25): `Note.resourceType` (default 'clients') — notes for any owner (groups as
+# well as clients), keyed (resourceType, owner id) in the `notes` store. Purely additive: every
+# existing row is a client note, which the default records. A plain AutoMigration (no spec).
+version: 18
 
 # Units already folded into this fork's INITIAL schema. A fresh fork is created with the framework
 # tables in their current shape, so it needs no migration for them — it records them here instead.
@@ -64,3 +73,5 @@ baseline_units: [framework-fetched-at, framework-submit-drafts, drafts-unique-ke
 migrations:
   - { unit: fork-document-contents, from: 14, to: 15 }
   - { unit: fork-charges-composite-key, from: 15, to: 16 }
+  - { unit: fork-server-instances, from: 16, to: 17 }
+  - { unit: fork-note-resource-type, from: 17, to: 18 }

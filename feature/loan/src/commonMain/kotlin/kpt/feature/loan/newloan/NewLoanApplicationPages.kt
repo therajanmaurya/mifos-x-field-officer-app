@@ -95,7 +95,6 @@ internal fun DetailsPage(
         // screen and the terms on the next step can never disagree.
         AppTextFieldDropdown(
             value = state.selections[LoanField.PRODUCT]?.label.orEmpty(),
-            onValueChanged = {},
             onOptionSelected = { index, _ ->
                 productOptions.getOrNull(index)
                     ?.let { onAction(NewLoanApplicationAction.OnProductSelected(it)) }
@@ -357,7 +356,6 @@ private fun Dropdown(
     FieldGap()
     AppTextFieldDropdown(
         value = state.selections[field]?.label.orEmpty(),
-        onValueChanged = {},
         onOptionSelected = { index, _ ->
             options.getOrNull(index)
                 ?.let { onAction(NewLoanApplicationAction.OnOptionSelected(field, it)) }

@@ -165,7 +165,6 @@ internal fun ClientDefaultAccountContent(
 
                 AppTextFieldDropdown(
                     value = selected.accountNo,
-                    onValueChanged = {},
                     // The index is resolved to an id HERE, against `options` as rendered, so the
                     // position never outlives the list it indexed.
                     onOptionSelected = { index, _ ->

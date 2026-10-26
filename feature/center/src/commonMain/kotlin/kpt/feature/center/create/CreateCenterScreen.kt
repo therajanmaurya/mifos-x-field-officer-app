@@ -124,7 +124,6 @@ internal fun CreateCenterContent(
                 )
                 AppTextFieldDropdown(
                     value = state.officeName,
-                    onValueChanged = {},
                     onOptionSelected = { index, label ->
                         officeList.getOrNull(index)?.let { onAction(CreateCenterAction.OfficeSelected(it.id, label)) }
                     },

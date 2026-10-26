@@ -41,7 +41,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AppTextFieldDropdown(
     enabled: Boolean = true,
     value: String,
-    onValueChanged: (String) -> Unit,
+    // Only an EDITABLE field (`readOnly = false`) ever calls this; a read-only dropdown changes only
+    // through [onOptionSelected]. Required, it made every read-only caller pass a do-nothing `{}`
+    // (40 of them, each a dead-clickable finding), so it is optional.
+    onValueChanged: (String) -> Unit = {},
     onOptionSelected: (Int, String) -> Unit,
     options: List<String>,
     modifier: Modifier = Modifier

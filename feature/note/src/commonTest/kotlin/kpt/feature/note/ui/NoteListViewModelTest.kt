@@ -46,13 +46,14 @@ class NoteListViewModelTest {
 
     private fun viewModel(
         clientId: Int = 42,
+        resourceType: String = "clients",
         outcome: () -> MutationResult<Unit> = { MutationResult.Applied(Unit, synced = true) },
     ): Pair<NoteListViewModel, FakeNoteCommandRepository> {
         val commands = FakeNoteCommandRepository(outcome)
         return NoteListViewModel(
             repository,
             commands,
-            SavedStateHandle(mapOf("clientId" to clientId)),
+            SavedStateHandle(mapOf("resourceType" to resourceType, "resourceId" to clientId)),
         ) to commands
     }
 
@@ -192,7 +193,7 @@ class NoteListViewModelTest {
             vm.trySendAction(NoteListAction.EditClicked)
             // Carries the EXPANDED row's id, not an id threaded through the action. "Which note"
             // lives in exactly one place.
-            assertEquals(NoteListEvent.NavigateToEdit(42, 3L), awaitItem())
+            assertEquals(NoteListEvent.NavigateToEdit("clients", 42, 3L), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -202,7 +203,7 @@ class NoteListViewModelTest {
         val (vm, _) = viewModel(clientId = 42)
         vm.eventFlow.test {
             vm.trySendAction(NoteListAction.AddClicked)
-            assertEquals(NoteListEvent.NavigateToAdd(42), awaitItem())
+            assertEquals(NoteListEvent.NavigateToAdd("clients", 42), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }

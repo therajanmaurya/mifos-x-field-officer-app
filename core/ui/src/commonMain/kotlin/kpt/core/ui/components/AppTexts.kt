@@ -89,7 +89,8 @@ fun AppTextTitleDescDrawableSingleLine(
     imageResId: DrawableResource,
     modifier: Modifier = Modifier,
     imageSize: Dp = DesignToken.sizes.imageDp14,
-    onDrawableClick: () -> Unit = {},
+    // Null = the image is not tappable. A do-nothing default drew a tap target with no action.
+    onDrawableClick: (() -> Unit)? = null,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -113,7 +114,7 @@ fun AppTextTitleDescDrawableSingleLine(
             contentDescription = "Image",
             modifier = Modifier
                 .size(imageSize)
-                .clickable { onDrawableClick() },
+                .then(if (onDrawableClick != null) Modifier.clickable(onClick = onDrawableClick) else Modifier),
         )
     }
 }

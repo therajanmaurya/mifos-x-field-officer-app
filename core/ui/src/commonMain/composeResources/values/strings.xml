@@ -138,4 +138,8 @@
     <string name="core_ui_offline_failures">%1$d could not be downloaded:</string>
     <string name="core_ui_offline_cancel">Cancel</string>
     <string name="core_ui_offline_done">Done</string>
+    <string name="core_ui_fab_create">Create new</string>
+    <string name="core_ui_fab_create_client">Create client</string>
+    <string name="core_ui_fab_create_center">Create centre</string>
+    <string name="core_ui_fab_create_group">Create group</string>
 </resources>

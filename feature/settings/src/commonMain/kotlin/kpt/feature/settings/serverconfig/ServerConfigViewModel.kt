@@ -10,17 +10,24 @@
 package kpt.feature.settings.serverconfig
 
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.viewmodel.BaseViewModel
+import kpt.core.data.auth.AuthCommandRepository
 import kpt.core.data.serverconfig.ServerConfigRepository
+import kpt.core.data.session.SessionRepository
 import kpt.core.domain.validation.ServerConfigRules
 import kpt.core.domain.validation.ValidationFailure
 import kpt.core.domain.validation.ValidationResult
 import kpt.core.model.utils.ServerConfig
+import kpt.core.model.utils.ServerInstance
+import kpt.core.model.utils.matching
 
 /**
  * Editor for the Fineract server configuration.
@@ -43,31 +50,56 @@ import kpt.core.model.utils.ServerConfig
  * The stored config is read through `ServerConfigRepository.serverConfigStream` — the same
  * store-backed read path as every other screen — and written through its `updateServerConfig`,
  * never by reaching into `core/datastore`.
+ *
+ * **What the form shows is derived, not seeded** (no `init {}` collector): [form] is the officer's
+ * [ServerConfigState.draft] when they have edited a field, else the STORED config. A draft is never
+ * overwritten by a re-emission of the preference, and nothing can submit a placeholder: before the
+ * stored config arrives there is no draft and nothing to submit.
+ *
+ * **Saving a DIFFERENT server signs the officer out** — as the original did (`prefManager.logOut()`
+ * before `updateServerConfig`): a session belongs to the server that issued it. The original then asked
+ * for an app restart, because its server was read once at start-up; requests now follow the saved
+ * config immediately (`ServerConfigBaseUrlOverride`), so no restart. Reached before sign-in (from the
+ * sign-in screen) there is no session and the sign-out is a no-op. Local data is kept, as the original
+ * kept it — unsynced work must not be lost to a server change.
  */
 class ServerConfigViewModel(
     private val repository: ServerConfigRepository,
-) : BaseViewModel<ServerConfigState, ServerConfigEvent, ServerConfigAction>(
-    ServerConfigState(config = repository.defaultConfig),
-) {
+    private val auth: AuthCommandRepository,
+    session: SessionRepository,
+) : BaseViewModel<ServerConfigState, ServerConfigEvent, ServerConfigAction>(ServerConfigState()) {
 
-    /** The stored config has been loaded into the fields; until then a submit would write the default. */
-    private var hydrated = false
+    /** The saved config. Eager: a submit must compare against it even with no screen collecting. */
+    private val stored: StateFlow<ServerConfig?> = repository.serverConfigStream(viewModelScope).state
+        .map { (it as? ScreenState.Content<ServerConfig>)?.data }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    /** The user has changed a field; a late hydrate must never overwrite their input. */
-    private var edited = false
+    /**
+     * Whether an officer is signed in — the same screen serves sign-in (nobody yet: save directly) and
+     * Settings (a session on the OLD server: changing it signs out, so confirm first). Eager, like
+     * [stored]: submit reads it with no screen collecting.
+     */
+    private val signedIn: StateFlow<Boolean> = session.sessionStream(viewModelScope).state
+        .map { (it as? ScreenState.Content)?.data?.isAuthenticated == true }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    init {
-        // A FORM, so a one-shot seed rather than a live subscription: re-applying every emission
-        // would replace what the user is typing whenever the preference re-emits.
-        viewModelScope.launch {
-            val stored = repository.serverConfigStream(viewModelScope).state
-                .filterIsInstance<ScreenState.Content<ServerConfig>>()
-                .first()
-                .data
-            if (!edited) mutableStateFlow.value = state.copy(config = stored)
-            hydrated = true
-        }
-    }
+    /** The instance list read — retained so [ServerConfigAction.RetryInstances] re-runs it. */
+    private val instancesStream = repository.instancesStream(viewModelScope)
+
+    /**
+     * The picker's own state — Loading (progress) until the first list lands, then Content; Error /
+     * NoNetwork with nothing cached. The five fields stay usable throughout: a custom server needs no list.
+     */
+    val instances: StateFlow<ScreenState<List<ServerInstance>>> =
+        instancesStream.state.stateIn(viewModelScope, SharingStarted.Eagerly, ScreenState.Loading)
+
+    /** What the screen renders: the draft over the stored config, with the instances to pick from. */
+    val form: StateFlow<ServerConfigState> = combine(stateFlow, stored, instances) { ui, saved, list ->
+        ui.copy(
+            config = ui.draft ?: saved ?: repository.defaultConfig,
+            instances = (list as? ScreenState.Content<List<ServerInstance>>)?.data.orEmpty(),
+        )
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, ServerConfigState(config = repository.defaultConfig))
 
     override fun handleAction(action: ServerConfigAction) {
         when (action) {
@@ -76,37 +108,47 @@ class ServerConfigViewModel(
             is ServerConfigAction.ApiPathChanged -> edit { copy(apiPath = action.value) }
             is ServerConfigAction.PortChanged -> edit { copy(port = action.value) }
             is ServerConfigAction.TenantChanged -> edit { copy(tenant = action.value) }
-            ServerConfigAction.UseDefaults -> replace(repository.defaultConfig)
-            ServerConfigAction.UseLocalhost -> replace(ServerConfig.LOCALHOST)
-            ServerConfigAction.Submit -> submit()
+            is ServerConfigAction.InstanceSelected ->
+                form.value.instances.firstOrNull { it.id == action.id }?.let { replace(it.config) }
+            ServerConfigAction.Submit -> submit(confirmed = false)
+            ServerConfigAction.SwitchConfirmed -> submit(confirmed = true)
+            ServerConfigAction.SwitchCancelled -> mutableStateFlow.value = state.copy(confirmingSwitch = false)
+            ServerConfigAction.RetryInstances -> instancesStream.retry()
         }
     }
 
-    private fun edit(mutate: ServerConfig.() -> ServerConfig) {
-        edited = true
-        val next = state.config.mutate()
-        mutableStateFlow.value = state.copy(config = next, failures = validate(next))
-    }
+    private fun edit(mutate: ServerConfig.() -> ServerConfig) = replace(form.value.config.mutate())
 
     private fun replace(config: ServerConfig) {
-        edited = true
-        mutableStateFlow.value = state.copy(config = config, failures = validate(config))
+        mutableStateFlow.value = state.copy(draft = config, failures = validate(config))
     }
 
-    private fun submit() {
+    private fun submit(confirmed: Boolean) {
+        mutableStateFlow.value = state.copy(confirmingSwitch = false)
+        val saved = stored.value
         // Nothing loaded and nothing typed: the fields hold a placeholder, not the user's config.
-        if (!hydrated && !edited) return
-        val failures = validate(state.config)
+        val config = state.draft ?: saved ?: return
+        val failures = validate(config)
         if (failures.isNotEmpty()) {
             // Re-publish so a user who never touched a field still sees why submit refused.
             mutableStateFlow.value = state.copy(failures = failures)
             sendEvent(ServerConfigEvent.Invalid)
             return
         }
+        val switching = saved != null && saved != config
+        // A signed-in officer changing server loses the session (it belongs to the old server) —
+        // ask first. Signed out (from sign-in) there is nothing to lose: save directly.
+        if (switching && signedIn.value && !confirmed) {
+            mutableStateFlow.value = state.copy(confirmingSwitch = true)
+            return
+        }
         viewModelScope.launch {
-            when (repository.updateServerConfig(state.config)) {
+            when (repository.updateServerConfig(config)) {
                 is MutationResult.Failed -> sendEvent(ServerConfigEvent.SaveFailed)
-                else -> sendEvent(ServerConfigEvent.Saved)
+                else -> {
+                    if (switching) auth.signOut(clearLocalData = false)
+                    sendEvent(ServerConfigEvent.Saved)
+                }
             }
         }
     }
@@ -138,10 +180,20 @@ class ServerConfigViewModel(
 enum class ServerConfigField { Protocol, EndPoint, ApiPath, Port, Tenant }
 
 data class ServerConfigState(
-    val config: ServerConfig,
+    /** What the fields show — set by [ServerConfigViewModel.form]; read it from there. */
+    val config: ServerConfig = ServerConfig.LOCALHOST,
+    /** The officer's edits; null until a field is changed. */
+    val draft: ServerConfig? = null,
     val failures: Map<ServerConfigField, ValidationFailure> = emptyMap(),
+    /** The named servers to pick from — set by [ServerConfigViewModel.form]. */
+    val instances: List<ServerInstance> = emptyList(),
+    /** A signed-in officer asked to save a different server; the screen confirms the sign-out. */
+    val confirmingSwitch: Boolean = false,
 ) {
     val isValid: Boolean get() = failures.isEmpty()
+
+    /** The instance the fields match exactly, or null when the officer typed a custom server. */
+    val selectedInstance: ServerInstance? get() = instances.matching(config)
 }
 
 sealed interface ServerConfigAction {
@@ -151,13 +203,21 @@ sealed interface ServerConfigAction {
     data class PortChanged(val value: String) : ServerConfigAction
     data class TenantChanged(val value: String) : ServerConfigAction
 
-    /** Restores `ServerConfigRepository.defaultConfig` — the original's `UseDefaultConfig`. */
-    data object UseDefaults : ServerConfigAction
-
-    /** Not in the original; `ServerConfig.LOCALHOST` already exists in the substrate. */
-    data object UseLocalhost : ServerConfigAction
+    /**
+     * Fill every field from a named instance. Replaces the original's "Use default config" and the
+     * port's "Use localhost" buttons — both are now instances, beside the demo servers.
+     */
+    data class InstanceSelected(val id: String) : ServerConfigAction
 
     data object Submit : ServerConfigAction
+
+    /** The officer confirmed signing out to switch server. */
+    data object SwitchConfirmed : ServerConfigAction
+
+    data object SwitchCancelled : ServerConfigAction
+
+    /** Re-fetch the instance list after a failed load. */
+    data object RetryInstances : ServerConfigAction
 }
 
 sealed interface ServerConfigEvent {

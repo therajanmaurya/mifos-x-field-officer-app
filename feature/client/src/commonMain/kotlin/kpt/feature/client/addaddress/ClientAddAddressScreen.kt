@@ -296,7 +296,6 @@ private fun OptionDropdown(
 ) {
     AppTextFieldDropdown(
         value = value,
-        onValueChanged = { },
         onOptionSelected = { index, selectedLabel ->
             options.getOrNull(index)?.let { onSelected(it.id, selectedLabel) }
         },

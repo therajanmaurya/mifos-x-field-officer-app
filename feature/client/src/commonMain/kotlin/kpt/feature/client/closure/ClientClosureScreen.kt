@@ -194,7 +194,6 @@ internal fun ClientClosureContent(
 
             AppTextFieldDropdown(
                 value = selected.name,
-                onValueChanged = {},
                 onOptionSelected = { index, _ -> onAction(ClientClosureAction.OptionChanged(index)) },
                 options = narrations.map { it.name },
                 label = stringResource(Res.string.feature_client_closure_reason),

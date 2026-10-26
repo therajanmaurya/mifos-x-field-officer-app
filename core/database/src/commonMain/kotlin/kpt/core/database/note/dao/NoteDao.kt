@@ -32,8 +32,8 @@ interface NoteDao {
     @Insert(entity = NoteEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNotes(notes: List<NoteEntity>)
 
-    @Query("SELECT * FROM Note WHERE clientId = :clientId ORDER BY createdOn DESC")
-    fun getNotesForClient(clientId: Long): Flow<List<NoteEntity>>
+    @Query("SELECT * FROM Note WHERE resourceType = :resourceType AND clientId = :resourceId ORDER BY createdOn DESC")
+    fun getNotesFor(resourceType: String, resourceId: Long): Flow<List<NoteEntity>>
 
     @Query("SELECT * FROM Note WHERE id = :id LIMIT 1")
     fun observeById(id: Long): Flow<NoteEntity?>
@@ -41,8 +41,8 @@ interface NoteDao {
     @Query("DELETE FROM Note WHERE id = :id")
     suspend fun deleteById(id: Long)
 
-    @Query("DELETE FROM Note WHERE clientId = :clientId")
-    suspend fun deleteNotesForClient(clientId: Long)
+    @Query("DELETE FROM Note WHERE resourceType = :resourceType AND clientId = :resourceId")
+    suspend fun deleteNotesFor(resourceType: String, resourceId: Long)
 
     @Query("DELETE FROM Note")
     suspend fun deleteAll()
@@ -52,8 +52,8 @@ interface NoteDao {
      * alone, so a note deleted on the server (or on another device) stayed in the table forever.
      */
     @Transaction
-    suspend fun replaceForClient(clientId: Long, notes: List<NoteEntity>) {
-        deleteNotesForClient(clientId)
+    suspend fun replaceFor(resourceType: String, resourceId: Long, notes: List<NoteEntity>) {
+        deleteNotesFor(resourceType, resourceId)
         insertNotes(notes)
     }
 }

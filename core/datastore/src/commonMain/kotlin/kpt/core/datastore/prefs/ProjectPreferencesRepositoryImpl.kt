@@ -20,8 +20,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kpt.core.base.common.manager.DispatcherManager
 import kpt.core.model.objects.users.User
-import kpt.core.model.utils.ServerConfig
-import kpt.core.model.utils.getInstanceUrl
 
 /**
  * Fork preferences, delegating every framework preference to the template's implementation.
@@ -41,36 +39,15 @@ class ProjectPreferencesRepositoryImpl(
     val plainSettings: Settings,
     val secureSettings: Settings,
     val dispatcher: DispatcherManager,
-    /** The shipped server, used until the user saves one — derived from app-profile in core/network. */
-    defaultServerConfig: ServerConfig,
 ) : ProjectPreferencesRepository, UserPreferencesRepository by delegate {
-
-    private val _serverConfig = MutableStateFlow(
-        plainSettings.decodeValueOrNull(serializer = ServerConfig.serializer(), key = SERVER_CONFIG) ?: defaultServerConfig,
-    )
-    override val serverConfig: StateFlow<ServerConfig> = _serverConfig.asStateFlow()
 
     private val _fineractUser = MutableStateFlow(
         secureSettings.decodeValueOrNull(serializer = User.serializer(), key = FINERACT_USER) ?: User(),
     )
     override val fineractUser: StateFlow<User> = _fineractUser.asStateFlow()
 
-    override val instanceUrl: String
-        get() = _serverConfig.value.getInstanceUrl()
-
     override val authHeader: String
         get() = _fineractUser.value.base64EncodedAuthenticationKey?.let { "Basic $it" }.orEmpty()
-
-    override suspend fun updateServerConfig(serverConfig: ServerConfig) {
-        withContext(dispatcher.io) {
-            plainSettings.encodeValue(
-                serializer = ServerConfig.serializer(),
-                key = SERVER_CONFIG,
-                value = serverConfig,
-            )
-            _serverConfig.value = serverConfig
-        }
-    }
 
     override suspend fun updateFineractUser(user: User) {
         withContext(dispatcher.io) {
@@ -111,7 +88,6 @@ class ProjectPreferencesRepositoryImpl(
     }
 
     private companion object {
-        const val SERVER_CONFIG = "fineract.server_config"
         const val FINERACT_USER = "fineract.user"
     }
 }

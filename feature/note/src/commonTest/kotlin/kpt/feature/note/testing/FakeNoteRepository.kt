@@ -60,10 +60,14 @@ internal class FakeNoteRepository(
         state.value = ScreenState.Content(notes.toList())
     }
 
+    val requestedTypes = mutableListOf<String>()
+
     override fun notesStream(
+        resourceType: String,
         resourceId: Long,
         scope: CoroutineScope,
     ): ScreenDataStream<List<Note>> {
+        requestedTypes += resourceType
         requestedIds += resourceId
         return screenDataStreamForTesting(
             state,

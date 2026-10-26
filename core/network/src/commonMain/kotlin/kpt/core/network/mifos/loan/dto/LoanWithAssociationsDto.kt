@@ -16,7 +16,11 @@ data class LoanWithAssociationsDto(
     val id: Long,
     val accountNo: String? = null,
     val status: LoanStatusDto? = null,
-    val clientId: Long,
+    // Absent on a GROUP loan (it carries `group` instead) — required, every group loan failed to
+    // decode and its summary showed "Something went wrong" (device, 2026-10-25).
+    val clientId: Long = 0,
+    /** A group loan's owner (`{id, name, …}`) — null on a client loan. */
+    val group: LoanGroupDto? = null,
     val clientAccountNo: String? = null,
     val clientName: String? = null,
     val loanProductId: Long,
@@ -243,3 +247,7 @@ data class DelinquentDto(
     val delinquentAmount: Double,
     val nextPaymentDueDate: List<Int>?,
 )
+
+/** The owner of a group loan, as `loans/{id}` returns it. */
+@Serializable
+data class LoanGroupDto(val id: Long? = null, val name: String? = null)

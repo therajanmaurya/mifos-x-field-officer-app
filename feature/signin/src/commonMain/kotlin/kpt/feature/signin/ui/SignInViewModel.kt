@@ -11,10 +11,14 @@ package kpt.feature.signin.ui
 
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kpt.core.base.security.BiometricAuthenticator
 import kpt.core.base.security.BiometricResult
+import kpt.core.base.store.error.ErrorCategory
+import kpt.core.base.store.error.categorize
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
@@ -24,10 +28,13 @@ import kpt.core.data.serverconfig.ServerConfigRepository
 import kpt.core.data.session.SessionRepository
 import kpt.core.domain.validation.CredentialRules
 import kpt.core.domain.validation.ValidationResult
-import kpt.core.model.objects.users.User
-import kpt.core.model.utils.ServerConfig
 import kpt.core.model.auth.PostAuthenticationRequest
 import kpt.core.model.auth.PostAuthenticationResponse
+import kpt.core.model.objects.users.User
+import kpt.core.model.utils.DemoCredentials
+import kpt.core.model.utils.ServerConfig
+import kpt.core.model.utils.ServerInstance
+import kpt.core.model.utils.matching
 
 /**
  * Sign-in against the configured Fineract instance.
@@ -68,13 +75,18 @@ class SignInViewModel(
         // who leaves for the server-config screen and comes back must see the value they just
         // saved, not the one captured when this screen was first composed. Read through the
         // store-backed repository stream, never `core/datastore` directly.
+        // A PUBLIC demo instance's published sign-in rides along, so a tester sees what to type.
         viewModelScope.launch {
             serverConfig.serverConfigStream(viewModelScope).state
                 .filterIsInstance<ScreenState.Content<ServerConfig>>()
-                .collect { content ->
+                .combine(
+                    serverConfig.instancesStream(viewModelScope).state.map { (it as? ScreenState.Content<List<ServerInstance>>)?.data.orEmpty() },
+                ) { content, instances -> content.data to instances.matching(content.data)?.demoAccounts.orEmpty() }
+                .collect { (config, demo) ->
                     mutableStateFlow.value = state.copy(
-                        instanceHost = content.data.endPoint,
-                        instanceTenant = content.data.tenant,
+                        instanceHost = config.endPoint,
+                        instanceTenant = config.tenant,
+                        demoAccounts = demo,
                     )
                 }
         }
@@ -89,6 +101,9 @@ class SignInViewModel(
                 mutableStateFlow.value = state.copy(password = action.value, error = null)
 
             SignInAction.Submit -> submit()
+
+            is SignInAction.UseDemoAccount ->
+                mutableStateFlow.value = state.copy(username = action.account.username, password = action.account.password, error = null)
 
             SignInAction.UnlockWithBiometrics -> unlockWithBiometrics()
         }
@@ -121,7 +136,13 @@ class SignInViewModel(
                     // (a 404 from a wrong `base_path`) took a packet-level probe for exactly this
                     // reason. The message the user sees is unchanged.
                     Logger.e(tag = TAG, throwable = result.cause) { "authenticate failed" }
-                    fail(SignInError.Rejected)
+                    // Only the SERVER saying no is a credential failure. A server that could not be
+                    // reached (TLS down, DNS, refused) must say so — and must NOT count toward the
+                    // lockout, or a bad server choice locks the officer out with the right password.
+                    when (categorize(result.cause)) {
+                        ErrorCategory.Auth, is ErrorCategory.ClientError -> fail(SignInError.Rejected)
+                        else -> fail(SignInError.Unreachable, countsTowardLockout = false)
+                    }
                 }
                 is MutationResult.Conflicted -> fail(SignInError.Rejected)
             }
@@ -271,6 +292,8 @@ data class SignInState(
      * which ships android/ios/desktop/js actuals and was never wired until now.
      */
     val hasStoredSession: Boolean = false,
+    /** The current server's published demo sign-ins, one per role — empty on a real server. */
+    val demoAccounts: List<DemoCredentials> = emptyList(),
     val biometricAvailable: Boolean = false,
 ) {
     /** The accelerator is offered only when it can actually succeed. */
@@ -284,13 +307,16 @@ data class SignInState(
 }
 
 /** Distinct causes, because the officer's next step differs for each. */
-enum class SignInError { UsernameTooShort, PasswordTooShort, Rejected, Offline, LockedOut, BiometricFailed }
+enum class SignInError { UsernameTooShort, PasswordTooShort, Rejected, Offline, Unreachable, LockedOut, BiometricFailed }
 
 sealed interface SignInAction {
     data class UsernameChanged(val value: String) : SignInAction
     data class PasswordChanged(val value: String) : SignInAction
     data object Submit : SignInAction
     data object UnlockWithBiometrics : SignInAction
+
+    /** Fill the fields with one of [SignInState.demoAccounts]. */
+    data class UseDemoAccount(val account: DemoCredentials) : SignInAction
 }
 
 sealed interface SignInEvent {

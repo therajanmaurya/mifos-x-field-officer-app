@@ -19,6 +19,7 @@ import kpt.core.model.objects.note.Note
 import kpt.core.network.mifos.note.api.NoteApi
 import kpt.core.network.mifos.note.mapper.toModel
 import kpt.core.store.note.NOTE_CLIENT_RESOURCE
+import kpt.core.store.note.NoteKey
 import kpt.core.store.note.NoteItemKey
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
@@ -33,19 +34,26 @@ internal class NoteTestStores(api: NoteApi) {
 
     val table = MutableStateFlow<List<Note>>(emptyList())
 
-    fun rowsOf(clientId: Long) = table.value.filter { it.clientId == clientId }
+    /** The owner type of each row (by note id) — the real table's `resourceType` column. */
+    private val typeOf = mutableMapOf<Long, String>()
+
+    private fun Note.ownedBy(key: NoteKey) = clientId == key.resourceId && (typeOf[id] ?: NOTE_CLIENT_RESOURCE) == key.resourceType
+
+    fun rowsOf(clientId: Long, resourceType: String = NOTE_CLIENT_RESOURCE) =
+        table.value.filter { it.ownedBy(NoteKey(resourceType, clientId)) }
 
     val notesStore = StoreBuilder.from(
-        fetcher = Fetcher.of { clientId: Long ->
-            api.retrieveListNotes(NOTE_CLIENT_RESOURCE, clientId).map { it.toModel() }
+        fetcher = Fetcher.of { key: NoteKey ->
+            api.retrieveListNotes(key.resourceType, key.resourceId).map { it.toModel() }
         },
         sourceOfTruth = SourceOfTruth.of(
-            reader = { clientId: Long ->
-                table.map { rows -> rows.filter { it.clientId == clientId } }
+            reader = { key: NoteKey ->
+                table.map { rows -> rows.filter { it.ownedBy(key) } }
             },
-            // Mirrors NoteDao.replaceForClient.
-            writer = { clientId: Long, notes: List<Note> ->
-                table.value = table.value.filterNot { it.clientId == clientId } + notes.map { it.copy(clientId = clientId) }
+            // Mirrors NoteDao.replaceFor — scoped to (resourceType, owner id).
+            writer = { key: NoteKey, notes: List<Note> ->
+                notes.forEach { note -> note.id?.let { typeOf[it] = key.resourceType } }
+                table.value = table.value.filterNot { it.ownedBy(key) } + notes.map { it.copy(clientId = key.resourceId) }
             },
         ),
     ).build()
@@ -55,7 +63,7 @@ internal class NoteTestStores(api: NoteApi) {
             reader = { key: NoteItemKey -> table.map { rows -> rows.firstOrNull { it.id == key.noteId } } },
             writer = { key: NoteItemKey, note: Note ->
                 table.value = table.value.filterNot { it.id == key.noteId } +
-                    note.copy(id = key.noteId, clientId = key.clientId)
+                    note.copy(id = key.noteId, clientId = key.resourceId)
             },
             delete = { key: NoteItemKey -> table.value = table.value.filterNot { it.id == key.noteId } },
         ),

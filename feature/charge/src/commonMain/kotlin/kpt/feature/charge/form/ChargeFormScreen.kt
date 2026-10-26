@@ -201,7 +201,6 @@ private fun ChargeForm(
 
         AppTextFieldDropdown(
             value = state.selectedCharge?.name.orEmpty(),
-            onValueChanged = {},
             // The chosen CHARGE is dispatched, not its index.
             onOptionSelected = { index, _ ->
                 state.chargeTypes.getOrNull(index)?.let { onAction(ChargeFormAction.OnChargeSelected(it)) }

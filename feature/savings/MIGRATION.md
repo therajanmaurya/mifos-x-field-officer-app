@@ -320,3 +320,7 @@ The summary's overflow menu gains **Charges**, opening the ONE charge module (`f
 `savingsaccounts/{accountId}/charges` — list, detail, add, edit, delete. The original had no
 levied-charge screen for savings at all. The application wizard's Charges PAGE is unrelated (charges
 chosen before the account exists) and is unchanged. See `feature/charge/MIGRATION.md`.
+
+## Audit pass (2026-10-25)
+
+The summary gains **More savings account info** (`feature/datatable`, `m_savings_account`). **Bug fixed:** a group savings account showed "Client name unavailable". Fineract sends `groupName` and a null `clientName`, so the store fetcher folds the group name in and the cached row keeps it. Verified on the device: Charges and Add charge open, and correctly report no charge types (the gateway has none for savings).

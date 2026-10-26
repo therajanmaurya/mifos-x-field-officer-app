@@ -10,10 +10,13 @@
 package kpt.core.data.di
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.map
+import kpt.core.base.network.NetworkConfigRepository
 import kpt.core.base.network.UnauthorizedHandler
 import kpt.core.data.auth.AuthCommandRepository
 import kpt.core.data.auth.impl.SignOutOnRejectedSession
 import kpt.core.datastore.prefs.ProjectPreferencesRepository
+import kpt.core.network.config.toServerConfig
 import kpt.core.store.serverconfig.ServerConfigSource
 import kpt.core.store.session.SessionSource
 import org.koin.dsl.module
@@ -33,7 +36,14 @@ import org.koin.dsl.module
 val ProjectRepositoryModule = module {
     // The read PORT `core/store`'s server-config store declares (it cannot depend on
     // core/datastore) — supplied here, as `DataModule` supplies `UserDataSource`.
-    single<ServerConfigSource> { ServerConfigSource { get<ProjectPreferencesRepository>().serverConfig } }
+    // The server is the MAIN runtime network config (core-base NetworkConfigRepository), as the
+    // server-config screen's five fields. One persisted source for the screen and the HTTP client.
+    single<ServerConfigSource> {
+        val networkConfigs = get<NetworkConfigRepository>()
+        ServerConfigSource {
+            networkConfigs.configs.map { requireNotNull(networkConfigs.mainConfig()) { "app-profile marks no main access point" }.toServerConfig() }
+        }
+    }
     single<SessionSource> { SessionSource { get<ProjectPreferencesRepository>().fineractUser } }
 
     // A rejected session (401 on a credentialed request) ends it — see SignOutOnRejectedSession.

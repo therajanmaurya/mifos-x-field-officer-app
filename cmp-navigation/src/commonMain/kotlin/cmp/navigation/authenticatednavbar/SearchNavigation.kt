@@ -21,6 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
@@ -33,7 +37,15 @@ import kpt.core.base.ui.nav.composableWithPushTransitions
 import kpt.core.common.utils.Constants
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.model.objects.SearchedEntity
+import kpt.core.ui.components.FabButton
+import kpt.core.ui.components.FabButtonState
+import kpt.core.ui.components.FabType
+import kpt.core.ui.components.MultiFloatingActionButton
+import kpt.feature.center.navigation.navigateToCenterDetail
+import kpt.feature.center.navigation.navigateToCreateCenter
 import kpt.feature.client.navigation.navigateToClientProfile
+import kpt.feature.client.navigation.navigateToCreateNewClient
+import kpt.feature.groups.navigation.navigateToCreateGroup
 import kpt.feature.groups.navigation.navigateToGroupsDetail
 import kpt.feature.home.search.SearchBody
 import kpt.feature.loan.navigation.navigateToLoanSummary
@@ -61,15 +73,26 @@ import org.jetbrains.compose.resources.stringResource
 data object SearchRoute
 
 internal const val SEARCH_SCREEN_TAG: String = "shell:search"
+internal const val SEARCH_CREATE_FAB_TAG: String = "shell:search:create"
 
 fun NavController.navigateToSearch() = navigate(SearchRoute)
 
 internal fun NavGraphBuilder.searchDestination(
     onBackClick: () -> Unit,
     onResultClick: (SearchedEntity) -> Unit,
+    onCreate: ((FabType) -> Unit)? = null,
 ) {
     composableWithPushTransitions<SearchRoute> {
-        SearchScreen(onBackClick = onBackClick, onResultClick = onResultClick)
+        SearchScreen(onBackClick = onBackClick, onResultClick = onResultClick, onCreate = onCreate)
+    }
+}
+
+/** The search FAB's three creates — the original's `onFabClick` on its search screen. */
+internal fun NavController.navigateToCreate(type: FabType) {
+    when (type) {
+        FabType.CLIENT -> navigateToCreateNewClient()
+        FabType.CENTER -> navigateToCreateCenter()
+        FabType.GROUP -> navigateToCreateGroup()
     }
 }
 
@@ -81,9 +104,8 @@ internal fun NavGraphBuilder.searchDestination(
  * lives in the SHELL here for the reason every other cross-feature route does: the shell is the
  * only layer allowed to know about more than one feature.
  *
- * Four of the five types have a destination. `CENTER` does not, and its rows are not
- * clickable at all — `SearchBody` asks the same question before drawing the tap, so a row that
- * reaches this function always has somewhere to go. Comparison is case-insensitive: the value comes
+ * All five types have a destination (`CENTER` since 2026-10-25). `SearchBody` asks the same
+ * question before drawing the tap, so a row that reaches this function always has somewhere to go. Comparison is case-insensitive: the value comes
  * off the wire, not out of an enum.
  */
 internal fun NavController.navigateToSearchResult(entity: SearchedEntity) {
@@ -97,6 +119,7 @@ internal fun NavController.navigateToSearchResult(entity: SearchedEntity) {
         // a recurring-deposit account reached this way would address the wrong endpoint, which is
         // why the client's savings list (S5d) passes `depositType.endpoint` explicitly.
         Constants.SEARCH_ENTITY_SAVING -> navigateToSavingsSummary(entity.entityId)
+        Constants.SEARCH_ENTITY_CENTER -> navigateToCenterDetail(entity.entityId)
         else -> Unit
     }
 }
@@ -107,7 +130,9 @@ private fun SearchScreen(
     onBackClick: () -> Unit,
     onResultClick: (SearchedEntity) -> Unit,
     modifier: Modifier = Modifier,
+    onCreate: ((FabType) -> Unit)? = null,
 ) {
+    var fabState by remember { mutableStateOf<FabButtonState>(FabButtonState.Collapsed) }
     Scaffold(
         modifier = modifier.testTag(SEARCH_SCREEN_TAG),
         topBar = {
@@ -129,6 +154,26 @@ private fun SearchScreen(
             )
         },
         containerColor = MaterialTheme.colorScheme.background,
+        // The original's `+` FAB on search: create client / centre / group. It came back with the
+        // three create flows; absent (not inert) when the shell supplies no destination.
+        floatingActionButton = {
+            if (onCreate != null) {
+                MultiFloatingActionButton(
+                    fabButtons = listOf(
+                        FabButton.VectorFab(type = FabType.CLIENT, iconRes = AppIcons.Person),
+                        FabButton.VectorFab(type = FabType.CENTER, iconRes = AppIcons.buildingIcon),
+                        FabButton.VectorFab(type = FabType.GROUP, iconRes = AppIcons.People),
+                    ),
+                    fabButtonState = fabState,
+                    onFabButtonStateChange = { fabState = it },
+                    modifier = Modifier.testTag(SEARCH_CREATE_FAB_TAG),
+                    onFabClick = { type ->
+                        fabState = FabButtonState.Collapsed
+                        onCreate(type)
+                    },
+                )
+            }
+        },
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             SearchBody(onResultClick = onResultClick)

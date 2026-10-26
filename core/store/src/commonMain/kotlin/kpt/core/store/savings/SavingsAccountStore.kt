@@ -49,7 +49,11 @@ fun provideSavingsAccountStore(
             savingsAccountType = key.savingsAccountType,
             savingsAccountId = key.savingsAccountId,
             association = key.associations,
-        )
+        ).let { account ->
+            // A group account has no client: its owner's name is `groupName`, and the summary's header
+            // read "Client name unavailable" (device, 2026-10-25). Folded in here so the cached row keeps it.
+            account.copy(clientName = account.clientName ?: account.groupName)
+        }
     },
     sourceOfTruth = SourceOfTruth.of(
         reader = { key: SavingsAccountKey -> dao.getSavingsAccountWithAssociations(key.savingsAccountId).map { it?.toModel() } },

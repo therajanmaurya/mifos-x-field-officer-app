@@ -559,6 +559,7 @@ fun ExampleUsage(
             )
 
             Button(
+                // intentional-noop: a sample composable, rendered only by `Example_preview` below.
                 onClick = { },
                 modifier = Modifier.height(DesignToken.sizes.buttonHeight),
                 shape = DesignToken.shapes.small,

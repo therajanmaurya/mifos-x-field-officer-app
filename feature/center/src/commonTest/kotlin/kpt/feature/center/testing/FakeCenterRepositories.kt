@@ -11,6 +11,10 @@
 
 package kpt.feature.center.testing
 
+import kpt.core.model.objects.groups.CenterInfo
+import kpt.core.model.center.CenterWithAssociations
+import kpt.core.model.group.GroupWithAssociations
+import kpt.core.model.group.GroupAccounts
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +50,15 @@ internal class FakeCenterRepository(
         screenDataStreamForTesting(state, refreshTrigger = refreshes)
 
     override suspend fun collectionSheet(centerId: Long, payload: Payload): CollectionSheet? = null
+
+    val meetingState = MutableStateFlow<ScreenState<CenterWithAssociations>>(ScreenState.Loading)
+    val summaryState = MutableStateFlow<ScreenState<List<CenterInfo>>>(ScreenState.Loading)
+
+    override fun centerWithMeetingStream(centerId: Int, scope: CoroutineScope): ScreenDataStream<CenterWithAssociations> =
+        screenDataStreamForTesting(meetingState)
+
+    override fun centerSummaryStream(centerId: Int, scope: CoroutineScope): ScreenDataStream<List<CenterInfo>> =
+        screenDataStreamForTesting(summaryState)
 }
 
 internal class FakeGroupRepository(
@@ -61,6 +74,16 @@ internal class FakeGroupRepository(
 
     override fun groupsStream(scope: CoroutineScope): ScreenDataStream<List<Group>> =
         screenDataStreamForTesting(state, refreshTrigger = refreshes)
+
+    /** Members / accounts — Loading until a test sets them. */
+    val membersState = MutableStateFlow<ScreenState<GroupWithAssociations>>(ScreenState.Loading)
+    val accountsState = MutableStateFlow<ScreenState<GroupAccounts>>(ScreenState.Loading)
+
+    override fun groupWithMembersStream(groupId: Int, scope: CoroutineScope): ScreenDataStream<GroupWithAssociations> =
+        screenDataStreamForTesting(membersState)
+
+    override fun groupAccountsStream(groupId: Int, scope: CoroutineScope): ScreenDataStream<GroupAccounts> =
+        screenDataStreamForTesting(accountsState)
 }
 
 internal fun center(

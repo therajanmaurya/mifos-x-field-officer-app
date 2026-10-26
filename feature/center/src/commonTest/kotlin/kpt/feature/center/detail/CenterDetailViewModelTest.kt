@@ -9,6 +9,8 @@
  */
 package kpt.feature.center.detail
 
+import kpt.core.model.center.CenterWithAssociations
+import kpt.core.model.objects.groups.CenterInfo
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +22,6 @@ import kpt.core.base.store.screen.ScreenState
 import kpt.core.model.center.Center
 import kpt.core.model.group.Group
 import kpt.feature.center.testing.FakeCenterRepository
-import kpt.feature.center.testing.FakeGroupRepository
 import kpt.feature.center.testing.center
 import kpt.feature.center.testing.group
 import kotlin.test.AfterTest
@@ -44,14 +45,18 @@ class CenterDetailViewModelTest {
 
     private fun viewModel(
         centers: FakeCenterRepository,
-        groups: FakeGroupRepository,
         centerId: Int = 7,
-    ) = CenterDetailViewModel(centers, groups, SavedStateHandle(mapOf("centerId" to centerId)))
+    ) = CenterDetailViewModel(centers, SavedStateHandle(mapOf("centerId" to centerId)))
+
+    /** The centre's own read, carrying [groups] as its `groupMembers`. */
+    private fun FakeCenterRepository.emitMembers(vararg groups: Group) {
+        meetingState.value = ScreenState.Content(CenterWithAssociations(id = 7, groupMembers = groups.toList()))
+    }
 
     @Test
     fun theScreenShowsTheOneCenterItWasOpenedFor() = runTest(dispatcher) {
         val centers = FakeCenterRepository()
-        val vm = viewModel(centers, FakeGroupRepository())
+        val vm = viewModel(centers)
         centers.emit(center(1), center(7, name = "Target"), center(9))
 
         vm.center.test {
@@ -67,7 +72,7 @@ class CenterDetailViewModelTest {
         // A Content holding null would render a detail page of empty rows, which reads as "this
         // center has no data" rather than "this center is not yours".
         val centers = FakeCenterRepository()
-        val vm = viewModel(centers, FakeGroupRepository())
+        val vm = viewModel(centers)
         centers.emit(center(1), center(2))
 
         vm.center.test {
@@ -78,10 +83,12 @@ class CenterDetailViewModelTest {
     }
 
     @Test
-    fun onlyTheGroupsOfThisCenterAreListed() = runTest(dispatcher) {
-        val groups = FakeGroupRepository()
-        val vm = viewModel(FakeCenterRepository(), groups)
-        groups.emit(group(1, centerId = 7), group(2, centerId = 99), group(3, centerId = 7))
+    fun theGroupsAreTheCentresOwnMembers() = runTest(dispatcher) {
+        // From `centers/{id}?associations=groupMembers` — the `groups` list never carries
+        // `centerId`, so filtering it matched nothing for every centre (device, 2026-10-25).
+        val centers = FakeCenterRepository()
+        val vm = viewModel(centers)
+        centers.emitMembers(group(1, centerId = 7), group(3, centerId = 7))
 
         vm.groups.test {
             assertIs<ScreenState.Loading>(awaitItem())
@@ -95,9 +102,9 @@ class CenterDetailViewModelTest {
     fun aCenterWithNoGroupsIsEmptyRatherThanAnEmptyList() = runTest(dispatcher) {
         // Empty renders the empty state; a Content of zero rows renders a blank area that looks
         // like a section which failed to draw.
-        val groups = FakeGroupRepository()
-        val vm = viewModel(FakeCenterRepository(), groups)
-        groups.emit(group(1, centerId = 99))
+        val centers = FakeCenterRepository()
+        val vm = viewModel(centers)
+        centers.emitMembers()
 
         vm.groups.test {
             assertIs<ScreenState.Loading>(awaitItem())
@@ -113,15 +120,14 @@ class CenterDetailViewModelTest {
         // ScreenStates remain independent. The center's fields are already on screen and still
         // true, so a groups failure must not replace them.
         val centers = FakeCenterRepository()
-        val groups = FakeGroupRepository()
-        val vm = viewModel(centers, groups)
+        val vm = viewModel(centers)
         centers.emit(center(7, name = "Still here"))
 
         vm.center.test {
             assertIs<ScreenState.Loading>(awaitItem())
             assertIs<ScreenState.Content<Center>>(awaitItem())
 
-            groups.state.value = ScreenState.Error(RuntimeException("groups boom"))
+            centers.meetingState.value = ScreenState.Error(RuntimeException("groups boom"))
             testScheduler.advanceUntilIdle()
 
             // The center flow must NOT re-emit because groups failed. Any emission here is the
@@ -136,9 +142,8 @@ class CenterDetailViewModelTest {
         // The same independence in the other direction — asserted separately because a shared
         // `combine` would pass the first test and fail this one.
         val centers = FakeCenterRepository()
-        val groups = FakeGroupRepository()
-        val vm = viewModel(centers, groups)
-        groups.emit(group(1, centerId = 7))
+        val vm = viewModel(centers)
+        centers.emitMembers(group(1, centerId = 7))
 
         vm.groups.test {
             assertIs<ScreenState.Loading>(awaitItem())
@@ -148,6 +153,33 @@ class CenterDetailViewModelTest {
             testScheduler.advanceUntilIdle()
 
             expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun theSummaryIsTheReportRowAndAnEmptyReportIsEmptyNotZeros() = runTest(dispatcher) {
+        val centers = FakeCenterRepository()
+        val vm = viewModel(centers)
+        centers.summaryState.value = ScreenState.Content(listOf(CenterInfo(activeClients = 12, overdueClientLoans = 2)))
+        vm.summary.test {
+            var item = awaitItem()
+            while (item is ScreenState.Loading) item = awaitItem()
+            val info = assertIs<ScreenState.Content<CenterInfo>>(item).data
+            assertEquals(12, info.activeClients)
+            assertEquals(2, info.overdueClientLoans)
+            centers.summaryState.value = ScreenState.Content(emptyList())
+            assertIs<ScreenState.Empty>(awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun addSavingsAccountOpensTheApplicationForThisCentre() = runTest(dispatcher) {
+        val vm = viewModel(FakeCenterRepository())
+        vm.eventFlow.test {
+            vm.trySendAction(CenterDetailAction.AddSavingsAccountClicked)
+            assertEquals(CenterDetailEvent.OpenAddSavingsAccount(7), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }

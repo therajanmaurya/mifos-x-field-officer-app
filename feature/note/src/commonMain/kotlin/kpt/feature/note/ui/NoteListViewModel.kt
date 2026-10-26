@@ -54,17 +54,16 @@ internal class NoteListViewModel(
     /**
      * Read once from the route argument.
      *
-     * The original took `resourceId` + `resourceType` and every caller passed `"clients"` — see
-     * `NoteNavigation` for the measurement. Writes still send the type because the Fineract
-     * endpoint is `/{resourceType}/{resourceId}/notes`; it is a constant here, not a parameter.
+     * The owner — Fineract's `/{resourceType}/{resourceId}/notes` (clients, groups). See `NoteNavigation`.
      */
-    private val clientId: Int = savedStateHandle.get<Int>(CLIENT_ID_KEY) ?: 0
+    private val resourceType: String = savedStateHandle.get<String>(RESOURCE_TYPE_KEY) ?: Constants.ENTITY_TYPE_CLIENTS
+    private val resourceId: Int = savedStateHandle.get<Int>(RESOURCE_ID_KEY) ?: 0
 
     /**
      * Held, not collected inline — the error state's Retry has to reach the stream that failed.
      * A Retry wired to `{}` is the dead-clickable defect in its most misleading form.
      */
-    private val notesStream = repository.notesStream(clientId.toLong(), viewModelScope)
+    private val notesStream = repository.notesStream(resourceType, resourceId.toLong(), viewModelScope)
 
     /**
      * The client's notes. `stateIn(… WhileSubscribed …)` rather than an `init{}` hand-lift — the
@@ -79,13 +78,13 @@ internal class NoteListViewModel(
             NoteListAction.Retry -> notesStream.retry()
             NoteListAction.Refresh -> notesStream.refresh()
             NoteListAction.BackClicked -> sendEvent(NoteListEvent.NavigateBack)
-            NoteListAction.AddClicked -> sendEvent(NoteListEvent.NavigateToAdd(clientId))
+            NoteListAction.AddClicked -> sendEvent(NoteListEvent.NavigateToAdd(resourceType, resourceId))
 
             // Edit acts on the EXPANDED row rather than on an id carried in the action. That
             // mirrors the original, where the action strip belongs to whichever row is open, and it
             // keeps "which note" in exactly one place.
             NoteListAction.EditClicked ->
-                state.expandedNoteId?.let { sendEvent(NoteListEvent.NavigateToEdit(clientId, it)) }
+                state.expandedNoteId?.let { sendEvent(NoteListEvent.NavigateToEdit(resourceType, resourceId, it)) }
 
             is NoteListAction.ToggleExpanded ->
                 mutableStateFlow.value = state.copy(
@@ -121,8 +120,8 @@ internal class NoteListViewModel(
         mutableStateFlow.value = state.copy(isDeleting = true, showDeleteConfirmation = false)
         viewModelScope.launch {
             val result = commands.deleteNote(
-                resourceType = Constants.ENTITY_TYPE_CLIENTS,
-                resourceId = clientId.toLong(),
+                resourceType = resourceType,
+                resourceId = resourceId.toLong(),
                 noteId = id,
             )
             mutableStateFlow.value = when (result) {
@@ -155,7 +154,8 @@ internal class NoteListViewModel(
 
     private companion object {
         /** Matches the route argument name in `NoteNavigation.NoteListRoute`. */
-        const val CLIENT_ID_KEY = "clientId"
+        const val RESOURCE_TYPE_KEY = "resourceType"
+        const val RESOURCE_ID_KEY = "resourceId"
         const val TAG = "NoteListViewModel"
 
         /** Template default — long enough to survive a rotation or a brief tab switch. */
@@ -187,8 +187,8 @@ internal enum class NoteWriteError { Offline, Failed }
 
 internal sealed interface NoteListEvent {
     data object NavigateBack : NoteListEvent
-    data class NavigateToAdd(val clientId: Int) : NoteListEvent
-    data class NavigateToEdit(val clientId: Int, val noteId: Long) : NoteListEvent
+    data class NavigateToAdd(val resourceType: String, val resourceId: Int) : NoteListEvent
+    data class NavigateToEdit(val resourceType: String, val resourceId: Int, val noteId: Long) : NoteListEvent
 }
 
 internal sealed interface NoteListAction {
