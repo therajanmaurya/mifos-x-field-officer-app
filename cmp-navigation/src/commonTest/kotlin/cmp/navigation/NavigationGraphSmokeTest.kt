@@ -184,7 +184,7 @@ class NavigationGraphSmokeTest {
         //
         // Home is FIRST by product decision (the original's first tab was Search, which now lives
         // on the top bar's magnifier). ProfileTab is absent: the original has no Profile tab, its
-        // account surface is the drawer header.
+        // account surface is the Home avatar.
         assertEquals(
             listOf("HomeTab", "ClientTab", "CentersTab", "GroupsTab"),
             TabRegistry.tabs.map { it.testTag },

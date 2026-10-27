@@ -39,7 +39,7 @@ import org.jetbrains.compose.resources.StringResource
  * replaced by the top bar's search icon (a deliberate product decision — see [HomeTab]).
  *
  * `ProfileTab` is REMOVED from the bar. The original has no Profile tab; the account surface is the
- * drawer header. Keeping it would have made the fork's bar five tabs wide and wrong.
+ * Home avatar. Keeping it would have made the fork's bar five tabs wide and wrong.
  */
 sealed class AuthenticatedNavBarTabItem : NavigationItem {
 

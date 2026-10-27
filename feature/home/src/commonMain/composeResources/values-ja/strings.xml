@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">検索</string>
     <string name="feature_home_dashboard_qa_path_tracker">経路トラッカー</string>
     <string name="feature_home_dashboard_settings">設定</string>
+    <string name="feature_home_dashboard_profile">プロフィール</string>
     <string name="feature_home_dashboard_loan_queue_empty">このキューに融資はありません</string>
     <string name="feature_home_dashboard_queue_pending_badge">保留中 %1$d 件</string>
     <string name="feature_home_dashboard_meetings_summary">予定 %1$d 件 · %2$s</string>

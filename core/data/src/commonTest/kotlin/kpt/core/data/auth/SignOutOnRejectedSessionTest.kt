@@ -34,6 +34,8 @@ class SignOutOnRejectedSessionTest {
             clear()
             return MutationResult.Applied(Unit, synced = true)
         }
+
+        override suspend fun changePassword(newPassword: String, repeatPassword: String): MutationResult<Unit> = error("not used here")
     }
 
     private fun TestScope.handler(signedIn: Boolean): Pair<SignOutOnRejectedSession, RecordingAuth> {

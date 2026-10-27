@@ -39,20 +39,10 @@
     <string name="tab_centers">Centers</string>
     <string name="tab_groups">Groups</string>
 
-    <!-- Navigation drawer entries, in the original's order. -->
-    <string name="drawer_checker_inbox_tasks">Checker Inbox Tasks</string>
-    <string name="drawer_collection_sheet">Collection Sheet</string>
-    <string name="drawer_run_reports">Run Reports</string>
-    <string name="drawer_path_tracker">Path Tracker</string>
-    <string name="drawer_settings">Settings</string>
-    <string name="cd_open_navigation_drawer">Open navigation drawer</string>
     <string name="cd_search">Search</string>
     <string name="cd_notifications">Notifications</string>
-    <string name="cd_profile_picture">Profile picture</string>
 
     <!-- Pending-migration host. Names the feature rather than pretending to be it. -->
-    <string name="pending_title">Not migrated yet</string>
-    <string name="pending_message">%1$s has not been ported onto the new substrate yet. It is tracked in CAPABILITY_GAPS and will appear here once its slice lands.</string>
     <string name="search_title">Search</string>
     <string name="cd_navigate_back">Navigate back</string>
     <string name="home_dashboard_feature">Home Dashboard</string>

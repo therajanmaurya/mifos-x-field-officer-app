@@ -81,7 +81,7 @@ object TabRegistry {
      * This is the ORIGINAL's bar, ported from `6b66e8a43`, with one deliberate change: Home stays
      * FIRST. The original's first tab was Search; search now lives on the top bar's magnifier, which
      * frees tab one for a real home dashboard. `ProfileTab` is GONE — the original has no Profile
-     * tab, its account surface is the drawer header.
+     * tab, its account surface is the Home avatar.
      *
      * ## Why the order is written out instead of `addAll(extraTabs)`
      *

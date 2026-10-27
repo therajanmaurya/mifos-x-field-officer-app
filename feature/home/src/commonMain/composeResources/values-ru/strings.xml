@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">Поиск</string>
     <string name="feature_home_dashboard_qa_path_tracker">Трекер маршрута</string>
     <string name="feature_home_dashboard_settings">Настройки</string>
+    <string name="feature_home_dashboard_profile">Профиль</string>
     <string name="feature_home_dashboard_loan_queue_empty">В этой очереди нет займов</string>
     <string name="feature_home_dashboard_queue_pending_badge">Ожидают: %1$d</string>
     <string name="feature_home_dashboard_meetings_summary">Запланировано: %1$d · %2$s</string>

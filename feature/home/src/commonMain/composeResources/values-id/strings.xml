@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">Cari</string>
     <string name="feature_home_dashboard_qa_path_tracker">Pelacak Rute</string>
     <string name="feature_home_dashboard_settings">Pengaturan</string>
+    <string name="feature_home_dashboard_profile">Profil</string>
     <string name="feature_home_dashboard_loan_queue_empty">Tidak ada pinjaman di antrean ini</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d tertunda</string>
     <string name="feature_home_dashboard_meetings_summary">%1$d terjadwal · %2$s</string>

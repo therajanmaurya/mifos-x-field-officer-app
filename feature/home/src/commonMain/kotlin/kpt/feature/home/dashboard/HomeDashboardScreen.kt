@@ -78,6 +78,8 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -164,6 +166,7 @@ import kpt.feature.home.generated.resources.feature_home_dashboard_qa_run_report
 import kpt.feature.home.generated.resources.feature_home_dashboard_qa_search
 import kpt.feature.home.generated.resources.feature_home_dashboard_qa_path_tracker
 import kpt.feature.home.generated.resources.feature_home_dashboard_settings
+import kpt.feature.home.generated.resources.feature_home_dashboard_profile
 import kpt.feature.home.generated.resources.feature_home_dashboard_queue_approval
 import kpt.feature.home.generated.resources.feature_home_dashboard_queue_checker
 import kpt.feature.home.generated.resources.feature_home_dashboard_queue_disbursal
@@ -271,24 +274,24 @@ fun HomeDashboardScreenContent(
         ) {
             when {
                 allLoading -> {
-                    Header(state.header, HeaderStyle.Loading, onSettings = { onNavigate(HomeNavigation.Settings) })
+                    Header(state.header, HeaderStyle.Loading, onSettings = { onNavigate(HomeNavigation.Settings) }, onProfile = { onNavigate(HomeNavigation.Profile) })
                     DashboardSkeleton()
                 }
                 allFailed && offline -> {
-                    Header(state.header, HeaderStyle.Offline, onSettings = { onNavigate(HomeNavigation.Settings) })
+                    Header(state.header, HeaderStyle.Offline, onSettings = { onNavigate(HomeNavigation.Settings) }, onProfile = { onNavigate(HomeNavigation.Profile) })
                     OfflineError(onRetryAll = onRefresh)
                     OfflineBanner()
                     QuickActions(state.quickActions, onNavigate, QuickStyle.Offline)
                     RecentCard(state.recent, onNavigate, RecentStyle.Offline)
                 }
                 allFailed -> {
-                    Header(state.header, HeaderStyle.Error, onSettings = { onNavigate(HomeNavigation.Settings) })
+                    Header(state.header, HeaderStyle.Error, onSettings = { onNavigate(HomeNavigation.Settings) }, onProfile = { onNavigate(HomeNavigation.Profile) })
                     QuickActions(state.quickActions, onNavigate, QuickStyle.Error)
                     RecentCard(state.recent, onNavigate, RecentStyle.Error)
                     ScreenError(onRetryAll = onRefresh)
                 }
                 else -> {
-                    Header(state.header, HeaderStyle.Content, onSettings = { onNavigate(HomeNavigation.Settings) })
+                    Header(state.header, HeaderStyle.Content, onSettings = { onNavigate(HomeNavigation.Settings) }, onProfile = { onNavigate(HomeNavigation.Profile) })
                     ContentState(state, states, onRetry, onNavigate)
                 }
             }
@@ -346,7 +349,7 @@ private fun String.shortDate(): String = runCatching { shortDate.format(LocalDat
 private enum class HeaderStyle { Loading, Content, Error, Offline }
 
 @Composable
-private fun Header(header: HomeHeader, style: HeaderStyle, onSettings: () -> Unit) {
+private fun Header(header: HomeHeader, style: HeaderStyle, onSettings: () -> Unit, onProfile: () -> Unit) {
     val hour = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).hour
     val greeting = when {
         hour < NOON -> Res.string.feature_home_dashboard_greeting_morning
@@ -417,6 +420,7 @@ private fun Header(header: HomeHeader, style: HeaderStyle, onSettings: () -> Uni
                 }
             }
         }
+        val profileLabel = stringResource(Res.string.feature_home_dashboard_profile)
         when (style) {
             // 01: the avatar shimmers like everything else that hasn't loaded
             HeaderStyle.Loading -> KptShimmerLoadingBox(
@@ -428,6 +432,10 @@ private fun Header(header: HomeHeader, style: HeaderStyle, onSettings: () -> Uni
                 modifier = Modifier
                     .size(11.tw)
                     .shadow(CARD_SHADOW, CircleShape)
+                    .clip(CircleShape)
+                    .clickable(role = Role.Button, onClick = onProfile)
+                    .semantics { contentDescription = profileLabel }
+                    .testTag(TestTags.Home.PROFILE)
                     .background(c.primaryContainer, CircleShape)
                     .border(0.5f.tw, c.surfaceContainerLowest, CircleShape),
                 contentAlignment = Alignment.Center,
@@ -437,7 +445,7 @@ private fun Header(header: HomeHeader, style: HeaderStyle, onSettings: () -> Uni
             // 04 / 05 carry no avatar
             else -> Unit
         }
-        // Settings sits inline with the greeting (it is also in the drawer). Hidden while loading.
+        // Settings sits inline with the greeting — the app has no drawer. Hidden while loading.
         if (style != HeaderStyle.Loading) {
             IconButton(onClick = onSettings, modifier = Modifier.testTag(TestTags.Home.SETTINGS)) {
                 Icon(AppIcons.Settings, contentDescription = stringResource(Res.string.feature_home_dashboard_settings), tint = c.onSurfaceVariant)

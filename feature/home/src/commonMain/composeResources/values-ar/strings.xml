@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">بحث</string>
     <string name="feature_home_dashboard_qa_path_tracker">متتبع المسار</string>
     <string name="feature_home_dashboard_settings">الإعدادات</string>
+    <string name="feature_home_dashboard_profile">الملف الشخصي</string>
     <string name="feature_home_dashboard_loan_queue_empty">لا توجد قروض في هذه القائمة</string>
     <string name="feature_home_dashboard_queue_pending_badge">عناصر معلقة: %1$d</string>
     <string name="feature_home_dashboard_meetings_summary">مجدولة: %1$d · %2$s</string>

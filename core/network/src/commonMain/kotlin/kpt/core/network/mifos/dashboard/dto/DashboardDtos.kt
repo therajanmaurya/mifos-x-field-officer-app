@@ -21,7 +21,12 @@ data class AppUserDto(
     val officeId: Long = 0,
     val officeName: String? = null,
     val staff: StaffRefDto? = null,
+    val email: String? = null,
+    val selectedRoles: List<RoleRefDto> = emptyList(),
 )
+
+@Serializable
+data class RoleRefDto(val id: Long = 0, val name: String? = null)
 
 @Serializable
 data class StaffRefDto(val id: Long = 0, val displayName: String? = null)

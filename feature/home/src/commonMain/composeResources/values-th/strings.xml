@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">ค้นหา</string>
     <string name="feature_home_dashboard_qa_path_tracker">ติดตามเส้นทาง</string>
     <string name="feature_home_dashboard_settings">การตั้งค่า</string>
+    <string name="feature_home_dashboard_profile">โปรไฟล์</string>
     <string name="feature_home_dashboard_loan_queue_empty">ไม่มีสินเชื่อในคิวนี้</string>
     <string name="feature_home_dashboard_queue_pending_badge">รอดำเนินการ %1$d รายการ</string>
     <string name="feature_home_dashboard_meetings_summary">นัดหมาย %1$d รายการ · %2$s</string>

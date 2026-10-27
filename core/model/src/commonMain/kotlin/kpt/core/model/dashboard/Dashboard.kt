@@ -19,7 +19,7 @@ import kpt.core.model.objects.users.User
  */
 data class DashboardScope(val officeId: Long, val staffId: Long?, val username: String)
 
-/** The signed-in user's own Fineract record — only the fields the dashboard reads. */
+/** The signed-in user's own Fineract record — the fields the dashboard and Profile read. */
 @Serializable
 data class DashboardUser(
     val id: Long = 0,
@@ -28,6 +28,10 @@ data class DashboardUser(
     val officeId: Long = 0,
     val officeName: String? = null,
     val staffId: Long? = null,
+    val staffName: String? = null,
+    val email: String? = null,
+    /** `selectedRoles[].name` — the session saved at sign-in does not carry roles. */
+    val roles: List<String> = emptyList(),
 )
 
 /** One loan as the dashboard needs it: ownership, arrears and the summary sums. */

@@ -58,7 +58,12 @@ fun provideDashboardUserStore(
     keyOf = { userId -> AppCacheKeys.DashboardUser.forKey("$userId") },
     fetch = { userId -> dashboardApi.getUser(userId) },
     map = { dto ->
-        DashboardUser(id = dto.id, firstname = dto.firstname, lastname = dto.lastname, officeId = dto.officeId, officeName = dto.officeName, staffId = dto.staff?.id?.takeIf { it > 0 })
+        DashboardUser(
+            id = dto.id, firstname = dto.firstname, lastname = dto.lastname, officeId = dto.officeId, officeName = dto.officeName, staffId = dto.staff?.id?.takeIf { it > 0 },
+            staffName = dto.staff?.displayName,
+            email = dto.email?.takeIf { it.isNotBlank() },
+            roles = dto.selectedRoles.mapNotNull { it.name?.takeIf(String::isNotBlank) },
+        )
     },
 )
 

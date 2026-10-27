@@ -81,6 +81,7 @@ class HomeDashboardScreenUiTest {
         onNodeWithTag(TestTags.Home.QA_SEARCH).performScrollTo().performClick()
         onNodeWithTag(TestTags.Home.QA_PATH_TRACKER).performScrollTo().performClick()
         onNodeWithTag(TestTags.Home.SETTINGS).performScrollTo().performClick()
+        onNodeWithTag(TestTags.Home.PROFILE).performScrollTo().performClick()
         assertEquals(
             listOf(
                 HomeNavigation.LoanQueue(DashboardRepository.STATUS_SUBMITTED),
@@ -89,6 +90,7 @@ class HomeDashboardScreenUiTest {
                 HomeNavigation.Quick(QuickAction.SEARCH),
                 HomeNavigation.Quick(QuickAction.PATH_TRACKER),
                 HomeNavigation.Settings,
+                HomeNavigation.Profile,
             ),
             taps,
         )

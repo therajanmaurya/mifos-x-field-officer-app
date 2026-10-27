@@ -11,7 +11,9 @@ package kpt.core.network.mifos.auth.api
 
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.POST
+import de.jensklingenberg.ktorfit.http.Path
 import kpt.core.base.network.annotation.ApiBinding
+import kpt.core.model.auth.ChangePasswordRequest
 import kpt.core.model.auth.PostAuthenticationRequest
 import kpt.core.model.auth.PostAuthenticationResponse
 
@@ -34,4 +36,14 @@ interface AuthApi {
     suspend fun authenticate(
         @Body postAuthenticationRequest: PostAuthenticationRequest,
     ): PostAuthenticationResponse
+
+    /**
+     * The signed-in user's own password. A validation refusal (policy, mismatch) is a 400 whose
+     * `errors[]` carry the reasons; the success body (a command result) is not read.
+     */
+    @POST("users/{userId}/pwd")
+    suspend fun changePassword(
+        @Path("userId") userId: Long,
+        @Body request: ChangePasswordRequest,
+    ): Unit
 }

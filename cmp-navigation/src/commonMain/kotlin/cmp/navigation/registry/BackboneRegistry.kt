@@ -12,35 +12,37 @@ package cmp.navigation.registry
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import cmp.navigation.drafts.rememberCreateDraftExtras
-import kpt.core.base.ui.nav.popBackStackSafely
 import cmp.navigation.authenticatednavbar.navigateToCreate
 import cmp.navigation.authenticatednavbar.navigateToSearch
 import cmp.navigation.authenticatednavbar.navigateToSearchResult
 import cmp.navigation.authenticatednavbar.searchDestination
+import cmp.navigation.drafts.rememberCreateDraftExtras
+import kpt.core.base.ui.nav.popBackStackSafely
+import kpt.core.model.recent.RecentKind
+import kpt.feature.about.navigation.navigateToAbout
 import kpt.feature.center.navigation.navigateToCenterDetail
 import kpt.feature.center.navigation.navigateToCreateCenter
+import kpt.feature.checkerinbox.navigation.navigateToCheckerInbox
 import kpt.feature.client.navigation.navigateToClientList
+import kpt.feature.client.navigation.navigateToClientProfile
 import kpt.feature.client.navigation.navigateToCreateNewClient
+import kpt.feature.collectionsheet.navigation.navigateToIndividualCollectionSheet
 import kpt.feature.groups.navigation.navigateToCreateGroup
+import kpt.feature.groups.navigation.navigateToGroupsDetail
 import kpt.feature.home.dashboard.HomeDashboardScreen
 import kpt.feature.home.dashboard.HomeNavigation
 import kpt.feature.home.dashboard.QuickAction
 import kpt.feature.home.dashboard.loanQueueDestination
 import kpt.feature.home.dashboard.navigateToLoanQueue
 import kpt.feature.loan.navigation.navigateToLoanProfile
-import kpt.core.model.recent.RecentKind
-import kpt.feature.client.navigation.navigateToClientProfile
-import kpt.feature.groups.navigation.navigateToGroupsDetail
-import kpt.feature.about.navigation.navigateToAbout
+import kpt.feature.notification.navigation.navigateToNotifications
 import kpt.feature.offlinesync.navigation.navigateToOfflineSync
-import kpt.feature.checkerinbox.navigation.navigateToCheckerInbox
-import kpt.feature.collectionsheet.navigation.navigateToIndividualCollectionSheet
+import kpt.feature.pathtracking.navigation.navigateToPathTracking
 import kpt.feature.profile.identity.ProfileBody
+import kpt.feature.profile.navigateToProfile
+import kpt.feature.profile.profileDestination
 import kpt.feature.report.navigation.navigateToReports
 import kpt.feature.settings.SettingsBody
-import kpt.feature.notification.navigation.navigateToNotifications
-import kpt.feature.pathtracking.navigation.navigateToPathTracking
 import kpt.feature.settings.navigateToSettings
 import kpt.feature.settings.navigateToSyncAndDrafts
 import kpt.feature.settings.notificationDestination
@@ -106,11 +108,13 @@ object BackboneRegistry {
      * `customizer --clean` strips the fenced block, leaving `{ }` for the fork to fill (mirrors
      * `homeBody`). WS01 / AC7.
      */
-    val profileBody: @Composable (NavController) -> Unit = { _ ->
-        // Signed-in officer identity (S2). Another seam that was EMPTY. Sign-out lives at the bottom of
-        // Settings; it needs no navigation callback — clearing the session flips
-        // `UserData.isAuthenticated`, and RootNavViewModel routes to sign-in.
-        ProfileBody()
+    val profileBody: @Composable (NavController) -> Unit = { navController ->
+        // The officer's account (screens/profile). Only navigation is wired here; ProfileBody owns its
+        // sign-out (the Settings dialog + ViewModel).
+        ProfileBody(
+            onBack = { navController.popBackStackSafely() },
+            onServerSettings = { navController.navigateToServerConfig() },
+        )
     }
 
     /**
@@ -119,18 +123,6 @@ object BackboneRegistry {
      * imports (mirrors the `homeBody` seam pattern).
      */
     val navigateToSettings: (NavController) -> Unit = { it.navigateToSettings() }
-
-    /** The drawer's Collection Sheet entry → `feature/collectionsheet`. */
-    val navigateToCollectionSheet: (NavController) -> Unit = { it.navigateToIndividualCollectionSheet() }
-
-    /** The drawer's Path Tracker entry → `feature/pathtracking`. */
-    val navigateToPathTracker: (NavController) -> Unit = { it.navigateToPathTracking() }
-
-    /** The drawer's Run Reports entry → `feature/report`. */
-    val navigateToReports: (NavController) -> Unit = { it.navigateToReports() }
-
-    /** The drawer's Checker Inbox & Tasks entry → `feature/checkerinbox`. */
-    val navigateToCheckerInbox: (NavController) -> Unit = { it.navigateToCheckerInbox() }
 
     /**
      * Route the dashboard top bar's bell to the Notification backbone. Same seam shape as
@@ -157,6 +149,9 @@ object BackboneRegistry {
         // Settings inner content flows through the fork-owned `settingsBody` seam (WS01 / AC7); the
         // template `settingsDestination` shell forwards this opaque body, carrying no demo wiring.
         settingsDestination(settingsBody = { BackboneRegistry.settingsBody(navController) })
+        // Profile opens from the Home avatar (the drawer header did, until the drawer was removed
+        // 2026-10-27), and Home taps leave through this outer controller.
+        profileDestination(profileBody = { BackboneRegistry.profileBody(navController) })
         // Search on the OUTER graph too. The top bar's magnifier opens it inside the inner (bottom-bar)
         // host, but `homeBody` only receives this outer controller, and navigating to a route the
         // graph lacks crashes ("Destination with route SearchRoute cannot be found" — device,
@@ -182,6 +177,7 @@ private fun NavController.navigateHome(target: HomeNavigation) = when (target) {
     HomeNavigation.PendingClients -> navigateToClientList()
     HomeNavigation.Drafts -> navigateToSyncAndDrafts()
     HomeNavigation.Settings -> navigateToSettings()
+    HomeNavigation.Profile -> navigateToProfile()
     is HomeNavigation.Center -> navigateToCenterDetail(target.centerId)
     is HomeNavigation.Recent -> when (target.kind) {
         RecentKind.CLIENT -> navigateToClientProfile(target.id.toInt())

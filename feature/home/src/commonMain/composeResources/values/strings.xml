@@ -131,6 +131,7 @@
     <string name="feature_home_dashboard_qa_search">Search</string>
     <string name="feature_home_dashboard_qa_path_tracker">Path Tracker</string>
     <string name="feature_home_dashboard_settings">Settings</string>
+    <string name="feature_home_dashboard_profile">Profile</string>
     <string name="feature_home_dashboard_loan_queue_empty">No loans in this queue</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d items pending</string>
     <string name="feature_home_dashboard_meetings_summary">%1$d scheduled · %2$s</string>

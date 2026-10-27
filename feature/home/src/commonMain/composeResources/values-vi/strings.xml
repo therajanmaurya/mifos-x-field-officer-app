@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">Tìm kiếm</string>
     <string name="feature_home_dashboard_qa_path_tracker">Theo dõi lộ trình</string>
     <string name="feature_home_dashboard_settings">Cài đặt</string>
+    <string name="feature_home_dashboard_profile">Hồ sơ</string>
     <string name="feature_home_dashboard_loan_queue_empty">Không có khoản vay trong hàng đợi này</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d mục đang chờ</string>
     <string name="feature_home_dashboard_meetings_summary">%1$d đã lên lịch · %2$s</string>

@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">Ara</string>
     <string name="feature_home_dashboard_qa_path_tracker">Rota Takibi</string>
     <string name="feature_home_dashboard_settings">Ayarlar</string>
+    <string name="feature_home_dashboard_profile">Profil</string>
     <string name="feature_home_dashboard_loan_queue_empty">Bu kuyrukta kredi yok</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d bekleyen</string>
     <string name="feature_home_dashboard_meetings_summary">%1$d planlı · %2$s</string>

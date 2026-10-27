@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">Zoeken</string>
     <string name="feature_home_dashboard_qa_path_tracker">Routetracker</string>
     <string name="feature_home_dashboard_settings">Instellingen</string>
+    <string name="feature_home_dashboard_profile">Profiel</string>
     <string name="feature_home_dashboard_loan_queue_empty">Geen leningen in deze lijst</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d openstaand</string>
     <string name="feature_home_dashboard_meetings_summary">%1$d gepland · %2$s</string>

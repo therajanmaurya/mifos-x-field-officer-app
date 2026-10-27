@@ -65,6 +65,7 @@ object TestTags {
         const val QA_SEARCH: String = "home_qa_search"
         const val QA_PATH_TRACKER: String = "home_qa_path_tracker"
         const val SETTINGS: String = "home_settings"
+        const val PROFILE: String = "home_profile"
         const val SCREEN_ERROR: String = "home_screen_error"
         const val CARD_ERROR: String = "home_card_error"
         const val CARD_ERROR_REASON: String = "home_card_error_reason"

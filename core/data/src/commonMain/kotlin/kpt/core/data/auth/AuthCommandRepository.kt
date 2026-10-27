@@ -39,4 +39,16 @@ interface AuthCommandRepository {
      * Local only, so it works offline: an officer who cannot sign out without signal is stranded.
      */
     suspend fun signOut(clearLocalData: Boolean): MutationResult<Unit>
+
+    /**
+     * Change the signed-in user's own password, then sign in again with it so the stored session key
+     * (derived from the old password) is replaced and the next request is not a 401. A server refusal
+     * comes back as `Failed` and the old password still works. If the change went through but the
+     * re-sign-in did not, the session is ended keeping local data and [PasswordChangedSignInFailed] is
+     * returned — the officer signs in again with the new password.
+     */
+    suspend fun changePassword(newPassword: String, repeatPassword: String): MutationResult<Unit>
 }
+
+/** The password changed, but signing in with it failed; the session was ended (data kept). */
+class PasswordChangedSignInFailed(cause: Throwable? = null) : Exception("password changed; sign-in with it failed", cause)

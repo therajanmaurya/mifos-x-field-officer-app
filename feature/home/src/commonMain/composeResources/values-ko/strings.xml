@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">검색</string>
     <string name="feature_home_dashboard_qa_path_tracker">경로 추적</string>
     <string name="feature_home_dashboard_settings">설정</string>
+    <string name="feature_home_dashboard_profile">프로필</string>
     <string name="feature_home_dashboard_loan_queue_empty">이 대기열에 대출이 없습니다</string>
     <string name="feature_home_dashboard_queue_pending_badge">대기 중 %1$d건</string>
     <string name="feature_home_dashboard_meetings_summary">예정 %1$d건 · %2$s</string>

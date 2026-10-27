@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">Rechercher</string>
     <string name="feature_home_dashboard_qa_path_tracker">Suivi de parcours</string>
     <string name="feature_home_dashboard_settings">Paramètres</string>
+    <string name="feature_home_dashboard_profile">Profil</string>
     <string name="feature_home_dashboard_loan_queue_empty">Aucun prêt dans cette file</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d éléments en attente</string>
     <string name="feature_home_dashboard_meetings_summary">%1$d prévues · %2$s</string>

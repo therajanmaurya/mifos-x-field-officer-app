@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">Buscar</string>
     <string name="feature_home_dashboard_qa_path_tracker">Rastreador de trajeto</string>
     <string name="feature_home_dashboard_settings">Configurações</string>
+    <string name="feature_home_dashboard_profile">Perfil</string>
     <string name="feature_home_dashboard_loan_queue_empty">Nenhum empréstimo nesta fila</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d itens pendentes</string>
     <string name="feature_home_dashboard_meetings_summary">%1$d agendadas · %2$s</string>

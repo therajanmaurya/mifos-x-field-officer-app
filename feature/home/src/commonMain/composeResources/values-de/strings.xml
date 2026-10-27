@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">Suchen</string>
     <string name="feature_home_dashboard_qa_path_tracker">Wegverfolgung</string>
     <string name="feature_home_dashboard_settings">Einstellungen</string>
+    <string name="feature_home_dashboard_profile">Profil</string>
     <string name="feature_home_dashboard_loan_queue_empty">Keine Kredite in dieser Liste</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d offene Einträge</string>
     <string name="feature_home_dashboard_meetings_summary">%1$d geplant · %2$s</string>

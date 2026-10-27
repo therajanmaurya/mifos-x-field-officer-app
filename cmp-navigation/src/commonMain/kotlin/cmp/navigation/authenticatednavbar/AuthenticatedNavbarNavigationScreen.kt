@@ -10,19 +10,13 @@
 package cmp.navigation.authenticatednavbar
 
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
@@ -35,7 +29,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import cmp.navigation.components.DashboardTopBar
-import cmp.navigation.navigation.HomeDestinationsScreen
 import cmp.navigation.registry.BackboneRegistry
 import cmp.navigation.registry.TabRegistry
 import cmp.navigation.ui.KptRootScaffold
@@ -44,7 +37,7 @@ import cmp.navigation.ui.logDestinationChanged
 import cmp.navigation.ui.rememberKptNavController
 import io.github.mobilebytelabs.kmptoolkit.firebase.compose.rememberAnalyticsHelper
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.launch
+import kpt.core.base.data.infra.NetworkMonitor
 import kpt.core.base.designsystem.theme.motion
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.nav.popBackStackSafely
@@ -52,19 +45,12 @@ import kpt.core.base.ui.util.RootTransitionProviders
 import kpt.feature.home.HomeDestination
 import kpt.feature.home.homeGraph
 import kpt.feature.home.navigateToHome
-import kpt.feature.profile.navigateToProfile
-import kpt.feature.profile.profileDestination
-import kpt.core.base.data.infra.NetworkMonitor
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun AuthenticatedNavbarNavigationScreen(
     navigateToSettingsScreen: () -> Unit,
-    navigateToCollectionSheet: () -> Unit,
-    navigateToReports: () -> Unit,
-    navigateToPathTracker: () -> Unit,
-    navigateToCheckerInbox: () -> Unit,
     homeBody: @Composable () -> Unit,
     // The OUTER authenticated-graph controller. Used to (a) push a FULL-SCREEN tab (inlineTab = false,
     // e.g. an immersive focus modal) above the scaffold, and (b) hand INLINE fork tabs a controller for
@@ -97,10 +83,6 @@ internal fun AuthenticatedNavbarNavigationScreen(
         outerNavController = outerNavController,
         modifier = modifier,
         navigateToSettingsScreen = navigateToSettingsScreen,
-        navigateToCollectionSheet = navigateToCollectionSheet,
-        navigateToReports = navigateToReports,
-        navigateToPathTracker = navigateToPathTracker,
-        navigateToCheckerInbox = navigateToCheckerInbox,
         homeBody = homeBody,
         onAction = remember(viewModel) {
             { viewModel.trySendAction(it) }
@@ -114,10 +96,6 @@ internal fun AuthenticatedNavbarNavigationScreenContent(
     navController: NavHostController,
     outerNavController: NavController,
     navigateToSettingsScreen: () -> Unit,
-    navigateToCollectionSheet: () -> Unit,
-    navigateToReports: () -> Unit,
-    navigateToPathTracker: () -> Unit,
-    navigateToCheckerInbox: () -> Unit,
     homeBody: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -130,162 +108,103 @@ internal fun AuthenticatedNavbarNavigationScreenContent(
     // The top bar's connection pill reads the app's own NetworkMonitor (Stitch shell: "● Online").
     val online by koinInject<NetworkMonitor>().isOnline.collectAsState(initial = true)
 
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    // The drawer's own selection. It cannot be derived from the current route the way the TAB
-    // selection is: six of the seven entries share ONE pending host today, so route-matching would
-    // highlight all six at once. Tracking the tap is both correct now and still correct once each
-    // entry has its own destination.
-    var selectedDrawerEntry by remember { mutableStateOf<HomeDestinationsScreen?>(null) }
-
-    val closeDrawer: () -> Unit = { scope.launch { drawerState.close() } }
-
     // The dashboard chrome belongs to TAB ROOTS, and to exactly the destinations the bottom bar
     // also serves — one condition for both bars, so they can never disagree. A drill-down (client
-    // detail, search, a pending drawer entry) draws its own bar with a back arrow, and would
+    // detail, search) draws its own bar with a back arrow, and would
     // otherwise stack two.
     val isTabRoot = navigationItems.any { navBackStackEntry.isCurrentRoute(it.startDestinationRoute) }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        // Gesture-only opening is withheld: the hamburger is the discoverable affordance, and a
-        // swipe-from-edge competes with horizontal gestures inside list rows.
-        gesturesEnabled = drawerState.isOpen,
-        drawerContent = {
-            DashboardDrawerSheet(
-                selected = selectedDrawerEntry,
-                onHeaderClick = {
-                    closeDrawer()
-                    navController.navigateToProfile()
-                },
-                onEntryClick = { entry ->
-                    selectedDrawerEntry = entry
-                    closeDrawer()
-                    // Migrated entries live on the OUTER graph (full-screen destinations, not tabs),
-                    // so they route through callbacks the authenticated graph supplied — the shell
-                    // never imports a feature module.
-                    when (entry) {
-                        HomeDestinationsScreen.SettingsScreen -> navigateToSettingsScreen()
-                        HomeDestinationsScreen.CollectionSheetScreen -> navigateToCollectionSheet()
-                        HomeDestinationsScreen.RunReportsScreen -> navigateToReports()
-                        HomeDestinationsScreen.PathTrackerScreen -> navigateToPathTracker()
-                        HomeDestinationsScreen.CheckerInboxAndTasksScreen -> navigateToCheckerInbox()
-                        else -> navController.navigateToInlineTab(pendingFeatureRoute(entry.featureName))
+    KptRootScaffold(
+        contentWindowInsets = WindowInsets(0.dp),
+        navigationData = ScaffoldNavigationData(
+            navigationItems = navigationItems,
+            selectedNavigationItem = navigationItems.find {
+                navBackStackEntry.isCurrentRoute(route = it.graphRoute)
+            },
+            onNavigationClick = { navigationItem ->
+                when (navigationItem) {
+                    is AuthenticatedNavBarTabItem.HomeTab -> {
+                        onAction(AuthenticatedNavBarAction.HomeTabClick)
                     }
-                },
+
+                    // Fork extra tabs. INLINE tabs (inlineTab = true — the default) swap content inside
+                    // THIS inner NavHost so the bottom bar persists and the tab keeps its own back stack
+                    // (their top screen is registered by TabRegistry.extraInlineTabDestinations below).
+                    // FULL-SCREEN tabs (inlineTab = false, e.g. an immersive focus modal that declares
+                    // bottom_navigation_visible: false) push their route on the OUTER graph, hiding the bar.
+                    else -> if (navigationItem.inlineTab) {
+                        navController.navigateToInlineTab(navigationItem.startDestinationRoute)
+                    } else {
+                        outerNavController.navigate(
+                            navigationItem.startDestinationRoute,
+                            navOptions { launchSingleTop = true },
+                        )
+                    }
+                }
+            },
+            shouldShowNavigation = isTabRoot,
+            // Named tabs. The app being ported labels all four (Home · Clients · Centers · Groups)
+            // and a field officer picks between them by name, not by a monochrome glyph.
+            showLabels = true,
+        ),
+        topBar = {
+            if (!isTabRoot) return@KptRootScaffold
+            DashboardTopBar(
+                online = online,
+                onSearchIconClick = { navController.navigateToSearch() },
+                // Notifications is a migrated backbone destination (feature/settings ships
+                // notificationDestination), but it hangs off the OUTER graph, so it is reached the
+                // same way Settings is.
+                onNotificationIconClick = { BackboneRegistry.navigateToNotification(outerNavController) },
             )
         },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        modifier = modifier,
     ) {
-        KptRootScaffold(
-            contentWindowInsets = WindowInsets(0.dp),
-            navigationData = ScaffoldNavigationData(
-                navigationItems = navigationItems,
-                selectedNavigationItem = navigationItems.find {
-                    navBackStackEntry.isCurrentRoute(route = it.graphRoute)
-                },
-                onNavigationClick = { navigationItem ->
-                    when (navigationItem) {
-                        is AuthenticatedNavBarTabItem.HomeTab -> {
-                            onAction(AuthenticatedNavBarAction.HomeTabClick)
-                        }
-
-                        // Fork extra tabs. INLINE tabs (inlineTab = true — the default) swap content inside
-                        // THIS inner NavHost so the bottom bar persists and the tab keeps its own back stack
-                        // (their top screen is registered by TabRegistry.extraInlineTabDestinations below).
-                        // FULL-SCREEN tabs (inlineTab = false, e.g. an immersive focus modal that declares
-                        // bottom_navigation_visible: false) push their route on the OUTER graph, hiding the bar.
-                        else -> if (navigationItem.inlineTab) {
-                            navController.navigateToInlineTab(navigationItem.startDestinationRoute)
-                        } else {
-                            outerNavController.navigate(
-                                navigationItem.startDestinationRoute,
-                                navOptions { launchSingleTop = true },
-                            )
-                        }
-                    }
-                },
-                shouldShowNavigation = isTabRoot,
-                // Named tabs. The app being ported labels all four (Home · Clients · Centers · Groups)
-                // and a field officer picks between them by name, not by a monochrome glyph.
-                showLabels = true,
-            ),
-            topBar = {
-                if (!isTabRoot) return@KptRootScaffold
-                DashboardTopBar(
-                    online = online,
-                    onNavigationIconClick = { scope.launch { drawerState.open() } },
-                    onSearchIconClick = { navController.navigateToSearch() },
-                    // Notifications is a migrated backbone destination (feature/settings ships
-                    // notificationDestination), but it hangs off the OUTER graph, so it is reached the
-                    // same way Settings is.
-                    onNotificationIconClick = { BackboneRegistry.navigateToNotification(outerNavController) },
-                )
-            },
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
-            },
-            modifier = modifier,
+        // Because this Scaffold has a bottom navigation bar, the NavHost will:
+        // - consume the vertical navigation bar insets.
+        // - consume the IME insets.
+        // Snapshot motion tokens once so the non-Composable enterTransition lambdas capture
+        // theme-resolved values rather than the hardcoded fallbacks.
+        val motion = MaterialTheme.motion
+        NavHost(
+            navController = navController,
+            startDestination = HomeDestination,
+            // Sibling navigation (bottom-nav tab switch) uses M3 fade-through pattern.
+            enterTransition = RootTransitionProviders.Kpt.Enter.fadeThrough(motion),
+            exitTransition = RootTransitionProviders.Kpt.Exit.fadeThrough(motion),
+            popEnterTransition = RootTransitionProviders.Kpt.Enter.fadeThrough(motion),
+            popExitTransition = RootTransitionProviders.Kpt.Exit.fadeThrough(motion),
         ) {
-            // Because this Scaffold has a bottom navigation bar, the NavHost will:
-            // - consume the vertical navigation bar insets.
-            // - consume the IME insets.
-            // Snapshot motion tokens once so the non-Composable enterTransition lambdas capture
-            // theme-resolved values rather than the hardcoded fallbacks.
-            val motion = MaterialTheme.motion
-            NavHost(
-                navController = navController,
-                startDestination = HomeDestination,
-                // Sibling navigation (bottom-nav tab switch) uses M3 fade-through pattern.
-                enterTransition = RootTransitionProviders.Kpt.Enter.fadeThrough(motion),
-                exitTransition = RootTransitionProviders.Kpt.Exit.fadeThrough(motion),
-                popEnterTransition = RootTransitionProviders.Kpt.Enter.fadeThrough(motion),
-                popExitTransition = RootTransitionProviders.Kpt.Exit.fadeThrough(motion),
-            ) {
-                // TOP LEVEL DESTINATIONS
-                // topBar = { } — the shell draws ONE bar above every tab (hamburger + search +
-                // notifications), so HomeScreen must not draw a second. That slot was added to
-                // feature/home for exactly this case; see its note.
-                homeGraph(
-                    onSettingsClick = navigateToSettingsScreen,
-                    homeBody = homeBody,
-                    topBar = { },
-                )
+            // TOP LEVEL DESTINATIONS
+            // topBar = { } — the shell draws ONE bar above every tab (search +
+            // notifications), so HomeScreen must not draw a second. That slot was added to
+            // feature/home for exactly this case; see its note.
+            homeGraph(
+                onSettingsClick = navigateToSettingsScreen,
+                homeBody = homeBody,
+                topBar = { },
+            )
 
-                // Search, reached from the top bar's magnifier rather than from a tab.
-                searchDestination(
-                    onBackClick = { navController.popBackStackSafely() },
-                    // Both on the OUTER controller: search sits in this INNER (bottom-bar) host, but every
-                    // destination it opens — the five entity details and the three create forms — is a
-                    // feature destination registered on the outer graph (`FeatureRegistry`). On the
-                    // inner controller `navigate()` threw "Destination … cannot be found" and crashed
-                    // the app (device, 2026-10-25: the FAB's Create centre).
-                    onResultClick = outerNavController::navigateToSearchResult,
-                    onCreate = outerNavController::navigateToCreate,
-                )
+            // Search, reached from the top bar's magnifier rather than from a tab.
+            searchDestination(
+                onBackClick = { navController.popBackStackSafely() },
+                // Both on the OUTER controller: search sits in this INNER (bottom-bar) host, but every
+                // destination it opens — the five entity details and the three create forms — is a
+                // feature destination registered on the outer graph (`FeatureRegistry`). On the
+                // inner controller `navigate()` threw "Destination … cannot be found" and crashed
+                // the app (device, 2026-10-25: the FAB's Create centre).
+                onResultClick = outerNavController::navigateToSearchResult,
+                onCreate = outerNavController::navigateToCreate,
+            )
 
-                // Profile is no longer a BOTTOM-NAV tab (the original has none — the account surface is the
-                // drawer header), but its destination stays registered: the drawer header opens it, and
-                // removing the route would lose the screen rather than relocate it.
-                profileDestination(profileBody = { BackboneRegistry.profileBody(navController) })
-
-                // One host for every dashboard destination whose feature is not ported yet — the two
-                // pending TABS and the six pending DRAWER entries all land here. See PendingFeature.kt.
-                // One host per pending destination — the two pending TABS and the six pending DRAWER
-                // entries. Literal routes, so each is independently replaceable when its feature lands.
-                // Every entry here is a DRAWER destination (HomeDestinationsScreen holds only
-                // drawer entries), so each gets a back affordance. Without one they opened
-                // full-screen with no app bar and no control of any kind — the system gesture was
-                // the only way out. Found on device 2026-10-23.
-                PENDING_DESTINATIONS.forEach {
-                    pendingFeatureDestination(it, onNavigateBack = { navController.popBackStack() })
-                }
-
-                // Fork INLINE extra-tab top screens (TabRegistry.extraInlineTabDestinations). Registered in
-                // THIS inner NavHost so tapping the tab swaps content inside the scaffold (bottom bar stays)
-                // — the fork wires each screen's drill-downs on outerNavController (full-screen). Template
-                // default = no-op. Keeps the merge-owned shell feature-import-free (the seam lives in the fork).
-                TabRegistry.extraInlineTabDestinations.invoke(this, navController, outerNavController)
-            }
+            // Fork INLINE extra-tab top screens (TabRegistry.extraInlineTabDestinations). Registered in
+            // THIS inner NavHost so tapping the tab swaps content inside the scaffold (bottom bar stays)
+            // — the fork wires each screen's drill-downs on outerNavController (full-screen). Template
+            // default = no-op. Keeps the merge-owned shell feature-import-free (the seam lives in the fork).
+            TabRegistry.extraInlineTabDestinations.invoke(this, navController, outerNavController)
         }
     }
 }

@@ -27,6 +27,8 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.core.data)
+            // Sign-out is the Settings dialog + ViewModel — one implementation, two entry points.
+            implementation(projects.feature.settings)
             implementation(projects.core.datastore)
             implementation(projects.core.model)
             implementation(projects.core.store)
@@ -37,6 +39,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.kotlinx.serialization.json)

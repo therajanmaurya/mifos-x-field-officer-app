@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">搜索</string>
     <string name="feature_home_dashboard_qa_path_tracker">路径追踪</string>
     <string name="feature_home_dashboard_settings">设置</string>
+    <string name="feature_home_dashboard_profile">个人资料</string>
     <string name="feature_home_dashboard_loan_queue_empty">此队列中没有贷款</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d 项待处理</string>
     <string name="feature_home_dashboard_meetings_summary">已安排 %1$d 项 · %2$s</string>

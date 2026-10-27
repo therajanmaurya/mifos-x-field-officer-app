@@ -23,6 +23,7 @@ import kpt.core.data.infra.testMutationGateway
 import kpt.core.datastore.prefs.ProjectPreferencesRepositoryImpl
 import kpt.core.datastore.prefs.UserPreferencesRepositoryImpl
 import kpt.core.network.mifos.auth.api.AuthApi
+import kpt.core.model.auth.ChangePasswordRequest
 import kpt.core.model.auth.PostAuthenticationRequest
 import kpt.core.model.auth.PostAuthenticationResponse
 import kotlin.test.Test
@@ -59,16 +60,28 @@ class AuthCommandRepositoryTest {
         )
     }
 
+    // Password changes the fake server received, what it answers them with, and the passwords it
+    // refuses at sign-in — enough to script the change → re-sign-in sequence.
+    private val passwordChanges = mutableListOf<Pair<Long, ChangePasswordRequest>>()
+    private var passwordChangeError: Throwable? = null
+    private val refusedPasswords = mutableSetOf<String>()
+
     private fun api(authenticated: Boolean) = object : AuthApi {
         override suspend fun authenticate(postAuthenticationRequest: PostAuthenticationRequest) =
             PostAuthenticationResponse(
-                authenticated = authenticated,
+                authenticated = authenticated && postAuthenticationRequest.password !in refusedPasswords,
                 username = postAuthenticationRequest.username,
                 userId = 7,
-                base64EncodedAuthenticationKey = "a2V5",
+                // The key depends on the password, as Fineract's Basic key does.
+                base64EncodedAuthenticationKey = if (postAuthenticationRequest.password == request.password) "a2V5" else "key-${postAuthenticationRequest.password}",
                 officeId = 1,
                 officeName = "Head Office",
             )
+
+        override suspend fun changePassword(userId: Long, request: ChangePasswordRequest) {
+            passwordChangeError?.let { throw it }
+            passwordChanges += userId to request
+        }
     }
 
     // Records what sign-out purged. The real one clears every registered store through its
@@ -178,5 +191,52 @@ class AuthCommandRepositoryTest {
 
         assertIs<MutationResult.Failed>(result)
         assertEquals("a2V5", preferences.fineractUser.value.base64EncodedAuthenticationKey)
+    }
+
+    // ---- change password ----
+
+    private val newPassword = "Field#Office2026"
+
+    @Test
+    fun aChangedPasswordSignsInAgainSoTheSessionKeyIsTheNewOne() = runTest {
+        repository().authenticate(request)
+
+        assertIs<MutationResult.Applied<Unit>>(repository().changePassword(newPassword, newPassword))
+
+        assertEquals(listOf(7L to ChangePasswordRequest(newPassword, newPassword)), passwordChanges)
+        // The old key was derived from the old password; every later request would 401 with it.
+        assertEquals("key-$newPassword", preferences.fineractUser.value.base64EncodedAuthenticationKey)
+        assertTrue(preferences.fineractUser.value.isAuthenticated)
+        assertNull(preferences.fineractUser.value.password)
+    }
+
+    @Test
+    fun aRefusedPasswordKeepsTheOldSessionAndDoesNotSignInAgain() = runTest {
+        repository().authenticate(request)
+        passwordChangeError = IllegalStateException("400 Validation errors exist.")
+
+        assertIs<MutationResult.Failed>(repository().changePassword("abc", "abc"))
+
+        assertEquals("a2V5", preferences.fineractUser.value.base64EncodedAuthenticationKey)
+        assertTrue(preferences.fineractUser.value.isAuthenticated)
+    }
+
+    @Test
+    fun changingThePasswordNeedsTheNetwork() = runTest {
+        repository().authenticate(request)
+        assertIs<MutationResult.Blocked>(repository(online = false).changePassword(newPassword, newPassword))
+        assertTrue(passwordChanges.isEmpty())
+    }
+
+    @Test
+    fun ifSigningInWithTheNewPasswordFailsTheSessionEndsButTheDataStays() = runTest {
+        repository().authenticate(request)
+        refusedPasswords += newPassword
+
+        val result = repository().changePassword(newPassword, newPassword)
+
+        assertIs<PasswordChangedSignInFailed>(assertIs<MutationResult.Failed>(result).cause)
+        assertFalse(preferences.fineractUser.value.isAuthenticated)
+        assertEquals(0, cache.cleared)
     }
 }

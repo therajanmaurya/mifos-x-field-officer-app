@@ -13,13 +13,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,14 +29,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import cmp.navigation.generated.resources.Res
 import cmp.navigation.generated.resources.cd_notifications
-import cmp.navigation.generated.resources.cd_open_navigation_drawer
 import cmp.navigation.generated.resources.cd_search
 import cmp.navigation.generated.resources.shell_status_offline
 import cmp.navigation.generated.resources.shell_status_online
@@ -72,13 +71,12 @@ import org.jetbrains.compose.resources.stringResource
  * (0xFF0773BB). This shell is white-label, so neither is copied: the name comes from
  * `AppInfo.appDisplayName` (app-profile → BuildKonfig) and the colour from `colorScheme.primary`.
  * The brand hex still exists — it lives in this fork's palette, which is where a brand value goes.
- * The LOGO is a fork-supplied drawable, carried across from `6b66e8a43` with the drawer assets;
+ * The LOGO is a fork-supplied drawable, carried across from `6b66e8a43`;
  * another fork replaces the file, not this code.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun DashboardTopBar(
-    onNavigationIconClick: () -> Unit,
     onSearchIconClick: () -> Unit,
     onNotificationIconClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -121,17 +119,6 @@ internal fun DashboardTopBar(
                     )
                 }
             },
-            navigationIcon = {
-                IconButton(
-                    onClick = onNavigationIconClick,
-                    modifier = Modifier.testTag(DASHBOARD_MENU_ACTION_TAG),
-                ) {
-                    Icon(
-                        imageVector = AppIcons.Menu,
-                        contentDescription = stringResource(Res.string.cd_open_navigation_drawer),
-                    )
-                }
-            },
             actions = {
                 // In the actions slot, not the title: the title is what shrinks on a narrow / large-font
                 // phone, and a squeezed pill wrapped to one letter per line on device (2026-10-27).
@@ -154,7 +141,6 @@ internal fun DashboardTopBar(
             },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = KptTheme.colorScheme.surfaceContainerLowest,
-                navigationIconContentColor = KptTheme.colorScheme.onSurface,
                 actionIconContentColor = KptTheme.colorScheme.onSurface,
             ),
             expandedHeight = DesignToken.sizes.topAppBarHeight,
@@ -190,4 +176,3 @@ private fun ConnectionPill(online: Boolean) {
 internal const val DASHBOARD_CONNECTION_TAG: String = "shell:top-bar:connection"
 internal const val DASHBOARD_TOP_BAR_TAG: String = "shell:top-bar"
 internal const val DASHBOARD_SEARCH_ACTION_TAG: String = "shell:top-bar:search"
-internal const val DASHBOARD_MENU_ACTION_TAG: String = "shell:top-bar:menu"

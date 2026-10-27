@@ -61,6 +61,8 @@ class SignInViewModelTest {
         }
 
         override suspend fun signOut(clearLocalData: Boolean): MutationResult<Unit> = error("not used by sign-in")
+
+        override suspend fun changePassword(newPassword: String, repeatPassword: String): MutationResult<Unit> = error("not used by sign-in")
     }
 
     /**

@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">Cerca</string>
     <string name="feature_home_dashboard_qa_path_tracker">Tracciamento percorso</string>
     <string name="feature_home_dashboard_settings">Impostazioni</string>
+    <string name="feature_home_dashboard_profile">Profilo</string>
     <string name="feature_home_dashboard_loan_queue_empty">Nessun prestito in questa coda</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d in attesa</string>
     <string name="feature_home_dashboard_meetings_summary">%1$d programmate · %2$s</string>

@@ -14,7 +14,7 @@ import kpt.core.data.auth.AuthCommandRepository
 import kpt.core.model.auth.PostAuthenticationRequest
 import kpt.core.model.auth.PostAuthenticationResponse
 
-/** Records sign-outs (the clearLocalData flag of each); sign-in is not scripted. */
+/** Records sign-outs (the clearLocalData flag of each) and password changes; sign-in is not scripted. */
 @ExperimentalDataTestingApi
 class FakeAuthCommandRepository : AuthCommandRepository {
 
@@ -31,5 +31,16 @@ class FakeAuthCommandRepository : AuthCommandRepository {
     override suspend fun signOut(clearLocalData: Boolean): MutationResult<Unit> {
         signOuts += clearLocalData
         return signOutResult
+    }
+
+    /** Each `(newPassword, repeatPassword)` asked for. */
+    val passwordChanges = mutableListOf<Pair<String, String>>()
+
+    /** What [changePassword] returns. */
+    var changePasswordResult: MutationResult<Unit> = MutationResult.Applied(Unit, synced = true)
+
+    override suspend fun changePassword(newPassword: String, repeatPassword: String): MutationResult<Unit> {
+        passwordChanges += newPassword to repeatPassword
+        return changePasswordResult
     }
 }

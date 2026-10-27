@@ -97,6 +97,7 @@
     <string name="feature_home_dashboard_qa_search">Buscar</string>
     <string name="feature_home_dashboard_qa_path_tracker">Rastreador de ruta</string>
     <string name="feature_home_dashboard_settings">Configuración</string>
+    <string name="feature_home_dashboard_profile">Perfil</string>
     <string name="feature_home_dashboard_loan_queue_empty">No hay préstamos en esta cola</string>
     <string name="feature_home_dashboard_queue_pending_badge">%1$d pendientes</string>
     <string name="feature_home_dashboard_meetings_summary">%1$d programadas · %2$s</string>

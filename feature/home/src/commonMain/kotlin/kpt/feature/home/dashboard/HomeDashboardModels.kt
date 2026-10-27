@@ -105,6 +105,7 @@ sealed interface HomeNavigation {
     data object Reschedules : HomeNavigation
     data object Drafts : HomeNavigation
     data object Settings : HomeNavigation
+    data object Profile : HomeNavigation
     data class Center(val centerId: Int) : HomeNavigation
     data class Quick(val action: QuickAction) : HomeNavigation
     data class Recent(val kind: RecentKind, val id: Long) : HomeNavigation
