@@ -9,10 +9,14 @@
  */
 package kpt.feature.home.di
 
+import kpt.feature.home.dashboard.HomeViewModel
+import kpt.feature.home.dashboard.LoanQueueViewModel
 import kpt.feature.home.search.SearchViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val HomeModule = module {
     viewModelOf(::SearchViewModel)
+    viewModelOf(::HomeViewModel)
+    viewModelOf(::LoanQueueViewModel)
 }

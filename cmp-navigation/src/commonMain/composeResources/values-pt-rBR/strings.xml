@@ -29,4 +29,6 @@
     <string name="error_category_ratelimit">Muitas solicitações. Aguarde e tente novamente.</string>
     <string name="error_category_server">Nossos servidores estão instáveis. Tente daqui a pouco.</string>
     <string name="error_category_generic">Algo deu errado</string>
+    <string name="shell_status_online">On-line</string>
+    <string name="shell_status_offline">Off-line</string>
 </resources>

@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">冲突</string>
     <string name="feature_settings_conflicts_accept_server">保留服务器</string>
     <string name="feature_settings_conflicts_retry_local">重试我的</string>
+    <string name="feature_settings_about_row">关于</string>
+    <string name="feature_settings_about_row_description">版本、帮助、社区和许可</string>
+    <string name="feature_settings_offline_sync_row">离线同步</string>
+    <string name="feature_settings_offline_sync_row_description">在此设备上保存中心、小组和客户</string>
 </resources>

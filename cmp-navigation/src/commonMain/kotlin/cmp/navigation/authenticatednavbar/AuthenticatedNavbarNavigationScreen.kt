@@ -17,6 +17,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,14 +54,16 @@ import kpt.feature.home.homeGraph
 import kpt.feature.home.navigateToHome
 import kpt.feature.profile.navigateToProfile
 import kpt.feature.profile.profileDestination
+import kpt.core.base.data.infra.NetworkMonitor
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun AuthenticatedNavbarNavigationScreen(
     navigateToSettingsScreen: () -> Unit,
-    navigateToAboutScreen: () -> Unit,
     navigateToCollectionSheet: () -> Unit,
     navigateToReports: () -> Unit,
+    navigateToPathTracker: () -> Unit,
     navigateToCheckerInbox: () -> Unit,
     homeBody: @Composable () -> Unit,
     // The OUTER authenticated-graph controller. Used to (a) push a FULL-SCREEN tab (inlineTab = false,
@@ -94,9 +97,9 @@ internal fun AuthenticatedNavbarNavigationScreen(
         outerNavController = outerNavController,
         modifier = modifier,
         navigateToSettingsScreen = navigateToSettingsScreen,
-        navigateToAboutScreen = navigateToAboutScreen,
         navigateToCollectionSheet = navigateToCollectionSheet,
         navigateToReports = navigateToReports,
+        navigateToPathTracker = navigateToPathTracker,
         navigateToCheckerInbox = navigateToCheckerInbox,
         homeBody = homeBody,
         onAction = remember(viewModel) {
@@ -111,9 +114,9 @@ internal fun AuthenticatedNavbarNavigationScreenContent(
     navController: NavHostController,
     outerNavController: NavController,
     navigateToSettingsScreen: () -> Unit,
-    navigateToAboutScreen: () -> Unit,
     navigateToCollectionSheet: () -> Unit,
     navigateToReports: () -> Unit,
+    navigateToPathTracker: () -> Unit,
     navigateToCheckerInbox: () -> Unit,
     homeBody: @Composable () -> Unit,
     modifier: Modifier = Modifier,
@@ -124,6 +127,8 @@ internal fun AuthenticatedNavbarNavigationScreenContent(
     // Tabs from the fork-owned TabRegistry seam (backbone Home/Profile + fork extraTabs) — the
     // navbar renders the list generically instead of a hardcoded item list (S6 heal, T7).
     val navigationItems = TabRegistry.tabs.toImmutableList()
+    // The top bar's connection pill reads the app's own NetworkMonitor (Stitch shell: "● Online").
+    val online by koinInject<NetworkMonitor>().isOnline.collectAsState(initial = true)
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -161,9 +166,9 @@ internal fun AuthenticatedNavbarNavigationScreenContent(
                     // never imports a feature module.
                     when (entry) {
                         HomeDestinationsScreen.SettingsScreen -> navigateToSettingsScreen()
-                        HomeDestinationsScreen.AboutScreen -> navigateToAboutScreen()
                         HomeDestinationsScreen.CollectionSheetScreen -> navigateToCollectionSheet()
                         HomeDestinationsScreen.RunReportsScreen -> navigateToReports()
+                        HomeDestinationsScreen.PathTrackerScreen -> navigateToPathTracker()
                         HomeDestinationsScreen.CheckerInboxAndTasksScreen -> navigateToCheckerInbox()
                         else -> navController.navigateToInlineTab(pendingFeatureRoute(entry.featureName))
                     }
@@ -207,6 +212,7 @@ internal fun AuthenticatedNavbarNavigationScreenContent(
             topBar = {
                 if (!isTabRoot) return@KptRootScaffold
                 DashboardTopBar(
+                    online = online,
                     onNavigationIconClick = { scope.launch { drawerState.open() } },
                     onSearchIconClick = { navController.navigateToSearch() },
                     // Notifications is a migrated backbone destination (feature/settings ships

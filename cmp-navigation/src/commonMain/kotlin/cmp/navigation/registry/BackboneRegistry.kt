@@ -12,25 +12,41 @@ package cmp.navigation.registry
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import cmp.navigation.authenticatednavbar.PendingFeatureScreen
 import cmp.navigation.drafts.rememberCreateDraftExtras
-import cmp.navigation.generated.resources.Res
-import cmp.navigation.generated.resources.home_dashboard_feature
 import kpt.core.base.ui.nav.popBackStackSafely
+import cmp.navigation.authenticatednavbar.navigateToCreate
+import cmp.navigation.authenticatednavbar.navigateToSearch
+import cmp.navigation.authenticatednavbar.navigateToSearchResult
+import cmp.navigation.authenticatednavbar.searchDestination
+import kpt.feature.center.navigation.navigateToCenterDetail
+import kpt.feature.center.navigation.navigateToCreateCenter
+import kpt.feature.client.navigation.navigateToClientList
+import kpt.feature.client.navigation.navigateToCreateNewClient
+import kpt.feature.groups.navigation.navigateToCreateGroup
+import kpt.feature.home.dashboard.HomeDashboardScreen
+import kpt.feature.home.dashboard.HomeNavigation
+import kpt.feature.home.dashboard.QuickAction
+import kpt.feature.home.dashboard.loanQueueDestination
+import kpt.feature.home.dashboard.navigateToLoanQueue
+import kpt.feature.loan.navigation.navigateToLoanProfile
+import kpt.core.model.recent.RecentKind
+import kpt.feature.client.navigation.navigateToClientProfile
+import kpt.feature.groups.navigation.navigateToGroupsDetail
 import kpt.feature.about.navigation.navigateToAbout
+import kpt.feature.offlinesync.navigation.navigateToOfflineSync
 import kpt.feature.checkerinbox.navigation.navigateToCheckerInbox
 import kpt.feature.collectionsheet.navigation.navigateToIndividualCollectionSheet
 import kpt.feature.profile.identity.ProfileBody
 import kpt.feature.report.navigation.navigateToReports
 import kpt.feature.settings.SettingsBody
-import kpt.feature.settings.navigateToNotification
+import kpt.feature.notification.navigation.navigateToNotifications
+import kpt.feature.pathtracking.navigation.navigateToPathTracking
 import kpt.feature.settings.navigateToSettings
 import kpt.feature.settings.navigateToSyncAndDrafts
 import kpt.feature.settings.notificationDestination
 import kpt.feature.settings.serverconfig.navigateToServerConfig
 import kpt.feature.settings.settingsDestination
 import kpt.feature.settings.syncAndDraftsDestination
-import org.jetbrains.compose.resources.stringResource
 
 /**
  * BackboneRegistry — the FORK-OWNED white-label seam for the app **backbone** (the home-tab body and,
@@ -53,18 +69,10 @@ object BackboneRegistry {
      * default is the demo Money-Toolkit dashboard wired to its feature destinations; `customizer --clean`
      * strips the fenced block below, leaving `{ }` — an empty backbone body for the fork to fill.
      */
-    val homeBody: @Composable (NavController) -> Unit = { _ ->
-        // Search used to render HERE — it was the original app's first tab and so its de-facto
-        // dashboard. It now has its own destination behind the top bar's magnifier (SearchNavigation),
-        // which leaves this seam needing content of its own.
-        //
-        // There is no home dashboard to put in it: the original has none (its four tabs are Search ·
-        // Clients · Centers · Groups), and a Home-first bar is a NEW product decision, so nothing has
-        // been designed or ported for this surface. Rather than improvise a plausible-looking
-        // dashboard — fabricated summary cards being precisely what RULE-DESIGN-CONFORMANCE-001
-        // forbids — the tab states what it is waiting for, and the gap is tracked in
-        // CAPABILITY_GAPS.yaml like every other unported destination.
-        PendingFeatureScreen(featureName = stringResource(Res.string.home_dashboard_feature))
+    val homeBody: @Composable (NavController) -> Unit = { navController ->
+        // The field officer's day (feature/home dashboard). Search moved to its own destination behind
+        // the top bar's magnifier; every tap here leaves through one HomeNavigation mapping.
+        HomeDashboardScreen(onNavigate = { target -> navController.navigateHome(target) })
     }
 
     /**
@@ -87,6 +95,8 @@ object BackboneRegistry {
             onBackClick = { navController.popBackStackSafely() },
             onSyncAndDraftsClick = { navController.navigateToSyncAndDrafts() },
             onServerConfigClick = { navController.navigateToServerConfig() },
+            onAboutClick = { navController.navigateToAbout() },
+            onOfflineSyncClick = { navController.navigateToOfflineSync() },
         )
     }
 
@@ -110,11 +120,11 @@ object BackboneRegistry {
      */
     val navigateToSettings: (NavController) -> Unit = { it.navigateToSettings() }
 
-    /** The drawer's About entry → `feature/about`. Same seam shape as [navigateToSettings]. */
-    val navigateToAbout: (NavController) -> Unit = { it.navigateToAbout() }
-
     /** The drawer's Collection Sheet entry → `feature/collectionsheet`. */
     val navigateToCollectionSheet: (NavController) -> Unit = { it.navigateToIndividualCollectionSheet() }
+
+    /** The drawer's Path Tracker entry → `feature/pathtracking`. */
+    val navigateToPathTracker: (NavController) -> Unit = { it.navigateToPathTracking() }
 
     /** The drawer's Run Reports entry → `feature/report`. */
     val navigateToReports: (NavController) -> Unit = { it.navigateToReports() }
@@ -127,7 +137,9 @@ object BackboneRegistry {
      * [navigateToSettings] and for the same reason: it keeps the `kpt.feature.settings` import out
      * of the merge-owned shell, which `customization-surface.yaml` has as `owner: merge`.
      */
-    val navigateToNotification: (NavController) -> Unit = { it.navigateToNotification() }
+    // The bell opens Fineract's notifications (feature/notification), not the template's static
+    // placeholder in feature/settings — that destination stays registered but nothing routes to it.
+    val navigateToNotification: (NavController) -> Unit = { it.navigateToNotifications() }
 
     /**
      * Backbone (framework) nav destinations — settings, notification, sync-and-drafts.
@@ -145,5 +157,45 @@ object BackboneRegistry {
         // Settings inner content flows through the fork-owned `settingsBody` seam (WS01 / AC7); the
         // template `settingsDestination` shell forwards this opaque body, carrying no demo wiring.
         settingsDestination(settingsBody = { BackboneRegistry.settingsBody(navController) })
+        // Search on the OUTER graph too. The top bar's magnifier opens it inside the inner (bottom-bar)
+        // host, but `homeBody` only receives this outer controller, and navigating to a route the
+        // graph lacks crashes ("Destination with route SearchRoute cannot be found" — device,
+        // 2026-10-27, Home's Search quick action). Same screen and callbacks, opened full-screen.
+        searchDestination(
+            onBackClick = { navController.popBackStackSafely() },
+            onResultClick = navController::navigateToSearchResult,
+            onCreate = navController::navigateToCreate,
+        )
+        loanQueueDestination(
+            onBack = { navController.popBackStackSafely() },
+            onLoanClick = { loanId -> navController.navigateToLoanProfile(loanId.toInt()) },
+        )
+    }
+}
+
+/** Where each Home dashboard tap goes. Reschedules are approved from the checker inbox's own tab. */
+private fun NavController.navigateHome(target: HomeNavigation) = when (target) {
+    HomeNavigation.CollectionSheet -> navigateToIndividualCollectionSheet()
+    HomeNavigation.CheckerInbox, HomeNavigation.Reschedules -> navigateToCheckerInbox()
+    is HomeNavigation.LoanQueue -> navigateToLoanQueue(target.status)
+    // ponytail: the client list has no status filter yet, so this opens the full list.
+    HomeNavigation.PendingClients -> navigateToClientList()
+    HomeNavigation.Drafts -> navigateToSyncAndDrafts()
+    HomeNavigation.Settings -> navigateToSettings()
+    is HomeNavigation.Center -> navigateToCenterDetail(target.centerId)
+    is HomeNavigation.Recent -> when (target.kind) {
+        RecentKind.CLIENT -> navigateToClientProfile(target.id.toInt())
+        RecentKind.GROUP -> navigateToGroupsDetail(target.id.toInt())
+        RecentKind.CENTER -> navigateToCenterDetail(target.id.toInt())
+        RecentKind.LOAN -> navigateToLoanProfile(target.id.toInt())
+    }
+    is HomeNavigation.Quick -> when (target.action) {
+        QuickAction.NEW_CLIENT -> navigateToCreateNewClient()
+        QuickAction.NEW_GROUP -> navigateToCreateGroup()
+        QuickAction.NEW_CENTER -> navigateToCreateCenter()
+        QuickAction.COLLECTION_SHEET -> navigateToIndividualCollectionSheet()
+        QuickAction.RUN_REPORTS -> navigateToReports()
+        QuickAction.SEARCH -> navigateToSearch()
+        QuickAction.PATH_TRACKER -> navigateToPathTracking()
     }
 }

@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">Konflikt</string>
     <string name="feature_settings_conflicts_accept_server">Zachowaj serwer</string>
     <string name="feature_settings_conflicts_retry_local">Ponów moją</string>
+    <string name="feature_settings_about_row">Informacje</string>
+    <string name="feature_settings_about_row_description">Wersja, pomoc, społeczność i licencja</string>
+    <string name="feature_settings_offline_sync_row">Synchronizacja offline</string>
+    <string name="feature_settings_offline_sync_row_description">Zachowaj centra, grupy i klientów na tym urządzeniu</string>
 </resources>

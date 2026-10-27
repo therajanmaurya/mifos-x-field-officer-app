@@ -12,6 +12,7 @@ package kpt.feature.center.di
 import kpt.feature.center.detail.CenterDetailViewModel
 import kpt.feature.center.list.CenterListViewModel
 import kpt.feature.center.create.CreateCenterViewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -20,7 +21,7 @@ import org.koin.dsl.module
  * which scans each feature module's `di` package — no registry edit.
  */
 val CenterModule = module {
-    viewModelOf(::CenterListViewModel)
+    viewModel { CenterListViewModel(repository = get(), downloads = get()) }
     viewModelOf(::CenterDetailViewModel)
     viewModelOf(::CreateCenterViewModel)
 }

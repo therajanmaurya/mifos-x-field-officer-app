@@ -29,4 +29,6 @@
     <string name="error_category_ratelimit">Забагато запитів. Зачекайте та спробуйте ще раз.</string>
     <string name="error_category_server">На наших серверах тимчасовий збій. Спробуйте трохи згодом.</string>
     <string name="error_category_generic">Щось пішло не так</string>
+    <string name="shell_status_online">У мережі</string>
+    <string name="shell_status_offline">Не в мережі</string>
 </resources>

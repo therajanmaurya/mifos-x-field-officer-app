@@ -7,8 +7,11 @@
  *
  * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
+@file:OptIn(kpt.core.data.testing.ExperimentalDataTestingApi::class)
+
 package kpt.feature.groups.detail
 
+import kpt.core.data.testing.FakeRecentRecordsRepository
 import kpt.core.model.loan.LoanAccount
 import kpt.core.model.group.GroupWithAssociations
 import kpt.core.model.group.GroupAccounts
@@ -45,7 +48,7 @@ class GroupsDetailViewModelTest {
         repo: FakeGroupRepository,
         commands: FakeGroupCommandRepository = FakeGroupCommandRepository(),
         groupId: Int = 7,
-    ) = GroupsDetailViewModel(repo, commands, SavedStateHandle(mapOf("groupId" to groupId)))
+    ) = GroupsDetailViewModel(repo, commands, SavedStateHandle(mapOf("groupId" to groupId)), FakeRecentRecordsRepository())
 
     @Test
     fun theScreenShowsTheOneGroupItWasOpenedFor() = runTest(dispatcher) {

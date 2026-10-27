@@ -62,6 +62,8 @@ fun SettingsBody(
     onSyncAndDraftsClick: () -> Unit,
     modifier: Modifier = Modifier,
     onServerConfigClick: (() -> Unit)? = null,
+    onAboutClick: (() -> Unit)? = null,
+    onOfflineSyncClick: (() -> Unit)? = null,
     signOutViewModel: SignOutViewModel = koinViewModel(),
 ) {
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
@@ -73,6 +75,8 @@ fun SettingsBody(
         onLanguageCardClick = { showLanguageDialog = true },
         onSyncAndDraftsClick = onSyncAndDraftsClick,
         onServerConfigClick = onServerConfigClick,
+        onAboutClick = onAboutClick,
+        onOfflineSyncClick = onOfflineSyncClick,
         onSignOutClick = { signOutViewModel.trySendAction(SignOutAction.Requested) },
         modifier = modifier,
     )

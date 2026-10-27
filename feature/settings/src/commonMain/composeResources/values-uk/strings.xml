@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">Конфлікт</string>
     <string name="feature_settings_conflicts_accept_server">Залишити серверну</string>
     <string name="feature_settings_conflicts_retry_local">Повторити мою</string>
+    <string name="feature_settings_about_row">Про застосунок</string>
+    <string name="feature_settings_about_row_description">Версія, допомога, спільнота та ліцензія</string>
+    <string name="feature_settings_offline_sync_row">Офлайн-синхронізація</string>
+    <string name="feature_settings_offline_sync_row_description">Зберігайте центри, групи та клієнтів на цьому пристрої</string>
 </resources>

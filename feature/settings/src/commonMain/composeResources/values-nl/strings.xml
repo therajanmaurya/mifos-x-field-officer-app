@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">Conflict</string>
     <string name="feature_settings_conflicts_accept_server">Server behouden</string>
     <string name="feature_settings_conflicts_retry_local">Mijne opnieuw</string>
+    <string name="feature_settings_about_row">Over</string>
+    <string name="feature_settings_about_row_description">Versie, hulp, community en licentie</string>
+    <string name="feature_settings_offline_sync_row">Offlinesynchronisatie</string>
+    <string name="feature_settings_offline_sync_row_description">Bewaar centra, groepen en klanten op dit apparaat</string>
 </resources>

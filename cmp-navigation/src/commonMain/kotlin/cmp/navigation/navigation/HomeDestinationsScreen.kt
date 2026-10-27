@@ -11,10 +11,8 @@ package cmp.navigation.navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import cmp.navigation.generated.resources.Res
-import cmp.navigation.generated.resources.drawer_about
 import cmp.navigation.generated.resources.drawer_checker_inbox_tasks
 import cmp.navigation.generated.resources.drawer_collection_sheet
-import cmp.navigation.generated.resources.drawer_offline_sync
 import cmp.navigation.generated.resources.drawer_path_tracker
 import cmp.navigation.generated.resources.drawer_run_reports
 import cmp.navigation.generated.resources.drawer_settings
@@ -27,11 +25,11 @@ import org.jetbrains.compose.resources.StringResource
  *
  * Order is the original's and is load-bearing twice over: the drawer renders it top to bottom, and
  * [AuthenticatedNavbarNavigationScreen] draws a divider at `index == size - 2`, which is what places
- * the rule above Offline Sync. Reordering this list silently moves that divider.
+ * the rule above Settings. Reordering this list silently moves that divider.
  *
  * ## migrated vs pending
  *
- * Each entry declares whether its feature exists yet. Settings, About and Collection Sheet do. The other four render as
+ * Each entry declares whether its feature exists yet. All five do (Path Tracker since 2026-10-27). A future unported entry renders as
  * real rows and open [PendingFeatureRoute], which names the missing feature rather than imitating
  * it — see that file for why the shell ships complete instead of partially drawn.
  *
@@ -74,13 +72,19 @@ sealed class HomeDestinationsScreen(
         isMigrated = true,
     )
 
+    /** Migrated: `feature/pathtracking` — the officer's recorded paths (2026-10-27). */
     data object PathTrackerScreen : HomeDestinationsScreen(
         title = Res.string.drawer_path_tracker,
         icon = AppIcons.PersonPinCircle,
         featureName = "Path Tracker",
+        isMigrated = true,
     )
 
     /**
+     * Last by design — the divider above it is computed from this list's size. It also holds what the
+     * drawer used to: About (a Settings row since 2026-10-27) and Offline Sync, which Settings →
+     * Sync & drafts replaces.
+     *
      * Migrated. `feature/settings` is in fact RICHER than the original's, which had
      * only Settings + UpdateServerConfig: the port adds SyncAndDrafts and Notification.
      */
@@ -89,21 +93,6 @@ sealed class HomeDestinationsScreen(
         icon = AppIcons.Settings,
         featureName = "Settings",
         isMigrated = true,
-    )
-
-    /** Migrated: `feature/about` (2026-10-24). */
-    data object AboutScreen : HomeDestinationsScreen(
-        title = Res.string.drawer_about,
-        icon = AppIcons.Info,
-        featureName = "About",
-        isMigrated = true,
-    )
-
-    /** Last by design — the divider above it is computed from this list's size. */
-    data object OfflineSyncScreen : HomeDestinationsScreen(
-        title = Res.string.drawer_offline_sync,
-        icon = AppIcons.CloudOff,
-        featureName = "Offline Sync",
     )
 
     companion object {
@@ -126,8 +115,6 @@ sealed class HomeDestinationsScreen(
             RunReportsScreen,
             PathTrackerScreen,
             SettingsScreen,
-            AboutScreen,
-            OfflineSyncScreen,
         )
     }
 }

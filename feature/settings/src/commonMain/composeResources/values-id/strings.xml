@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">Konflik</string>
     <string name="feature_settings_conflicts_accept_server">Pertahankan server</string>
     <string name="feature_settings_conflicts_retry_local">Coba punya saya</string>
+    <string name="feature_settings_about_row">Tentang</string>
+    <string name="feature_settings_about_row_description">Versi, bantuan, komunitas, dan lisensi</string>
+    <string name="feature_settings_offline_sync_row">Sinkronisasi luring</string>
+    <string name="feature_settings_offline_sync_row_description">Simpan pusat, kelompok, dan klien di perangkat ini</string>
 </resources>

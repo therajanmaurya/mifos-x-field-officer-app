@@ -31,4 +31,6 @@
     <string name="error_category_ratelimit">Zu viele Anfragen. Bitte warten und erneut versuchen.</string>
     <string name="error_category_server">Unsere Server haben gerade Probleme. Bitte später erneut versuchen.</string>
     <string name="error_category_generic">Etwas ist schiefgelaufen</string>
+    <string name="shell_status_online">Online</string>
+    <string name="shell_status_offline">Offline</string>
 </resources>

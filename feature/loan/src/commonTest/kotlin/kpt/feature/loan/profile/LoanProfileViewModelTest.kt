@@ -11,6 +11,7 @@
 
 package kpt.feature.loan.profile
 
+import kpt.core.data.testing.FakeRecentRecordsRepository
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +58,7 @@ class LoanProfileViewModelTest {
     private val repository = FakeLoanRepository(loan = loanState)
 
     private fun viewModel(loanId: Int = 7) =
-        LoanProfileViewModel(repository, SavedStateHandle(mapOf("loanId" to loanId)))
+        LoanProfileViewModel(repository, SavedStateHandle(mapOf("loanId" to loanId)), FakeRecentRecordsRepository())
 
     private fun loan(status: LoanStatus?) =
         LoanWithAssociations(id = 7, clientName = "Asha", status = status)

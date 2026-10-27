@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">Xung đột</string>
     <string name="feature_settings_conflicts_accept_server">Giữ bản máy chủ</string>
     <string name="feature_settings_conflicts_retry_local">Thử bản của tôi</string>
+    <string name="feature_settings_about_row">Giới thiệu</string>
+    <string name="feature_settings_about_row_description">Phiên bản, trợ giúp, cộng đồng và giấy phép</string>
+    <string name="feature_settings_offline_sync_row">Đồng bộ ngoại tuyến</string>
+    <string name="feature_settings_offline_sync_row_description">Lưu giữ trung tâm, nhóm và khách hàng trên thiết bị này</string>
 </resources>

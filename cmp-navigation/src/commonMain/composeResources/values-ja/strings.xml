@@ -31,4 +31,6 @@
     <string name="error_category_ratelimit">リクエストが多すぎます。しばらく待ってから再試行してください。</string>
     <string name="error_category_server">サーバーで問題が発生しています。しばらくしてから再試行してください。</string>
     <string name="error_category_generic">問題が発生しました</string>
+    <string name="shell_status_online">オンライン</string>
+    <string name="shell_status_offline">オフライン</string>
 </resources>

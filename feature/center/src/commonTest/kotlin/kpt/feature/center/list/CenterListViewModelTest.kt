@@ -19,7 +19,11 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.data.testing.ExperimentalDataTestingApi
-import kpt.core.data.testing.FakeOfflineDownloadRepository
+import kpt.core.data.testing.FakeOfflineSyncRepository
+import kpt.core.model.offline.RecordKind
+import kpt.core.model.offline.SyncJob
+import kpt.core.model.offline.SyncJobStatus
+import kpt.core.model.offline.SyncTarget
 import kpt.feature.center.testing.FakeCenterRepository
 import kpt.feature.center.testing.center
 import kotlin.test.AfterTest
@@ -38,7 +42,7 @@ import kotlin.test.assertIs
 @OptIn(ExperimentalDataTestingApi::class)
 class CenterListViewModelTest {
 
-    private val downloads = FakeOfflineDownloadRepository()
+    private val downloads = FakeOfflineSyncRepository()
 
     private fun repoWith() = FakeCenterRepository().also { it.emit(center(1), center(2)) }
 
@@ -151,16 +155,19 @@ class CenterListViewModelTest {
 
     @Test
     fun downloadingSendsTheSelectedRowsAndReportsProgressToTheEnd() = runTest(dispatcher) {
-        val vm = CenterListViewModel(repoWith(), downloads)
+        val vm = CenterListViewModel(repoWith(), downloads, nowMs = { 0L })
         vm.screenState.test {
             skipItems(1)
             awaitItem() // content
             vm.trySendAction(CenterListAction.SelectionToggled(2))
             vm.trySendAction(CenterListAction.DownloadSelected)
             testScheduler.advanceUntilIdle()
+            // The background job finishes; the dialog follows its durable row.
+            downloads.latestJob.value = SyncJob(1, SyncJobStatus.FINISHED, listOf(SyncTarget(RecordKind.CENTRE, 2, "x")), done = 1, startedAtMs = 1)
+            testScheduler.advanceUntilIdle()
             cancelAndIgnoreRemainingEvents()
         }
-        assertEquals(listOf(2), downloads.centersRequested.single().map { it.id })
+        assertEquals(listOf("download:CENTRE:2"), downloads.calls)
         assertTrue(vm.stateFlow.value.download!!.finished)
         assertTrue(vm.stateFlow.value.selected.isEmpty())
         vm.trySendAction(CenterListAction.DownloadDismissed)

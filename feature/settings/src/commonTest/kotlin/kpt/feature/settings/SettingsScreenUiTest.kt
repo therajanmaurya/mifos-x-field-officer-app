@@ -12,6 +12,9 @@ package kpt.feature.settings
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
+import kotlin.test.assertEquals
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import kpt.core.designsystem.theme.KptTheme
 import kotlin.test.Test
@@ -47,5 +50,45 @@ class SettingsScreenUiTest {
             }
         }
         onNodeWithTag(TestTags.Settings.SCREEN).assertIsDisplayed()
+    }
+
+    @Test
+    fun aboutRowOpensAbout() = runComposeUiTest {
+        var opened = 0
+        setContent {
+            KptTheme {
+                SettingsScreenContent(
+                    onBackClick = {},
+                    onThemeCardClick = {},
+                    onLanguageCardClick = {},
+                    onSyncAndDraftsClick = {},
+                    onAboutClick = { opened++ },
+                )
+            }
+        }
+        // About moved out of the drawer into Settings (2026-10-27).
+        onNodeWithTag(TestTags.Settings.ABOUT_ROW).performScrollTo().performClick()
+        assertEquals(1, opened)
+    }
+
+    @Test
+    fun offlineSyncRowOpensOfflineSync() = runComposeUiTest {
+        var opened = 0
+        var drafts = 0
+        setContent {
+            KptTheme {
+                SettingsScreenContent(
+                    onBackClick = {},
+                    onThemeCardClick = {},
+                    onLanguageCardClick = {},
+                    onSyncAndDraftsClick = { drafts++ },
+                    onOfflineSyncClick = { opened++ },
+                )
+            }
+        }
+        // Its own row, separate from Sync & Drafts (2026-10-27).
+        onNodeWithTag(TestTags.Settings.OFFLINE_SYNC_ROW).performScrollTo().performClick()
+        assertEquals(1, opened)
+        assertEquals(0, drafts)
     }
 }

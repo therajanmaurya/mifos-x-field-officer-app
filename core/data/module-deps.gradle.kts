@@ -24,6 +24,12 @@
 // Empty on the template — this is yours to fill.
 
 dependencies {
+    val libs = project.extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
+
+    // worker-kmp core — Settings → Offline sync runs as a durable background job
+    // (kpt.core.data.offline.work.OfflineSyncWorker), registered in cmp-shared/ForkWorkerDeclarations.kt.
+    "commonMainImplementation"(libs.findLibrary("worker-kmp").get())
+
     // In-memory `MapSettings` for core/data tests that exercise the REAL `core/datastore`
     // preferences (AuthCommandRepositoryTest: the session a sign-in persists). Resolved through the
     // catalog so the version stays in one place.

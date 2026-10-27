@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">Conflito</string>
     <string name="feature_settings_conflicts_accept_server">Manter servidor</string>
     <string name="feature_settings_conflicts_retry_local">Tentar a minha</string>
+    <string name="feature_settings_about_row">Sobre</string>
+    <string name="feature_settings_about_row_description">Versão, ajuda, comunidade e licença</string>
+    <string name="feature_settings_offline_sync_row">Sincronização offline</string>
+    <string name="feature_settings_offline_sync_row_description">Mantenha centros, grupos e clientes neste dispositivo</string>
 </resources>

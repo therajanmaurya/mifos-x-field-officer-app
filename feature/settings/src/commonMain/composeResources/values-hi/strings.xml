@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">विरोध</string>
     <string name="feature_settings_conflicts_accept_server">सर्वर वाला रखें</string>
     <string name="feature_settings_conflicts_retry_local">मेरा पुनः आज़माएँ</string>
+    <string name="feature_settings_about_row">ऐप के बारे में</string>
+    <string name="feature_settings_about_row_description">संस्करण, सहायता, समुदाय और लाइसेंस</string>
+    <string name="feature_settings_offline_sync_row">ऑफ़लाइन सिंक</string>
+    <string name="feature_settings_offline_sync_row_description">केंद्रों, समूहों और ग्राहकों को इस डिवाइस पर रखें</string>
 </resources>

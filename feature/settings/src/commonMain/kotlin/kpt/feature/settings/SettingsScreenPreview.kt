@@ -54,6 +54,8 @@ internal fun SettingsScreenContentWithRateAppPreview() {
             onLanguageCardClick = {},
             onSyncAndDraftsClick = {},
             onRateAppClick = {},
+            onAboutClick = {},
+            onOfflineSyncClick = {},
         )
     }
 }

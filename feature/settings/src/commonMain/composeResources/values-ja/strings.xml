@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">競合</string>
     <string name="feature_settings_conflicts_accept_server">サーバー版を保持</string>
     <string name="feature_settings_conflicts_retry_local">自分の版で再試行</string>
+    <string name="feature_settings_about_row">このアプリについて</string>
+    <string name="feature_settings_about_row_description">バージョン、ヘルプ、コミュニティ、ライセンス</string>
+    <string name="feature_settings_offline_sync_row">オフライン同期</string>
+    <string name="feature_settings_offline_sync_row_description">センター、グループ、クライアントをこのデバイスに保存します</string>
 </resources>

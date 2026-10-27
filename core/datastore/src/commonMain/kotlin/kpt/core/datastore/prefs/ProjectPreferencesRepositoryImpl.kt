@@ -11,9 +11,10 @@ package kpt.core.datastore.prefs
 
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
-import com.russhwolf.settings.serialization.decodeValueOrNull
-import com.russhwolf.settings.serialization.encodeValue
+import kpt.core.base.datastore.infra.getJsonOrNull
+import kpt.core.base.datastore.infra.putJson
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
@@ -41,9 +42,21 @@ class ProjectPreferencesRepositoryImpl(
     val dispatcher: DispatcherManager,
 ) : ProjectPreferencesRepository, UserPreferencesRepository by delegate {
 
+    // JSON, not `encodeValue`: that layout read `permissions` (and `roles`) back EMPTY on every cold
+    // start, so every permission-gated surface — the whole Home dashboard — vanished after a restart.
     private val _fineractUser = MutableStateFlow(
-        secureSettings.decodeValueOrNull(serializer = User.serializer(), key = FINERACT_USER) ?: User(),
+        secureSettings.getJsonOrNull(User.serializer(), FINERACT_USER) ?: User(),
     )
+
+    init {
+        // A session saved in that lossy layout has an empty permission list and no way to recover it
+        // (Fineract returns permissions only at sign-in, and the password is never stored), so it
+        // starts signed out. Once: the next sign-in saves it in the JSON layout. Cached data stays.
+        if (_fineractUser.value.isAuthenticated && _fineractUser.value.permissions.isEmpty()) {
+            dispatcher.appScope.launch { clearFineractUser() }
+            _fineractUser.value = User()
+        }
+    }
     override val fineractUser: StateFlow<User> = _fineractUser.asStateFlow()
 
     override val authHeader: String
@@ -51,7 +64,7 @@ class ProjectPreferencesRepositoryImpl(
 
     override suspend fun updateFineractUser(user: User) {
         withContext(dispatcher.io) {
-            secureSettings.encodeValue(serializer = User.serializer(), key = FINERACT_USER, value = user)
+            secureSettings.putJson(User.serializer(), FINERACT_USER, user)
             _fineractUser.value = user
             // Keep the framework's token slot in step — the network layer reads it from there, and a
             // stale token outliving the user it belongs to is the failure this pairing prevents.
@@ -80,7 +93,7 @@ class ProjectPreferencesRepositoryImpl(
 
     override suspend fun clearFineractUser() {
         withContext(dispatcher.io) {
-            secureSettings.encodeValue(serializer = User.serializer(), key = FINERACT_USER, value = User())
+            secureSettings.putJson(User.serializer(), FINERACT_USER, User())
             _fineractUser.value = User()
             delegate.setAuthToken(null)
             delegate.setIsAuthenticated(false)

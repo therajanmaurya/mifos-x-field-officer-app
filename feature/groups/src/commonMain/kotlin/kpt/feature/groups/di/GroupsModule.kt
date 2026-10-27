@@ -12,6 +12,7 @@ package kpt.feature.groups.di
 import kpt.feature.groups.create.CreateGroupViewModel
 import kpt.feature.groups.detail.GroupsDetailViewModel
 import kpt.feature.groups.list.GroupsListViewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -20,7 +21,7 @@ import org.koin.dsl.module
  * which scans each feature module's `di` package — no registry edit.
  */
 val GroupsModule = module {
-    viewModelOf(::GroupsListViewModel)
+    viewModel { GroupsListViewModel(repository = get(), downloads = get()) }
     viewModelOf(::CreateGroupViewModel)
     viewModelOf(::GroupsDetailViewModel)
 }

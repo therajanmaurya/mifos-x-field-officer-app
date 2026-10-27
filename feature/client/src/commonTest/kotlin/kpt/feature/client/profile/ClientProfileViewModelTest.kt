@@ -14,6 +14,7 @@
 
 package kpt.feature.client.profile
 
+import kpt.core.data.testing.FakeRecentRecordsRepository
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +59,7 @@ class ClientProfileViewModelTest {
     private fun viewModel(
         repo: FakeClientRepository = repository(),
         clientId: Int = 42,
-    ) = ClientProfileViewModel(repo, SavedStateHandle(mapOf("clientId" to clientId)))
+    ) = ClientProfileViewModel(repo, SavedStateHandle(mapOf("clientId" to clientId)), FakeRecentRecordsRepository())
 
     private fun client(id: Int = 42) = Client(
         id = id,

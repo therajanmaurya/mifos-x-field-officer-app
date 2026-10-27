@@ -84,6 +84,13 @@ fork:
   - { id: collectionsheet,  status: exists }
   - { id: report,           status: exists }
   - { id: checkerinbox,     status: exists }
+  # The top bar's bell: Fineract notifications. No original — the ported app had none (2026-10-27).
+  - { id: notification,     status: exists }
+  # Ported from 6b66e8a43 feature/path-tracking (2026-10-27) — see feature/pathtracking/MIGRATION.md.
+  - { id: pathtracking,     status: exists }
+  # Settings → Offline sync: a redesign of 6b66e8a43 feature/offline, download-only (2026-10-27) — see
+  # feature/offlinesync/MIGRATION.md.
+  - { id: offlinesync,      status: exists }
   - { id: home,             status: exists }
   - { id: profile,          status: exists }
   - { id: settings,         status: exists }

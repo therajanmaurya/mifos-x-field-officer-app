@@ -78,8 +78,8 @@ internal const val DASHBOARD_DRAWER_TAG: String = "shell:drawer"
  * The drawer sheet: a photo header that opens Profile, then [HomeDestinationsScreen.entries] in
  * their declared order.
  *
- * The divider sits above the LAST entry (`index == size - 1`), separating Offline Sync from the
- * six navigational entries above it — it is a mode switch, not another destination. Its position is
+ * The divider sits above the LAST entry (`index == size - 2` draws it under the one before), separating
+ * Settings from the work destinations above it — it configures the app rather than opening work. Its position is
  * computed from the list, so reordering `entries` moves it; see that file's note.
  */
 @Composable

@@ -10,18 +10,27 @@
 package cmp.navigation.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -29,12 +38,15 @@ import cmp.navigation.generated.resources.Res
 import cmp.navigation.generated.resources.cd_notifications
 import cmp.navigation.generated.resources.cd_open_navigation_drawer
 import cmp.navigation.generated.resources.cd_search
+import cmp.navigation.generated.resources.shell_status_offline
+import cmp.navigation.generated.resources.shell_status_online
 import cmp.navigation.generated.resources.topbarlogo
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.ui.AppInfo
 import kpt.core.designsystem.component.AppCard
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.DesignToken
+import kpt.core.designsystem.theme.finance
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -70,6 +82,8 @@ internal fun DashboardTopBar(
     onSearchIconClick: () -> Unit,
     onNotificationIconClick: () -> Unit,
     modifier: Modifier = Modifier,
+    /** Live connectivity, from the app's NetworkMonitor at the call site (kept a value so previews need no DI). */
+    online: Boolean = true,
 ) {
     AppCard(
         shape = RoundedCornerShape(
@@ -79,7 +93,9 @@ internal fun DashboardTopBar(
         elevation = DesignToken.elevation.appBar,
         modifier = Modifier.fillMaxWidth().testTag(DASHBOARD_TOP_BAR_TAG),
     ) {
-        CenterAlignedTopAppBar(
+        // Stitch shell (mockups/home/stitch/*): the brand sits LEFT, beside it the live connection pill
+        // (Online / Offline) — the one shell element the officer reads before trusting a figure.
+        TopAppBar(
             modifier = modifier,
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -94,6 +110,9 @@ internal fun DashboardTopBar(
                         // which is the one thing in that file a white-label shell must not copy.
                         text = AppInfo.appDisplayName,
                         style = KptTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         // `primary`, not the original's literal 0xFF0773BB. The hex is a brand
                         // value and belongs in the palette, where `Color.kt` already carries it for
                         // this fork; reading it from the theme is what lets another fork's name
@@ -114,6 +133,9 @@ internal fun DashboardTopBar(
                 }
             },
             actions = {
+                // In the actions slot, not the title: the title is what shrinks on a narrow / large-font
+                // phone, and a squeezed pill wrapped to one letter per line on device (2026-10-27).
+                ConnectionPill(online)
                 IconButton(
                     onClick = onSearchIconClick,
                     modifier = Modifier.testTag(DASHBOARD_SEARCH_ACTION_TAG),
@@ -140,6 +162,32 @@ internal fun DashboardTopBar(
     }
 }
 
+/** "● Online" / "● Offline". */
+@Composable
+private fun ConnectionPill(online: Boolean) {
+    val f = MaterialTheme.finance
+    val (container, content) = if (online) f.moneyPositiveContainer to f.moneyPositive else f.moneyNegativeContainer to f.moneyNegative
+    Row(
+        modifier = Modifier
+            .background(container, CircleShape)
+            .padding(horizontal = KptTheme.spacing.sm, vertical = KptTheme.spacing.xs)
+            .testTag(DASHBOARD_CONNECTION_TAG),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(KptTheme.spacing.xs),
+    ) {
+        Box(Modifier.size(KptTheme.spacing.sm - KptTheme.spacing.xs / 2).background(content, CircleShape))
+        Text(
+            stringResource(if (online) Res.string.shell_status_online else Res.string.shell_status_offline),
+            maxLines = 1,
+            softWrap = false,
+            style = KptTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = content,
+        )
+    }
+}
+
+internal const val DASHBOARD_CONNECTION_TAG: String = "shell:top-bar:connection"
 internal const val DASHBOARD_TOP_BAR_TAG: String = "shell:top-bar"
 internal const val DASHBOARD_SEARCH_ACTION_TAG: String = "shell:top-bar:search"
 internal const val DASHBOARD_MENU_ACTION_TAG: String = "shell:top-bar:menu"

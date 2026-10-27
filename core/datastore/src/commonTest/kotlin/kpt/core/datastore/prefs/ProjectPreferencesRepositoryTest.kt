@@ -112,4 +112,28 @@ class ProjectPreferencesRepositoryTest {
 
         assertTrue(secure.keys.any { it.startsWith("fineract.") }, "user key not namespaced")
     }
+
+    @Test
+    fun aSavedSessionWithoutPermissionsStartsSignedOut() = runTest {
+        // Saved before sign-in stored the permission list (2026-10-24): the Home dashboard gates every
+        // card on it, so this session would show an empty Home until the user happened to sign out.
+        repo().updateFineractUser(user)
+
+        val reopened = repo()
+
+        assertEquals(User(), reopened.fineractUser.value)
+        assertFalse(reopened.userData.value.isAuthenticated)
+        assertNull(reopened.authToken)
+    }
+
+    @Test
+    fun aSavedSessionWithPermissionsSurvivesARestart() = runTest {
+        val withPermissions = user.copy(permissions = listOf("READ_CLIENT"))
+        repo().updateFineractUser(withPermissions)
+
+        val reopened = repo()
+
+        assertEquals(withPermissions, reopened.fineractUser.value)
+        assertTrue(reopened.userData.value.isAuthenticated)
+    }
 }

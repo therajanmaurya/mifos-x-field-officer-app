@@ -29,4 +29,6 @@
     <string name="error_category_ratelimit">Çok fazla istek. Lütfen bekleyip tekrar deneyin.</string>
     <string name="error_category_server">Sunucularımızda geçici bir sorun var. Biraz sonra deneyin.</string>
     <string name="error_category_generic">Bir sorun oluştu</string>
+    <string name="shell_status_online">Çevrimiçi</string>
+    <string name="shell_status_offline">Çevrimdışı</string>
 </resources>

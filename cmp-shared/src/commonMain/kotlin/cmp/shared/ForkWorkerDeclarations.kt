@@ -9,6 +9,8 @@
  */
 package cmp.shared
 
+import kpt.core.data.offline.work.OfflineSyncWorker
+
 /**
  * ForkWorkerDeclarations — the FORK-OWNED white-label seam for a fork's own background workers.
  *
@@ -29,5 +31,12 @@ package cmp.shared
  * Leave it un-annotated (as shipped) when the fork has no extra workers — the KSP processor finds
  * nothing to add here and uses the template's base worker set. The declaration itself is a no-op
  * anchor: it keeps this seam a valid, non-empty source file the fork edits in place.
+ *
+ * This fork's workers:
+ *  - [OfflineSyncWorker] — Settings → Offline sync: downloads the officer's chosen centres / groups /
+ *    clients in the background (one-shot `kpt.offline-sync` + periodic `kpt.offline-refresh`).
  */
+@io.github.mobilebytelabs.worker.app.WorkerKmpWorkers(
+    workers = [OfflineSyncWorker::class],
+)
 public fun forkWorkerDeclarations(): Unit = Unit

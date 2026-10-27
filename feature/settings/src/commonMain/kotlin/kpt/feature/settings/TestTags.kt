@@ -18,6 +18,8 @@ object TestTags {
 
     /** Tags for [SettingsScreen]. */
     object Settings {
+        const val ABOUT_ROW: String = "settings_about_row"
+        const val OFFLINE_SYNC_ROW: String = "settings_offline_sync_row"
         /** Root scaffold — always rendered regardless of dialog state. */
         const val SCREEN: String = "settings_screen"
     }

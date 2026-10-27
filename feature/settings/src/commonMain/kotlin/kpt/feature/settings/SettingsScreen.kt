@@ -13,6 +13,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +38,10 @@ import kpt.core.designsystem.icon.KptIcons
 import kpt.core.designsystem.theme.spacing
 import kpt.core.ui.scaffold.KptScaffold
 import kpt.feature.settings.generated.resources.Res
+import kpt.feature.settings.generated.resources.feature_settings_about_row
+import kpt.feature.settings.generated.resources.feature_settings_about_row_description
+import kpt.feature.settings.generated.resources.feature_settings_offline_sync_row
+import kpt.feature.settings.generated.resources.feature_settings_offline_sync_row_description
 import kpt.feature.settings.generated.resources.feature_settings_change_language_placeholder_text
 import kpt.feature.settings.generated.resources.feature_settings_change_language_text
 import kpt.feature.settings.generated.resources.feature_settings_change_theme_placeholder_text
@@ -74,6 +80,8 @@ internal fun SettingsScreenContent(
     onRateAppClick: (() -> Unit)? = null,
     onServerConfigClick: (() -> Unit)? = null,
     onSignOutClick: (() -> Unit)? = null,
+    onAboutClick: (() -> Unit)? = null,
+    onOfflineSyncClick: (() -> Unit)? = null,
 ) {
     val sp = MaterialTheme.spacing
     KptScaffold(
@@ -88,6 +96,8 @@ internal fun SettingsScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                // Scrolls: with About, Server config, Rate and Sign out the rows outgrow a short phone.
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = sp.lg),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(sp.md),
@@ -95,6 +105,18 @@ internal fun SettingsScreenContent(
             ThemeCard(onClick = onThemeCardClick)
             LanguageCard(onClick = onLanguageCardClick)
             SyncAndDraftsCard(onClick = onSyncAndDraftsClick)
+            // Keep centres / groups / clients on the device for the field — a separate feature from
+            // Sync & Drafts (which uploads what was done offline). Null on a build without it.
+            onOfflineSyncClick?.let {
+                SettingsRowCard(
+                    icon = AppIcons.CloudDownload,
+                    title = stringResource(Res.string.feature_settings_offline_sync_row),
+                    contentDescription = stringResource(Res.string.feature_settings_offline_sync_row_description),
+                    accentColor = MaterialTheme.colorScheme.secondary,
+                    onClick = it,
+                    modifier = Modifier.testTag(TestTags.Settings.OFFLINE_SYNC_ROW),
+                )
+            }
             // The original's ENDPOINT (Instance URL) and SERVER_CONFIG rows edited the same server two
             // ways; the Server config screen's instance picker now covers both. Null = no server choice.
             onServerConfigClick?.let {
@@ -110,6 +132,18 @@ internal fun SettingsScreenContent(
             // target with neither a native review flow nor a configured store listing, and a
             // greyed-out row there would advertise a capability the build genuinely does not have.
             onRateAppClick?.let { RateAppCard(onClick = it) }
+            // The app's About page (version, help, community, licence) — moved here from the drawer.
+            // Null on a build without feature/about.
+            onAboutClick?.let {
+                SettingsRowCard(
+                    icon = AppIcons.Info,
+                    title = stringResource(Res.string.feature_settings_about_row),
+                    contentDescription = stringResource(Res.string.feature_settings_about_row_description),
+                    accentColor = MaterialTheme.colorScheme.primary,
+                    onClick = it,
+                    modifier = Modifier.testTag(TestTags.Settings.ABOUT_ROW),
+                )
+            }
             // Last: the one action that ends the session. Null on a build with no sign-in.
             onSignOutClick?.let {
                 SettingsRowCard(

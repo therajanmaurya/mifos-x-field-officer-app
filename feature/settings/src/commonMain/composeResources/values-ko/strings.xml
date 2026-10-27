@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">충돌</string>
     <string name="feature_settings_conflicts_accept_server">서버 유지</string>
     <string name="feature_settings_conflicts_retry_local">내 것으로 재시도</string>
+    <string name="feature_settings_about_row">정보</string>
+    <string name="feature_settings_about_row_description">버전, 도움말, 커뮤니티 및 라이선스</string>
+    <string name="feature_settings_offline_sync_row">오프라인 동기화</string>
+    <string name="feature_settings_offline_sync_row_description">센터, 그룹, 고객을 이 기기에 저장합니다</string>
 </resources>

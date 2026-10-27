@@ -55,7 +55,12 @@
 # 17 -> 18 (2026-10-25): `Note.resourceType` (default 'clients') — notes for any owner (groups as
 # well as clients), keyed (resourceType, owner id) in the `notes` store. Purely additive: every
 # existing row is a client note, which the default records. A plain AutoMigration (no spec).
-version: 18
+#
+# 19 -> 20 (2026-10-27): added `offline_records` + `sync_jobs` — Settings → Offline sync. The officer's
+# chosen centres / groups / clients (and everything brought in under them) with a per-record sync
+# status, and the durable background job whose progress the dashboard renders live. Both keyed by
+# user. Purely additive: two new tables, a plain AutoMigration (no spec).
+version: 20
 
 # Units already folded into this fork's INITIAL schema. A fresh fork is created with the framework
 # tables in their current shape, so it needs no migration for them — it records them here instead.
@@ -75,3 +80,5 @@ migrations:
   - { unit: fork-charges-composite-key, from: 15, to: 16 }
   - { unit: fork-server-instances, from: 16, to: 17 }
   - { unit: fork-note-resource-type, from: 17, to: 18 }
+  - { unit: fork-recent-records, from: 18, to: 19 }
+  - { unit: fork-offline-sync, from: 19, to: 20 }

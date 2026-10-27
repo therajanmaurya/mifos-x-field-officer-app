@@ -64,4 +64,8 @@
     <string name="feature_settings_conflicts_row_label">Çakışma</string>
     <string name="feature_settings_conflicts_accept_server">Sunucuyu koru</string>
     <string name="feature_settings_conflicts_retry_local">Benimkini dene</string>
+    <string name="feature_settings_about_row">Hakkında</string>
+    <string name="feature_settings_about_row_description">Sürüm, yardım, topluluk ve lisans</string>
+    <string name="feature_settings_offline_sync_row">Çevrimdışı senkronizasyon</string>
+    <string name="feature_settings_offline_sync_row_description">Merkezleri, grupları ve müşterileri bu cihazda saklayın</string>
 </resources>

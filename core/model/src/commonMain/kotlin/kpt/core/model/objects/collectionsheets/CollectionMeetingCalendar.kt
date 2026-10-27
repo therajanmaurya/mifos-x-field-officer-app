@@ -51,6 +51,8 @@ data class CollectionMeetingCalendar(
     var nextTenRecurringDates: List<List<Int>> = ArrayList(),
 
     var humanReadable: String? = null,
+    /** Fineract `meetingTime` — an `[h, m]` array or an `"HH:mm[:ss]"` string; read through a tolerant parser. */
+    var meetingTime: kotlinx.serialization.json.JsonElement? = null,
 
     var recentEligibleMeetingDate: List<Int> = ArrayList(),
 

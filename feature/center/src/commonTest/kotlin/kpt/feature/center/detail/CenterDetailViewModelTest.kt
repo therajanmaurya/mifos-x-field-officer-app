@@ -7,8 +7,11 @@
  *
  * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
+@file:OptIn(kpt.core.data.testing.ExperimentalDataTestingApi::class)
+
 package kpt.feature.center.detail
 
+import kpt.core.data.testing.FakeRecentRecordsRepository
 import kpt.core.model.center.CenterWithAssociations
 import kpt.core.model.objects.groups.CenterInfo
 import androidx.lifecycle.SavedStateHandle
@@ -46,7 +49,7 @@ class CenterDetailViewModelTest {
     private fun viewModel(
         centers: FakeCenterRepository,
         centerId: Int = 7,
-    ) = CenterDetailViewModel(centers, SavedStateHandle(mapOf("centerId" to centerId)))
+    ) = CenterDetailViewModel(centers, SavedStateHandle(mapOf("centerId" to centerId)), FakeRecentRecordsRepository())
 
     /** The centre's own read, carrying [groups] as its `groupMembers`. */
     private fun FakeCenterRepository.emitMembers(vararg groups: Group) {

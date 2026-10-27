@@ -29,4 +29,6 @@
     <string name="error_category_ratelimit">Troppe richieste. Attendi e riprova.</string>
     <string name="error_category_server">I nostri server hanno un problema momentaneo. Riprova tra poco.</string>
     <string name="error_category_generic">Qualcosa è andato storto</string>
+    <string name="shell_status_online">Online</string>
+    <string name="shell_status_offline">Offline</string>
 </resources>

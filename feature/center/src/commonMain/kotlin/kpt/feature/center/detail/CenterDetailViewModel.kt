@@ -9,6 +9,13 @@
  */
 package kpt.feature.center.detail
 
+import kpt.core.model.recent.RecentRecord
+import kpt.core.model.recent.RecentKind
+import kpt.core.data.recent.RecentRecordsRepository
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.filterIsInstance
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -50,6 +57,7 @@ import kpt.core.model.objects.groups.CenterInfo
 internal class CenterDetailViewModel(
     centerRepository: CenterRepository,
     savedStateHandle: SavedStateHandle,
+    private val recents: RecentRecordsRepository,
 ) : BaseViewModel<Unit, CenterDetailEvent, CenterDetailAction>(Unit) {
 
     /**
@@ -105,6 +113,13 @@ internal class CenterDetailViewModel(
         .emptyIfContent { it.isEmpty() }
         .mapContent { matches, _ -> matches.first() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
+
+    init {
+        // Home's "Recently opened": record this visit once, when the record first loads.
+        center.filterIsInstance<ScreenState.Content<Center>>().take(1)
+            .onEach { content -> content.data.let { recents.record(RecentRecord(RecentKind.CENTER, (it.id ?: centerId).toLong(), it.name.orEmpty(), it.accountNo)) } }
+            .launchIn(viewModelScope)
+    }
 
     /**
      * The groups of this center — a SEPARATE StateFlow, which is the whole reason the original's

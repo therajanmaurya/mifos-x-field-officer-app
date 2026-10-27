@@ -11,6 +11,8 @@ package kpt.core.datastore.di
 
 import com.russhwolf.settings.Settings
 import kpt.core.base.common.manager.DispatcherManager
+import kpt.core.datastore.offline.OfflineSyncSettingsStore
+import kpt.core.datastore.offline.SettingsOfflineSyncSettingsStore
 import kpt.core.datastore.prefs.ProjectPreferencesRepository
 import kpt.core.datastore.prefs.ProjectPreferencesRepositoryImpl
 import kpt.core.datastore.prefs.UserPreferencesRepository
@@ -38,4 +40,5 @@ val ProjectDatastoreModule = module {
             dispatcher = get<DispatcherManager>(),
         )
     }
+    single<OfflineSyncSettingsStore> { SettingsOfflineSyncSettingsStore(plainSettings = get<Settings>(named("plain"))) }
 }

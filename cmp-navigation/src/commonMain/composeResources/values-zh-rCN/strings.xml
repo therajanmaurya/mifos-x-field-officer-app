@@ -31,4 +31,6 @@
     <string name="error_category_ratelimit">请求过多。请稍候再试。</string>
     <string name="error_category_server">服务器暂时出现问题。请稍后再试。</string>
     <string name="error_category_generic">出了点问题</string>
+    <string name="shell_status_online">在线</string>
+    <string name="shell_status_offline">离线</string>
 </resources>

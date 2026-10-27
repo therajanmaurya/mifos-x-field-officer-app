@@ -29,4 +29,6 @@
     <string name="error_category_ratelimit">มีคำขอมากเกินไป โปรดรอแล้วลองใหม่</string>
     <string name="error_category_server">เซิร์ฟเวอร์ของเรามีปัญหาชั่วคราว ลองอีกครั้งในอีกสักครู่</string>
     <string name="error_category_generic">เกิดข้อผิดพลาด</string>
+    <string name="shell_status_online">ออนไลน์</string>
+    <string name="shell_status_offline">ออฟไลน์</string>
 </resources>

@@ -123,4 +123,8 @@
     <string name="feature_settings_server_live_tenant">Tenant: %1$s</string>
     <string name="feature_settings_server_live_user">Signed in as %1$s</string>
     <string name="feature_settings_sync_drafts_open">Open</string>
+    <string name="feature_settings_about_row">About</string>
+    <string name="feature_settings_about_row_description">Version, help, community and licence</string>
+    <string name="feature_settings_offline_sync_row">Offline sync</string>
+    <string name="feature_settings_offline_sync_row_description">Keep centres, groups and clients on this device</string>
 </resources>

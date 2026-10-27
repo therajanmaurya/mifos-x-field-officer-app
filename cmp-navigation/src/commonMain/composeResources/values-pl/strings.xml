@@ -29,4 +29,6 @@
     <string name="error_category_ratelimit">Zbyt wiele żądań. Poczekaj i spróbuj ponownie.</string>
     <string name="error_category_server">Nasze serwery mają chwilowy problem. Spróbuj za chwilę.</string>
     <string name="error_category_generic">Coś poszło nie tak</string>
+    <string name="shell_status_online">Online</string>
+    <string name="shell_status_offline">Offline</string>
 </resources>

@@ -21,10 +21,15 @@ import kpt.core.base.store.screen.combineContent
 import kpt.core.base.store.screen.emptyIfContent
 import kpt.core.base.ui.viewmodel.BaseViewModel
 import kpt.core.data.center.CenterRepository
-import kpt.core.data.offline.OfflineDownloadRepository
+import kpt.core.data.offline.OfflineSyncRepository
 import kpt.core.model.center.Center
 import kpt.core.model.offline.DownloadProgress
-import kpt.core.model.offline.DownloadTarget
+import kpt.core.model.offline.RecordKind
+import kpt.core.model.offline.SyncTarget
+import kpt.core.model.offline.toDownloadProgress
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlin.time.Clock
 
 /**
  * The center list — ported from `6b66e8a43:feature/center/centerList/ui/CenterListViewModel.kt`.
@@ -47,7 +52,8 @@ import kpt.core.model.offline.DownloadTarget
  */
 internal class CenterListViewModel(
     repository: CenterRepository,
-    private val downloads: OfflineDownloadRepository,
+    private val downloads: OfflineSyncRepository,
+    private val nowMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : BaseViewModel<CenterListState, CenterListEvent, CenterListAction>(CenterListState()) {
 
     private val stream = repository.centersStream(viewModelScope)
@@ -75,21 +81,26 @@ internal class CenterListViewModel(
     /** Re-run the read. Wired to `ScreenContent`'s retry. */
     fun onRetry() = stream.retry()
 
-    /** The running download — held so Cancel can stop it (what is already downloaded stays). */
-    private var download: Job? = null
+    /** Watching the background job for the progress dialog. Closing the dialog stops watching, never the job. */
+    private var watch: Job? = null
 
     /**
-     * The original's long-press SELECTION + Sync, now that the download path exists
-     * (`OfflineDownloadRepository`): the selected centers, then each one's groups, clients and active
-     * accounts. Collected on the action, not in an `init {}` — nothing runs until the officer asks.
+     * The original's long-press SELECTION + Sync: the selected centres go to Settings → Offline sync's
+     * background job (their groups, clients and every account come with them), so leaving this list
+     * does not stop the download. The dialog follows the job from its durable row. Nothing runs until
+     * the officer asks.
      */
     private fun downloadSelected() {
         val rows = (screenState.value as? ScreenState.Content)?.data.orEmpty()
-        val targets = rows.mapNotNull { c -> c.id?.takeIf { it in state.selected }?.let { DownloadTarget(it, c.name ?: "#$it") } }
-        if (targets.isEmpty() || download?.isActive == true) return
+        val targets = rows.mapNotNull { c -> c.id?.takeIf { it in state.selected }?.let { SyncTarget(RecordKind.CENTRE, it, c.name ?: "#$it") } }
+        if (targets.isEmpty() || watch?.isActive == true) return
         mutableStateFlow.value = state.copy(selected = emptySet(), download = DownloadProgress(total = targets.size))
-        download = viewModelScope.launch {
-            downloads.downloadCenters(targets).collect { mutableStateFlow.value = state.copy(download = it) }
+        val requestedAt = nowMs()
+        watch = viewModelScope.launch {
+            downloads.download(targets)
+            downloads.latestJob.filterNotNull().filter { it.startedAtMs >= requestedAt }.collect { job ->
+                mutableStateFlow.value = state.copy(download = job.toDownloadProgress())
+            }
         }
     }
 
@@ -129,10 +140,14 @@ internal class CenterListViewModel(
             CenterListAction.SelectionCleared -> mutableStateFlow.value = state.copy(selected = emptySet())
             CenterListAction.DownloadSelected -> downloadSelected()
             CenterListAction.DownloadCancelled -> {
-                download?.cancel()
+                watch?.cancel()
+                viewModelScope.launch { downloads.cancel() }
                 mutableStateFlow.value = state.copy(download = null)
             }
-            CenterListAction.DownloadDismissed -> mutableStateFlow.value = state.copy(download = null)
+            CenterListAction.DownloadDismissed -> {
+                watch?.cancel()
+                mutableStateFlow.value = state.copy(download = null)
+            }
         }
     }
 

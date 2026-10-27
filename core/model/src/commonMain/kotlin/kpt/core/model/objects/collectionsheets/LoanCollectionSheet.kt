@@ -18,6 +18,9 @@ data class LoanCollectionSheet(
     val currency: Currency? = null,
     val interestDue: Double? = null,
     val interestPaid: Double? = null,
+    /** Principal already collected against today's installment (`principal_completed_derived`). */
+    val principalPaid: Double? = null,
+    val feePaid: Double? = null,
     val loanId: Int = 0,
     val principalDue: Double? = null,
     val productId: Double? = null,

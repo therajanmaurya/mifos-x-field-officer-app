@@ -9,6 +9,13 @@
  */
 package kpt.feature.loan.profile
 
+import kpt.core.model.recent.RecentRecord
+import kpt.core.model.recent.RecentKind
+import kpt.core.data.recent.RecentRecordsRepository
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.filterIsInstance
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -57,6 +64,7 @@ import kpt.feature.loan.profile.components.LoanProfileActionItem
 internal class LoanProfileViewModel(
     repository: LoanRepository,
     savedStateHandle: SavedStateHandle,
+    private val recents: RecentRecordsRepository,
 ) : BaseViewModel<Unit, LoanProfileEvent, LoanProfileAction>(Unit) {
 
     private val loanId: Int = savedStateHandle.get<Int>(LOAN_ID_KEY) ?: -1
@@ -65,6 +73,13 @@ internal class LoanProfileViewModel(
 
     val loan: StateFlow<ScreenState<LoanWithAssociations>> = stream.state
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
+
+    init {
+        // Home's "Recently opened": record this visit once, when the record first loads.
+        loan.filterIsInstance<ScreenState.Content<LoanWithAssociations>>().take(1)
+            .onEach { content -> content.data.let { recents.record(RecentRecord(RecentKind.LOAN, (it.id ?: loanId).toLong(), it.loanProductName.orEmpty(), it.accountNo, detail = it.clientName)) } }
+            .launchIn(viewModelScope)
+    }
 
     /** The loan's status, derived from the same emission the detail renders. */
     val status: StateFlow<ScreenState<LoanProfileStatus>> = stream.state
