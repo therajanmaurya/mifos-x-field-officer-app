@@ -15,8 +15,8 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.loan.LoanTemplate
 import kpt.core.designsystem.theme.KptTheme
+import kpt.core.model.loan.LoanTemplate
 import kpt.core.model.objects.account.loan.Currency
 import kpt.core.model.objects.account.loan.RepaymentSchedule
 import kpt.core.model.objects.template.loan.AmortizationTypeOptions

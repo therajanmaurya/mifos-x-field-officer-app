@@ -12,11 +12,6 @@
 package kpt.feature.groups.create
 
 import app.cash.turbine.test
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,6 +35,11 @@ import kpt.core.model.group.GroupPayload
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.responses.SaveResponse
 import kpt.core.model.office.Office
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /** A created group opens its detail — the original's `onGroupCreated`; that needs the server's id. */
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalDataTestingApi::class)
@@ -53,7 +53,9 @@ class CreateGroupViewModelTest {
 
     private val offices = object : OfficeRepository {
         override fun officesStream(scope: CoroutineScope) =
-            screenDataStreamForTesting(flowOf<ScreenState<List<Office>>>(ScreenState.Content(listOf(Office(id = 1, name = "CENTRAL")))))
+            screenDataStreamForTesting(
+                flowOf<ScreenState<List<Office>>>(ScreenState.Content(listOf(Office(id = 1, name = "CENTRAL")))),
+            )
     }
 
     private fun commands(result: MutationResult<SaveResponse>) = object : GroupCommandRepository {
@@ -88,7 +90,10 @@ class CreateGroupViewModelTest {
 
     // ---- drafts ----
 
-    private fun TestScope.submitted(result: MutationResult<SaveResponse>, drafts: FakeFormDraftRepository): CreateGroupViewModel {
+    private fun TestScope.submitted(
+        result: MutationResult<SaveResponse>,
+        drafts: FakeFormDraftRepository,
+    ): CreateGroupViewModel {
         val vm = CreateGroupViewModel(offices, commands(result), drafts)
         vm.actionChannel.trySend(CreateGroupAction.UpdateName("FOTest Group"))
         vm.actionChannel.trySend(CreateGroupAction.UpdateOffice(OfficeOption(1, "CENTRAL")))

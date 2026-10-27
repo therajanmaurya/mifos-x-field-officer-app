@@ -43,7 +43,12 @@ class ClientProfileGroupChipUiTest {
         val actions = mutableListOf<ClientProfileAction>()
         setContent {
             KptTheme {
-                ClientProfileContent(ClientProfileState(), ScreenState.Content(Client(id = 5, displayName = "Asha")), { actions += it }, emptyList())
+                ClientProfileContent(
+                    ClientProfileState(),
+                    ScreenState.Content(Client(id = 5, displayName = "Asha")),
+                    { actions += it },
+                    emptyList(),
+                )
             }
         }
         onNodeWithText("Group: N/A").performClick()

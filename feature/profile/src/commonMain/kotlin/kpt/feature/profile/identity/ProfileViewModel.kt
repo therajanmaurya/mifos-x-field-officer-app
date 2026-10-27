@@ -96,7 +96,9 @@ class ProfileViewModel(
         ui.copy(
             username = session.username.orEmpty(),
             officeName = self?.officeName ?: session.officeName.orEmpty(),
-            fullName = self?.let { listOfNotNull(it.firstname, it.lastname).filter(String::isNotBlank).joinToString(" ").ifBlank { null } },
+            fullName = self?.let {
+                listOfNotNull(it.firstname, it.lastname).filter(String::isNotBlank).joinToString(" ").ifBlank { null }
+            },
             initials = initials(self, session.username.orEmpty()),
             email = self?.email,
             roles = self?.roles.orEmpty(),
@@ -139,12 +141,20 @@ class ProfileViewModel(
                     // Signed out (data kept) — the root graph is already moving to sign-in.
                     updateState { copy(password = null) }
                 } else {
-                    updatePassword { copy(submitting = false, error = PasswordError.Server(result.cause.serverErrorMessage())) }
+                    updatePassword {
+                        copy(submitting = false, error = PasswordError.Server(result.cause.serverErrorMessage()))
+                    }
                 }
                 is MutationResult.Blocked -> updatePassword {
-                    copy(submitting = false, error = if (result.reason == BlockReason.OFFLINE) PasswordError.Offline else PasswordError.Server(null))
+                    val error = if (result.reason == BlockReason.OFFLINE) {
+                        PasswordError.Offline
+                    } else {
+                        PasswordError.Server(null)
+                    }
+                    copy(submitting = false, error = error)
                 }
-                is MutationResult.Conflicted -> updatePassword { copy(submitting = false, error = PasswordError.Server(null)) }
+                is MutationResult.Conflicted ->
+                    updatePassword { copy(submitting = false, error = PasswordError.Server(null)) }
             }
         }
     }
@@ -157,7 +167,8 @@ class ProfileViewModel(
 
         /** First + last initials, as the Home avatar draws them; else the username's first letter. */
         fun initials(self: DashboardUser?, username: String): String =
-            listOfNotNull(self?.firstname, self?.lastname).filter(String::isNotBlank).joinToString("") { it.first().uppercase() }
+            listOfNotNull(self?.firstname, self?.lastname).filter(String::isNotBlank)
+                .joinToString("") { it.first().uppercase() }
                 .ifEmpty { username.take(1).uppercase() }
     }
 }

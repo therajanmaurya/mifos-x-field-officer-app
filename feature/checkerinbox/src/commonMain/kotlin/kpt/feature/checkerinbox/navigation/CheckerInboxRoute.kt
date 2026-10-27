@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.checkerinbox.navigation
 
@@ -17,7 +17,10 @@ import kpt.core.base.ui.nav.composableWithPushTransitions
 import kpt.feature.checkerinbox.ui.CheckerInboxScreen
 import kpt.feature.loan.navigation.LoanReschedulesRoute
 
-/** The drawer's "Checker Inbox & Tasks" — the original's `CheckerInboxTaskScreenRoute` hub + `CheckerInboxScreenRoute`. */
+/**
+ * The drawer's "Checker Inbox & Tasks" — the original's `CheckerInboxTaskScreenRoute` hub +
+ * `CheckerInboxScreenRoute`.
+ */
 @Serializable
 data object CheckerInboxRoute
 

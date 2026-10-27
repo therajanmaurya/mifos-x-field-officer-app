@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.theme.AppTheme
 import kpt.core.designsystem.theme.DesignToken
-import kpt.core.ui.util.DevicePreview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppLinkText(
@@ -40,7 +40,7 @@ fun AppLinkText(
     )
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun AppLinkTextPreview(
     modifier: Modifier = Modifier,

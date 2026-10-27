@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.offline.impl
 
@@ -189,7 +189,10 @@ internal class OfflineSyncEngine(
         if (centre != null) {
             walk.fetch("mark downloaded") {
                 entities.centreItem.write(
-                    StoreWriteRequest.of<Int, Center, Any>(target.id, centre.toCenter().copy(id = target.id, sync = true)),
+                    StoreWriteRequest.of<Int, Center, Any>(
+                        target.id,
+                        centre.toCenter().copy(id = target.id, sync = true),
+                    ),
                 )
             }
         }
@@ -206,7 +209,14 @@ internal class OfflineSyncEngine(
         )
     }
 
-    private suspend fun syncGroup(id: Int, name: String, parent: Parent?, chosen: Boolean, sink: SyncSink, run: SyncRun): OfflineRecord {
+    private suspend fun syncGroup(
+        id: Int,
+        name: String,
+        parent: Parent?,
+        chosen: Boolean,
+        sink: SyncSink,
+        run: SyncRun,
+    ): OfflineRecord {
         run.walked(RecordKind.GROUP, id)?.let { return it.reachedAgain(parent, chosen) }
         val walk = Walk(sink, name, run)
         val group = walk.fetch("group") { entities.group.fresh(id) }
@@ -217,7 +227,9 @@ internal class OfflineSyncEngine(
         val me = Parent(RecordKind.GROUP, id, group?.name ?: name)
         val clients = group?.clientMembers.orEmpty().mapNotNull { c -> c.id?.let { it to (c.displayName ?: "#$it") } }
         val children = coroutineScope {
-            clients.map { (clientId, clientName) -> async { syncClient(clientId, clientName, me, chosen = false, sink = sink, run = run) } }
+            clients.map { (clientId, clientName) ->
+                async { syncClient(clientId, clientName, me, chosen = false, sink = sink, run = run) }
+            }
                 .awaitAll()
         }
         if (chosen && group != null) {
@@ -241,7 +253,14 @@ internal class OfflineSyncEngine(
         return record
     }
 
-    private suspend fun syncClient(id: Int, name: String, parent: Parent?, chosen: Boolean, sink: SyncSink, run: SyncRun): OfflineRecord {
+    private suspend fun syncClient(
+        id: Int,
+        name: String,
+        parent: Parent?,
+        chosen: Boolean,
+        sink: SyncSink,
+        run: SyncRun,
+    ): OfflineRecord {
         run.walked(RecordKind.CLIENT, id)?.let { return it.reachedAgain(parent, chosen) }
         val walk = Walk(sink, name, run)
         val client = walk.fetch("client") { entities.client.fresh(id) }
@@ -270,35 +289,56 @@ internal class OfflineSyncEngine(
 
     /** The first path's result, as seen from the second: same counts, the second path's role. */
     private fun OfflineRecord.reachedAgain(parent: Parent?, chosen: Boolean): OfflineRecord =
-        if (chosen) copy(chosen = true) else copy(parentKind = parent?.kind, parentId = parent?.id, parentName = parent?.name, chosen = false)
+        if (chosen) {
+            copy(chosen = true)
+        } else {
+            copy(
+                parentKind = parent?.kind,
+                parentId = parent?.id,
+                parentName = parent?.name,
+                chosen = false,
+            )
+        }
 
     /** Every account, closed included (its history is part of the record). Templates only while active. */
     private suspend fun Walk.accounts(loans: List<LoanAccount>, savings: List<SavingsAccount>): Counts {
         var documents = 0
-        for (loan in loans) {
-            val id = loan.id ?: continue
-            if (!run.firstTime("loan:$id")) continue
-            fetch("loan #$id") { accounts.loan.fresh(id) }
-            fetch("loan #$id charges") { accounts.loanCharges.fresh(id) }
-            fetch("loan #$id reschedules") { accounts.loanReschedules.fresh(id) }
-            fetch("loan #$id notes") { shared.notes.fresh(NoteKey(LOANS, id.toLong())) }
-            documents += documents(LOANS, id)
-            if (loan.status?.active == true) fetch("loan #$id repayment template") { accounts.repaymentTemplate.fresh(id) }
+        for (loan in loans) documents += loanRecord(loan)
+        for (account in savings) savingsRecord(account)
+        return Counts(
+            loans = loans.count { it.id != null },
+            savings = savings.count { it.id != null },
+            documents = documents,
+        )
+    }
+
+    /** One loan's reads; returns its document count (0 when it has no id or was already walked). */
+    private suspend fun Walk.loanRecord(loan: LoanAccount): Int {
+        val id = loan.id
+        if (id == null || !run.firstTime("loan:$id")) return 0
+        fetch("loan #$id") { accounts.loan.fresh(id) }
+        fetch("loan #$id charges") { accounts.loanCharges.fresh(id) }
+        fetch("loan #$id reschedules") { accounts.loanReschedules.fresh(id) }
+        fetch("loan #$id notes") { shared.notes.fresh(NoteKey(LOANS, id.toLong())) }
+        val documents = documents(LOANS, id)
+        if (loan.status?.active == true) {
+            fetch("loan #$id repayment template") { accounts.repaymentTemplate.fresh(id) }
         }
-        for (account in savings) {
-            val id = account.id ?: continue
-            val type = account.depositType?.endpoint ?: SAVINGS_ENDPOINT
-            if (!run.firstTime("$type:$id")) continue
-            fetch("savings #$id") { accounts.savings.fresh(SavingsAccountKey(type, id)) }
-            if (account.status?.active == true) {
-                for (command in TRANSACTION_COMMANDS) {
-                    fetch("savings #$id $command template") {
-                        accounts.savingsTemplate.fresh(GetSavingsAccountTransactionTemplateKey(type, id, command))
-                    }
-                }
+        return documents
+    }
+
+    private suspend fun Walk.savingsRecord(account: SavingsAccount) {
+        val id = account.id ?: return
+        val type = account.depositType?.endpoint ?: SAVINGS_ENDPOINT
+        if (!run.firstTime("$type:$id")) return
+        fetch("savings #$id") { accounts.savings.fresh(SavingsAccountKey(type, id)) }
+        // Only an active account takes deposits / withdrawals, so only it needs the templates.
+        val commands = if (account.status?.active == true) TRANSACTION_COMMANDS else emptyList()
+        for (command in commands) {
+            fetch("savings #$id $command template") {
+                accounts.savingsTemplate.fresh(GetSavingsAccountTransactionTemplateKey(type, id, command))
             }
         }
-        return Counts(loans = loans.count { it.id != null }, savings = savings.count { it.id != null }, documents = documents)
     }
 
     /** The document list AND each file's contents — the officer opens them in the field. */
@@ -322,7 +362,13 @@ internal class OfflineSyncEngine(
 
     private data class Parent(val kind: RecordKind, val id: Int, val name: String)
 
-    private data class Identity(val kind: RecordKind, val id: Int, val name: String, val parent: Parent?, val chosen: Boolean)
+    private data class Identity(
+        val kind: RecordKind,
+        val id: Int,
+        val name: String,
+        val parent: Parent?,
+        val chosen: Boolean,
+    )
 
     private data class Counts(
         val groups: Int = 0,

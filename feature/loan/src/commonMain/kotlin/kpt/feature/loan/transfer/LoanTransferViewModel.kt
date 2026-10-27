@@ -19,7 +19,6 @@ import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.loan.LoanCommandRepository
 import kpt.core.data.loan.LoanRepository
 import kpt.core.model.objects.account.loan.transfer.AccountOption
@@ -27,6 +26,7 @@ import kpt.core.model.objects.account.loan.transfer.AccountTransferRequest
 import kpt.core.model.objects.account.loan.transfer.AccountTypeOption
 import kpt.core.model.objects.account.loan.transfer.ClientOption
 import kpt.core.model.objects.account.loan.transfer.OfficeOption
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.utils.ApiDateFormatter
 import kpt.core.ui.components.ResultStatus
 import kotlin.time.Clock
@@ -223,42 +223,12 @@ internal class LoanTransferViewModel(
      * The original's `validateFields` also collected every error — kept, because a form with six
      * required fields that reports one error per tap is six taps to discover what it wants.
      */
-    @OptIn(ExperimentalTime::class)
     private fun validateThenSubmit() {
         if (state.isSubmitting) return
 
-        val amount = state.amount.trim().toDoubleOrNull()
-        val next = state.copy(
-            amountError = when {
-                amount == null -> TransferFieldError.AMOUNT_INVALID
-                amount <= 0.0 -> TransferFieldError.AMOUNT_NOT_POSITIVE
-                else -> null
-            },
-            descriptionError = TransferFieldError.DESCRIPTION_REQUIRED
-                .takeIf { state.description.isBlank() },
-            officeError = TransferFieldError.OFFICE_REQUIRED.takeIf { state.office == null },
-            clientError = TransferFieldError.CLIENT_REQUIRED.takeIf { state.client == null },
-            accountTypeError = TransferFieldError.ACCOUNT_TYPE_REQUIRED
-                .takeIf { state.accountType == null },
-            accountError = TransferFieldError.ACCOUNT_REQUIRED.takeIf { state.account == null },
-        )
+        val next = state.withFieldErrors()
         mutableStateFlow.value = next
-        if (next.hasFieldError) return
-
-        // Resolved ONCE, here, AFTER the errors are known to be clear. Elvis-returns rather than
-        // `!!`: the validation above makes them unreachable, and an unreachable `!!` is still the
-        // thing that crashed the original's retry path.
-        val draft = TransferDraft(
-            toOfficeId = next.office?.id ?: return,
-            toClientId = next.client?.id ?: return,
-            toAccountType = next.accountType?.id ?: return,
-            toAccountId = next.account?.id ?: return,
-            amount = amount ?: return,
-            description = next.description.trim(),
-            transferDate = Clock.System.now().toEpochMilliseconds(),
-        )
-
-        submit(draft)
+        if (!next.hasFieldError) next.toDraft()?.let(::submit)
     }
 
     private fun submit(draft: TransferDraft) {
@@ -439,3 +409,46 @@ internal sealed interface LoanTransferAction {
     data class OnAccountTypeSelected(val option: AccountTypeOption) : LoanTransferAction
     data class OnAccountSelected(val option: AccountOption) : LoanTransferAction
 }
+
+private fun LoanTransferState.withFieldErrors(): LoanTransferState {
+    val parsed = amount.trim().toDoubleOrNull()
+    return copy(
+        amountError = when {
+            parsed == null -> TransferFieldError.AMOUNT_INVALID
+            parsed <= 0.0 -> TransferFieldError.AMOUNT_NOT_POSITIVE
+            else -> null
+        },
+        descriptionError = TransferFieldError.DESCRIPTION_REQUIRED.takeIf { description.isBlank() },
+        officeError = TransferFieldError.OFFICE_REQUIRED.takeIf { office == null },
+        clientError = TransferFieldError.CLIENT_REQUIRED.takeIf { client == null },
+        accountTypeError = TransferFieldError.ACCOUNT_TYPE_REQUIRED.takeIf { accountType == null },
+        accountError = TransferFieldError.ACCOUNT_REQUIRED.takeIf { account == null },
+    )
+}
+
+/**
+ * Resolved ONCE, AFTER the errors are known to be clear. Null-safe rather than `!!`: the
+ * validation makes the null unreachable, and an unreachable `!!` is still the thing that crashed
+ * the original's retry path.
+ */
+@OptIn(ExperimentalTime::class)
+private fun LoanTransferState.toDraft(): TransferDraft? {
+    val ids = listOfNotNull(office?.id, client?.id, accountType?.id, account?.id)
+        .takeIf { it.size == TRANSFER_TARGET_ID_COUNT }
+    val parsed = amount.trim().toDoubleOrNull()
+    return if (ids == null || parsed == null) {
+        null
+    } else {
+        TransferDraft(
+            toOfficeId = ids[0],
+            toClientId = ids[1],
+            toAccountType = ids[2],
+            toAccountId = ids[3],
+            amount = parsed,
+            description = description.trim(),
+            transferDate = Clock.System.now().toEpochMilliseconds(),
+        )
+    }
+}
+
+private const val TRANSFER_TARGET_ID_COUNT = 4

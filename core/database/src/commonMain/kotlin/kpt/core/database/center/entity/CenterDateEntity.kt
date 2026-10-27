@@ -26,7 +26,13 @@ import kpt.core.base.database.annotation.DbEntity
 @Serializable
 data class CenterDateEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNSPECIFIED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
+    @ColumnInfo(
+        index = true,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
+    )
     val centerId: Long = 0,
 
     val chargeId: Long = 0,

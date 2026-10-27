@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.offlinesync.ui
 
@@ -58,7 +58,12 @@ internal class OfflineSyncViewModel(
 ) : BaseViewModel<OfflineSyncState, OfflineSyncEvent, OfflineSyncAction>(OfflineSyncState()) {
 
     init {
-        combine(repository.records, repository.latestJob, repository.refresh, networkMonitor.isOnline) { records, job, refresh, online ->
+        combine(
+            repository.records,
+            repository.latestJob,
+            repository.refresh,
+            networkMonitor.isOnline,
+        ) { records, job, refresh, online ->
             Snapshot(records, job, refresh, online)
         }.onEach { snapshot ->
             updateState {
@@ -86,14 +91,34 @@ internal class OfflineSyncViewModel(
         .flatMapLatest { tab ->
             when (tab) {
                 null -> flowOf(ScreenState.Loading)
-                RecordKind.CENTRE -> centreList.state.map { s -> s.mapRows { c -> c.id?.let { PickerRow(SyncTarget(RecordKind.CENTRE, it, c.name ?: "#$it"), c.accountNo) } } }
-                RecordKind.GROUP -> groupList.state.map { s -> s.mapRows { g -> g.id?.let { PickerRow(SyncTarget(RecordKind.GROUP, it, g.name ?: "#$it"), g.accountNo) } } }
-                RecordKind.CLIENT -> clientList.state.map { s -> s.mapRows { c -> c.id?.let { PickerRow(SyncTarget(RecordKind.CLIENT, it, c.displayName ?: "#$it"), c.accountNo) } } }
+                RecordKind.CENTRE -> centreList.state.map { s ->
+                    s.mapRows { c ->
+                        c.id?.let { PickerRow(SyncTarget(RecordKind.CENTRE, it, c.name ?: "#$it"), c.accountNo) }
+                    }
+                }
+                RecordKind.GROUP -> groupList.state.map { s ->
+                    s.mapRows { g ->
+                        g.id?.let { PickerRow(SyncTarget(RecordKind.GROUP, it, g.name ?: "#$it"), g.accountNo) }
+                    }
+                }
+                RecordKind.CLIENT -> clientList.state.map { s ->
+                    s.mapRows { c ->
+                        c.id?.let {
+                            PickerRow(SyncTarget(RecordKind.CLIENT, it, c.displayName ?: "#$it"), c.accountNo)
+                        }
+                    }
+                }
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), ScreenState.Loading)
 
     override fun handleAction(action: OfflineSyncAction) {
+        handleSyncAction(action)
+        handleListAction(action)
+        handlePickerAction(action)
+    }
+
+    private fun handleSyncAction(action: OfflineSyncAction) {
         when (action) {
             OfflineSyncAction.NavigateBack -> sendEvent(OfflineSyncEvent.NavigateBack)
             OfflineSyncAction.SyncNow -> if (state.canSync) launch { repository.syncNow() }
@@ -103,14 +128,21 @@ internal class OfflineSyncViewModel(
             is OfflineSyncAction.SetInterval -> setRefresh(state.refresh.copy(intervalHours = action.hours))
             is OfflineSyncAction.SetWifiOnly -> setRefresh(state.refresh.copy(wifiOnly = action.on))
             is OfflineSyncAction.SetChargingOnly -> setRefresh(state.refresh.copy(chargingOnly = action.on))
+            OfflineSyncAction.OpenDrafts -> sendEvent(OfflineSyncEvent.OpenDrafts)
+            else -> Unit
+        }
+    }
+
+    private fun handleListAction(action: OfflineSyncAction) {
+        when (action) {
             is OfflineSyncAction.Level -> updateState { copy(level = action.level, search = "") }
             is OfflineSyncAction.ToggleExpand -> updateState {
                 val key = action.record.kind to action.record.id
                 copy(expanded = if (key in expanded) expanded - key else expanded + key)
             }
             is OfflineSyncAction.Search -> updateState { copy(search = action.query) }
-            is OfflineSyncAction.OpenRecord -> sendEvent(OfflineSyncEvent.OpenRecord(action.record.kind, action.record.id))
-            OfflineSyncAction.OpenDrafts -> sendEvent(OfflineSyncEvent.OpenDrafts)
+            is OfflineSyncAction.OpenRecord ->
+                sendEvent(OfflineSyncEvent.OpenRecord(action.record.kind, action.record.id))
             is OfflineSyncAction.RefreshRecord -> launch { repository.refreshRecord(action.record.target) }
             is OfflineSyncAction.AskRemove -> updateState { copy(confirmRemove = action.record) }
             OfflineSyncAction.DismissRemove -> updateState { copy(confirmRemove = null) }
@@ -118,6 +150,12 @@ internal class OfflineSyncViewModel(
                 updateState { copy(confirmRemove = null) }
                 launch { repository.remove(record.target) }
             }
+            else -> Unit
+        }
+    }
+
+    private fun handlePickerAction(action: OfflineSyncAction) {
+        when (action) {
             OfflineSyncAction.AddRecords -> updateState { copy(picker = PickerState()) }
             OfflineSyncAction.ClosePicker -> updateState { copy(picker = null) }
             is OfflineSyncAction.PickerTab -> updatePicker { copy(tab = action.tab, query = "") }
@@ -132,6 +170,7 @@ internal class OfflineSyncViewModel(
                 RecordKind.CLIENT -> clientList.retry()
                 null -> Unit
             }
+            else -> Unit
         }
     }
 
@@ -152,7 +191,12 @@ internal class OfflineSyncViewModel(
         viewModelScope.launch { block() }
     }
 
-    private data class Snapshot(val records: List<OfflineRecord>, val job: SyncJob?, val refresh: RefreshSettings, val online: Boolean)
+    private data class Snapshot(
+        val records: List<OfflineRecord>,
+        val job: SyncJob?,
+        val refresh: RefreshSettings,
+        val online: Boolean,
+    )
 
     private companion object {
         const val STATE_TIMEOUT_MS = 5_000L
@@ -199,22 +243,30 @@ internal data class OfflineSyncState(
 
     fun count(kind: RecordKind): Int = records.orEmpty().count { it.kind == kind }
 
-    fun hasFailures(kind: RecordKind): Boolean = records.orEmpty().any { it.kind == kind && it.status == RecordSyncStatus.FAILED }
+    fun hasFailures(kind: RecordKind): Boolean =
+        records.orEmpty().any { it.kind == kind && it.status == RecordSyncStatus.FAILED }
 
     /** The selected level's rows: needs-sync first, then by name; the Clients level filters by [search]. */
     val levelRows: List<OfflineRecord>
         get() = records.orEmpty()
             .filter { it.kind == level }
             .filter { search.isBlank() || it.name.contains(search.trim(), ignoreCase = true) }
-            .sortedWith(compareBy<OfflineRecord> { if (it.needsSync(nowMs, refresh.maxAgeMs)) 0 else 1 }.thenBy { it.name.lowercase() })
+            .sortedWith(
+                compareBy<OfflineRecord> { if (it.needsSync(nowMs, refresh.maxAgeMs)) 0 else 1 }
+                    .thenBy { it.name.lowercase() },
+            )
 
     fun childrenOf(record: OfflineRecord): List<OfflineRecord> =
-        records.orEmpty().filter { it.parentKind == record.kind && it.parentId == record.id }.sortedBy { it.name.lowercase() }
+        records.orEmpty()
+            .filter { it.parentKind == record.kind && it.parentId == record.id }
+            .sortedBy { it.name.lowercase() }
 
     val lastSyncedAtMs: Long? get() = records.orEmpty().filter { it.chosen }.mapNotNull { it.refreshedAtMs }.maxOrNull()
 
     val nextSyncAtMs: Long?
-        get() = lastSyncedAtMs?.takeIf { refresh.mode == RefreshMode.AUTOMATIC }?.let { it + refresh.intervalHours * RefreshSettings.HOUR_MS }
+        get() = lastSyncedAtMs
+            ?.takeIf { refresh.mode == RefreshMode.AUTOMATIC }
+            ?.let { it + refresh.intervalHours * RefreshSettings.HOUR_MS }
 
     /** Records on the device, so the picker can mark them. */
     fun isOnDevice(target: SyncTarget): Boolean = records.orEmpty().any { it.kind == target.kind && it.id == target.id }

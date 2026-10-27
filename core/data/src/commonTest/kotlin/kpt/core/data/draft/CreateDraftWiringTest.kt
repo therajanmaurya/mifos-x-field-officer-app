@@ -43,7 +43,9 @@ class CreateDraftWiringTest {
     @Test
     fun theCreateOutboxSeesOnlyCreateRowsNotNotes() = kotlinx.coroutines.test.runTest {
         RoomSubmitOutbox(dao, NoteDraft.serializer()).saveByUniqueKey(
-            "note", "client:7:new", NoteDraft(resourceId = 7, text = "x", resourceType = "clients", idempotencyKey = "k"),
+            "note",
+            "client:7:new",
+            NoteDraft(resourceId = 7, text = "x", resourceType = "clients", idempotencyKey = "k"),
         )
         drafts.save(formDraftSlot(null), groupDraft("FOTest Group"))
 

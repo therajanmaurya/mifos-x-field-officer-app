@@ -167,10 +167,11 @@ fun AppActionsIdentifierListingComponent(
     menuList: List<Actions>,
     onActionClicked: (Actions) -> Unit,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
 
-    Column {
+    Column(modifier = modifier) {
         AppActionsListingComponentOutline(
             isExpanded = isExpanded,
         ) {
@@ -249,8 +250,9 @@ fun AppActionsCollateralDataListingComponent(
     totalCollateralValue: String,
     menuList: List<Actions>,
     onActionClicked: (Actions) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    AppActionsListingComponentOutline(isExpanded = false) {
+    AppActionsListingComponentOutline(modifier = modifier, isExpanded = false) {
         Column {
             Column(
                 modifier = Modifier.padding(DesignToken.padding.large),
@@ -314,9 +316,10 @@ fun AppActionsClientDocumentListingComponent(
     menuList: List<Actions>,
     onClick: () -> Unit,
     onActionClicked: (Actions) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
-    Column {
+    Column(modifier = modifier) {
         AppActionsListingComponentOutline(
             isExpanded = isExpanded,
         ) {
@@ -388,10 +391,11 @@ fun AppActionsLoanListingComponent(
     status: String,
     menuList: List<Actions>,
     onActionClicked: (Actions) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var isActive by rememberSaveable { mutableStateOf(false) }
 
-    Column {
+    Column(modifier = modifier) {
         AppActionsListingComponentOutline(
             isExpanded = isActive,
         ) {
@@ -475,8 +479,9 @@ fun AppActionsShareListingComponent(
     onClick: () -> Unit,
     menuList: List<Actions>,
     onActionClicked: (Actions) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    AppActionsListingComponentOutline {
+    AppActionsListingComponentOutline(modifier = modifier) {
         Column(
             modifier = Modifier.clickable { onClick() },
         ) {
@@ -542,19 +547,20 @@ fun AppActionsShareListingComponent(
 fun AppActionsChargeListingComponent(
     chargeTitle: String,
     type: String,
-    date: String? = null,
     collectedOn: String,
+    onActionClicked: (Actions) -> Unit,
+    isExpanded: Boolean,
+    onExpandToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+    date: String? = null,
     amount: String? = null,
     menuList: List<Actions> = listOf<Actions>(
         Actions.Edit(),
         Actions.Delete(),
     ),
-    onActionClicked: (Actions) -> Unit,
-    isExpanded: Boolean,
-    onExpandToggle: () -> Unit,
 ) {
     Column(
-        Modifier.fillMaxWidth(),
+        modifier.fillMaxWidth(),
     ) {
         AppActionsListingComponentOutline(
             isExpanded = isExpanded,
@@ -664,8 +670,9 @@ fun AppActionsSavingsListingComponent(
     onExpandToggle: () -> Unit,
     menuList: List<Actions>,
     onActionClicked: (Actions) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
+    Column(modifier = modifier) {
         AppActionsListingComponentOutline(
             isExpanded = isExpanded,
         ) {
@@ -736,8 +743,9 @@ fun AppActionsClientFeeListingComponent(
     outstanding: String,
     menuList: List<Actions>,
     onActionClicked: (Actions) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    AppActionsListingComponentOutline(isExpanded = isActive) {
+    AppActionsListingComponentOutline(modifier = modifier, isExpanded = isActive) {
         Column {
             Column(
                 modifier = Modifier.padding(DesignToken.padding.large)
@@ -842,10 +850,11 @@ fun AppActionsNoteListingComponent(
     onExpand: () -> Unit,
     isExpanded: Boolean,
     onActionClicked: (Actions) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
 
-    Column {
+    Column(modifier = modifier) {
         AppActionsListingComponentOutline(
             modifier = Modifier.clickable { onExpand() },
             isExpanded = isExpanded,

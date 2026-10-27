@@ -27,6 +27,7 @@ import kpt.core.designsystem.theme.DesignToken
 fun AppImageCropperDialog(
     state: CropState,
     aspectRatio: AspectRatio,
+    modifier: Modifier = Modifier,
 ) {
     ImageCropperDialog(
         state = state,
@@ -40,7 +41,7 @@ fun AppImageCropperDialog(
         ),
         topBar = {
             AppTopBar(
-                modifier = Modifier.height(DesignToken.sizes.topBarStandardHeight),
+                modifier = modifier.height(DesignToken.sizes.topBarStandardHeight),
                 topBarTitle = "",
                 backPress = {
                     state.done(accept = false)

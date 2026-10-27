@@ -185,32 +185,87 @@ private fun TransferForm(
 
         Spacer(Modifier.height(KptTheme.spacing.md))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = stringResource(Res.string.feature_loan_transfer_to),
-                style = AppTypography.labelMediumEmphasized,
-            )
-            // Beside the section heading, NOT at the bottom of the form.
-            //
-            // It started out after the submit button, which in a scrolling column six fields long
-            // put it off-screen — so selecting an office showed no sign of anything happening
-            // while the next level reloaded. A render test caught it (the node was composed but
-            // never displayed), which is exactly the class of defect only a render test finds.
-            //
-            // Inline rather than a blocking overlay: every cascade step reloads the template, so
-            // an overlay would flash over the form four times on the way to one transfer.
-            if (state.isLoadingTemplate) {
-                AppProgressIndicatorMini(
-                    modifier = Modifier.testTag(LoanTransferTestTags.LOADING),
-                )
-            }
-        }
+        TransferToHeader(isLoading = state.isLoadingTemplate)
 
         Spacer(Modifier.height(KptTheme.spacing.sm))
 
+        TransferCascade(state, onAction)
+
+        Spacer(Modifier.height(KptTheme.spacing.md))
+
+        AppOutlinedTextField(
+            value = state.amount,
+            onValueChange = { onAction(LoanTransferAction.OnAmountChange(it)) },
+            label = stringResource(Res.string.feature_loan_transfer_amount),
+            keyboardType = KeyboardType.Number,
+            isError = state.amountError != null,
+            errorText = state.amountError?.let { stringResource(it.messageRes()) },
+            modifier = Modifier.fillMaxWidth().testTag(LoanTransferTestTags.AMOUNT),
+        )
+
+        Spacer(Modifier.height(KptTheme.spacing.md))
+
+        AppOutlinedTextField(
+            value = state.description,
+            onValueChange = { onAction(LoanTransferAction.OnDescriptionChange(it)) },
+            label = stringResource(Res.string.feature_loan_transfer_description),
+            isError = state.descriptionError != null,
+            errorText = state.descriptionError?.let { stringResource(it.messageRes()) },
+            modifier = Modifier.fillMaxWidth().testTag(LoanTransferTestTags.DESCRIPTION),
+        )
+
+        Spacer(Modifier.height(KptTheme.spacing.md))
+
+        AppButton(
+            onClick = { onAction(LoanTransferAction.OnSubmit) },
+            enabled = !state.isSubmitting && !state.isLoadingTemplate,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(DesignToken.spacing.dp44)
+                .testTag(LoanTransferTestTags.SUBMIT),
+        ) {
+            Text(text = stringResource(Res.string.feature_loan_submit))
+        }
+
+        Spacer(Modifier.height(KptTheme.spacing.md))
+    }
+}
+
+@Composable
+private fun TransferToHeader(isLoading: Boolean) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = stringResource(Res.string.feature_loan_transfer_to),
+            style = AppTypography.labelMediumEmphasized,
+        )
+        // Beside the section heading, NOT at the bottom of the form.
+        //
+        // It started out after the submit button, which in a scrolling column six fields long
+        // put it off-screen — so selecting an office showed no sign of anything happening
+        // while the next level reloaded. A render test caught it (the node was composed but
+        // never displayed), which is exactly the class of defect only a render test finds.
+        //
+        // Inline rather than a blocking overlay: every cascade step reloads the template, so
+        // an overlay would flash over the form four times on the way to one transfer.
+        if (isLoading) {
+            AppProgressIndicatorMini(
+                modifier = Modifier.testTag(LoanTransferTestTags.LOADING),
+            )
+        }
+    }
+}
+
+/** The cascade of dependent dropdowns, office down to account. */
+@Composable
+private fun TransferCascade(
+    state: LoanTransferState,
+    onAction: (LoanTransferAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
         // The cascade. Each level is disabled until the level above it has been chosen, which the
         // original expressed only by leaving the list empty — so an un-chooseable dropdown looked
         // identical to one whose office genuinely had no clients.
@@ -279,44 +334,6 @@ private fun TransferForm(
             errorMessage = state.accountError?.let { stringResource(it.messageRes()) },
             modifier = Modifier.fillMaxWidth().testTag(LoanTransferTestTags.ACCOUNT),
         )
-
-        Spacer(Modifier.height(KptTheme.spacing.md))
-
-        AppOutlinedTextField(
-            value = state.amount,
-            onValueChange = { onAction(LoanTransferAction.OnAmountChange(it)) },
-            label = stringResource(Res.string.feature_loan_transfer_amount),
-            keyboardType = KeyboardType.Number,
-            isError = state.amountError != null,
-            errorText = state.amountError?.let { stringResource(it.messageRes()) },
-            modifier = Modifier.fillMaxWidth().testTag(LoanTransferTestTags.AMOUNT),
-        )
-
-        Spacer(Modifier.height(KptTheme.spacing.md))
-
-        AppOutlinedTextField(
-            value = state.description,
-            onValueChange = { onAction(LoanTransferAction.OnDescriptionChange(it)) },
-            label = stringResource(Res.string.feature_loan_transfer_description),
-            isError = state.descriptionError != null,
-            errorText = state.descriptionError?.let { stringResource(it.messageRes()) },
-            modifier = Modifier.fillMaxWidth().testTag(LoanTransferTestTags.DESCRIPTION),
-        )
-
-        Spacer(Modifier.height(KptTheme.spacing.md))
-
-        AppButton(
-            onClick = { onAction(LoanTransferAction.OnSubmit) },
-            enabled = !state.isSubmitting && !state.isLoadingTemplate,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(DesignToken.spacing.dp44)
-                .testTag(LoanTransferTestTags.SUBMIT),
-        ) {
-            Text(text = stringResource(Res.string.feature_loan_submit))
-        }
-
-        Spacer(Modifier.height(KptTheme.spacing.md))
     }
 }
 

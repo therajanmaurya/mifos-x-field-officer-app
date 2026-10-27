@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.checkerinbox.ui
 
@@ -30,6 +30,7 @@ import kpt.core.model.objects.checkerinboxtask.CheckerInboxSearchTemplate
 import kpt.core.model.objects.checkerinboxtask.CheckerTask
 import kpt.core.model.objects.checkerinboxtask.RescheduleLoansTask
 import kpt.core.model.objects.error.serverErrorMessage
+import kpt.core.model.shared.GenericResponse
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -78,6 +79,33 @@ internal class CheckerInboxViewModel(
 
     override fun handleAction(action: CheckerInboxAction) {
         when (action) {
+            is CheckerInboxAction.TabSelected,
+            is CheckerInboxAction.QueryChanged,
+            is CheckerInboxAction.TaskClicked,
+            is CheckerInboxAction.TaskLongPressed,
+            CheckerInboxAction.SelectionCleared,
+            -> handleBrowse(action)
+            is CheckerInboxAction.DecideRequested,
+            CheckerInboxAction.DecideCancelled,
+            CheckerInboxAction.DecideConfirmed,
+            CheckerInboxAction.OutcomeDismissed,
+            -> handleDecision(action)
+            is CheckerInboxAction.DraftChanged,
+            is CheckerInboxAction.OpenDatePicker,
+            CheckerInboxAction.FilterOpened,
+            CheckerInboxAction.FilterClosed,
+            CheckerInboxAction.CloseDatePicker,
+            CheckerInboxAction.FilterApplied,
+            CheckerInboxAction.FilterCleared,
+            -> handleFilter(action)
+            is CheckerInboxAction.RescheduleClicked ->
+                action.request.loanId?.let { sendEvent(CheckerInboxEvent.OpenLoanReschedules(it)) }
+            CheckerInboxAction.NavigateBack -> sendEvent(CheckerInboxEvent.NavigateBack)
+        }
+    }
+
+    private fun handleBrowse(action: CheckerInboxAction) {
+        when (action) {
             is CheckerInboxAction.TabSelected -> update { copy(tab = action.tab, selected = emptySet()) }
             is CheckerInboxAction.QueryChanged -> update { copy(query = action.query) }
             is CheckerInboxAction.TaskClicked -> update {
@@ -86,8 +114,15 @@ internal class CheckerInboxViewModel(
                     else -> copy(expanded = if (expanded == action.id) null else action.id)
                 }
             }
-            is CheckerInboxAction.TaskLongPressed -> update { copy(selected = selected.toggle(action.id), expanded = null) }
+            is CheckerInboxAction.TaskLongPressed ->
+                update { copy(selected = selected.toggle(action.id), expanded = null) }
             CheckerInboxAction.SelectionCleared -> update { copy(selected = emptySet()) }
+            else -> Unit
+        }
+    }
+
+    private fun handleDecision(action: CheckerInboxAction) {
+        when (action) {
             is CheckerInboxAction.DecideRequested -> update {
                 val ids = action.id?.let { setOf(it) } ?: selected
                 if (ids.isEmpty()) this else copy(confirm = PendingDecision(action.decision, ids))
@@ -95,6 +130,12 @@ internal class CheckerInboxViewModel(
             CheckerInboxAction.DecideCancelled -> update { copy(confirm = null) }
             CheckerInboxAction.DecideConfirmed -> decide()
             CheckerInboxAction.OutcomeDismissed -> update { copy(outcome = null) }
+            else -> Unit
+        }
+    }
+
+    private fun handleFilter(action: CheckerInboxAction) {
+        when (action) {
             CheckerInboxAction.FilterOpened -> update { copy(draft = filter) }
             CheckerInboxAction.FilterClosed -> update { copy(draft = null, datePickerFor = null) }
             is CheckerInboxAction.DraftChanged -> update { copy(draft = draft?.let(action.change)) }
@@ -104,11 +145,16 @@ internal class CheckerInboxViewModel(
                 val next = draft ?: return@update this
                 if (!next.isValid) this else copy(filter = next, draft = null, selected = emptySet())
             }
-            CheckerInboxAction.FilterCleared -> update { copy(filter = InboxFilter(), draft = null, selected = emptySet()) }
-            is CheckerInboxAction.RescheduleClicked ->
-                action.request.loanId?.let { sendEvent(CheckerInboxEvent.OpenLoanReschedules(it)) }
-            CheckerInboxAction.NavigateBack -> sendEvent(CheckerInboxEvent.NavigateBack)
+            CheckerInboxAction.FilterCleared ->
+                update { copy(filter = InboxFilter(), draft = null, selected = emptySet()) }
+            else -> Unit
         }
+    }
+
+    private suspend fun decideOne(decision: Decision, id: Int): MutationResult<GenericResponse> = when (decision) {
+        Decision.APPROVE -> commands.approveCheckerEntry(id)
+        Decision.REJECT -> commands.rejectCheckerEntry(id)
+        Decision.DELETE -> commands.deleteCheckerEntry(id)
     }
 
     /**
@@ -125,21 +171,18 @@ internal class CheckerInboxViewModel(
             var offline = false
             val failures = mutableListOf<DecisionFailure>()
             for (id in pending.ids.sorted()) {
-                val result = when (pending.decision) {
-                    Decision.APPROVE -> commands.approveCheckerEntry(id)
-                    Decision.REJECT -> commands.rejectCheckerEntry(id)
-                    Decision.DELETE -> commands.deleteCheckerEntry(id)
-                }
-                when (result) {
+                val label = labels[id] ?: "#$id"
+                when (val result = decideOne(pending.decision, id)) {
                     is MutationResult.Applied -> decided += id
                     is MutationResult.Blocked ->
                         if (result.reason == BlockReason.OFFLINE) {
                             offline = true
                         } else {
-                            failures += DecisionFailure(labels[id] ?: "#$id", null)
+                            failures += DecisionFailure(label, null)
                         }
-                    is MutationResult.Failed -> failures += DecisionFailure(labels[id] ?: "#$id", result.cause.serverErrorMessage())
-                    is MutationResult.Conflicted -> failures += DecisionFailure(labels[id] ?: "#$id", null)
+                    is MutationResult.Failed ->
+                        failures += DecisionFailure(label, result.cause.serverErrorMessage())
+                    is MutationResult.Conflicted -> failures += DecisionFailure(label, null)
                 }
                 if (offline) break
             }

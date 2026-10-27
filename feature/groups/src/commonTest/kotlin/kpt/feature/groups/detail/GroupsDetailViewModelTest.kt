@@ -11,12 +11,8 @@
 
 package kpt.feature.groups.detail
 
-import kpt.core.data.testing.FakeRecentRecordsRepository
-import kpt.core.model.loan.LoanAccount
-import kpt.core.model.group.GroupWithAssociations
-import kpt.core.model.group.GroupAccounts
-import kpt.core.model.client.Client
 import androidx.lifecycle.SavedStateHandle
+import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -24,8 +20,12 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.data.testing.FakeRecentRecordsRepository
+import kpt.core.model.client.Client
 import kpt.core.model.group.Group
-import kpt.feature.groups.testing.FakeGroupCommandRepository
+import kpt.core.model.group.GroupAccounts
+import kpt.core.model.group.GroupWithAssociations
+import kpt.core.model.loan.LoanAccount
 import kpt.feature.groups.testing.FakeGroupRepository
 import kpt.feature.groups.testing.group
 import kotlin.test.AfterTest
@@ -46,9 +46,8 @@ class GroupsDetailViewModelTest {
 
     private fun viewModel(
         repo: FakeGroupRepository,
-        commands: FakeGroupCommandRepository = FakeGroupCommandRepository(),
         groupId: Int = 7,
-    ) = GroupsDetailViewModel(repo, commands, SavedStateHandle(mapOf("groupId" to groupId)), FakeRecentRecordsRepository())
+    ) = GroupsDetailViewModel(repo, SavedStateHandle(mapOf("groupId" to groupId)), FakeRecentRecordsRepository())
 
     @Test
     fun theScreenShowsTheOneGroupItWasOpenedFor() = runTest(dispatcher) {
@@ -119,7 +118,7 @@ class GroupsDetailViewModelTest {
         // the date on a dedicated screen (`feature/activate`, shared with client and centre). So
         // this screen navigates, and the in-flight guard / offline reporting live with the write.
         val repo = FakeGroupRepository()
-        val vm = viewModel(repo, FakeGroupCommandRepository())
+        val vm = viewModel(repo)
         repo.emit(group(7, active = false))
         testScheduler.advanceUntilIdle()
 
@@ -133,17 +132,18 @@ class GroupsDetailViewModelTest {
     @Test
     fun theActivateButtonSendsNoRequestFromThisScreen() = runTest(dispatcher) {
         val repo = FakeGroupRepository()
-        val commands = FakeGroupCommandRepository()
-        val vm = viewModel(repo, commands)
+        val vm = viewModel(repo)
         repo.emit(group(7, active = false))
         testScheduler.advanceUntilIdle()
 
-        vm.trySendAction(GroupsDetailAction.ActivateClicked)
-        testScheduler.advanceUntilIdle()
-
         // The tap must NOT post from here — doing so would activate with a date the officer was
-        // never asked for, which is the defect this move fixed.
-        assertEquals(emptyList(), commands.activations)
+        // never asked for, which is the defect this move fixed. The ViewModel holds no command
+        // repository at all, so the only thing the tap can do is navigate.
+        vm.eventFlow.test {
+            vm.trySendAction(GroupsDetailAction.ActivateClicked)
+            assertEquals(GroupsDetailEvent.Activate(groupId = 7), awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -158,11 +158,13 @@ class GroupsDetailViewModelTest {
         )
 
         vm.members.test {
-            assertEquals(listOf("Asha"), assertIs<ScreenState.Content<List<Client>>>(expectMostRecentItemOrLoading()).data.map { it.displayName })
+            val content = assertIs<ScreenState.Content<List<Client>>>(expectMostRecentItemOrLoading())
+            assertEquals(listOf("Asha"), content.data.map { it.displayName })
             cancelAndIgnoreRemainingEvents()
         }
         vm.accounts.test {
-            assertEquals(listOf(11), assertIs<ScreenState.Content<GroupAccounts>>(expectMostRecentItemOrLoading()).data.loanAccounts.map { it.id })
+            val content = assertIs<ScreenState.Content<GroupAccounts>>(expectMostRecentItemOrLoading())
+            assertEquals(listOf(11), content.data.loanAccounts.map { it.id })
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -184,7 +186,7 @@ class GroupsDetailViewModelTest {
     }
 
     /** Skips the initial Loading if a later state is already there. */
-    private suspend fun <T> app.cash.turbine.ReceiveTurbine<ScreenState<T>>.expectMostRecentItemOrLoading(): ScreenState<T> {
+    private suspend fun <T> ReceiveTurbine<ScreenState<T>>.expectMostRecentItemOrLoading(): ScreenState<T> {
         var item = awaitItem()
         while (item is ScreenState.Loading) item = awaitItem()
         return item

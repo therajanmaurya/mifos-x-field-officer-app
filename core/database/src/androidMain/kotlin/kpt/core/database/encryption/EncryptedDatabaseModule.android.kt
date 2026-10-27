@@ -133,11 +133,15 @@ private class SqlCipherDatabaseFiles(private val db: File) : EncryptedDatabaseFi
     override fun tempSnapshot(rawKey: String) = open(temp, rawKey).use { it.snapshot() }
 
     override fun opensWith(rawKey: String): Boolean = try {
-        open(db, rawKey).use { it.rawQuery("SELECT count(*) FROM sqlite_master", arrayOf<String>()).use { c -> c.moveToFirst() } }
+        open(db, rawKey).use {
+            it.rawQuery("SELECT count(*) FROM sqlite_master", arrayOf<String>()).use { c -> c.moveToFirst() }
+        }
         true
-    } catch (e: SQLiteException) {
+    } catch (e: SQLiteDatabaseCorruptException) {
         // Only "wrong key" means unreadable. Anything else (I/O, locked) must not trigger a reset.
-        if (e is SQLiteDatabaseCorruptException || e.message.orEmpty().contains("not a database")) false else throw e
+        false
+    } catch (e: SQLiteException) {
+        if (e.message.orEmpty().contains("not a database")) false else throw e
     }
 
     override fun promoteTemp() {
@@ -151,7 +155,9 @@ private class SqlCipherDatabaseFiles(private val db: File) : EncryptedDatabaseFi
 
     override fun moveAside() {
         val suffix = ".unreadable-${System.currentTimeMillis()}"
-        (listOf("") + SIDECARS).forEach { File(db.path + it).takeIf(File::exists)?.renameTo(File(db.path + it + suffix)) }
+        (listOf("") + SIDECARS).forEach {
+            File(db.path + it).takeIf(File::exists)?.renameTo(File(db.path + it + suffix))
+        }
     }
 
     private fun open(file: File, key: String): SQLiteDatabase = SQLiteDatabase.openDatabase(

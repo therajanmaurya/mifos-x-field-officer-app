@@ -91,8 +91,12 @@ internal class ClientAddAddressViewModel(
 
     /** This client's address create that did not land — resumable here, listed in Sync & Drafts. */
     private val draft = FormDraftSlot(
-        drafts, viewModelScope, CreateForm.ADDRESS.key, ownerId = state.clientId.toLong(),
-        ClientAddAddressState.serializer(), AddressDraftPayload.serializer(),
+        drafts,
+        viewModelScope,
+        CreateForm.ADDRESS.key,
+        ownerId = state.clientId.toLong(),
+        ClientAddAddressState.serializer(),
+        AddressDraftPayload.serializer(),
     )
 
     val offeredDraft: StateFlow<SavedFormDraft?> = draft.offered
@@ -123,7 +127,15 @@ internal class ClientAddAddressViewModel(
                 mutableStateFlow.value = state.copy(draftSaved = true)
             }
             ClientAddAddressAction.NavigateBack -> sendEvent(ClientAddAddressEvent.NavigateBack)
+            ClientAddAddressAction.Submit -> submit()
+            ClientAddAddressAction.DismissError ->
+                mutableStateFlow.value = state.copy(writeError = null)
+            else -> updateField(action)
+        }
+    }
 
+    private fun updateField(action: ClientAddAddressAction) {
+        when (action) {
             is ClientAddAddressAction.UpdateAddressType ->
                 mutableStateFlow.value =
                     state.copy(addressTypeId = action.id, addressTypeLabel = action.label)
@@ -151,11 +163,16 @@ internal class ClientAddAddressViewModel(
             is ClientAddAddressAction.UpdatePostalCode ->
                 mutableStateFlow.value = state.copy(postalCode = action.value)
 
-            ClientAddAddressAction.Submit -> submit()
-
-            ClientAddAddressAction.DismissError ->
-                mutableStateFlow.value = state.copy(writeError = null)
+            else -> Unit
         }
+    }
+
+    private fun failSubmit(reason: String?) {
+        mutableStateFlow.value = state.copy(
+            isSubmitting = false,
+            writeError = AddAddressError.Failed,
+            failureReason = reason,
+        )
     }
 
     private fun submit() {
@@ -180,18 +197,21 @@ internal class ClientAddAddressViewModel(
                 // Offline: kept automatically and sent on reconnect.
                 is MutationResult.Blocked -> if (result.isOffline) {
                     keepDraft(failure = null)
-                    mutableStateFlow.value = state.copy(isSubmitting = false, writeError = AddAddressError.Offline, draftSaved = true)
+                    mutableStateFlow.value = state.copy(
+                        isSubmitting = false,
+                        writeError = AddAddressError.Offline,
+                        draftSaved = true,
+                    )
                 } else {
-                    mutableStateFlow.value = state.copy(isSubmitting = false, writeError = AddAddressError.Failed, failureReason = result.failureReason { it.serverErrorMessage() })
+                    failSubmit(result.failureReason { it.serverErrorMessage() })
                 }
 
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "create client address failed" }
-                    mutableStateFlow.value = state.copy(isSubmitting = false, writeError = AddAddressError.Failed, failureReason = result.failureReason { it.serverErrorMessage() })
+                    failSubmit(result.failureReason { it.serverErrorMessage() })
                 }
 
-                is MutationResult.Conflicted ->
-                    mutableStateFlow.value = state.copy(isSubmitting = false, writeError = AddAddressError.Failed, failureReason = result.failureReason())
+                is MutationResult.Conflicted -> failSubmit(result.failureReason())
             }
         }
     }

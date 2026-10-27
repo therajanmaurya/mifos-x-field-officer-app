@@ -44,14 +44,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.attafitamim.krop.core.crop.AspectRatio
 import com.attafitamim.krop.core.crop.ImageCropper
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.dataOrNull
 import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
-import kpt.core.base.ui.generated.resources.Res as BaseRes
 import kpt.core.base.ui.generated.resources.draft_save
 import kpt.core.base.ui.generated.resources.draft_saved
 import kpt.core.base.ui.generated.resources.draft_saved_offline
@@ -129,6 +126,9 @@ import kpt.feature.client.generated.resources.feature_client_postal_code
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kpt.core.base.ui.generated.resources.Res as BaseRes
 
 /**
  * Create a new client — carried over from
@@ -345,41 +345,43 @@ private fun IdentityFields(
     state: CreateNewClientState,
     onAction: (CreateNewClientAction) -> Unit,
 ) {
-    ClientTextField(
-        field = CreateClientField.FIRST_NAME,
-        label = Res.string.feature_client_createnew_first_name,
-        state = state,
-        onAction = onAction,
-    )
-    ClientTextField(
-        field = CreateClientField.MIDDLE_NAME,
-        label = Res.string.feature_client_createnew_middle_name,
-        state = state,
-        onAction = onAction,
-    )
-    ClientTextField(
-        field = CreateClientField.LAST_NAME,
-        label = Res.string.feature_client_createnew_last_name,
-        state = state,
-        onAction = onAction,
-    )
-    ClientTextField(
-        field = CreateClientField.MOBILE_NO,
-        label = Res.string.feature_client_createnew_phone_no,
-        state = state,
-        onAction = onAction,
-        // `Phone`, not the original's `Number`: the validation rule accepts `+`, brackets, dots
-        // and spaces, none of which a numeric keypad offers — so the formats the app considered
-        // valid were the ones an officer could not type, and a number typed without them was then
-        // dropped from the payload in silence.
-        keyboardType = KeyboardType.Phone,
-    )
-    ClientTextField(
-        field = CreateClientField.EXTERNAL_ID,
-        label = Res.string.feature_client_createnew_external_id,
-        state = state,
-        onAction = onAction,
-    )
+    Column {
+        ClientTextField(
+            field = CreateClientField.FIRST_NAME,
+            label = Res.string.feature_client_createnew_first_name,
+            state = state,
+            onAction = onAction,
+        )
+        ClientTextField(
+            field = CreateClientField.MIDDLE_NAME,
+            label = Res.string.feature_client_createnew_middle_name,
+            state = state,
+            onAction = onAction,
+        )
+        ClientTextField(
+            field = CreateClientField.LAST_NAME,
+            label = Res.string.feature_client_createnew_last_name,
+            state = state,
+            onAction = onAction,
+        )
+        ClientTextField(
+            field = CreateClientField.MOBILE_NO,
+            label = Res.string.feature_client_createnew_phone_no,
+            state = state,
+            onAction = onAction,
+            // `Phone`, not the original's `Number`: the validation rule accepts `+`, brackets, dots
+            // and spaces, none of which a numeric keypad offers — so the formats the app considered
+            // valid were the ones an officer could not type, and a number typed without them was then
+            // dropped from the payload in silence.
+            keyboardType = KeyboardType.Phone,
+        )
+        ClientTextField(
+            field = CreateClientField.EXTERNAL_ID,
+            label = Res.string.feature_client_createnew_external_id,
+            state = state,
+            onAction = onAction,
+        )
+    }
 }
 
 @Composable
@@ -389,68 +391,70 @@ private fun OptionFields(
     staffOptions: ScreenState<List<ClientOption>>,
     onAction: (CreateNewClientAction) -> Unit,
 ) {
-    ClientDropdown(
-        field = CreateClientField.GENDER,
-        label = Res.string.feature_client_createnew_gender,
-        options = options.genders,
-        state = state,
-        onAction = onAction,
-    )
-
-    FieldGap()
-    AppDatePickerTextField(
-        value = state.dateOfBirth?.let { DateHelper.getDateAsStringFromLong(it) }.orEmpty(),
-        label = stringResource(Res.string.feature_client_createnew_dob),
-        openDatePicker = {
-            onAction(CreateNewClientAction.OpenDatePicker(ClientDateField.DATE_OF_BIRTH))
-        },
-        modifier = Modifier.fillMaxWidth().testTag(CreateNewClientTestTags.DATE_OF_BIRTH),
-    )
-
-    ClientDropdown(
-        field = CreateClientField.CLIENT_TYPE,
-        label = Res.string.feature_client_createnew_client_type,
-        options = options.clientTypes,
-        state = state,
-        onAction = onAction,
-    )
-    ClientDropdown(
-        field = CreateClientField.CLASSIFICATION,
-        label = Res.string.feature_client_createnew_client_classification,
-        options = options.classifications,
-        state = state,
-        onAction = onAction,
-    )
-    ClientDropdown(
-        field = CreateClientField.OFFICE,
-        label = Res.string.feature_client_createnew_office,
-        options = options.offices,
-        state = state,
-        onAction = onAction,
-    )
-
-    val hasOffice = state.choice(CreateClientField.OFFICE) != null
-    ClientDropdown(
-        field = CreateClientField.STAFF,
-        label = Res.string.feature_client_createnew_staff,
-        options = staffOptions.dataOrNull.orEmpty(),
-        state = state,
-        onAction = onAction,
-        // Disabled until an office is chosen, and while that office's staff are still arriving.
-        // The original enabled it on `staffInOffices.isNotEmpty()` alone, which was true for
-        // office zero's staff before any office had been chosen at all.
-        enabled = hasOffice && staffOptions is ScreenState.Content,
-        // Only ever drawn when a chosen office genuinely came back with nobody. The original's
-        // equivalent message fired on first composition, before any office was picked.
-        alwaysShow = hasOffice,
-    )
-    if (hasOffice && staffOptions is ScreenState.Empty) {
-        Text(
-            text = stringResource(Res.string.feature_client_createnew_no_staff),
-            style = AppTypography.bodySmall,
-            color = KptTheme.colorScheme.error,
-            modifier = Modifier.testTag(CreateNewClientTestTags.NO_STAFF),
+    Column {
+        ClientDropdown(
+            field = CreateClientField.GENDER,
+            label = Res.string.feature_client_createnew_gender,
+            options = options.genders,
+            state = state,
+            onAction = onAction,
         )
+
+        FieldGap()
+        AppDatePickerTextField(
+            value = state.dateOfBirth?.let { DateHelper.getDateAsStringFromLong(it) }.orEmpty(),
+            label = stringResource(Res.string.feature_client_createnew_dob),
+            openDatePicker = {
+                onAction(CreateNewClientAction.OpenDatePicker(ClientDateField.DATE_OF_BIRTH))
+            },
+            modifier = Modifier.fillMaxWidth().testTag(CreateNewClientTestTags.DATE_OF_BIRTH),
+        )
+
+        ClientDropdown(
+            field = CreateClientField.CLIENT_TYPE,
+            label = Res.string.feature_client_createnew_client_type,
+            options = options.clientTypes,
+            state = state,
+            onAction = onAction,
+        )
+        ClientDropdown(
+            field = CreateClientField.CLASSIFICATION,
+            label = Res.string.feature_client_createnew_client_classification,
+            options = options.classifications,
+            state = state,
+            onAction = onAction,
+        )
+        ClientDropdown(
+            field = CreateClientField.OFFICE,
+            label = Res.string.feature_client_createnew_office,
+            options = options.offices,
+            state = state,
+            onAction = onAction,
+        )
+
+        val hasOffice = state.choice(CreateClientField.OFFICE) != null
+        ClientDropdown(
+            field = CreateClientField.STAFF,
+            label = Res.string.feature_client_createnew_staff,
+            options = staffOptions.dataOrNull.orEmpty(),
+            state = state,
+            onAction = onAction,
+            // Disabled until an office is chosen, and while that office's staff are still arriving.
+            // The original enabled it on `staffInOffices.isNotEmpty()` alone, which was true for
+            // office zero's staff before any office had been chosen at all.
+            enabled = hasOffice && staffOptions is ScreenState.Content,
+            // Only ever drawn when a chosen office genuinely came back with nobody. The original's
+            // equivalent message fired on first composition, before any office was picked.
+            alwaysShow = hasOffice,
+        )
+        if (hasOffice && staffOptions is ScreenState.Empty) {
+            Text(
+                text = stringResource(Res.string.feature_client_createnew_no_staff),
+                style = AppTypography.bodySmall,
+                color = KptTheme.colorScheme.error,
+                modifier = Modifier.testTag(CreateNewClientTestTags.NO_STAFF),
+            )
+        }
     }
 }
 
@@ -496,73 +500,75 @@ private fun AddressFields(
     address: AddressFormOptions,
     onAction: (CreateNewClientAction) -> Unit,
 ) {
-    HorizontalDivider(modifier = Modifier.padding(vertical = KptTheme.spacing.md))
+    Column {
+        HorizontalDivider(modifier = Modifier.padding(vertical = KptTheme.spacing.md))
 
-    Text(
-        text = stringResource(Res.string.feature_client_address),
-        style = AppTypography.titleMedium,
-    )
+        Text(
+            text = stringResource(Res.string.feature_client_address),
+            style = AppTypography.titleMedium,
+        )
 
-    ClientDropdown(
-        field = CreateClientField.ADDRESS_TYPE,
-        label = Res.string.feature_client_createnew_address_type,
-        options = address.types,
-        state = state,
-        onAction = onAction,
-    )
-    ClientTextField(
-        field = CreateClientField.ADDRESS_LINE_1,
-        label = Res.string.feature_client_address_line_1,
-        state = state,
-        onAction = onAction,
-    )
-    ClientTextField(
-        field = CreateClientField.ADDRESS_LINE_2,
-        label = Res.string.feature_client_address_line_2,
-        state = state,
-        onAction = onAction,
-    )
-    ClientTextField(
-        field = CreateClientField.ADDRESS_LINE_3,
-        label = Res.string.feature_client_address_line_3,
-        state = state,
-        onAction = onAction,
-    )
-    ClientTextField(
-        field = CreateClientField.CITY,
-        label = Res.string.feature_client_city,
-        state = state,
-        onAction = onAction,
-    )
-    ClientTextField(
-        field = CreateClientField.POSTAL_CODE,
-        label = Res.string.feature_client_postal_code,
-        state = state,
-        onAction = onAction,
-        keyboardType = KeyboardType.Number,
-    )
-    ClientDropdown(
-        field = CreateClientField.STATE_PROVINCE,
-        label = Res.string.feature_client_createnew_state_province,
-        options = address.states,
-        state = state,
-        onAction = onAction,
-    )
-    ClientDropdown(
-        field = CreateClientField.COUNTRY,
-        label = Res.string.feature_client_country,
-        options = address.countries,
-        state = state,
-        onAction = onAction,
-    )
+        ClientDropdown(
+            field = CreateClientField.ADDRESS_TYPE,
+            label = Res.string.feature_client_createnew_address_type,
+            options = address.types,
+            state = state,
+            onAction = onAction,
+        )
+        ClientTextField(
+            field = CreateClientField.ADDRESS_LINE_1,
+            label = Res.string.feature_client_address_line_1,
+            state = state,
+            onAction = onAction,
+        )
+        ClientTextField(
+            field = CreateClientField.ADDRESS_LINE_2,
+            label = Res.string.feature_client_address_line_2,
+            state = state,
+            onAction = onAction,
+        )
+        ClientTextField(
+            field = CreateClientField.ADDRESS_LINE_3,
+            label = Res.string.feature_client_address_line_3,
+            state = state,
+            onAction = onAction,
+        )
+        ClientTextField(
+            field = CreateClientField.CITY,
+            label = Res.string.feature_client_city,
+            state = state,
+            onAction = onAction,
+        )
+        ClientTextField(
+            field = CreateClientField.POSTAL_CODE,
+            label = Res.string.feature_client_postal_code,
+            state = state,
+            onAction = onAction,
+            keyboardType = KeyboardType.Number,
+        )
+        ClientDropdown(
+            field = CreateClientField.STATE_PROVINCE,
+            label = Res.string.feature_client_createnew_state_province,
+            options = address.states,
+            state = state,
+            onAction = onAction,
+        )
+        ClientDropdown(
+            field = CreateClientField.COUNTRY,
+            label = Res.string.feature_client_country,
+            options = address.countries,
+            state = state,
+            onAction = onAction,
+        )
 
-    FieldGap()
-    AppCheckBox(
-        text = stringResource(Res.string.feature_client_createnew_address_active),
-        checked = state.isAddressActive,
-        onCheckChanged = { onAction(CreateNewClientAction.OnAddressActiveToggled(it)) },
-        modifier = Modifier.fillMaxWidth().testTag(CreateNewClientTestTags.ADDRESS_ACTIVE),
-    )
+        FieldGap()
+        AppCheckBox(
+            text = stringResource(Res.string.feature_client_createnew_address_active),
+            checked = state.isAddressActive,
+            onCheckChanged = { onAction(CreateNewClientAction.OnAddressActiveToggled(it)) },
+            modifier = Modifier.fillMaxWidth().testTag(CreateNewClientTestTags.ADDRESS_ACTIVE),
+        )
+    }
 }
 
 @Composable
@@ -732,55 +738,65 @@ private fun Dialogs(
             modifier = Modifier.testTag(CreateNewClientTestTags.AWAITING_CHECKER_DIALOG),
         )
 
-        is CreateClientDialog.Created -> AppStatusDialog(
-            status = ResultStatus.SUCCESS,
-            onConfirm = { onAction(CreateNewClientAction.OnCreatedContinue) },
-            onDismissRequest = { onAction(CreateNewClientAction.OnCreatedContinue) },
-            btnText = stringResource(Res.string.feature_client_dialog_continue),
-            successTitle = stringResource(Res.string.feature_client_createnew_created_title),
-            // The client exists either way; a photo that did not upload is a note on a success,
-            // not a failure. The original surfaced it as an error screen OVER a created client,
-            // which left that client unreachable.
-            successMessage = if (dialog.photoFailed) {
-                stringResource(Res.string.feature_client_createnew_created_photo_failed_message)
-            } else {
-                stringResource(Res.string.feature_client_createnew_created_message)
-            },
-            // Unreachable arm: this dialog is only ever built for a SUCCESS, and a failed create
-            // reaches the branch below. Empty rather than invented copy nothing can show.
-            failureTitle = "",
-            failureMessage = "",
-            showAsDialog = true,
-            modifier = Modifier.testTag(CreateNewClientTestTags.CREATED_DIALOG),
-        )
+        is CreateClientDialog.Created -> CreatedDialog(dialog, onAction)
 
-        is CreateClientDialog.Failed -> AppStatusDialog(
-            status = ResultStatus.FAILURE,
-            // Dismiss, keeping the whole filled-in form behind it.
-            onConfirm = { onAction(CreateNewClientAction.OnDismissDialog) },
-            onDismissRequest = { onAction(CreateNewClientAction.OnDismissDialog) },
-            btnText = stringResource(Res.string.feature_client_dialog_continue),
-            successTitle = "",
-            successMessage = "",
-            failureTitle = stringResource(Res.string.feature_client_createnew_failed_title),
-            failureMessage = when {
-                dialog.offline -> stringResource(Res.string.feature_client_createnew_offline)
-                else ->
-                    dialog.message
-                        ?: stringResource(Res.string.feature_client_createnew_failed)
-            },
-            showAsDialog = true,
-            modifier = Modifier.testTag(CreateNewClientTestTags.FAILED_DIALOG),
-            // Kept offline automatically; a refusal can be kept and resumed later.
-            secondaryBtnText = stringResource(BaseRes.string.draft_save).takeIf { !dialog.draftSaved },
-            onSecondary = { onAction(CreateNewClientAction.SaveDraft) },
-            note = when {
-                !dialog.draftSaved -> null
-                dialog.offline -> stringResource(BaseRes.string.draft_saved_offline)
-                else -> stringResource(BaseRes.string.draft_saved)
-            },
-        )
+        is CreateClientDialog.Failed -> FailedDialog(dialog, onAction)
     }
+}
+
+@Composable
+private fun CreatedDialog(dialog: CreateClientDialog.Created, onAction: (CreateNewClientAction) -> Unit) {
+    AppStatusDialog(
+        status = ResultStatus.SUCCESS,
+        onConfirm = { onAction(CreateNewClientAction.OnCreatedContinue) },
+        onDismissRequest = { onAction(CreateNewClientAction.OnCreatedContinue) },
+        btnText = stringResource(Res.string.feature_client_dialog_continue),
+        successTitle = stringResource(Res.string.feature_client_createnew_created_title),
+        // The client exists either way; a photo that did not upload is a note on a success,
+        // not a failure. The original surfaced it as an error screen OVER a created client,
+        // which left that client unreachable.
+        successMessage = if (dialog.photoFailed) {
+            stringResource(Res.string.feature_client_createnew_created_photo_failed_message)
+        } else {
+            stringResource(Res.string.feature_client_createnew_created_message)
+        },
+        // Unreachable arm: this dialog is only ever built for a SUCCESS, and a failed create
+        // reaches the branch below. Empty rather than invented copy nothing can show.
+        failureTitle = "",
+        failureMessage = "",
+        showAsDialog = true,
+        modifier = Modifier.testTag(CreateNewClientTestTags.CREATED_DIALOG),
+    )
+}
+
+@Composable
+private fun FailedDialog(dialog: CreateClientDialog.Failed, onAction: (CreateNewClientAction) -> Unit) {
+    AppStatusDialog(
+        status = ResultStatus.FAILURE,
+        // Dismiss, keeping the whole filled-in form behind it.
+        onConfirm = { onAction(CreateNewClientAction.OnDismissDialog) },
+        onDismissRequest = { onAction(CreateNewClientAction.OnDismissDialog) },
+        btnText = stringResource(Res.string.feature_client_dialog_continue),
+        successTitle = "",
+        successMessage = "",
+        failureTitle = stringResource(Res.string.feature_client_createnew_failed_title),
+        failureMessage = when {
+            dialog.offline -> stringResource(Res.string.feature_client_createnew_offline)
+            else ->
+                dialog.message
+                    ?: stringResource(Res.string.feature_client_createnew_failed)
+        },
+        showAsDialog = true,
+        modifier = Modifier.testTag(CreateNewClientTestTags.FAILED_DIALOG),
+        // Kept offline automatically; a refusal can be kept and resumed later.
+        secondaryBtnText = stringResource(BaseRes.string.draft_save).takeIf { !dialog.draftSaved },
+        onSecondary = { onAction(CreateNewClientAction.SaveDraft) },
+        note = when {
+            !dialog.draftSaved -> null
+            dialog.offline -> stringResource(BaseRes.string.draft_saved_offline)
+            else -> stringResource(BaseRes.string.draft_saved)
+        },
+    )
 }
 
 /**

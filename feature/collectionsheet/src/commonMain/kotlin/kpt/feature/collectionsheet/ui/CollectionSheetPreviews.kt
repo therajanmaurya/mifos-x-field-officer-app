@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.collectionsheet.ui
 
@@ -34,21 +34,34 @@ private val previewSheet = IndividualCollectionSheet(
             clientId = 1,
             clientName = "Asha Rahman",
             loans = arrayListOf(
-                LoanCollectionSheet(loanId = 11, accountId = "000000011", productShortName = "GL", totalDue = 1200.0, chargesDue = 25.0),
+                LoanCollectionSheet(
+                    loanId = 11,
+                    accountId = "000000011",
+                    productShortName = "GL",
+                    totalDue = 1200.0,
+                    chargesDue = 25.0,
+                ),
                 LoanCollectionSheet(loanId = 12, accountId = "000000012", productShortName = "EL", totalDue = 450.0),
             ),
         ),
         ClientCollectionSheet(
             clientId = 2,
             clientName = "Bimal Das",
-            loans = arrayListOf(LoanCollectionSheet(loanId = 21, accountId = "000000021", productShortName = "GL", totalDue = 800.0)),
+            loans = arrayListOf(
+                LoanCollectionSheet(loanId = 21, accountId = "000000021", productShortName = "GL", totalDue = 800.0),
+            ),
         ),
     ),
-    paymentTypeOptions = arrayListOf(PaymentTypeOptions(id = 1, name = "Cash"), PaymentTypeOptions(id = 2, name = "Cheque")),
+    paymentTypeOptions = arrayListOf(
+        PaymentTypeOptions(id = 1, name = "Cash"),
+        PaymentTypeOptions(id = 2, name = "Cheque"),
+    ),
 )
 
 // i18n:skip — preview fixture
-private val previewDrafts = mapOf(12 to BulkRepaymentTransactions(loanId = 12, transactionAmount = 300.0, paymentTypeId = 1))
+private val previewDrafts = mapOf(
+    12 to BulkRepaymentTransactions(loanId = 12, transactionAmount = 300.0, paymentTypeId = 1),
+)
 
 @Preview
 @Composable

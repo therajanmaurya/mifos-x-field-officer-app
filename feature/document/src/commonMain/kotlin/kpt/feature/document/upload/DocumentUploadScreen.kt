@@ -78,7 +78,6 @@ internal fun DocumentUploadScreen(
     DocumentUploadContent(
         state = state,
         onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
-        onBackPressed = onBackPressed,
         modifier = modifier,
     )
 }
@@ -88,7 +87,6 @@ internal fun DocumentUploadScreen(
 internal fun DocumentUploadContent(
     state: DocumentUploadState,
     onAction: (DocumentUploadAction) -> Unit,
-    onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val required = stringResource(Res.string.feature_document_message_field_required)

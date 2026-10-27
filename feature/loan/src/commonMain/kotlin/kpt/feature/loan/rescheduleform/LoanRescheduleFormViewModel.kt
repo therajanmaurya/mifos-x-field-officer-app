@@ -16,11 +16,11 @@ import kotlinx.coroutines.launch
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.loan.LoanCommandRepository
 import kpt.core.data.loan.LoanRepository
 import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRequest
 import kpt.core.model.objects.account.loan.reschedules.RescheduleReasonOption
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.utils.ApiDateFormatter
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -86,14 +86,8 @@ internal class LoanRescheduleFormViewModel(
                 errors = state.errors - RescheduleField.REASON,
             )
 
-            is LoanRescheduleFormAction.OnDateChanged -> mutableStateFlow.value = when (action.field) {
-                RescheduleDate.FROM -> state.copy(rescheduleFrom = action.millis)
-                RescheduleDate.SUBMITTED_ON -> state.copy(submittedOn = action.millis)
-                RescheduleDate.ADJUSTED_DUE -> state.copy(
-                    adjustedDueDate = action.millis,
-                    errors = state.errors - RescheduleField.ADJUSTED_DUE_DATE,
-                )
-            }
+            is LoanRescheduleFormAction.OnDateChanged ->
+                mutableStateFlow.value = state.withDate(action.field, action.millis)
 
             is LoanRescheduleFormAction.OpenDatePicker ->
                 mutableStateFlow.value = state.copy(activeDatePicker = action.field)
@@ -136,49 +130,56 @@ internal class LoanRescheduleFormViewModel(
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun validateThenSubmit() {
         if (state.isSubmitting) return
 
-        val errors = buildSet {
-            if (state.reason == null) add(RescheduleField.REASON)
-            if (state.changeRepaymentDate && state.adjustedDueDate == null) {
-                add(RescheduleField.ADJUSTED_DUE_DATE)
-            }
-            // Each ENABLED numeric option must carry a usable number. The original only checked
-            // non-blankness, so "two" was submitted as-is.
-            if (state.introduceGracePeriods) {
-                val principal = state.numbers[RescheduleField.GRACE_ON_PRINCIPAL].orEmpty()
-                val interest = state.numbers[RescheduleField.GRACE_ON_INTEREST].orEmpty()
-                // At least ONE of the two, as the original required — a grace period on principal
-                // alone is a legitimate proposal.
-                if (principal.isBlank() && interest.isBlank()) {
-                    add(RescheduleField.GRACE_ON_PRINCIPAL)
-                }
-                if (principal.isNotBlank() && !principal.isNonNegativeNumber()) {
-                    add(RescheduleField.GRACE_ON_PRINCIPAL)
-                }
-                if (interest.isNotBlank() && !interest.isNonNegativeNumber()) {
-                    add(RescheduleField.GRACE_ON_INTEREST)
-                }
-            }
-            if (state.extendRepaymentPeriod) {
-                val terms = state.numbers[RescheduleField.EXTRA_TERMS].orEmpty()
-                if (!terms.isNonNegativeNumber()) add(RescheduleField.EXTRA_TERMS)
-            }
-            if (state.adjustInterestRate) {
-                val rate = state.numbers[RescheduleField.NEW_INTEREST_RATE].orEmpty()
-                if (!rate.isNonNegativeNumber()) add(RescheduleField.NEW_INTEREST_RATE)
-            }
-        }
-
+        val errors = validationErrors()
         mutableStateFlow.value = state.copy(errors = errors)
-        if (errors.isNotEmpty()) return
+        if (errors.isEmpty()) buildDraft()?.let(::submit)
+    }
 
-        // Resolved once, after the errors are known clear — the same shape as the transfer's
-        // draft, and for the same reason: retry must not re-read nullable state.
-        val draft = RescheduleDraft(
-            reasonId = state.reason?.id ?: return,
+    private fun validationErrors(): Set<RescheduleField> = buildSet {
+        if (state.reason == null) add(RescheduleField.REASON)
+        if (state.changeRepaymentDate && state.adjustedDueDate == null) {
+            add(RescheduleField.ADJUSTED_DUE_DATE)
+        }
+        // Each ENABLED numeric option must carry a usable number. The original only checked
+        // non-blankness, so "two" was submitted as-is.
+        if (state.introduceGracePeriods) addAll(graceErrors())
+        if (state.extendRepaymentPeriod) {
+            val terms = state.numbers[RescheduleField.EXTRA_TERMS].orEmpty()
+            if (!terms.isNonNegativeNumber()) add(RescheduleField.EXTRA_TERMS)
+        }
+        if (state.adjustInterestRate) {
+            val rate = state.numbers[RescheduleField.NEW_INTEREST_RATE].orEmpty()
+            if (!rate.isNonNegativeNumber()) add(RescheduleField.NEW_INTEREST_RATE)
+        }
+    }
+
+    private fun graceErrors(): Set<RescheduleField> = buildSet {
+        val principal = state.numbers[RescheduleField.GRACE_ON_PRINCIPAL].orEmpty()
+        val interest = state.numbers[RescheduleField.GRACE_ON_INTEREST].orEmpty()
+        // At least ONE of the two, as the original required — a grace period on principal
+        // alone is a legitimate proposal.
+        if (principal.isBlank() && interest.isBlank()) {
+            add(RescheduleField.GRACE_ON_PRINCIPAL)
+        }
+        if (principal.isNotBlank() && !principal.isNonNegativeNumber()) {
+            add(RescheduleField.GRACE_ON_PRINCIPAL)
+        }
+        if (interest.isNotBlank() && !interest.isNonNegativeNumber()) {
+            add(RescheduleField.GRACE_ON_INTEREST)
+        }
+    }
+
+    /**
+     * Resolved once, after the errors are known clear — the same shape as the transfer's
+     * draft, and for the same reason: retry must not re-read nullable state.
+     */
+    private fun buildDraft(): RescheduleDraft? {
+        val reasonId = state.reason?.id ?: return null
+        return RescheduleDraft(
+            reasonId = reasonId,
             rescheduleFrom = state.rescheduleFrom,
             submittedOn = state.submittedOn,
             comments = state.comments.trim().takeIf { it.isNotBlank() },
@@ -202,8 +203,6 @@ internal class LoanRescheduleFormViewModel(
             // instruction. The original's `if (selected) true else null`, kept.
             waivePenalties = true.takeIf { state.waivePenalties },
         )
-
-        submit(draft)
     }
 
     private fun submit(draft: RescheduleDraft) {
@@ -415,3 +414,13 @@ internal sealed interface LoanRescheduleFormAction {
     data class OnToggle(val option: RescheduleOption, val selected: Boolean) : LoanRescheduleFormAction
     data class OnNumberChanged(val field: RescheduleField, val value: String) : LoanRescheduleFormAction
 }
+
+private fun LoanRescheduleFormState.withDate(field: RescheduleDate, millis: Long): LoanRescheduleFormState =
+    when (field) {
+        RescheduleDate.FROM -> copy(rescheduleFrom = millis)
+        RescheduleDate.SUBMITTED_ON -> copy(submittedOn = millis)
+        RescheduleDate.ADJUSTED_DUE -> copy(
+            adjustedDueDate = millis,
+            errors = errors - RescheduleField.ADJUSTED_DUE_DATE,
+        )
+    }

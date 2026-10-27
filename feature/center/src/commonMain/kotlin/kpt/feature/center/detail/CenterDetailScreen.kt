@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -76,17 +75,6 @@ import kpt.feature.center.generated.resources.feature_center_unassigned
 import kpt.feature.center.generated.resources.feature_center_unnamed
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-
-internal object CenterDetailTestTags {
-    const val ACTIVATE = "center-detail:activate"
-    const val SCREEN = "center:detail"
-    const val GROUPS = "center:detail:groups"
-    const val GROUP_ROW = "center:detail:group-row"
-    const val MEETING = "center:detail:meeting"
-    const val SUMMARY = "center:detail:summary"
-    const val OVERFLOW = "center:detail:overflow"
-    const val ADD_SAVINGS_ACCOUNT = "center:detail:add-savings-account"
-}
 
 @Composable
 internal fun CenterDetailScreen(
@@ -165,7 +153,10 @@ internal fun CenterDetailContent(
                             onClick = { expanded = !expanded },
                             modifier = Modifier.testTag(CenterDetailTestTags.OVERFLOW),
                         ) {
-                            Icon(AppIcons.MoreVert, contentDescription = stringResource(Res.string.feature_center_more_options))
+                            Icon(
+                                AppIcons.MoreVert,
+                                contentDescription = stringResource(Res.string.feature_center_more_options),
+                            )
                         }
                         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                             AppMenuDropDownItem(
@@ -267,7 +258,11 @@ internal fun CenterDetailContent(
 
 @Composable
 private fun SectionTitle(text: String) {
-    Text(text = text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+    )
 }
 
 /** The original's activation-date / next-meeting / frequency rows. */
@@ -276,7 +271,10 @@ private fun MeetingFields(center: CenterWithAssociations) {
     val calendar = center.collectionMeetingCalendar
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         if (center.activationDate.isNotEmpty()) {
-            Field(stringResource(Res.string.feature_center_activation_date), DateHelper.getDateAsString(center.activationDate))
+            Field(
+                stringResource(Res.string.feature_center_activation_date),
+                DateHelper.getDateAsString(center.activationDate),
+            )
         }
         Field(
             stringResource(Res.string.feature_center_next_meeting_on),

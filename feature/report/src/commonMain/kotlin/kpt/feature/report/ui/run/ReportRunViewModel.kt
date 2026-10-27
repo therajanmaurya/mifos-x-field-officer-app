@@ -5,13 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.report.ui.run
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +31,6 @@ import kpt.core.model.objects.runreport.FullParameterListResponse
 import kpt.core.model.report.ReportOption
 import kpt.core.model.report.ReportParameter
 import kpt.core.model.report.ReportParameterType
-import kpt.feature.report.navigation.ReportRunRoute
 import kpt.feature.report.ui.toCsv
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -55,7 +53,7 @@ internal class ReportRunViewModel(
     savedStateHandle: SavedStateHandle,
     private val repository: ReportRepository,
 ) : BaseViewModel<ReportRunState, ReportRunEvent, ReportRunAction>(
-    ReportRunState(reportName = savedStateHandle.toRoute<ReportRunRoute>().reportName),
+    ReportRunState(reportName = requireNotNull(savedStateHandle.get<String>("reportName"))),
 ) {
 
     private val parametersStream = repository.reportParametersStream(state.reportName, viewModelScope)
@@ -71,7 +69,10 @@ internal class ReportRunViewModel(
      * whose parent value changed is fetched again.
      */
     val options: StateFlow<Map<String, ParameterOptions>> =
-        combine(parametersStream.state.map { it.dataOrNull.orEmpty() }, stateFlow.map { it.values }.distinctUntilChanged()) { params, values ->
+        combine(
+            parametersStream.state.map { it.dataOrNull.orEmpty() },
+            stateFlow.map { it.values }.distinctUntilChanged(),
+        ) { params, values ->
             params.filter { it.displayType == ReportParameterType.SELECT }
                 .associate { it.name to parentQuery(it, params, values) }
         }
@@ -108,7 +109,8 @@ internal class ReportRunViewModel(
             ReportRunAction.Export -> state.result?.let {
                 sendEvent(ReportRunEvent.ExportCsv(fileName = state.reportName.toFileName(), csv = it.toCsv()))
             }
-            is ReportRunAction.ExportFinished -> sendEvent(ReportRunEvent.ShowMessage(if (action.saved) ExportOutcome.SAVED else ExportOutcome.FAILED))
+            is ReportRunAction.ExportFinished ->
+                sendEvent(ReportRunEvent.ShowMessage(if (action.saved) ExportOutcome.SAVED else ExportOutcome.FAILED))
             ReportRunAction.NavigateBack ->
                 // Back from a result returns to the form, as the original's result screen did.
                 if (state.result != null) {
@@ -123,12 +125,17 @@ internal class ReportRunViewModel(
         if (state.isRunning) return
         val params = parameters.value.dataOrNull ?: return
         val values = params.associate { it.name to effectiveValue(it, state.values) }
-        val missing = params.filter { it.displayType != ReportParameterType.HIDDEN && values[it.name].isNullOrBlank() && it.isRequired }
+        val missing = params
+            .filter { it.displayType != ReportParameterType.HIDDEN && values[it.name].isNullOrBlank() && it.isRequired }
             .map { it.name }.toSet()
         if (missing.isNotEmpty()) {
             mutableStateFlow.value = state.copy(missing = missing)
-            return
+        } else {
+            execute(params, values)
         }
+    }
+
+    private fun execute(params: List<ReportParameter>, values: Map<String, String?>) {
         val query = params.mapNotNull { p -> values[p.name]?.let { p.queryKey to it } }.toMap()
         mutableStateFlow.value = state.copy(isRunning = true, failure = null)
         viewModelScope.launch {
@@ -167,10 +174,13 @@ internal const val ALL = "-1"
  * The parent values [parameter]'s options are read with, or null while its parent has none yet (there
  * is nothing to narrow by — e.g. no office chosen, so no officer list).
  */
-internal fun parentQuery(parameter: ReportParameter, params: List<ReportParameter>, values: Map<String, String>): Map<String, String>? {
+internal fun parentQuery(
+    parameter: ReportParameter,
+    params: List<ReportParameter>,
+    values: Map<String, String>,
+): Map<String, String>? {
     val parent = parameter.parentName?.let { name -> params.firstOrNull { it.name == name } } ?: return emptyMap()
-    val value = effectiveValue(parent, values) ?: return null
-    return mapOf(parent.queryKey to value)
+    return effectiveValue(parent, values)?.let { mapOf(parent.queryKey to it) }
 }
 
 private fun String.toFileName() = lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-').ifEmpty { "report" }

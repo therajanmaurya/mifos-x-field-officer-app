@@ -35,8 +35,8 @@ import kpt.core.common.utils.FileKitUtil
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.data.client.ClientRepository
 import kpt.core.model.objects.noncoreobjects.DocumentUpload
-import kpt.core.ui.util.imageToByteArray
 import kpt.core.ui.util.getMimeTypeFromPlatformFile
+import kpt.core.ui.util.imageToByteArray
 
 /**
  * The client's PROFILE PHOTO — ported from `6b66e8a43:feature/client/clientEditProfile/`

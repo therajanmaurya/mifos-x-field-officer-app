@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.testing
 
@@ -20,7 +20,12 @@ import kpt.core.model.shared.GenericResponse
 /** Records each individual-sheet save — what was sent, for which request — and answers [result]. */
 @ExperimentalDataTestingApi
 class FakeCollectionSheetCommandRepository(
-    private val result: () -> MutationResult<GenericResponse> = { MutationResult.Applied(GenericResponse(), synced = true) },
+    private val result: () -> MutationResult<GenericResponse> = {
+        MutationResult.Applied(
+            GenericResponse(),
+            synced = true,
+        )
+    },
 ) : CollectionSheetCommandRepository {
 
     data class Save(val request: RequestCollectionSheetPayload, val payload: IndividualCollectionSheetPayload?)
@@ -31,7 +36,10 @@ class FakeCollectionSheetCommandRepository(
         request: RequestCollectionSheetPayload,
         payload: IndividualCollectionSheetPayload?,
     ): MutationResult<GenericResponse> {
-        saved += Save(request.copy(), payload?.copy(bulkRepaymentTransactions = ArrayList(payload.bulkRepaymentTransactions)))
+        saved += Save(
+            request.copy(),
+            payload?.copy(bulkRepaymentTransactions = ArrayList(payload.bulkRepaymentTransactions)),
+        )
         return result()
     }
 

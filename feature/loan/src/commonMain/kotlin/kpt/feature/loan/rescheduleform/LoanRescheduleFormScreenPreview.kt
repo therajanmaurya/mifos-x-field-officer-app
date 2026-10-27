@@ -26,7 +26,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 private const val PREVIEW_DATE_MILLIS = 1_760_000_000_000L
 
 // i18n:skip — preview fixtures below
-private val previewReasons = listOf(RescheduleReasonOption(id = 1, name = "Crop failure"), RescheduleReasonOption(id = 2, name = "Medical emergency"))
+private val previewReasons = listOf(
+    RescheduleReasonOption(id = 1, name = "Crop failure"),
+    RescheduleReasonOption(id = 2, name = "Medical emergency"),
+)
 
 @Preview
 @Composable
@@ -52,7 +55,12 @@ internal fun LoanRescheduleFormContentPreview() {
 internal fun LoanRescheduleFormContentReasonsErrorPreview() {
     KptTheme {
         LoanRescheduleFormContent(
-            state = LoanRescheduleFormState(loanId = 7, rescheduleFrom = PREVIEW_DATE_MILLIS, submittedOn = PREVIEW_DATE_MILLIS, reasonsError = true),
+            state = LoanRescheduleFormState(
+                loanId = 7,
+                rescheduleFrom = PREVIEW_DATE_MILLIS,
+                submittedOn = PREVIEW_DATE_MILLIS,
+                reasonsError = true,
+            ),
             onAction = {},
         )
     }

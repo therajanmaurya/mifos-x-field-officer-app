@@ -69,7 +69,10 @@ class FakeServerConfigRepository(
                 "test",
                 "Test server",
                 TEST_DEFAULT,
-                listOf(DemoCredentials("Officer", "demo", "demo-pass"), DemoCredentials("Supervisor", "boss", "boss-pass")),
+                listOf(
+                    DemoCredentials("Officer", "demo", "demo-pass"),
+                    DemoCredentials("Supervisor", "boss", "boss-pass"),
+                ),
             ),
             ServerInstance("localhost", "Localhost", ServerConfig.LOCALHOST),
         )

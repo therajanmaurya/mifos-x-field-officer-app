@@ -18,9 +18,9 @@ import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.searchrecord.SearchRecordRepository
 import kpt.core.model.objects.searchrecord.GenericSearchRecord
+import kpt.core.model.objects.searchrecord.SearchRecordKey
 import kpt.core.store.config.AppCacheKeys
 import kpt.core.store.config.AppStoreIds
-import kpt.core.model.objects.searchrecord.SearchRecordKey
 import org.mobilenativefoundation.store.store5.Store
 
 @RepositoryBinding(binds = SearchRecordRepository::class)
@@ -28,7 +28,10 @@ internal class SearchRecordRepositoryImpl(
     @FromStore(AppStoreIds.SearchRecords) private val store: Store<SearchRecordKey, List<GenericSearchRecord>>,
 ) : SearchRecordRepository {
 
-    override fun searchStream(keys: Flow<SearchRecordKey>, scope: CoroutineScope): ScreenDataStream<List<GenericSearchRecord>> =
+    override fun searchStream(
+        keys: Flow<SearchRecordKey>,
+        scope: CoroutineScope,
+    ): ScreenDataStream<List<GenericSearchRecord>> =
         store.asScreenStream(
             keyFlow = keys,
             cacheKeyFor = { AppCacheKeys.SearchRecords.forQuery(it.type.name, it.query) },

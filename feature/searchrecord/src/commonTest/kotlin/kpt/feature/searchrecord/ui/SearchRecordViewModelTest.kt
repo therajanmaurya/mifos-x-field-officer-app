@@ -42,16 +42,34 @@ class SearchRecordViewModelTest {
 
     @AfterTest fun tearDown() = Dispatchers.resetMain()
 
-    private val home = GenericSearchRecord(id = 5, name = "Home", description = "12 Lake Road, Dhaka", type = RecordType.ADDRESS.name)
-    private val office = GenericSearchRecord(id = 6, name = "Office", description = "4 Mill Lane, Sylhet", type = RecordType.ADDRESS.name)
-    private val passport = GenericSearchRecord(id = 9, name = "Passport", description = "scan", type = RecordType.IDENTIFIER.name)
+    private val home = GenericSearchRecord(
+        id = 5,
+        name = "Home",
+        description = "12 Lake Road, Dhaka",
+        type = RecordType.ADDRESS.name,
+    )
+    private val office = GenericSearchRecord(
+        id = 6,
+        name = "Office",
+        description = "4 Mill Lane, Sylhet",
+        type = RecordType.ADDRESS.name,
+    )
+    private val passport = GenericSearchRecord(
+        id = 9,
+        name = "Passport",
+        description = "scan",
+        type = RecordType.IDENTIFIER.name,
+    )
 
     private val repository = FakeSearchRecordRepository(listOf(home, office, passport))
 
     private fun viewModel(type: RecordType = RecordType.ADDRESS) =
         SearchRecordViewModel(SavedStateHandle(mapOf("type" to type.name)), repository)
 
-    /** A started VM: [SearchRecordViewModel.screen] is `WhileSubscribed`, so — as on device — it reads only while collected. */
+    /**
+     * A started VM: [SearchRecordViewModel.screen] is `WhileSubscribed`, so — as on device — it reads only while
+     * collected.
+     */
     private fun TestScope.started(type: RecordType = RecordType.ADDRESS) = viewModel(type).also { vm ->
         backgroundScope.launch { vm.screen.collect {} }
         runCurrent()
@@ -65,7 +83,8 @@ class SearchRecordViewModelTest {
     fun theRouteDecidesWhichRecordsAreSearched() = runTest(dispatcher) {
         val vm = started(RecordType.IDENTIFIER)
         vm.type("pass")
-        advanceTimeBy(400); runCurrent()
+        advanceTimeBy(400)
+        runCurrent()
 
         assertEquals(listOf(9), vm.shown.searchRecords.map { it.id })
         assertEquals(listOf(SearchRecordKey(RecordType.IDENTIFIER, "pass")), repository.requested)
@@ -74,13 +93,18 @@ class SearchRecordViewModelTest {
     @Test
     fun typingSearchesOnlyAfterTheDebounceAndOnlyForTheLastQuery() = runTest(dispatcher) {
         val vm = started()
-        vm.type("d"); runCurrent()
-        vm.type("dh"); runCurrent()
-        vm.type("dha"); runCurrent()
-        advanceTimeBy(200); runCurrent()
+        vm.type("d")
+        runCurrent()
+        vm.type("dh")
+        runCurrent()
+        vm.type("dha")
+        runCurrent()
+        advanceTimeBy(200)
+        runCurrent()
         assertTrue(repository.requested.isEmpty(), "nothing is searched inside the 300 ms window")
 
-        advanceTimeBy(200); runCurrent()
+        advanceTimeBy(200)
+        runCurrent()
         assertEquals(listOf("dha"), repository.requested.map { it.query })
         assertEquals(listOf(5), vm.shown.searchRecords.map { it.id })
     }
@@ -89,7 +113,8 @@ class SearchRecordViewModelTest {
     fun aQueryThatMatchesNothingIsNoResultsNotTheEmptyPrompt() = runTest(dispatcher) {
         val vm = started()
         vm.type("nowhere")
-        advanceTimeBy(400); runCurrent()
+        advanceTimeBy(400)
+        runCurrent()
 
         assertTrue(vm.shown.isNoResultsFound)
         assertTrue(vm.shown.searchRecords.isEmpty())
@@ -99,17 +124,21 @@ class SearchRecordViewModelTest {
     fun clearingTheBoxDropsTheResultsAtOnce() = runTest(dispatcher) {
         val vm = started()
         vm.type("dhaka")
-        advanceTimeBy(400); runCurrent()
+        advanceTimeBy(400)
+        runCurrent()
         assertEquals(1, vm.shown.searchRecords.size)
 
-        vm.type(""); runCurrent()
+        vm.type("")
+        runCurrent()
         // Immediately — not 300 ms later, and not with "dhaka"'s result still listed.
         assertTrue(vm.shown.searchRecords.isEmpty())
         assertFalse(vm.shown.isNoResultsFound)
 
         vm.type("sylhet")
-        advanceTimeBy(400); runCurrent()
-        vm.trySendAction(SearchRecordAction.ClearSearch); runCurrent()
+        advanceTimeBy(400)
+        runCurrent()
+        vm.trySendAction(SearchRecordAction.ClearSearch)
+        runCurrent()
         assertEquals("", vm.shown.searchQuery)
         assertTrue(vm.shown.searchRecords.isEmpty())
     }
@@ -118,11 +147,17 @@ class SearchRecordViewModelTest {
     fun aCachedRecordArrivingLaterShowsUpInTheOpenSearch() = runTest(dispatcher) {
         val vm = started()
         vm.type("chittagong")
-        advanceTimeBy(400); runCurrent()
+        advanceTimeBy(400)
+        runCurrent()
         assertTrue(vm.shown.isNoResultsFound)
 
         // Another screen caches a client's addresses while this search is open.
-        repository.records.value += GenericSearchRecord(id = 7, name = "Shop", description = "Chittagong", type = RecordType.ADDRESS.name)
+        repository.records.value += GenericSearchRecord(
+            id = 7,
+            name = "Shop",
+            description = "Chittagong",
+            type = RecordType.ADDRESS.name,
+        )
         runCurrent()
         assertEquals(listOf(7), vm.shown.searchRecords.map { it.id })
     }
@@ -135,7 +170,8 @@ class SearchRecordViewModelTest {
         backgroundScope.launch { vm.screen.collect {} }
         runCurrent()
 
-        vm.type("d"); runCurrent()
+        vm.type("d")
+        runCurrent()
         // Device 2026-10-24: `combine` waited on the silent stream, so this stayed "".
         assertEquals("d", vm.shown.searchQuery)
     }
@@ -144,7 +180,8 @@ class SearchRecordViewModelTest {
     fun nothingIsReadUntilTheScreenCollects() = runTest(dispatcher) {
         val vm = viewModel()
         vm.type("dhaka")
-        advanceTimeBy(400); runCurrent()
+        advanceTimeBy(400)
+        runCurrent()
         // No init{} collector: without a subscriber the store is never asked.
         assertTrue(repository.requested.isEmpty())
     }

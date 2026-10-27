@@ -16,10 +16,10 @@ import kotlinx.coroutines.launch
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.savings.SavingsAccountRepository
 import kpt.core.data.savings.SavingsCommandRepository
 import kpt.core.model.objects.account.saving.SavingsTransactionInput
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.utils.ApiDateFormatter
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -228,12 +228,16 @@ internal enum class AmountError { MISSING, NOT_A_NUMBER, NOT_POSITIVE }
 
 internal fun String.validateAmount(): AmountError? {
     val trimmed = trim()
-    if (trimmed.isEmpty()) return AmountError.MISSING
     // `toDoubleOrNull`, not `toFloat()` inside a try/catch: Float holds ~7 significant digits, so
     // a ten-million deposit lost its cents.
-    val value = trimmed.toDoubleOrNull() ?: return AmountError.NOT_A_NUMBER
-    // The original rejected ONLY exactly zero, so "-500" submitted a negative deposit.
-    return if (value > 0) null else AmountError.NOT_POSITIVE
+    val value = trimmed.toDoubleOrNull()
+    return when {
+        trimmed.isEmpty() -> AmountError.MISSING
+        value == null -> AmountError.NOT_A_NUMBER
+        // The original rejected ONLY exactly zero, so "-500" submitted a negative deposit.
+        value > 0 -> null
+        else -> AmountError.NOT_POSITIVE
+    }
 }
 
 /**

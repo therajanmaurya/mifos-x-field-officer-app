@@ -20,13 +20,12 @@ import kotlinx.coroutines.test.setMain
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.objects.error.ServerErrorParser
-import kpt.core.model.objects.error.userMessage
 import kpt.core.data.testing.FakeChargeCommandRepository
 import kpt.core.data.testing.FakeChargeRepository
-import kpt.core.model.charge.ChargeTimeType as ChargesTimeType
 import kpt.core.model.charge.Charges
 import kpt.core.model.objects.charge.ChargeResource
+import kpt.core.model.objects.error.ServerErrorParser
+import kpt.core.model.objects.error.userMessage
 import kpt.core.model.objects.template.client.ChargeCalculationType
 import kpt.core.model.objects.template.client.ChargeOptions
 import kpt.core.model.objects.template.client.ChargeTemplate
@@ -41,6 +40,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kpt.core.model.charge.ChargeTimeType as ChargesTimeType
 
 class ChargeFormViewModelTest {
 
@@ -204,14 +204,21 @@ class ChargeFormViewModelTest {
 
     @Test
     fun editingAChargeThisDeviceNeverLoadedIsAnError() = runTest(dispatcher) {
-        val vm = viewModel(ChargeResource.LOAN, FakeChargeRepository(ScreenState.Content(emptyList()), template = { catalogue }), chargeId = 5)
+        val vm = viewModel(
+            ChargeResource.LOAN,
+            FakeChargeRepository(ScreenState.Content(emptyList()), template = { catalogue }),
+            chargeId = 5,
+        )
         testScheduler.advanceUntilIdle()
         assertTrue(vm.stateFlow.value.typesError)
     }
 
     @Test
     fun offlineAndServerFailuresAreToldApartAndKeepTheForm() = runTest(dispatcher) {
-        val offline = viewModel(ChargeResource.LOAN, commands = FakeChargeCommandRepository { MutationResult.Blocked(BlockReason.OFFLINE) })
+        val offline = viewModel(
+            ChargeResource.LOAN,
+            commands = FakeChargeCommandRepository { MutationResult.Blocked(BlockReason.OFFLINE) },
+        )
         testScheduler.advanceUntilIdle()
         offline.trySendAction(ChargeFormAction.OnChargeSelected(offline.stateFlow.value.chargeTypes.first()))
         offline.trySendAction(ChargeFormAction.OnSubmit)
@@ -220,14 +227,18 @@ class ChargeFormViewModelTest {
 
         val refused = viewModel(
             ChargeResource.LOAN,
-            commands = FakeChargeCommandRepository { MutationResult.Failed(IllegalStateException(FINERACT_403), rolledBack = false) },
+            commands = FakeChargeCommandRepository {
+                MutationResult.Failed(IllegalStateException(FINERACT_403), rolledBack = false)
+            },
         )
         testScheduler.advanceUntilIdle()
         refused.trySendAction(ChargeFormAction.OnChargeSelected(refused.stateFlow.value.chargeTypes.first()))
         refused.trySendAction(ChargeFormAction.OnSubmit)
         testScheduler.advanceUntilIdle()
         assertEquals(
-            ChargeFormState.DialogState.Failed(serverMessage = "This charge cannot be updated as the loan is not pending approval"),
+            ChargeFormState.DialogState.Failed(
+                serverMessage = "This charge cannot be updated as the loan is not pending approval",
+            ),
             refused.stateFlow.value.dialogState,
         )
 
@@ -242,7 +253,10 @@ class ChargeFormViewModelTest {
         // Device finding 2026-10-23: the dialog printed the whole request line + JSON body.
         // The shared core/model parser (it replaced this module's own copy) — pinned here on the
         // body that found the bug.
-        assertEquals("This charge cannot be updated as the loan is not pending approval", ServerErrorParser.parse(FINERACT_403)?.userMessage)
+        assertEquals(
+            "This charge cannot be updated as the loan is not pending approval",
+            ServerErrorParser.parse(FINERACT_403)?.userMessage,
+        )
         // Not a Fineract body (a dropped connection) -> no message; the screen's generic one shows.
         assertNull(ServerErrorParser.parse("Unable to resolve host")?.userMessage)
     }

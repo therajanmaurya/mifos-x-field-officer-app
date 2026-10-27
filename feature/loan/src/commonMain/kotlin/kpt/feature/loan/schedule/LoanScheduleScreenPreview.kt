@@ -26,7 +26,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // i18n:skip — preview fixtures below
 private fun previewRow(n: Int, date: String, paid: String, outstanding: String) = RepaymentScheduleRowData(
-    number = "$n", days = "30", date = date, paidDate = if (paid == "0.00") "" else date, balance = "${25_000 - n * 2_000}.00",
+    number = "$n", days = "30", date = date, paidDate = if (paid == "0.00") "" else date,
+    balance = "${25_000 - n * 2_000}.00",
     principal = "2000.00", interest = "450.00", fees = "0.00", penalties = "0.00", due = "2450.00",
     paid = paid, inAdvance = "0.00", late = "0.00", outstanding = outstanding,
 )
@@ -51,6 +52,6 @@ private val previewSchedule = RepaymentScheduleTableData(
 @Composable
 internal fun LoanScheduleContentPreview() {
     KptTheme {
-        LoanScheduleContent(schedule = ScreenState.Content(previewSchedule), onAction = {}, onBackPressed = {})
+        LoanScheduleContent(schedule = ScreenState.Content(previewSchedule), onAction = {})
     }
 }

@@ -38,7 +38,10 @@ class ChargePreviewScreenshotTest {
         )
 
         val duplicates = previews.map { it.methodName }.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
-        assertTrue(duplicates.isEmpty(), "Preview function names must be unique — goldens are keyed by name. Duplicated: $duplicates")
+        assertTrue(
+            duplicates.isEmpty(),
+            "Preview function names must be unique — goldens are keyed by name. Duplicated: $duplicates",
+        )
 
         previews.forEach { preview ->
             runDesktopComposeUiTest {

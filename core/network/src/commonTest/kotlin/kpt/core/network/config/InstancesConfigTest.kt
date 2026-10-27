@@ -5,14 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.config
 
 import kotlinx.coroutines.test.runTest
+import kpt.core.model.utils.ServerConfig
 import kpt.core.network.lwmswhoxvvoagzkqxiyd.appserverconfig.dto.RemoteDemoAccountDto
 import kpt.core.network.lwmswhoxvvoagzkqxiyd.appserverconfig.dto.RemoteServerInstanceDto
-import kpt.core.model.utils.ServerConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -30,7 +30,11 @@ class InstancesConfigTest {
             instances.first().demoAccounts.map { it.username },
         )
         for (host in listOf("mifos-bank-2.mifos.community", "sandbox.mifos.community")) {
-            assertEquals(listOf("mifos"), instances.single { it.config.endPoint == host }.demoAccounts.map { it.username }, host)
+            assertEquals(
+                listOf("mifos"),
+                instances.single { it.config.endPoint == host }.demoAccounts.map { it.username },
+                host,
+            )
         }
         assertEquals(ServerConfig.LOCALHOST, instances.single { it.config.endPoint == "localhost" }.config)
         assertTrue(!instances.single { it.config.endPoint == "localhost" }.isDemo)
@@ -41,12 +45,12 @@ class InstancesConfigTest {
         // mifos-pay's existing rows name no apps — they must not leak into this one.
         val row = """
             {"instances": [
-              {"endpoint": "pay.example.org", "protocol": "https://", "path": "/api/", "platformTenantId": "t", "label": "Pay",
-               "interbankServers": []},
-              {"endpoint": "both.example.org", "protocol": "https://", "path": "/api/", "platformTenantId": "t", "label": "Both",
-               "supportedApps": ["mifos-pay", "field-officer"]},
-              {"endpoint": "pay2.example.org", "protocol": "https://", "path": "/api/", "platformTenantId": "t", "label": "Pay 2",
-               "supportedApps": ["mifos-pay"]}
+              {"endpoint": "pay.example.org", "protocol": "https://", "path": "/api/",
+               "platformTenantId": "t", "label": "Pay", "interbankServers": []},
+              {"endpoint": "both.example.org", "protocol": "https://", "path": "/api/",
+               "platformTenantId": "t", "label": "Both", "supportedApps": ["mifos-pay", "field-officer"]},
+              {"endpoint": "pay2.example.org", "protocol": "https://", "path": "/api/",
+               "platformTenantId": "t", "label": "Pay 2", "supportedApps": ["mifos-pay"]}
             ]}
         """
         assertEquals(listOf("Both"), parseInstances(row).map { it.name })
@@ -59,12 +63,21 @@ class InstancesConfigTest {
     fun serverInstanceRowsReadAsTheSameDocumentTheParserReads() {
         val rows = listOf(
             RemoteServerInstanceDto(
-                label = "Local", protocol = "http://", endpoint = "localhost", path = "/fineract-provider/api/v1/",
-                port = "8080", platformTenantId = "default", supportedApps = listOf("field-officer"),
+                label = "Local",
+                protocol = "http://",
+                endpoint = "localhost",
+                path = "/fineract-provider/api/v1/",
+                port = "8080",
+                platformTenantId = "default",
+                supportedApps = listOf("field-officer"),
             ),
             RemoteServerInstanceDto(
-                label = "Gateway", protocol = "https://", endpoint = "apis.mifos.community", path = "/1.0/field/v1/",
-                platformTenantId = "mifos-bank-1", supportedApps = listOf("field-officer"),
+                label = "Gateway",
+                protocol = "https://",
+                endpoint = "apis.mifos.community",
+                path = "/1.0/field/v1/",
+                platformTenantId = "mifos-bank-1",
+                supportedApps = listOf("field-officer"),
                 demoAccounts = listOf(RemoteDemoAccountDto("Field officer", "fieldofficer", "password")),
             ),
         )

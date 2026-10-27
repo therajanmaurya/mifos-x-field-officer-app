@@ -172,6 +172,14 @@ internal fun SavingsStatusChangeContent(
         StatusChangeDatePicker(state = state, onAction = onAction)
     }
 
+    StatusChangeDialog(state, onAction)
+}
+
+@Composable
+private fun StatusChangeDialog(
+    state: SavingsStatusChangeState,
+    onAction: (SavingsStatusChangeAction) -> Unit,
+) {
     when (val dialog = state.dialogState) {
         null -> Unit
         DialogState.Succeeded -> AppStatusDialog(

@@ -5,13 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.home.dashboard
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import kpt.core.base.designsystem.theme.KptTheme as KptBaseTheme
 import kpt.core.base.store.freshness.FreshnessSignal
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.designsystem.theme.KptTheme
@@ -21,6 +20,7 @@ import kpt.core.model.recent.RecentRecord
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Clock
 import kotlin.time.Instant
+import kpt.core.base.designsystem.theme.KptTheme as KptBaseTheme
 
 /**
  * One preview per Stitch state (`idea-layer/mockups/home/stitch/0{1..5}-home-*`), fed from

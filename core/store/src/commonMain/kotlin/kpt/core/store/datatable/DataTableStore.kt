@@ -9,16 +9,15 @@
  */
 package kpt.core.store.datatable
 
-import kpt.core.store.mapping.toEntity
 import kotlinx.coroutines.flow.map
-import kpt.core.model.datatable.DataTable
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
 import kpt.core.database.datatable.dao.DataTableDao
-import kpt.core.database.datatable.entity.DataTableEntity
+import kpt.core.model.datatable.DataTable
 import kpt.core.network.mifos.datatable.api.DataTableApi
+import kpt.core.store.mapping.toEntity
+import kpt.core.store.mapping.toModel
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.Store

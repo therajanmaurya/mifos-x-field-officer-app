@@ -25,8 +25,6 @@ import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.name
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -48,7 +46,6 @@ import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.combineScreenStates
 import kpt.core.base.store.screen.dataOrNull
-import kpt.core.base.store.screen.emptyIfContent
 import kpt.core.base.store.screen.mapContent
 import kpt.core.base.store.submit.draft.FormDraftRepository
 import kpt.core.base.store.submit.draft.FormDraftSlot
@@ -70,6 +67,8 @@ import kpt.core.model.objects.noncoreobjects.DocumentUpload
 import kpt.core.model.staff.Staff
 import kpt.core.model.utils.ApiDateFormatter
 import kpt.core.ui.util.getMimeTypeFromPlatformFile
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * Create a new client — ported from `6b66e8a43:feature/client/createNewClient/`
@@ -208,8 +207,12 @@ internal class CreateNewClientViewModel(
 
     /** A create that did not land is kept here — resumable on this form, listed in Sync & Drafts. */
     private val draft = FormDraftSlot(
-        drafts, viewModelScope, CreateForm.CLIENT.key, ownerId = null,
-        ClientFormSnapshot.serializer(), ClientPayload.serializer(),
+        drafts,
+        viewModelScope,
+        CreateForm.CLIENT.key,
+        ownerId = null,
+        ClientFormSnapshot.serializer(),
+        ClientPayload.serializer(),
     )
 
     val offeredDraft: StateFlow<SavedFormDraft?> = draft.offered
@@ -350,24 +353,37 @@ internal class CreateNewClientViewModel(
 
             CreateNewClientAction.ResumeDraft -> draft.resume()?.let { mutableStateFlow.value = it.applyTo(state) }
             CreateNewClientAction.DiscardDraft -> draft.discard()
-            CreateNewClientAction.SaveDraft -> lastPayload?.let { payload ->
-                val failed = state.dialog as? CreateClientDialog.Failed
-                keepDraft(payload, failure = failed?.message ?: NOT_ACCEPTED)
-                mutableStateFlow.value = state.copy(dialog = failed?.copy(draftSaved = true))
-            }
+            CreateNewClientAction.SaveDraft -> saveDraft()
+            CreateNewClientAction.OnRetry -> retryAll()
+            CreateNewClientAction.OnDismissDialog ->
+                mutableStateFlow.value = state.copy(dialog = null)
 
-            CreateNewClientAction.OnRetry -> {
-                templateStream.retry()
-                officesStream.retry()
-                // Retried too: a failed address read is silently a disabled address block, so this
-                // is the only way back from one.
-                addressConfigStream.retry()
-                addressTemplateStream.retry()
-                // And the chosen office's staff, if one has been chosen — the original's retry
-                // reloaded the template and the offices and left the staff read with no way back.
-                state.choice(CreateClientField.OFFICE)?.id?.let { staffStreamFor(it).retry() }
-            }
+            CreateNewClientAction.OnCreatedContinue -> onCreatedContinue()
 
+            CreateNewClientAction.OnSubmit -> submit()
+            else -> handlePhotoOrFormAction(action)
+        }
+    }
+
+    /** The photo dialog actions; anything else is a form edit. */
+    private fun handlePhotoOrFormAction(action: CreateNewClientAction) {
+        when (action) {
+            CreateNewClientAction.ShowPhotoOptions ->
+                mutableStateFlow.value = state.copy(dialog = CreateClientDialog.PhotoOptions)
+
+            CreateNewClientAction.OpenImagePicker -> openImagePicker()
+
+            CreateNewClientAction.OpenCamera -> viewModelScope.launch { capture() }
+
+            CreateNewClientAction.RemovePhoto ->
+                mutableStateFlow.value = state.copy(dialog = null, photo = null)
+
+            else -> handleFormAction(action)
+        }
+    }
+
+    private fun handleFormAction(action: CreateNewClientAction) {
+        when (action) {
             is CreateNewClientAction.OnTextChanged -> mutableStateFlow.value = state.copy(
                 texts = state.texts + (action.field to action.value),
                 errors = state.errors - action.field,
@@ -393,37 +409,48 @@ internal class CreateNewClientViewModel(
                 dataTableErrors = state.dataTableErrors - action.field,
             )
 
-            CreateNewClientAction.ShowPhotoOptions ->
-                mutableStateFlow.value = state.copy(dialog = CreateClientDialog.PhotoOptions)
-
-            CreateNewClientAction.OpenImagePicker -> viewModelScope.launch {
-                val file = FileKit.openFilePicker(mode = FileKitMode.Single, type = FileKitType.Image)
-                // A cancelled picker closes the sheet rather than leaving it open over nothing.
-                if (file == null) {
-                    mutableStateFlow.value = state.copy(dialog = null)
-                } else {
-                    crop(file.toImageBitmap(), file.name)
-                }
-            }
-
-            CreateNewClientAction.OpenCamera -> viewModelScope.launch { capture() }
-
-            CreateNewClientAction.RemovePhoto ->
-                mutableStateFlow.value = state.copy(dialog = null, photo = null)
-
-            CreateNewClientAction.OnDismissDialog ->
-                mutableStateFlow.value = state.copy(dialog = null)
-
-            CreateNewClientAction.OnCreatedContinue -> {
-                val clientId = (state.dialog as? CreateClientDialog.Created)?.clientId
-                mutableStateFlow.value = state.copy(dialog = null)
-                clientId
-                    ?.let { sendEvent(CreateNewClientEvent.Created(it)) }
-                    ?: sendEvent(CreateNewClientEvent.NavigateBack)
-            }
-
-            CreateNewClientAction.OnSubmit -> submit()
+            else -> Unit
         }
+    }
+
+    private fun saveDraft() {
+        lastPayload?.let { payload ->
+            val failed = state.dialog as? CreateClientDialog.Failed
+            keepDraft(payload, failure = failed?.message ?: NOT_ACCEPTED)
+            mutableStateFlow.value = state.copy(dialog = failed?.copy(draftSaved = true))
+        }
+    }
+
+    private fun retryAll() {
+        templateStream.retry()
+        officesStream.retry()
+        // Retried too: a failed address read is silently a disabled address block, so this
+        // is the only way back from one.
+        addressConfigStream.retry()
+        addressTemplateStream.retry()
+        // And the chosen office's staff, if one has been chosen — the original's retry
+        // reloaded the template and the offices and left the staff read with no way back.
+        state.choice(CreateClientField.OFFICE)?.id?.let { staffStreamFor(it).retry() }
+    }
+
+    private fun openImagePicker() {
+        viewModelScope.launch {
+            val file = FileKit.openFilePicker(mode = FileKitMode.Single, type = FileKitType.Image)
+            // A cancelled picker closes the sheet rather than leaving it open over nothing.
+            if (file == null) {
+                mutableStateFlow.value = state.copy(dialog = null)
+            } else {
+                crop(file.toImageBitmap(), file.name)
+            }
+        }
+    }
+
+    private fun onCreatedContinue() {
+        val clientId = (state.dialog as? CreateClientDialog.Created)?.clientId
+        mutableStateFlow.value = state.copy(dialog = null)
+        clientId
+            ?.let { sendEvent(CreateNewClientEvent.Created(it)) }
+            ?: sendEvent(CreateNewClientEvent.NavigateBack)
     }
 
     /**
@@ -506,11 +533,11 @@ internal class CreateNewClientViewModel(
     }
 
     private fun submit() {
-        if (state.isSubmitting) return
-
         // Needs the options to decide which fields the tenant actually offers — the original's own
         // `clientTemplate.genderOptions?.isNotEmpty() == true` guards, kept.
-        val formOptions = form.value.dataOrNull ?: return
+        val formOptions = form.value.dataOrNull
+        if (state.isSubmitting || formOptions == null) return
+
         val hasAddressBlock = address.value != null
 
         val errors = state.validate(hasAddressBlock = hasAddressBlock)
@@ -935,11 +962,9 @@ internal sealed interface CreateNewClientAction {
  * in every timezone from UTC-12 to UTC+12 (midnight UTC is the previous day west of Greenwich).
  */
 @OptIn(ExperimentalTime::class)
-private fun List<Int>.toPickerMillis(): Long? {
-    if (size < DATE_PARTS) return null
-    val date = runCatching { LocalDate(this[0], this[1], this[2]) }.getOrNull() ?: return null
-    return date.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds() + NOON_OFFSET_MS
-}
+private fun List<Int>.toPickerMillis(): Long? = takeIf { size >= DATE_PARTS }
+    ?.let { runCatching { LocalDate(it[0], it[1], it[2]) }.getOrNull() }
+    ?.let { it.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds() + NOON_OFFSET_MS }
 
 private const val DATE_PARTS = 3
 private const val NOON_OFFSET_MS = 12 * 60 * 60 * 1000L
@@ -984,7 +1009,9 @@ internal data class ClientFormSnapshot(
         fun of(state: CreateNewClientState) = ClientFormSnapshot(
             texts = state.texts,
             choices = state.choices,
-            dataTables = state.dataTableValues.map { (field, value) -> DataTableEntry(field.table, field.column, value) },
+            dataTables = state.dataTableValues.map { (field, value) ->
+                DataTableEntry(field.table, field.column, value)
+            },
             isActive = state.isActive,
             activationDate = state.activationDate,
             dateOfBirth = state.dateOfBirth,

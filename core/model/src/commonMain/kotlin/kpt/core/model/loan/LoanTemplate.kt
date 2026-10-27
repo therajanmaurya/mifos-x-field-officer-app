@@ -41,7 +41,7 @@ import kpt.core.model.objects.template.loan.TransactionProcessingStrategyOptions
 
 /**
  * GENERATED twin — what every layer above `core/store` sees of `core/database`'s `LoanTemplate`.
- * Same field names as the row; `core/store/mapping/EntityModelMappers.kt` converts between them.
+ * Same field names as the row; the `core/store/mapping/` mappers convert between them.
  */
 @Serializable
 data class LoanTemplate(

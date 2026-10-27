@@ -243,6 +243,14 @@ internal fun SavingsTransactionContent(
         ReviewSheet(state = state, onAction = onAction)
     }
 
+    TransactionStatusDialog(state, onAction)
+}
+
+@Composable
+private fun TransactionStatusDialog(
+    state: SavingsTransactionState,
+    onAction: (SavingsTransactionAction) -> Unit,
+) {
     when (val dialog = state.dialogState) {
         null -> Unit
         is TransactionDialog.Succeeded -> AppStatusDialog(

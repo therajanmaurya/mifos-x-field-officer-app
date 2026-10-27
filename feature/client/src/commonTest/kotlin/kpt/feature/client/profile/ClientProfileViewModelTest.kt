@@ -14,7 +14,6 @@
 
 package kpt.feature.client.profile
 
-import kpt.core.data.testing.FakeRecentRecordsRepository
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +24,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.data.testing.FakeClientRepository
+import kpt.core.data.testing.FakeRecentRecordsRepository
 import kpt.core.model.client.Client
+import kpt.feature.client.imageCodecAvailable
 import kpt.feature.client.profile.components.ClientProfileActionItem
 import kpt.feature.client.profile.components.clientsActionItems
 import kotlin.test.AfterTest
@@ -101,8 +102,9 @@ class ClientProfileViewModelTest {
         clientState.value = ScreenState.Error(RuntimeException("boom"))
         testScheduler.advanceUntilIdle()
 
+        // The recents collector in init{} subscribes to [client], so the read state is already
+        // current by the time the screen collects — no Loading in front of it.
         vm.client.test {
-            assertIs<ScreenState.Loading>(awaitItem())
             assertIs<ScreenState.Error>(awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
@@ -120,6 +122,7 @@ class ClientProfileViewModelTest {
 
     @Test
     fun aPhotoArrivesWithTheDataUrlPrefixStillOnIt() = runTest(dispatcher) {
+        if (!imageCodecAvailable()) return@runTest
         // Fineract sends `data:image/png;base64,<payload>`. The prefix must be stripped EXACTLY
         // ONCE: the repository leaves it on (`bodyAsText()` verbatim) and `imageToByteArray` does
         // the `substringAfter(",")`. Stripping it in both places would cut into the payload of any
@@ -137,6 +140,7 @@ class ClientProfileViewModelTest {
 
     @Test
     fun aPhotoWithNoDataUrlPrefixDecodesToo() = runTest(dispatcher) {
+        if (!imageCodecAvailable()) return@runTest
         // A deployment that returns bare base64 must still work — `substringAfter(",")` returns
         // the whole string when there is no comma.
         val vm = viewModel(repository(image = ONE_PIXEL_PNG))

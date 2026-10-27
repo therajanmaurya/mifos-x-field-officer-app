@@ -27,9 +27,9 @@ import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.ScreenContent
-import kpt.core.model.datatable.DataTable
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.theme.DesignToken
+import kpt.core.model.datatable.DataTable
 import kpt.core.ui.components.AppEmptyUi
 import kpt.feature.datatable.generated.resources.Res
 import kpt.feature.datatable.generated.resources.feature_data_table_empty_data_table

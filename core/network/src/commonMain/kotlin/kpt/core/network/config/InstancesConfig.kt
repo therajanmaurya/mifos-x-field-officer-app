@@ -5,16 +5,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.config
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kpt.core.network.lwmswhoxvvoagzkqxiyd.appserverconfig.dto.RemoteServerInstanceDto
 import kpt.core.model.utils.DemoCredentials
 import kpt.core.model.utils.ServerConfig
 import kpt.core.model.utils.ServerInstance
+import kpt.core.network.lwmswhoxvvoagzkqxiyd.appserverconfig.dto.RemoteServerInstanceDto
 
 /**
  * The server instances the officer can pick — the same shape as mifos-pay's Supabase `app_config`

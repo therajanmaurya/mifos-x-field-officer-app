@@ -12,8 +12,9 @@ package kpt.core.model.savings
 import kotlinx.serialization.Serializable
 
 /**
- * GENERATED twin — what every layer above `core/store` sees of `core/database`'s `SavingsAccountTransactionRequestEntity`.
- * Same field names as the row; `core/store/mapping/EntityModelMappers.kt` converts between them.
+ * GENERATED twin — what every layer above `core/store` sees of `core/database`'s
+ * `SavingsAccountTransactionRequestEntity`.
+ * Same field names as the row; the `core/store/mapping` mappers convert between them.
  */
 @Serializable
 data class SavingsAccountTransactionRequest(

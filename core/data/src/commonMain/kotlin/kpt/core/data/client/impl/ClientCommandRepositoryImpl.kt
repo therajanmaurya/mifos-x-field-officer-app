@@ -9,8 +9,6 @@
  */
 package kpt.core.data.client.impl
 
-import kpt.core.network.mifos.document.toMultipart
-import kpt.core.model.objects.noncoreobjects.DocumentUpload
 import kotlinx.coroutines.CancellationException
 import kpt.core.base.data.annotation.FromStore
 import kpt.core.base.data.annotation.RepositoryBinding
@@ -21,6 +19,8 @@ import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.model.client.Client
 import kpt.core.model.client.ClientPayload
+import kpt.core.model.client.PostClientAddressRequest
+import kpt.core.model.client.PostClientsClientIdRequest
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.clients.AssignStaffRequest
 import kpt.core.model.objects.clients.ClientAddressEntity
@@ -30,13 +30,13 @@ import kpt.core.model.objects.clients.ClientCloseRequest
 import kpt.core.model.objects.clients.CollateralPayload
 import kpt.core.model.objects.clients.ProposeTransferRequest
 import kpt.core.model.objects.clients.UpdateSavingsAccountRequest
+import kpt.core.model.objects.noncoreobjects.DocumentUpload
 import kpt.core.model.objects.noncoreobjects.Identifier
 import kpt.core.model.objects.noncoreobjects.IdentifierPayload
 import kpt.core.model.shared.CollateralItemResult
 import kpt.core.network.mifos.client.api.ClientApi
 import kpt.core.network.mifos.client.api.ClientIdentifierApi
-import kpt.core.model.client.PostClientAddressRequest
-import kpt.core.model.client.PostClientsClientIdRequest
+import kpt.core.network.mifos.document.toMultipart
 import kpt.core.store.client.IdentifierItemKey
 import kpt.core.store.client.PinpointItemKey
 import kpt.core.store.config.AppStoreIds
@@ -93,7 +93,11 @@ internal class ClientCommandRepositoryImpl(
     private val identifierItemStore: MutableStore<IdentifierItemKey, Identifier>,
 ) : ClientCommandRepository {
 
-    override suspend fun activate1(clientId: Long, postClientsClientIdRequest: PostClientsClientIdRequest, command: String?) =
+    override suspend fun activate1(
+        clientId: Long,
+        postClientsClientIdRequest: PostClientsClientIdRequest,
+        command: String?,
+    ) =
         online(
             payload = postClientsClientIdRequest,
             endpoint = { clientApi.activate1(clientId = clientId, postClientsClientIdRequest = it, command = command) },
@@ -138,7 +142,12 @@ internal class ClientCommandRepositoryImpl(
     override suspend fun addClientPinpointLocation(clientId: Int, clientAddressRequest: ClientAddressRequest?) =
         online(
             payload = clientId,
-            endpoint = { clientApi.addClientPinpointLocation(clientId = it, clientAddressRequest = clientAddressRequest) },
+            endpoint = {
+                clientApi.addClientPinpointLocation(
+                    clientId = it,
+                    clientAddressRequest = clientAddressRequest,
+                )
+            },
             localApply = { ingest { pinpointStore.fresh(clientId) } },
         )
 
@@ -146,15 +155,28 @@ internal class ClientCommandRepositoryImpl(
     override suspend fun deleteClientPinpointLocation(apptableId: Int, datatableId: Int) =
         online(
             payload = PinpointItemKey(clientId = apptableId, datatableId = datatableId),
-            endpoint = { clientApi.deleteClientPinpointLocation(apptableId = it.clientId, datatableId = it.datatableId) },
+            endpoint = {
+                clientApi.deleteClientPinpointLocation(
+                    apptableId = it.clientId,
+                    datatableId = it.datatableId,
+                )
+            },
             localApply = { pinpointItemStore.clear(PinpointItemKey(apptableId, datatableId)) },
         )
 
-    override suspend fun updateClientPinpointLocation(apptableId: Int, datatableId: Int, address: ClientAddressRequest?) =
+    override suspend fun updateClientPinpointLocation(
+        apptableId: Int,
+        datatableId: Int,
+        address: ClientAddressRequest?,
+    ) =
         online(
             payload = PinpointItemKey(clientId = apptableId, datatableId = datatableId),
             endpoint = {
-                clientApi.updateClientPinpointLocation(apptableId = it.clientId, datatableId = it.datatableId, address = address)
+                clientApi.updateClientPinpointLocation(
+                    apptableId = it.clientId,
+                    datatableId = it.datatableId,
+                    address = address,
+                )
             },
             localApply = {
                 if (address != null) {
@@ -183,10 +205,20 @@ internal class ClientCommandRepositoryImpl(
         )
 
     // The address row carries names the server resolves from the ids sent (type, state, country).
-    override suspend fun createClientAddress(clientId: Int, addressTypeId: Int, addressPayload: PostClientAddressRequest) =
+    override suspend fun createClientAddress(
+        clientId: Int,
+        addressTypeId: Int,
+        addressPayload: PostClientAddressRequest,
+    ) =
         online(
             payload = addressPayload,
-            endpoint = { clientApi.createClientAddress(clientId = clientId, addressTypeId = addressTypeId, addressPayload = it) },
+            endpoint = {
+                clientApi.createClientAddress(
+                    clientId = clientId,
+                    addressTypeId = addressTypeId,
+                    addressPayload = it,
+                )
+            },
             localApply = { ingest { addressesStore.fresh(clientId) } },
         )
 
@@ -221,7 +253,10 @@ internal class ClientCommandRepositoryImpl(
             localApply = { ingestClient(clientId) },
         )
 
-    override suspend fun updateSavingsAccount(clientId: Int, payload: UpdateSavingsAccountRequest): MutationResult<Unit> =
+    override suspend fun updateSavingsAccount(
+        clientId: Int,
+        payload: UpdateSavingsAccountRequest,
+    ): MutationResult<Unit> =
         online(
             payload = payload,
             endpoint = {
@@ -256,12 +291,20 @@ internal class ClientCommandRepositoryImpl(
     override suspend fun deleteClientIdentifier(clientId: Long, identifierId: Long) =
         online(
             payload = IdentifierItemKey(clientId = clientId, identifierId = identifierId),
-            endpoint = { clientIdentifierApi.deleteClientIdentifier(clientId = it.clientId, identifierId = it.identifierId) },
+            endpoint = {
+                clientIdentifierApi.deleteClientIdentifier(
+                    clientId = it.clientId,
+                    identifierId = it.identifierId,
+                )
+            },
             localApply = { identifierItemStore.clear(IdentifierItemKey(clientId, identifierId)) },
         )
 
     // The row's document-type NAME and status label are the server's, resolved from the ids sent.
-    override suspend fun createClientIdentifier(clientId: Long, identifierPayload: IdentifierPayload): MutationResult<Unit> =
+    override suspend fun createClientIdentifier(
+        clientId: Long,
+        identifierPayload: IdentifierPayload,
+    ): MutationResult<Unit> =
         online(
             payload = identifierPayload,
             endpoint = {
@@ -271,11 +314,19 @@ internal class ClientCommandRepositoryImpl(
             localApply = { ingest { identifiersStore.fresh(clientId) } },
         )
 
-    override suspend fun updateClientIdentifier(clientId: Long, identifierId: Long, identifierPayload: IdentifierPayload) =
+    override suspend fun updateClientIdentifier(
+        clientId: Long,
+        identifierId: Long,
+        identifierPayload: IdentifierPayload,
+    ) =
         online(
             payload = identifierPayload,
             endpoint = {
-                clientIdentifierApi.updateClientIdentifier(clientId = clientId, identifierId = identifierId, identifierPayload = it)
+                clientIdentifierApi.updateClientIdentifier(
+                    clientId = clientId,
+                    identifierId = identifierId,
+                    identifierPayload = it,
+                )
             },
             localApply = { ingest { identifiersStore.fresh(clientId) } },
         )
@@ -325,7 +376,11 @@ internal class ClientCommandRepositoryImpl(
         localApply: suspend (R) -> Unit,
     ): MutationResult<R> =
         gateway.command(
-            CommandSpec(payload = payload, endpoint = endpoint, localApply = { result -> if (result != null) localApply(result) }),
+            CommandSpec(
+                payload = payload,
+                endpoint = endpoint,
+                localApply = { result -> if (result != null) localApply(result) },
+            ),
             policy = MutationPolicy.OnlineRequired,
         )
 

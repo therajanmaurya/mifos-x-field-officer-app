@@ -90,21 +90,21 @@ internal fun ClientGeneralScreen(
     viewModel: ClientGeneralViewModel = koinViewModel(),
 ) {
     val performance by viewModel.performance.collectAsStateWithLifecycle()
+    // The wired destination of each action row; an action with none is absent rather than inert.
+    val actionHandlers = mapOf<ClientGeneralActionItem, ((Int) -> Unit)?>(
+        ClientGeneralActionItem.UpcomingCharges to onUpcomingCharges,
+        ClientGeneralActionItem.LoanAccount to onLoanAccounts,
+        ClientGeneralActionItem.SavingAccounts to onSavingAccounts,
+        ClientGeneralActionItem.FixedDepositAccounts to onFixedDepositAccounts,
+        ClientGeneralActionItem.RecurringDepositAccounts to onRecurringDepositAccounts,
+        ClientGeneralActionItem.SharesAccounts to onSharesAccounts,
+        ClientGeneralActionItem.CollateralData to onCollateralData,
+    )
 
     EventsEffect(viewModel.eventFlow) { event ->
         when (event) {
             ClientGeneralEvent.NavigateBack -> onNavigateBack()
-            is ClientGeneralEvent.OnActionClick -> when (event.action) {
-                ClientGeneralActionItem.UpcomingCharges -> onUpcomingCharges?.invoke(event.clientId)
-                ClientGeneralActionItem.LoanAccount -> onLoanAccounts?.invoke(event.clientId)
-                ClientGeneralActionItem.SavingAccounts -> onSavingAccounts?.invoke(event.clientId)
-                ClientGeneralActionItem.FixedDepositAccounts ->
-                    onFixedDepositAccounts?.invoke(event.clientId)
-                ClientGeneralActionItem.RecurringDepositAccounts ->
-                    onRecurringDepositAccounts?.invoke(event.clientId)
-                ClientGeneralActionItem.SharesAccounts -> onSharesAccounts?.invoke(event.clientId)
-                ClientGeneralActionItem.CollateralData -> onCollateralData?.invoke(event.clientId)
-            }
+            is ClientGeneralEvent.OnActionClick -> actionHandlers[event.action]?.invoke(event.clientId)
         }
     }
 
@@ -117,26 +117,8 @@ internal fun ClientGeneralScreen(
         ClientGeneralContent(
             performance = performance,
             onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
-            availableActions = remember(
-                onUpcomingCharges,
-                onLoanAccounts,
-                onSavingAccounts,
-                onFixedDepositAccounts,
-                onRecurringDepositAccounts,
-                onSharesAccounts,
-                onCollateralData,
-            ) {
-                clientGeneralActions.filter { item ->
-                    when (item) {
-                        ClientGeneralActionItem.UpcomingCharges -> onUpcomingCharges != null
-                        ClientGeneralActionItem.LoanAccount -> onLoanAccounts != null
-                        ClientGeneralActionItem.SavingAccounts -> onSavingAccounts != null
-                        ClientGeneralActionItem.FixedDepositAccounts -> onFixedDepositAccounts != null
-                        ClientGeneralActionItem.RecurringDepositAccounts -> onRecurringDepositAccounts != null
-                        ClientGeneralActionItem.SharesAccounts -> onSharesAccounts != null
-                        ClientGeneralActionItem.CollateralData -> onCollateralData != null
-                    }
-                }
+            availableActions = remember(actionHandlers) {
+                clientGeneralActions.filter { actionHandlers[it] != null }
             },
             modifier = modifier,
             scaffoldPadding = scaffoldPadding,

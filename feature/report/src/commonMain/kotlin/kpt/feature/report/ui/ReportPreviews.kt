@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.report.ui
 
@@ -30,15 +30,32 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // i18n:skip — preview fixtures
 private val previewReports = listOf(
-    ClientReportTypeItem(reportId = 1, reportName = "Active Loans - Details", reportType = "Table", reportCategory = "Loan"),
-    ClientReportTypeItem(reportId = 2, reportName = "Loans Awaiting Disbursal", reportType = "Table", reportCategory = "Loan"),
+    ClientReportTypeItem(
+        reportId = 1,
+        reportName = "Active Loans - Details",
+        reportType = "Table",
+        reportCategory = "Loan",
+    ),
+    ClientReportTypeItem(
+        reportId = 2,
+        reportName = "Loans Awaiting Disbursal",
+        reportType = "Table",
+        reportCategory = "Loan",
+    ),
     ClientReportTypeItem(reportId = 3, reportName = "Loan Payments Due", reportType = "Table", reportCategory = "Loan"),
 )
 
 // i18n:skip — preview fixtures
 private val previewParameters = listOf(
     ReportParameter("OfficeIdSelectOne", "officeId", "Office", ReportParameterType.SELECT),
-    ReportParameter("loanOfficerIdSelectAll", "loanOfficerId", "Loan Officer", ReportParameterType.SELECT, allowAll = true, parentName = "OfficeIdSelectOne"),
+    ReportParameter(
+        "loanOfficerIdSelectAll",
+        "loanOfficerId",
+        "Loan Officer",
+        ReportParameterType.SELECT,
+        allowAll = true,
+        parentName = "OfficeIdSelectOne",
+    ),
     ReportParameter("startDateSelect", "startDate", "Start Date", ReportParameterType.DATE),
     ReportParameter("endDateSelect", "endDate", "End Date", ReportParameterType.DATE),
 )
@@ -50,11 +67,16 @@ private val previewOptions = mapOf(
 )
 
 // i18n:skip — preview fixtures
-private val previewValues = mapOf("OfficeIdSelectOne" to "1", "startDateSelect" to "2026-10-01", "endDateSelect" to "2026-10-24")
+private val previewValues = mapOf(
+    "OfficeIdSelectOne" to "1",
+    "startDateSelect" to "2026-10-01",
+    "endDateSelect" to "2026-10-24",
+)
 
 // i18n:skip — preview fixtures
 private val previewResult = FullParameterListResponse(
-    columnHeaders = listOf("Office", "Client", "Loan", "Principal", "Outstanding").map { ColumnHeader(columnName = it) },
+    columnHeaders = listOf("Office", "Client", "Loan", "Principal", "Outstanding")
+        .map { ColumnHeader(columnName = it) },
     data = listOf(
         DataRow(listOf("Head Office", "Asha Rahman", "000000011", "12000.00", "8400.00")),
         DataRow(listOf("Head Office", "Bimal Das", "000000021", "8000.00", null)),
@@ -127,7 +149,11 @@ internal fun ReportFailurePreview() {
     KptTheme {
         ReportRunContent(
             // i18n:skip — preview fixture
-            state = ReportRunState(reportName = "Active Loans - Details", values = previewValues, failure = ReportFailure("Start date is after end date")),
+            state = ReportRunState(
+                reportName = "Active Loans - Details",
+                values = previewValues,
+                failure = ReportFailure("Start date is after end date"),
+            ),
             parameters = ScreenState.Content(previewParameters),
             options = previewOptions,
             onAction = {},

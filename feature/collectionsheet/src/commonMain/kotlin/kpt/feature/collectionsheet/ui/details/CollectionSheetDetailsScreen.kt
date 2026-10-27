@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.collectionsheet.ui.details
 
@@ -141,7 +141,10 @@ internal fun CollectionSheetDetailsContent(
                 AppButton(
                     onClick = { onAction(CollectionSheetDetailsAction.Submit) },
                     enabled = !state.isSubmitting,
-                    modifier = Modifier.fillMaxWidth().padding(KptTheme.spacing.md).testTag(CollectionSheetDetailsTestTags.SUBMIT),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(KptTheme.spacing.md)
+                        .testTag(CollectionSheetDetailsTestTags.SUBMIT),
                 ) {
                     if (state.isSubmitting) {
                         CircularProgressIndicator(strokeWidth = KptTheme.spacing.xs / 2)
@@ -162,7 +165,12 @@ private fun Summary(view: CollectionSheetView) {
     Column(Modifier.fillMaxWidth().padding(KptTheme.spacing.md)) {
         Text(text = view.transactionDate, style = KptTheme.typography.titleMedium)
         Text(
-            text = stringResource(Res.string.feature_collection_sheet_summary, view.rows.size, view.memberCount, view.total.formatGrouped(2)),
+            text = stringResource(
+                Res.string.feature_collection_sheet_summary,
+                view.rows.size,
+                view.memberCount,
+                view.total.formatGrouped(2),
+            ),
             style = KptTheme.typography.bodyMedium,
             color = KptTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.testTag(CollectionSheetDetailsTestTags.SUMMARY),
@@ -183,21 +191,32 @@ private fun CollectionRowCard(row: CollectionRow, onClick: () -> Unit) {
             Column(Modifier.weight(1f)) {
                 Text(text = row.clientName, style = KptTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
                 Text(
-                    text = stringResource(Res.string.feature_collection_sheet_loan_account, row.productName, row.accountNo),
+                    text = stringResource(
+                        Res.string.feature_collection_sheet_loan_account,
+                        row.productName,
+                        row.accountNo,
+                    ),
                     style = KptTheme.typography.bodyMedium,
                     color = KptTheme.colorScheme.onSurfaceVariant,
                 )
                 LabelledAmount(Res.string.feature_collection_sheet_total_due, row.totalDue)
                 LabelledAmount(Res.string.feature_collection_sheet_total_charges, row.chargesDue)
                 Text(
-                    text = stringResource(Res.string.feature_collection_sheet_collecting, row.collect.transactionAmount.formatGrouped(2)),
+                    text = stringResource(
+                        Res.string.feature_collection_sheet_collecting,
+                        row.collect.transactionAmount.formatGrouped(2),
+                    ),
                     style = KptTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = if (row.edited) KptTheme.colorScheme.primary else KptTheme.colorScheme.onSurface,
                 )
                 Text(
                     text = stringResource(
-                        if (row.hasPaymentDetail) Res.string.feature_collection_sheet_payment_added else Res.string.feature_collection_sheet_no_payment_added,
+                        if (row.hasPaymentDetail) {
+                            Res.string.feature_collection_sheet_payment_added
+                        } else {
+                            Res.string.feature_collection_sheet_no_payment_added
+                        },
                     ),
                     style = KptTheme.typography.labelMedium,
                     color = KptTheme.colorScheme.onSurfaceVariant,
@@ -236,7 +255,11 @@ private fun PaymentEditorSheet(
         ) {
             Text(text = editor.clientName, style = KptTheme.typography.titleLarge)
             Text(
-                text = stringResource(Res.string.feature_collection_sheet_loan_account, editor.productName, editor.accountNo),
+                text = stringResource(
+                    Res.string.feature_collection_sheet_loan_account,
+                    editor.productName,
+                    editor.accountNo,
+                ),
                 style = KptTheme.typography.titleSmall,
                 color = KptTheme.colorScheme.onSurfaceVariant,
             )
@@ -246,7 +269,11 @@ private fun PaymentEditorSheet(
                 label = stringResource(Res.string.feature_collection_sheet_amount),
                 keyboardType = KeyboardType.Decimal,
                 isError = editor.amountError,
-                errorText = if (editor.amountError) stringResource(Res.string.feature_collection_sheet_amount_invalid) else null,
+                errorText = if (editor.amountError) {
+                    stringResource(Res.string.feature_collection_sheet_amount_invalid)
+                } else {
+                    null
+                },
                 modifier = Modifier.fillMaxWidth().testTag(CollectionSheetDetailsTestTags.AMOUNT),
             )
             LabelledAmount(Res.string.feature_collection_sheet_total_charges, editor.chargesDue)
@@ -264,14 +291,27 @@ private fun PaymentEditorSheet(
             // The detail fields travel only WITH a payment type (see PaymentEditor.toTransaction),
             // so they are shown only once one is chosen — not typed and then silently dropped.
             if (editor.paymentTypeId != null) {
-                DetailField(Res.string.feature_collection_sheet_account_number, editor.accountNumber) { v -> change { it.copy(accountNumber = v) } }
-                DetailField(Res.string.feature_collection_sheet_cheque_number, editor.checkNumber) { v -> change { it.copy(checkNumber = v) } }
-                DetailField(Res.string.feature_collection_sheet_routing_code, editor.routingCode) { v -> change { it.copy(routingCode = v) } }
-                DetailField(Res.string.feature_collection_sheet_receipt_number, editor.receiptNumber) { v -> change { it.copy(receiptNumber = v) } }
-                DetailField(Res.string.feature_collection_sheet_bank_number, editor.bankNumber) { v -> change { it.copy(bankNumber = v) } }
+                DetailField(Res.string.feature_collection_sheet_account_number, editor.accountNumber) { v ->
+                    change { it.copy(accountNumber = v) }
+                }
+                DetailField(Res.string.feature_collection_sheet_cheque_number, editor.checkNumber) { v ->
+                    change { it.copy(checkNumber = v) }
+                }
+                DetailField(Res.string.feature_collection_sheet_routing_code, editor.routingCode) { v ->
+                    change { it.copy(routingCode = v) }
+                }
+                DetailField(Res.string.feature_collection_sheet_receipt_number, editor.receiptNumber) { v ->
+                    change { it.copy(receiptNumber = v) }
+                }
+                DetailField(Res.string.feature_collection_sheet_bank_number, editor.bankNumber) { v ->
+                    change { it.copy(bankNumber = v) }
+                }
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(KptTheme.spacing.md)) {
-                AppButton(onClick = { onAction(CollectionSheetDetailsAction.CloseEditor) }, modifier = Modifier.weight(1f)) {
+                AppButton(
+                    onClick = { onAction(CollectionSheetDetailsAction.CloseEditor) },
+                    modifier = Modifier.weight(1f),
+                ) {
                     Text(stringResource(Res.string.feature_collection_sheet_cancel))
                 }
                 AppButton(
@@ -284,7 +324,11 @@ private fun PaymentEditorSheet(
 }
 
 @Composable
-private fun DetailField(label: org.jetbrains.compose.resources.StringResource, value: String, onChange: (String) -> Unit) {
+private fun DetailField(
+    label: org.jetbrains.compose.resources.StringResource,
+    value: String,
+    onChange: (String) -> Unit,
+) {
     AppOutlinedTextField(
         value = value,
         onValueChange = onChange,
@@ -297,13 +341,16 @@ private fun DetailField(label: org.jetbrains.compose.resources.StringResource, v
 private fun ResultDialog(dialog: CollectionSheetDetailsState.Dialog, onDismiss: () -> Unit) {
     val failed = stringResource(Res.string.feature_collection_sheet_failed_to_save_collection_sheet)
     val text = when (dialog) {
-        CollectionSheetDetailsState.Dialog.Submitted -> stringResource(Res.string.feature_collection_sheet_save_collection_sheet_success)
+        CollectionSheetDetailsState.Dialog.Submitted ->
+            stringResource(Res.string.feature_collection_sheet_save_collection_sheet_success)
         CollectionSheetDetailsState.Dialog.Offline -> stringResource(Res.string.feature_collection_sheet_offline)
         is CollectionSheetDetailsState.Dialog.Failed -> dialog.serverMessage?.let { "$failed\n$it" } ?: failed
     }
     AlertDialog(
         onDismissRequest = onDismiss,
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.feature_collection_sheet_ok)) } },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.feature_collection_sheet_ok)) }
+        },
         text = { Text(text) },
         modifier = Modifier.testTag(CollectionSheetDetailsTestTags.DIALOG),
     )

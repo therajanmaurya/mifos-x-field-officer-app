@@ -9,23 +9,23 @@
  */
 package kpt.feature.client.profile
 
-import kpt.core.model.recent.RecentRecord
-import kpt.core.model.recent.RecentKind
-import kpt.core.data.recent.RecentRecordsRepository
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.filterIsInstance
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.viewmodel.BaseViewModel
 import kpt.core.data.client.ClientRepository
+import kpt.core.data.recent.RecentRecordsRepository
 import kpt.core.model.client.Client
+import kpt.core.model.recent.RecentKind
+import kpt.core.model.recent.RecentRecord
 import kpt.core.ui.util.imageToByteArray
 import kpt.feature.client.profile.components.ClientProfileActionItem
 
@@ -78,7 +78,13 @@ internal class ClientProfileViewModel(
     init {
         // Home's "Recently opened": record this visit once, when the record first loads.
         client.filterIsInstance<ScreenState.Content<Client>>().take(1)
-            .onEach { content -> content.data.let { recents.record(RecentRecord(RecentKind.CLIENT, it.id.toLong(), it.displayName.orEmpty(), it.accountNo)) } }
+            .onEach { content ->
+                content.data.let {
+                    recents.record(
+                        RecentRecord(RecentKind.CLIENT, it.id.toLong(), it.displayName.orEmpty(), it.accountNo),
+                    )
+                }
+            }
             .launchIn(viewModelScope)
     }
 

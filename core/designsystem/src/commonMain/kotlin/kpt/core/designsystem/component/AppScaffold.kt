@@ -44,8 +44,8 @@ import kpt.core.designsystem.icon.AppIcons
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScaffold(
-    onBackPressed: () -> Unit = {},
     modifier: Modifier = Modifier,
+    onBackPressed: () -> Unit = {},
     title: String? = null,
     floatingActionButtonContent: FloatingActionButtonContent? = null,
     pullToRefreshState: AppPullToRefreshState = rememberAppPullToRefreshState(),

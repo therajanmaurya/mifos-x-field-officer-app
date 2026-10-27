@@ -54,7 +54,10 @@ internal class ReportRepositoryImpl(
             ttl = AppStoreRegistry.Ttl.REPORT_TYPES,
         )
 
-    override fun reportParametersStream(reportName: String, scope: CoroutineScope): ScreenDataStream<List<ReportParameter>> {
+    override fun reportParametersStream(
+        reportName: String,
+        scope: CoroutineScope,
+    ): ScreenDataStream<List<ReportParameter>> {
         return parameterStore.asScreenStream(
             key = reportName,
             cacheKey = AppCacheKeys.ReportParameters.forReport(reportName),
@@ -67,7 +70,10 @@ internal class ReportRepositoryImpl(
 
     // Options are the parameter's OWN report, run with `parameterType=true` (+ the parent's value),
     // through the same store as a report run — one read path. Cached: an office list is reference data.
-    override suspend fun parameterOptions(parameterName: String, parentValues: Map<String, String>): List<ReportOption>? =
+    override suspend fun parameterOptions(
+        parameterName: String,
+        parentValues: Map<String, String>,
+    ): List<ReportOption>? =
         runStore.freshOrCached(GetRunReportWithQueryKey(parameterName, parentValues + (PARAMETER_TYPE to "true")))
             ?.toReportOptions()
 

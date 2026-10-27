@@ -9,24 +9,24 @@
  */
 package kpt.feature.loan.profile
 
-import kpt.core.model.recent.RecentRecord
-import kpt.core.model.recent.RecentKind
-import kpt.core.data.recent.RecentRecordsRepository
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.filterIsInstance
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.mapContent
 import kpt.core.base.ui.viewmodel.BaseViewModel
 import kpt.core.data.loan.LoanRepository
+import kpt.core.data.recent.RecentRecordsRepository
 import kpt.core.model.objects.account.loan.loanWithAssociations.LoanStatus
 import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
+import kpt.core.model.recent.RecentKind
+import kpt.core.model.recent.RecentRecord
 import kpt.feature.loan.profile.components.LoanProfileActionItem
 
 /**
@@ -77,7 +77,18 @@ internal class LoanProfileViewModel(
     init {
         // Home's "Recently opened": record this visit once, when the record first loads.
         loan.filterIsInstance<ScreenState.Content<LoanWithAssociations>>().take(1)
-            .onEach { content -> content.data.let { recents.record(RecentRecord(RecentKind.LOAN, (it.id ?: loanId).toLong(), it.loanProductName.orEmpty(), it.accountNo, detail = it.clientName)) } }
+            .onEach { content ->
+                val data = content.data
+                recents.record(
+                    RecentRecord(
+                        RecentKind.LOAN,
+                        (data.id ?: loanId).toLong(),
+                        data.loanProductName.orEmpty(),
+                        data.accountNo,
+                        detail = data.clientName,
+                    ),
+                )
+            }
             .launchIn(viewModelScope)
     }
 

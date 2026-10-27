@@ -11,9 +11,9 @@ package kpt.feature.center.detail
 
 import androidx.compose.runtime.Composable
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.designsystem.theme.KptTheme
 import kpt.core.model.center.Center
 import kpt.core.model.group.Group
-import kpt.core.designsystem.theme.KptTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /*

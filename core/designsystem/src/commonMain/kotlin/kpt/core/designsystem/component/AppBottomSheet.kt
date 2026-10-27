@@ -91,11 +91,12 @@ fun AppBottomSheet(
 fun AppBottomSheetOptionItem(
     label: String,
     icon: ImageVector,
+    modifier: Modifier = Modifier,
     iconBackgroundColor: Color = KptTheme.colorScheme.onPrimary,
     onClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(DesignToken.padding.large)
             .clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -126,11 +127,12 @@ fun AppBottomSheetOptionItem(
 fun AppBottomSheetOptionItem(
     label: String,
     icon: ImageVector,
+    modifier: Modifier = Modifier,
     elevation: Dp = DesignToken.elevation.elevation,
     onClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(DesignToken.padding.large)
             .clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -161,9 +163,10 @@ fun AppBottomSheetOptionItem(
     label: String,
     icon: ImageVector,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(DesignToken.padding.large)
             .clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally,

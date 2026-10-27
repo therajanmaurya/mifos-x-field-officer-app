@@ -85,7 +85,6 @@ internal fun LoanTransactionsScreen(
     LoanTransactionsContent(
         transactions = transactions,
         onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
-        onBackPressed = onBackPressed,
         modifier = modifier,
     )
 }
@@ -95,7 +94,6 @@ internal fun LoanTransactionsScreen(
 internal fun LoanTransactionsContent(
     transactions: ScreenState<List<TransactionRow>>,
     onAction: (LoanTransactionsAction) -> Unit,
-    onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AppScaffold(

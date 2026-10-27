@@ -22,10 +22,10 @@ import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.datatable.impl.DataTableCommandRepositoryImpl
 import kpt.core.data.infra.testMutationGateway
 import kpt.core.model.datatable.DataTable
+import kpt.core.model.datatable.DeleteDataTablesDatatableAppTableIdDatatableIdResponse
 import kpt.core.model.objects.users.UserLocation
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.datatable.api.DataTableApi
-import kpt.core.model.datatable.DeleteDataTablesDatatableAppTableIdDatatableIdResponse
 import kpt.core.network.mifos.datatable.dto.GetDataTablesResponse
 import kpt.core.store.datatable.DataTableDataKey
 import org.mobilenativefoundation.store.store5.Fetcher
@@ -50,7 +50,10 @@ class DataTableRepositoryTest {
     private var nextRowId = 3
     private val serverPath = mutableListOf<UserLocation>()
 
-    private fun row(id: Int, value: String) = JsonObject(mapOf("id" to JsonPrimitive(id), "value" to JsonPrimitive(value)))
+    private fun row(
+        id: Int,
+        value: String,
+    ) = JsonObject(mapOf("id" to JsonPrimitive(id), "value" to JsonPrimitive(value)))
 
     /** The cached rows, keyed as `cachedRead` keys them. */
     private val cache = MutableStateFlow<Map<Any, Any>>(emptyMap())
@@ -74,17 +77,29 @@ class DataTableRepositoryTest {
             error("reads go through the store")
         override suspend fun getUserPathTracking(userId: Int): List<UserLocation> = error("reads go through the store")
 
-        override suspend fun deleteDatatableEntry(datatable: String, apptableId: Long, datatableId: Long): DeleteDataTablesDatatableAppTableIdDatatableIdResponse {
+        override suspend fun deleteDatatableEntry(
+            datatable: String,
+            apptableId: Long,
+            datatableId: Long,
+        ): DeleteDataTablesDatatableAppTableIdDatatableIdResponse {
             serverRows.removeAll { it.id() == datatableId.toInt() }
             return DeleteDataTablesDatatableAppTableIdDatatableIdResponse()
         }
 
-        override suspend fun createEntryInDataTable(dataTableName: String, entityId: Int, requestPayload: Map<String, String>): GenericResponse {
+        override suspend fun createEntryInDataTable(
+            dataTableName: String,
+            entityId: Int,
+            requestPayload: Map<String, String>,
+        ): GenericResponse {
             serverRows += row(nextRowId++, requestPayload.getValue("value"))
             return GenericResponse()
         }
 
-        override suspend fun deleteEntryOfDataTableManyToMany(dataTableName: String, entityId: Int, dataTableRowId: Int): GenericResponse {
+        override suspend fun deleteEntryOfDataTableManyToMany(
+            dataTableName: String,
+            entityId: Int,
+            dataTableRowId: Int,
+        ): GenericResponse {
             serverRows.removeAll { it.id() == dataTableRowId }
             return GenericResponse()
         }
@@ -105,7 +120,13 @@ class DataTableRepositoryTest {
     fun aCreatedRowLandsInTheRowsTheScreenObserves() = runTest {
         rowsStore.fresh(key)
 
-        assertIs<MutationResult.Applied<GenericResponse>>(commands.createEntryInDataTable("client_extra", 42, mapOf("value" to "c")))
+        assertIs<MutationResult.Applied<GenericResponse>>(
+            commands.createEntryInDataTable(
+                "client_extra",
+                42,
+                mapOf("value" to "c"),
+            ),
+        )
 
         assertEquals(listOf(1, 2, 3), cachedIds())
     }
@@ -142,7 +163,13 @@ class DataTableRepositoryTest {
         val brokenRows = cachedStore<DataTableDataKey, JsonArray> { error("read timed out") }
         val repo = DataTableCommandRepositoryImpl(api, testMutationGateway(), brokenRows, pathStore)
 
-        assertIs<MutationResult.Applied<GenericResponse>>(repo.createEntryInDataTable("client_extra", 42, mapOf("value" to "c")))
+        assertIs<MutationResult.Applied<GenericResponse>>(
+            repo.createEntryInDataTable(
+                "client_extra",
+                42,
+                mapOf("value" to "c"),
+            ),
+        )
         assertEquals(3, serverRows.size)
     }
 }

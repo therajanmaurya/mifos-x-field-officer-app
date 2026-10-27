@@ -9,22 +9,20 @@
  */
 package kpt.core.store.client
 
-import kpt.core.model.client.AddressConfiguration as AddressConfigurationModel
-import kpt.core.model.client.AddressTemplate as AddressTemplateModel
-import kpt.core.model.client.ClientsTemplate
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
 import kpt.core.database.client.entity.AddressConfiguration
 import kpt.core.database.client.entity.AddressTemplate
-import kpt.core.database.client.entity.ClientsTemplateEntity
 import kpt.core.model.client.ClientCloseTemplateResponse
+import kpt.core.model.client.ClientsTemplate
 import kpt.core.model.shared.CollateralItem
 import kpt.core.network.mifos.client.api.ClientApi
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys
 import org.mobilenativefoundation.store.store5.Store
+import kpt.core.model.client.AddressConfiguration as AddressConfigurationModel
+import kpt.core.model.client.AddressTemplate as AddressTemplateModel
 
 /**
  * Catalogue and template reads for client — option lists and form templates with no table of their

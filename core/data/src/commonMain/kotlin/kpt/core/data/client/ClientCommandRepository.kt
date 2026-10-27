@@ -9,10 +9,13 @@
  */
 package kpt.core.data.client
 
-import kpt.core.model.objects.noncoreobjects.DocumentUpload
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.model.client.Client
 import kpt.core.model.client.ClientPayload
+import kpt.core.model.client.PostClientAddressRequest
+import kpt.core.model.client.PostClientAddressResponse
+import kpt.core.model.client.PostClientsClientIdRequest
+import kpt.core.model.client.PostClientsClientIdResponse
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.clients.AssignStaffRequest
 import kpt.core.model.objects.clients.ClientAddressRequest
@@ -20,13 +23,10 @@ import kpt.core.model.objects.clients.ClientCloseRequest
 import kpt.core.model.objects.clients.CollateralPayload
 import kpt.core.model.objects.clients.ProposeTransferRequest
 import kpt.core.model.objects.clients.UpdateSavingsAccountRequest
+import kpt.core.model.objects.noncoreobjects.DocumentUpload
 import kpt.core.model.objects.noncoreobjects.IdentifierPayload
 import kpt.core.model.shared.GenericResponse
 import kpt.core.model.shared.PinpointLocationActionResponse
-import kpt.core.model.client.PostClientAddressRequest
-import kpt.core.model.client.PostClientAddressResponse
-import kpt.core.model.client.PostClientsClientIdRequest
-import kpt.core.model.client.PostClientsClientIdResponse
 
 /**
  * Every client write, as an explicit outcome.
@@ -54,7 +54,11 @@ interface ClientCommandRepository {
      * already means "the server accepted it", and the response object carries nothing beyond that.
      */
 
-    suspend fun activate1(clientId: Long, postClientsClientIdRequest: PostClientsClientIdRequest, command: String? = null): MutationResult<PostClientsClientIdResponse>
+    suspend fun activate1(
+        clientId: Long,
+        postClientsClientIdRequest: PostClientsClientIdRequest,
+        command: String? = null,
+    ): MutationResult<PostClientsClientIdResponse>
 
     /** The photo as bytes + name + MIME type; the multipart encoding is core/data's job, not the caller's. */
     suspend fun uploadClientImage(clientId: Int, image: DocumentUpload): MutationResult<Unit>
@@ -65,15 +69,29 @@ interface ClientCommandRepository {
 
     suspend fun updateClient(clientId: Int, clientPayload: ClientPayload?): MutationResult<Client>
 
-    suspend fun addClientPinpointLocation(clientId: Int, clientAddressRequest: ClientAddressRequest?): MutationResult<PinpointLocationActionResponse>
+    suspend fun addClientPinpointLocation(
+        clientId: Int,
+        clientAddressRequest: ClientAddressRequest?,
+    ): MutationResult<PinpointLocationActionResponse>
 
-    suspend fun deleteClientPinpointLocation(apptableId: Int, datatableId: Int): MutationResult<PinpointLocationActionResponse>
+    suspend fun deleteClientPinpointLocation(
+        apptableId: Int,
+        datatableId: Int,
+    ): MutationResult<PinpointLocationActionResponse>
 
-    suspend fun updateClientPinpointLocation(apptableId: Int, datatableId: Int, address: ClientAddressRequest?): MutationResult<PinpointLocationActionResponse>
+    suspend fun updateClientPinpointLocation(
+        apptableId: Int,
+        datatableId: Int,
+        address: ClientAddressRequest?,
+    ): MutationResult<PinpointLocationActionResponse>
 
     suspend fun activateClient(clientId: Int, clientActivate: ActivatePayload?): MutationResult<GenericResponse>
 
-    suspend fun createClientAddress(clientId: Int, addressTypeId: Int, addressPayload: PostClientAddressRequest): MutationResult<PostClientAddressResponse>
+    suspend fun createClientAddress(
+        clientId: Int,
+        addressTypeId: Int,
+        addressPayload: PostClientAddressRequest,
+    ): MutationResult<PostClientAddressResponse>
 
     suspend fun assignStaff(clientId: Int, payload: AssignStaffRequest): MutationResult<Unit>
 
@@ -91,5 +109,9 @@ interface ClientCommandRepository {
 
     suspend fun createClientIdentifier(clientId: Long, identifierPayload: IdentifierPayload): MutationResult<Unit>
 
-    suspend fun updateClientIdentifier(clientId: Long, identifierId: Long, identifierPayload: IdentifierPayload): MutationResult<GenericResponse>
+    suspend fun updateClientIdentifier(
+        clientId: Long,
+        identifierId: Long,
+        identifierPayload: IdentifierPayload,
+    ): MutationResult<GenericResponse>
 }

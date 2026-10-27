@@ -12,8 +12,6 @@ package kpt.feature.loan.newloan
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -38,6 +36,8 @@ import kpt.core.model.objects.account.loan.LoanApplicationInput
 import kpt.core.model.objects.account.loan.RepaymentSchedule
 import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.utils.ApiDateFormatter
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * The new INDIVIDUAL loan application — carried over from
@@ -114,8 +114,12 @@ internal class NewLoanApplicationViewModel(
      * product template is fetched again on resume (it is the server's, and may have changed).
      */
     private val draft = FormDraftSlot(
-        drafts, viewModelScope, CreateForm.LOAN.key, ownerId = state.clientId.toLong(),
-        LoanFormSnapshot.serializer(), LoanApplicationInput.serializer(),
+        drafts,
+        viewModelScope,
+        CreateForm.LOAN.key,
+        ownerId = state.clientId.toLong(),
+        LoanFormSnapshot.serializer(),
+        LoanApplicationInput.serializer(),
     )
 
     val offeredDraft: StateFlow<SavedFormDraft?> = draft.offered
@@ -151,9 +155,38 @@ internal class NewLoanApplicationViewModel(
             NewLoanApplicationAction.OnRetryTemplate ->
                 state.selectionId(LoanField.PRODUCT)?.let(::loadTemplate)
 
+            NewLoanApplicationAction.ResumeDraft,
+            NewLoanApplicationAction.DiscardDraft,
+            NewLoanApplicationAction.SaveDraft,
+            -> handleDraftAction(action)
+
+            is NewLoanApplicationAction.OnProductSelected,
+            is NewLoanApplicationAction.OnOptionSelected,
+            is NewLoanApplicationAction.OnNumberChanged,
+            is NewLoanApplicationAction.OnExternalIdChanged,
+            is NewLoanApplicationAction.OnToggled,
+            is NewLoanApplicationAction.OnDateChanged,
+            is NewLoanApplicationAction.OpenDatePicker,
+            NewLoanApplicationAction.CloseDatePicker,
+            -> handleFormEdit(action)
+
+            NewLoanApplicationAction.OnNext -> advance()
+            NewLoanApplicationAction.OnBack -> retreat()
+            NewLoanApplicationAction.OnRetrySchedule -> previewSchedule()
+            NewLoanApplicationAction.OnSubmit -> submit()
+        }
+    }
+
+    private fun handleDraftAction(action: NewLoanApplicationAction) {
+        when (action) {
             NewLoanApplicationAction.ResumeDraft -> draft.resume()?.let { restored ->
                 val productId = restored.selections[LoanField.PRODUCT]?.id ?: return@let
-                mutableStateFlow.value = state.copy(selections = restored.selections, template = null, schedule = null, step = LoanStep.DETAILS)
+                mutableStateFlow.value = state.copy(
+                    selections = restored.selections,
+                    template = null,
+                    schedule = null,
+                    step = LoanStep.DETAILS,
+                )
                 loadTemplate(productId, restore = restored)
             }
             NewLoanApplicationAction.DiscardDraft -> draft.discard()
@@ -162,7 +195,12 @@ internal class NewLoanApplicationViewModel(
                 keepDraft(payload, failure = failed?.msg ?: FAILED_MSG)
                 mutableStateFlow.value = state.copy(dialogState = failed?.copy(draftSaved = true))
             }
+            else -> Unit
+        }
+    }
 
+    private fun handleFormEdit(action: NewLoanApplicationAction) {
+        when (action) {
             is NewLoanApplicationAction.OnProductSelected -> {
                 // Clearing the WHOLE map, not the six the original reset: every option list in it
                 // came from the previous product's template.
@@ -208,10 +246,7 @@ internal class NewLoanApplicationViewModel(
             NewLoanApplicationAction.CloseDatePicker ->
                 mutableStateFlow.value = state.copy(activeDatePicker = null)
 
-            NewLoanApplicationAction.OnNext -> advance()
-            NewLoanApplicationAction.OnBack -> retreat()
-            NewLoanApplicationAction.OnRetrySchedule -> previewSchedule()
-            NewLoanApplicationAction.OnSubmit -> submit()
+            else -> Unit
         }
     }
 
@@ -313,10 +348,12 @@ internal class NewLoanApplicationViewModel(
                 // Land on the earliest step that owns a missing field, so the error is visible.
                 step = LoanStep.entries.first { step -> step.missing(state).isNotEmpty() },
             )
-            return
+        } else {
+            payload()?.let(::sendApplication)
         }
+    }
 
-        val payload = payload() ?: return
+    private fun sendApplication(payload: LoanApplicationInput) {
         lastPayload = payload
         mutableStateFlow.value = state.copy(isSubmitting = true, dialogState = null)
 
@@ -649,6 +686,7 @@ internal data class NewLoanApplicationState(
 
     sealed interface DialogState {
         data object Created : DialogState
+
         /** [draftSaved] = kept (offline automatically, or "Save as draft"), in Sync & Drafts. */
         data class Failed(val msg: String, val offline: Boolean = false, val draftSaved: Boolean = false) : DialogState
     }

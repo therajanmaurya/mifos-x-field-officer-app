@@ -87,19 +87,35 @@ internal class NoteCommandRepositoryImpl(
                 endpoint = { noteApi.deleteNote(resourceType = resourceType, resourceId = resourceId, noteId = it) },
                 localApply = { response ->
                     if (response != null) {
-                        itemStore.clear(NoteItemKey(resourceType = resourceType, resourceId = resourceId, noteId = noteId))
+                        itemStore.clear(
+                            NoteItemKey(
+                                resourceType = resourceType,
+                                resourceId = resourceId,
+                                noteId = noteId,
+                            ),
+                        )
                     }
                 },
             ),
             policy = MutationPolicy.OnlineRequired,
         )
 
-    override suspend fun updateNote(resourceType: String, resourceId: Long, noteId: Long, noteRequestDto: NoteRequestDto) =
+    override suspend fun updateNote(
+        resourceType: String,
+        resourceId: Long,
+        noteId: Long,
+        noteRequestDto: NoteRequestDto,
+    ) =
         gateway.command(
             CommandSpec(
                 payload = noteRequestDto,
                 endpoint = {
-                    noteApi.updateNote(resourceType = resourceType, resourceId = resourceId, noteId = noteId, noteRequestDto = it)
+                    noteApi.updateNote(
+                        resourceType = resourceType,
+                        resourceId = resourceId,
+                        noteId = noteId,
+                        noteRequestDto = it,
+                    )
                 },
                 localApply = { response -> if (response != null) ingest(resourceType, resourceId) },
             ),
@@ -157,7 +173,12 @@ internal class NoteCommandRepositoryImpl(
      */
     private suspend fun alreadyOnServer(draft: NoteDraft): Boolean {
         return orFalse {
-            notesStore.fresh(NoteKey(draft.resourceType, draft.resourceId)).any { it.noteContent?.trim() == draft.text.trim() }
+            notesStore.fresh(
+                NoteKey(
+                    draft.resourceType,
+                    draft.resourceId,
+                ),
+            ).any { it.noteContent?.trim() == draft.text.trim() }
         }
     }
 

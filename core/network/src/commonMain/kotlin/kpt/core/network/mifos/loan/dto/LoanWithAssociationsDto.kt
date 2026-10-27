@@ -83,7 +83,13 @@ data class LoanStatusDto(
 data class LoanTypeDto(val id: Int, val code: String? = null, val value: String? = null)
 
 @Serializable
-data class LoanCurrencyDto(val code: String? = null, val name: String? = null, val decimalPlaces: Int, val displaySymbol: String? = null, val displayLabel: String? = null)
+data class LoanCurrencyDto(
+    val code: String? = null,
+    val name: String? = null,
+    val decimalPlaces: Int,
+    val displaySymbol: String? = null,
+    val displayLabel: String? = null,
+)
 
 @Serializable
 data class LoanTimelineDto(
@@ -137,10 +143,25 @@ data class LoanSummaryDto(
 )
 
 @Serializable
-data class LoanRepaymentScheduleDto(val loanTermInDays: Int, val totalPrincipalDisbursed: Double, val totalOutstanding: Double, val periods: List<LoanPeriodDto>? = emptyList())
+data class LoanRepaymentScheduleDto(
+    val loanTermInDays: Int,
+    val totalPrincipalDisbursed: Double,
+    val totalOutstanding: Double,
+    val periods: List<LoanPeriodDto>? = emptyList(),
+)
 
 @Serializable
-data class LoanPeriodDto(val period: Int? = null, val dueDate: List<Int>? = null, val principalDue: Double? = null, val principalPaid: Double? = null, val principalOutstanding: Double? = null, val totalDueForPeriod: Double? = null, val totalPaidForPeriod: Double? = null, val totalOutstandingForPeriod: Double? = null, val complete: Boolean? = null)
+data class LoanPeriodDto(
+    val period: Int? = null,
+    val dueDate: List<Int>? = null,
+    val principalDue: Double? = null,
+    val principalPaid: Double? = null,
+    val principalOutstanding: Double? = null,
+    val totalDueForPeriod: Double? = null,
+    val totalPaidForPeriod: Double? = null,
+    val totalOutstandingForPeriod: Double? = null,
+    val complete: Boolean? = null,
+)
 
 @Serializable
 data class LoanTransactionDto(
@@ -229,13 +250,25 @@ data class PaymentTypeDto(
 )
 
 @Serializable
-data class LoanChargeDto(val id: Long, val name: String? = null, val amount: Double, val amountPaid: Double, val amountOutstanding: Double, val paid: Boolean = false, val waived: Boolean = false)
+data class LoanChargeDto(
+    val id: Long,
+    val name: String? = null,
+    val amount: Double,
+    val amountPaid: Double,
+    val amountOutstanding: Double,
+    val paid: Boolean = false,
+    val waived: Boolean = false,
+)
 
 @Serializable
 data class LoanNoteDto(val id: Long, val note: String? = null, val createdOn: String? = null)
 
 @Serializable
-data class LoanDelinquentDto(val pastDueDays: Int, val delinquentAmount: Double, val nextPaymentDueDate: List<Int>? = null)
+data class LoanDelinquentDto(
+    val pastDueDays: Int,
+    val delinquentAmount: Double,
+    val nextPaymentDueDate: List<Int>? = null,
+)
 data class NoteDto(
     val id: Long,
     val note: String?,

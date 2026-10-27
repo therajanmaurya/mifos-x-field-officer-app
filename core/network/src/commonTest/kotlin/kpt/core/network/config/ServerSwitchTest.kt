@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.config
 
@@ -46,7 +46,11 @@ class ServerSwitchTest {
         )
 
         client.get("offices")
-        assertEquals("https://apis.mifos.community/1.0/field/v1/offices" to "mifos-bank-1", seen.last(), "the default is unchanged")
+        assertEquals(
+            "https://apis.mifos.community/1.0/field/v1/offices" to "mifos-bank-1",
+            seen.last(),
+            "the default is unchanged",
+        )
 
         val other = ServerConfig("https://", "branch.example.org", "/fineract-provider/api/v1/", "8443", "branch-7")
         configs.update("mifos", baseUrl = other.baseUrl(), headers = other.networkHeaders())
@@ -55,6 +59,10 @@ class ServerSwitchTest {
 
         configs.reset("mifos")
         client.get("offices")
-        assertEquals("https://apis.mifos.community/1.0/field/v1/offices" to "mifos-bank-1", seen.last(), "reset returns to app-profile")
+        assertEquals(
+            "https://apis.mifos.community/1.0/field/v1/offices" to "mifos-bank-1",
+            seen.last(),
+            "reset returns to app-profile",
+        )
     }
 }

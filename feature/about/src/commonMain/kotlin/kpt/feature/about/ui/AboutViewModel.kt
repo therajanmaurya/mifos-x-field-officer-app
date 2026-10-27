@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.about.ui
 
@@ -126,7 +126,13 @@ internal fun aboutLinks(config: AboutConfig): List<AboutLink> {
         config.productUrl.trim().takeIf { it.isNotEmpty() }?.let { AboutLink(AboutLinkKind.PRODUCT_SITE, it) },
         config.communityUrl.trim().takeIf { it.isNotEmpty() }?.let { AboutLink(AboutLinkKind.COMMUNITY, it) },
         config.websiteUrl.trim().takeIf { it.isNotEmpty() }
-            ?.let { AboutLink(AboutLinkKind.WEBSITE, it, detail = it.removePrefix("https://").removePrefix("http://")) },
+            ?.let {
+                AboutLink(
+                    AboutLinkKind.WEBSITE,
+                    it,
+                    detail = it.removePrefix("https://").removePrefix("http://"),
+                )
+            },
         config.orgEmail.trim().takeIf { it.isNotEmpty() }
             ?.let { AboutLink(AboutLinkKind.CONTACT, "mailto:$it", detail = it) },
         source.takeIf { it.isNotEmpty() }?.let { AboutLink(AboutLinkKind.SOURCE_CODE, it) },

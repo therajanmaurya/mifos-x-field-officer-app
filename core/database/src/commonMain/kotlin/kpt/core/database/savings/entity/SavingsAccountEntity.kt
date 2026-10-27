@@ -43,15 +43,33 @@ data class SavingsAccountEntity(
 
     val productName: String? = null,
 
-    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNSPECIFIED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
+    @ColumnInfo(
+        index = true,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
+    )
     val status: SavingsAccountStatusEntity? = null,
 
-    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNSPECIFIED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
+    @ColumnInfo(
+        index = true,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
+    )
     val currency: SavingAccountCurrencyEntity? = null,
 
     val accountBalance: Double? = null,
 
-    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNSPECIFIED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
+    @ColumnInfo(
+        index = true,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
+    )
     val depositType: SavingAccountDepositTypeEntity? = null,
 
     val lastActiveTransactionDate: List<Int>? = null,

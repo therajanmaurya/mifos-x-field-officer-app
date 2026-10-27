@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.screen.ScreenContent
-import kpt.core.model.objects.note.Note
 import kpt.core.designsystem.icon.AppIcons
+import kpt.core.model.objects.note.Note
 import kpt.feature.note.generated.resources.Res
 import kpt.feature.note.generated.resources.feature_note_add_item
 import kpt.feature.note.generated.resources.feature_note_button_cancel

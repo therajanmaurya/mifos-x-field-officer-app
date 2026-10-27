@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.database.offline.dao
 
@@ -46,7 +46,10 @@ interface OfflineSyncDao {
     @Query("DELETE FROM offline_records WHERE userId = :userId AND kind = :kind AND id = :id")
     suspend fun deleteRecord(userId: Long, kind: String, id: Int)
 
-    @Query("DELETE FROM offline_records WHERE userId = :userId AND parentKind = :parentKind AND parentId = :parentId AND chosen = 0")
+    @Query(
+        "DELETE FROM offline_records WHERE userId = :userId AND parentKind = :parentKind " +
+            "AND parentId = :parentId AND chosen = 0",
+    )
     suspend fun deleteChildren(userId: Long, parentKind: String, parentId: Int)
 
     @Query("SELECT * FROM offline_records WHERE userId = :userId AND parentKind = :parentKind AND parentId = :parentId")
@@ -67,6 +70,9 @@ interface OfflineSyncDao {
     suspend fun updateJob(job: SyncJobEntity)
 
     /** Keep the newest few jobs per user — the screen shows the running or the last one. */
-    @Query("DELETE FROM sync_jobs WHERE userId = :userId AND id NOT IN (SELECT id FROM sync_jobs WHERE userId = :userId ORDER BY id DESC LIMIT :keep)")
+    @Query(
+        "DELETE FROM sync_jobs WHERE userId = :userId AND id NOT IN " +
+            "(SELECT id FROM sync_jobs WHERE userId = :userId ORDER BY id DESC LIMIT :keep)",
+    )
     suspend fun trimJobs(userId: Long, keep: Int)
 }

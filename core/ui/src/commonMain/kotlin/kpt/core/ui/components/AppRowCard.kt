@@ -42,11 +42,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppRowCard(
-    modifier: Modifier = Modifier,
     title: String,
     leftValues: List<TextUtil>,
     rightValues: List<TextUtil>,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     AppListingComponentOutline {
         Row(
@@ -206,13 +206,13 @@ fun AppRowTextWithButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppRowWithLabels(
-    modifier: Modifier = Modifier,
     byteArray: ByteArray?,
     title: String,
     subTitle: String,
     label1: TextUtil,
     label2: TextUtil,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     AppListingComponentOutline {
         Row(
@@ -227,7 +227,7 @@ fun AppRowWithLabels(
                 modifier = Modifier.size(DesignToken.sizes.iconMedium),
             )
             Row(
-                modifier.padding(start = DesignToken.padding.small).fillMaxWidth(),
+                Modifier.padding(start = DesignToken.padding.small).fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -290,7 +290,7 @@ fun AppDropDownRow(
             modifier = Modifier.size(DesignToken.sizes.iconExtraLarge),
         )
         Row(
-            modifier
+            Modifier
                 .fillMaxWidth()
                 .padding(start = DesignToken.padding.extraSmall),
             horizontalArrangement = Arrangement.SpaceBetween,

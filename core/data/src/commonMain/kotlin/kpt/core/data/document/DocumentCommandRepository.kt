@@ -33,5 +33,10 @@ interface DocumentCommandRepository {
 
     suspend fun removeDocument(entityType: String, entityId: Int, documentId: Int): MutationResult<GenericResponse>
 
-    suspend fun updateDocument(entityType: String, entityId: Int, documentId: Int, upload: DocumentUpload): MutationResult<GenericResponse>
+    suspend fun updateDocument(
+        entityType: String,
+        entityId: Int,
+        documentId: Int,
+        upload: DocumentUpload,
+    ): MutationResult<GenericResponse>
 }

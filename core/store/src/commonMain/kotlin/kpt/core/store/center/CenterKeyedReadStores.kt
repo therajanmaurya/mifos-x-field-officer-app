@@ -9,22 +9,18 @@
  */
 package kpt.core.store.center
 
-import kpt.core.model.center.CenterAccounts as CenterAccountsModel
-import kpt.core.model.center.CenterWithAssociations as CenterWithAssociationsModel
-import kpt.core.model.center.Center
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
-import kpt.core.database.center.entity.CenterAccounts
-import kpt.core.database.center.entity.CenterEntity
-import kpt.core.database.center.entity.CenterWithAssociations
+import kpt.core.model.center.Center
 import kpt.core.model.objects.databaseobjects.CollectionSheet
 import kpt.core.model.shared.Payload
 import kpt.core.network.mifos.center.api.CenterApi
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys
 import org.mobilenativefoundation.store.store5.Store
+import kpt.core.model.center.CenterAccounts as CenterAccountsModel
+import kpt.core.model.center.CenterWithAssociations as CenterWithAssociationsModel
 
 /**
  * Keyed reads for center with no table of their own — cached through the shared read cache so the
@@ -43,7 +39,11 @@ fun provideGetCenterAccountsStore(
 )
 
 @StoreProvider(id = "centerGetCenterWithGroupMembersAndCollectionMeetingCalendar", ttl = "12h")
-@CacheKey(fn = "forKey", key = "centerGetCenterWithGroupMembersAndCollectionMeetingCalendar:{key}", params = ["key:String"])
+@CacheKey(
+    fn = "forKey",
+    key = "centerGetCenterWithGroupMembersAndCollectionMeetingCalendar:{key}",
+    params = ["key:String"],
+)
 fun provideGetCenterWithGroupMembersAndCollectionMeetingCalendarStore(
     centerApi: CenterApi,
     cache: ApiResponseCacheDao,
@@ -78,7 +78,12 @@ fun provideGetAllCentersInOfficeStore(
 ): Store<GetAllCentersInOfficeKey, List<Center>> = cachedRead(
     dao = cache,
     keyOf = { key -> AppCacheKeys.CenterGetAllCentersInOffice.forKey("${key.officeId}:${key.additionalParams}") },
-    fetch = { key -> centerApi.getAllCentersInOffice(officeId = key.officeId, additionalParams = key.additionalParams) },
+    fetch = { key ->
+        centerApi.getAllCentersInOffice(
+            officeId = key.officeId,
+            additionalParams = key.additionalParams,
+        )
+    },
 )
 
 /**

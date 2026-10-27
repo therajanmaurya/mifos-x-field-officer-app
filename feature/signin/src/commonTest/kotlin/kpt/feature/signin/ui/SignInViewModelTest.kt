@@ -25,9 +25,9 @@ import kpt.core.data.testing.ExperimentalDataTestingApi
 import kpt.core.data.testing.FakeServerConfigRepository
 import kpt.core.data.testing.FakeSessionRepository
 import kpt.core.domain.validation.CredentialRules
-import kpt.core.model.objects.users.User
 import kpt.core.model.auth.PostAuthenticationRequest
 import kpt.core.model.auth.PostAuthenticationResponse
+import kpt.core.model.objects.users.User
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -62,7 +62,10 @@ class SignInViewModelTest {
 
         override suspend fun signOut(clearLocalData: Boolean): MutationResult<Unit> = error("not used by sign-in")
 
-        override suspend fun changePassword(newPassword: String, repeatPassword: String): MutationResult<Unit> = error("not used by sign-in")
+        override suspend fun changePassword(
+            newPassword: String,
+            repeatPassword: String,
+        ): MutationResult<Unit> = error("not used by sign-in")
     }
 
     /**
@@ -141,7 +144,11 @@ class SignInViewModelTest {
         // test stores it the way that repository does. The flag follows the stored credential
         // rather than being set at sign-in, because the session survives a process death the
         // ViewModel does not.
-        prefs.session.value = User(username = "officer", base64EncodedAuthenticationKey = "a2V5", isAuthenticated = true)
+        prefs.session.value = User(
+            username = "officer",
+            base64EncodedAuthenticationKey = "a2V5",
+            isAuthenticated = true,
+        )
         runCurrent()
         assertTrue(model.stateFlow.value.hasStoredSession)
     }
@@ -258,7 +265,8 @@ class SignInViewModelTest {
 
     @Test
     fun aServerRejectionStillCountsTowardTheLockout() = runTest(dispatcher) {
-        val model = signInViewModel(FakeAuth(MutationResult.Failed(RuntimeException("HTTP 401 Unauthorized"), rolledBack = false)))
+        val rejected = MutationResult.Failed(RuntimeException("HTTP 401 Unauthorized"), rolledBack = false)
+        val model = signInViewModel(FakeAuth(rejected))
         submitValid(model)
         runCurrent()
         assertEquals(SignInError.Rejected, model.stateFlow.value.error)

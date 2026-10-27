@@ -84,8 +84,12 @@ internal class CreateGroupViewModel(
 
     /** A create that did not land is kept here — resumable on this form, listed in Sync & Drafts. */
     private val draft = FormDraftSlot(
-        drafts, viewModelScope, CreateForm.GROUP.key, ownerId = null,
-        CreateGroupState.serializer(), GroupPayload.serializer(),
+        drafts,
+        viewModelScope,
+        CreateForm.GROUP.key,
+        ownerId = null,
+        CreateGroupState.serializer(),
+        GroupPayload.serializer(),
     )
 
     val offeredDraft: StateFlow<SavedFormDraft?> = draft.offered
@@ -116,12 +120,7 @@ internal class CreateGroupViewModel(
             is CreateGroupAction.UpdateActivationDate ->
                 mutableStateFlow.value = state.copy(activationDateMillis = action.millis)
 
-            is CreateGroupAction.UpdateActive -> mutableStateFlow.value = state.copy(
-                isActive = action.value,
-                // An inactive group has no activation date to send; clearing it here means the
-                // payload cannot carry a date for a group that is not being activated.
-                activationDateMillis = if (action.value) state.activationDateMillis else 0L,
-            )
+            is CreateGroupAction.UpdateActive -> mutableStateFlow.value = withActive(action.value)
 
             CreateGroupAction.Submit -> submit()
 
@@ -136,6 +135,19 @@ internal class CreateGroupViewModel(
             }
         }
     }
+
+    /**
+     * An inactive group has no activation date to send; clearing it here means the payload cannot
+     * carry a date for a group that is not being activated.
+     */
+    private fun withActive(active: Boolean): CreateGroupState =
+        state.copy(isActive = active, activationDateMillis = if (active) state.activationDateMillis else 0L)
+
+    private fun failedState(result: MutationResult<*>): CreateGroupState = state.copy(
+        isSubmitting = false,
+        error = CreateGroupError.Failed,
+        failureReason = result.failureReason { it.serverErrorMessage() },
+    )
 
     private fun submit() {
         val errors = state.validate()
@@ -164,20 +176,21 @@ internal class CreateGroupViewModel(
                 // Offline: kept automatically and sent on reconnect — the officer already chose to submit.
                 is MutationResult.Blocked -> if (result.isOffline) {
                     draft.keep(state.name, state.copy(isSubmitting = false), state.toPayload(), failure = null)
-                    mutableStateFlow.value = state.copy(isSubmitting = false, error = CreateGroupError.Offline, draftSaved = true)
+                    mutableStateFlow.value =
+                        state.copy(isSubmitting = false, error = CreateGroupError.Offline, draftSaved = true)
                 } else {
-                    mutableStateFlow.value = state.copy(isSubmitting = false, error = CreateGroupError.Failed, failureReason = result.failureReason { it.serverErrorMessage() })
+                    mutableStateFlow.value = failedState(result)
                 }
 
                 // Refused: the server's reason, and the choice to keep it (Save as draft) — never automatic,
                 // since resending a rejected create would only fail again.
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "create group failed" }
-                    mutableStateFlow.value = state.copy(isSubmitting = false, error = CreateGroupError.Failed, failureReason = result.failureReason { it.serverErrorMessage() })
+                    mutableStateFlow.value = failedState(result)
                 }
 
                 is MutationResult.Conflicted ->
-                    mutableStateFlow.value = state.copy(isSubmitting = false, error = CreateGroupError.Failed, failureReason = result.failureReason { it.serverErrorMessage() })
+                    mutableStateFlow.value = failedState(result)
             }
         }
     }

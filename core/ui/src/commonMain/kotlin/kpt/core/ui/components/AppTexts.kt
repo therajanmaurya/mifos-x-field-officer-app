@@ -30,9 +30,9 @@ import kpt.core.designsystem.theme.AppTheme
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.ui.generated.resources.Res
 import kpt.core.ui.generated.resources.core_ui_ic_centers_24dp
-import kpt.core.ui.util.DevicePreview
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppTextTitleDescSingleLine(
@@ -146,7 +146,7 @@ fun AppTitleDescSingleLineEqual(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun AppTextTitleDescSingleLinePreview(
     modifier: Modifier = Modifier,
@@ -160,7 +160,7 @@ private fun AppTextTitleDescSingleLinePreview(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun AppTextTitleDescDoubleLinePreview(
     modifier: Modifier = Modifier,
@@ -175,7 +175,7 @@ private fun AppTextTitleDescDoubleLinePreview(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun AppTextTitleDescDrawableSingleLinePreview(
     modifier: Modifier = Modifier,
@@ -190,7 +190,7 @@ private fun AppTextTitleDescDrawableSingleLinePreview(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun AppTitleDescSingleLineEqualPreview(
     modifier: Modifier = Modifier,

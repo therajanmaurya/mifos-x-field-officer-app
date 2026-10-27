@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos.dashboard.api
 
@@ -16,13 +16,16 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.network.mifos.dashboard.dto.AppUserDto
-import kpt.core.network.mifos.dashboard.dto.BusinessDateDto
-import kpt.core.network.mifos.dashboard.dto.LoanListPageDto
 import kpt.core.network.mifos.dashboard.dto.BatchRequestDto
 import kpt.core.network.mifos.dashboard.dto.BatchResponseDto
+import kpt.core.network.mifos.dashboard.dto.BusinessDateDto
+import kpt.core.network.mifos.dashboard.dto.LoanListPageDto
 import kpt.core.network.mifos.dashboard.dto.SavingsListPageDto
 
-/** Reads behind the home dashboard that no other feature needed. Every figure is computed from these, never from a report. */
+/**
+ * Reads behind the home dashboard that no other feature needed. Every figure is computed from these,
+ * never from a report.
+ */
 @ApiBinding("mifos")
 interface DashboardApi {
 

@@ -239,7 +239,6 @@ fun ServerConfigScreen(
                 failure = state.failures[ServerConfigField.Tenant],
                 tag = ServerConfigTestTags.TENANT,
             )
-
         }
     }
 
@@ -376,7 +375,12 @@ private fun DemoCredentialsHint(accounts: List<DemoCredentials>) {
                 )
                 accounts.forEach {
                     Text(
-                        text = stringResource(Res.string.feature_settings_server_demo_account, it.role, it.username, it.password),
+                        text = stringResource(
+                            Res.string.feature_settings_server_demo_account,
+                            it.role,
+                            it.username,
+                            it.password,
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                     )

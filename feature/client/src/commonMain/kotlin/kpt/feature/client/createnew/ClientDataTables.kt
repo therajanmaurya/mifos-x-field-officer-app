@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.client.createnew
 
@@ -77,17 +77,21 @@ internal fun validateDataTables(
         for (column in table.entryColumns()) {
             val key = DataTableField(name, column.dataTableColumnName ?: continue)
             val raw = values[key]?.trim().orEmpty()
-            when {
-                // A BOOLEAN is never "missing" — unchecked is a value (false).
-                raw.isEmpty() && column.isRequired && column.columnDisplayType != ColumnType.BOOLEAN ->
-                    put(key, DataTableFieldError.REQUIRED)
-                raw.isNotEmpty() && column.columnDisplayType == ColumnType.INTEGER && raw.toLongOrNull() == null ->
-                    put(key, DataTableFieldError.NOT_A_NUMBER)
-                raw.isNotEmpty() && column.columnDisplayType == ColumnType.DECIMAL && raw.toDoubleOrNull() == null ->
-                    put(key, DataTableFieldError.NOT_A_NUMBER)
-            }
+            fieldError(column, raw)?.let { put(key, it) }
         }
     }
+}
+
+private fun fieldError(column: ColumnHeader, raw: String): DataTableFieldError? = when {
+    // A BOOLEAN is never "missing" — unchecked is a value (false).
+    raw.isEmpty() -> DataTableFieldError.REQUIRED.takeIf {
+        column.isRequired && column.columnDisplayType != ColumnType.BOOLEAN
+    }
+    column.columnDisplayType == ColumnType.INTEGER && raw.toLongOrNull() == null ->
+        DataTableFieldError.NOT_A_NUMBER
+    column.columnDisplayType == ColumnType.DECIMAL && raw.toDoubleOrNull() == null ->
+        DataTableFieldError.NOT_A_NUMBER
+    else -> null
 }
 
 /**

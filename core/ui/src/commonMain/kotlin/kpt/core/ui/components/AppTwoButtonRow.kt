@@ -48,10 +48,10 @@ fun AppTwoButtonRow(
     secondBtnText: String,
     onFirstBtnClick: () -> Unit,
     onSecondBtnClick: () -> Unit,
+    modifier: Modifier = Modifier,
     isButtonIconVisible: Boolean = true,
     isFirstButtonEnabled: Boolean = true,
     isSecondButtonEnabled: Boolean = true,
-    modifier: Modifier = Modifier,
     firstBtnTestTag: String? = null,
     secondBtnTestTag: String? = null,
 ) {

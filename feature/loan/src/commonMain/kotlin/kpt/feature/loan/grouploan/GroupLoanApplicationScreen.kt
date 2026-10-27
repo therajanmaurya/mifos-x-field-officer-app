@@ -32,13 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
-import kpt.core.base.ui.generated.resources.Res as BaseRes
 import kpt.core.base.ui.generated.resources.draft_save
 import kpt.core.base.ui.generated.resources.draft_saved
 import kpt.core.base.ui.generated.resources.draft_saved_offline
@@ -97,6 +94,9 @@ import kpt.feature.loan.generated.resources.feature_loan_term
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kpt.core.base.ui.generated.resources.Res as BaseRes
 
 /**
  * Carried over from `6b66e8a43:feature/loan/groupLoanAccount/GroupLoanAccountScreen.kt` — the
@@ -294,66 +294,135 @@ private fun ApplicationForm(
     state: GroupLoanApplicationState,
     template: GroupLoanTemplate,
     onAction: (GroupLoanApplicationAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    // Each dropdown is drawn only when the template OFFERS its options — the original's
-    // `template.xOptions?.let { }`, kept. A field the tenant does not configure is absent rather
-    // than an empty dropdown.
-    Dropdown(GroupLoanField.LOAN_PURPOSE, Res.string.feature_loan_purpose, template.loanPurposeOptions?.toOptions { it.id to it.name }, state, onAction)
-    Dropdown(GroupLoanField.LOAN_OFFICER, Res.string.feature_loan_officer, template.loanOfficerOptions?.toOptions { it.id to it.displayName }, state, onAction)
-    Dropdown(GroupLoanField.FUND, Res.string.feature_loan_fund, template.fundOptions?.toOptions { it.id to it.name }, state, onAction)
+    Column(modifier = modifier) {
+        // Each dropdown is drawn only when the template OFFERS its options — the original's
+        // `template.xOptions?.let { }`, kept. A field the tenant does not configure is absent rather
+        // than an empty dropdown.
+        Dropdown(
+            GroupLoanField.LOAN_PURPOSE,
+            Res.string.feature_loan_purpose,
+            template.loanPurposeOptions?.toOptions { it.id to it.name },
+            state,
+            onAction,
+        )
+        Dropdown(
+            GroupLoanField.LOAN_OFFICER,
+            Res.string.feature_loan_officer,
+            template.loanOfficerOptions?.toOptions { it.id to it.displayName },
+            state,
+            onAction,
+        )
+        Dropdown(
+            GroupLoanField.FUND,
+            Res.string.feature_loan_fund,
+            template.fundOptions?.toOptions { it.id to it.name },
+            state,
+            onAction,
+        )
 
-    DateField(GroupLoanDate.SUBMITTED_ON, Res.string.feature_loan_submission_date, state.submittedOn, onAction, GroupLoanApplicationTestTags.SUBMITTED_ON)
-    DateField(GroupLoanDate.EXPECTED_DISBURSEMENT, Res.string.feature_loan_disbursed_date, state.expectedDisbursement, onAction, GroupLoanApplicationTestTags.DISBURSEMENT_DATE)
+        DateField(
+            GroupLoanDate.SUBMITTED_ON,
+            Res.string.feature_loan_submission_date,
+            state.submittedOn,
+            onAction,
+            GroupLoanApplicationTestTags.SUBMITTED_ON,
+        )
+        DateField(
+            GroupLoanDate.EXPECTED_DISBURSEMENT,
+            Res.string.feature_loan_disbursed_date,
+            state.expectedDisbursement,
+            onAction,
+            GroupLoanApplicationTestTags.DISBURSEMENT_DATE,
+        )
 
-    // The original's External Id field is ABSENT, not inert. It wrote to a `rememberSaveable`
-    // that nothing read — `GroupLoanPayload` has no `externalId` member, in the fork OR at
-    // `6b66e8a43` — so an officer typed an identifier their back office needed and it was
-    // discarded on submit with no error. Same "absent, never inert" rule the unported nav
-    // affordances follow; restoring it means adding the field to the payload and proving Fineract
-    // accepts it (it enforces uniqueness, so a wrong guess fails the whole application).
-    // Tracked in CAPABILITY_GAPS as `group-loan-external-id-was-discarded`.
+        // The original's External Id field is ABSENT, not inert. It wrote to a `rememberSaveable`
+        // that nothing read — `GroupLoanPayload` has no `externalId` member, in the fork OR at
+        // `6b66e8a43` — so an officer typed an identifier their back office needed and it was
+        // discarded on submit with no error. Same "absent, never inert" rule the unported nav
+        // affordances follow; restoring it means adding the field to the payload and proving Fineract
+        // accepts it (it enforces uniqueness, so a wrong guess fails the whole application).
+        // Tracked in CAPABILITY_GAPS as `group-loan-external-id-was-discarded`.
 
-    NumberField(GroupLoanField.PRINCIPAL, Res.string.feature_loan_principal, state, onAction)
-    NumberField(GroupLoanField.NUMBER_OF_REPAYMENTS, Res.string.feature_loan_number_of_repayments, state, onAction)
-    NumberField(GroupLoanField.NOMINAL_INTEREST, Res.string.feature_loan_nominal, state, onAction)
-    NumberField(GroupLoanField.REPAID_EVERY, Res.string.feature_loan_repaid_every, state, onAction)
+        NumberField(GroupLoanField.PRINCIPAL, Res.string.feature_loan_principal, state, onAction)
+        NumberField(GroupLoanField.NUMBER_OF_REPAYMENTS, Res.string.feature_loan_number_of_repayments, state, onAction)
+        NumberField(GroupLoanField.NOMINAL_INTEREST, Res.string.feature_loan_nominal, state, onAction)
+        NumberField(GroupLoanField.REPAID_EVERY, Res.string.feature_loan_repaid_every, state, onAction)
 
-    // Its OWN dropdown. The original fed this payload field from the LOAN TERM's frequency.
-    Dropdown(GroupLoanField.REPAYMENT_FREQUENCY_TYPE, Res.string.feature_loan_repayment_frequency, template.repaymentFrequencyTypeOptions?.toOptions { it.id to it.value }, state, onAction)
+        // Its OWN dropdown. The original fed this payload field from the LOAN TERM's frequency.
+        Dropdown(
+            GroupLoanField.REPAYMENT_FREQUENCY_TYPE,
+            Res.string.feature_loan_repayment_frequency,
+            template.repaymentFrequencyTypeOptions?.toOptions { it.id to it.value },
+            state,
+            onAction,
+        )
 
-    NumberField(GroupLoanField.LOAN_TERM, Res.string.feature_loan_loan_terms, state, onAction)
-    Dropdown(GroupLoanField.LOAN_TERM_TYPE, Res.string.feature_loan_term, template.termFrequencyTypeOptions?.toOptions { it.id to it.value }, state, onAction)
+        NumberField(GroupLoanField.LOAN_TERM, Res.string.feature_loan_loan_terms, state, onAction)
+        Dropdown(
+            GroupLoanField.LOAN_TERM_TYPE,
+            Res.string.feature_loan_term,
+            template.termFrequencyTypeOptions?.toOptions { it.id to it.value },
+            state,
+            onAction,
+        )
 
-    Dropdown(GroupLoanField.AMORTIZATION, Res.string.feature_loan_amortization, template.amortizationTypeOptions?.toOptions { it.id to it.value }, state, onAction)
-    Dropdown(GroupLoanField.INTEREST_CALCULATION_PERIOD, Res.string.feature_loan_interest_calculation_period, template.interestCalculationPeriodTypeOptions?.toOptions { it.id to it.value }, state, onAction)
-    Dropdown(GroupLoanField.REPAYMENT_STRATEGY, Res.string.feature_loan_repayment_strategy, template.transactionProcessingStrategyOptions?.toOptions { it.id to it.name }, state, onAction)
+        Dropdown(
+            GroupLoanField.AMORTIZATION,
+            Res.string.feature_loan_amortization,
+            template.amortizationTypeOptions?.toOptions { it.id to it.value },
+            state,
+            onAction,
+        )
+        Dropdown(
+            GroupLoanField.INTEREST_CALCULATION_PERIOD,
+            Res.string.feature_loan_interest_calculation_period,
+            template.interestCalculationPeriodTypeOptions?.toOptions { it.id to it.value },
+            state,
+            onAction,
+        )
+        Dropdown(
+            GroupLoanField.REPAYMENT_STRATEGY,
+            Res.string.feature_loan_repayment_strategy,
+            template.transactionProcessingStrategyOptions?.toOptions { it.id to it.name },
+            state,
+            onAction,
+        )
 
-    Spacer(Modifier.height(KptTheme.spacing.sm))
+        Spacer(Modifier.height(KptTheme.spacing.sm))
 
-    AppCheckBox(
-        text = stringResource(Res.string.feature_loan_calculate_interest_for_exact_days_in),
-        checked = state.calculateExactDays,
-        onCheckChanged = { onAction(GroupLoanApplicationAction.OnExactDaysToggled(it)) },
-        modifier = Modifier.fillMaxWidth().testTag(GroupLoanApplicationTestTags.EXACT_DAYS),
-    )
+        AppCheckBox(
+            text = stringResource(Res.string.feature_loan_calculate_interest_for_exact_days_in),
+            checked = state.calculateExactDays,
+            onCheckChanged = { onAction(GroupLoanApplicationAction.OnExactDaysToggled(it)) },
+            modifier = Modifier.fillMaxWidth().testTag(GroupLoanApplicationTestTags.EXACT_DAYS),
+        )
 
-    Dropdown(GroupLoanField.INTEREST_TYPE, Res.string.feature_loan_interest_type_method, template.interestTypeOptions?.toOptions { it.id to it.value }, state, onAction)
+        Dropdown(
+            GroupLoanField.INTEREST_TYPE,
+            Res.string.feature_loan_interest_type_method,
+            template.interestTypeOptions?.toOptions { it.id to it.value },
+            state,
+            onAction,
+        )
 
-    Spacer(Modifier.height(KptTheme.spacing.md))
+        Spacer(Modifier.height(KptTheme.spacing.md))
 
-    AppButton(
-        onClick = { onAction(GroupLoanApplicationAction.OnSubmit) },
-        // Enabled, so tapping it REPORTS what is missing across a form this long.
-        enabled = !state.isSubmitting && !state.isLoadingTemplate,
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(DesignToken.spacing.dp44)
-            .testTag(GroupLoanApplicationTestTags.SUBMIT),
-    ) {
-        Text(text = stringResource(Res.string.feature_loan_submit), style = AppTypography.bodyLarge)
+        AppButton(
+            onClick = { onAction(GroupLoanApplicationAction.OnSubmit) },
+            // Enabled, so tapping it REPORTS what is missing across a form this long.
+            enabled = !state.isSubmitting && !state.isLoadingTemplate,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(DesignToken.spacing.dp44)
+                .testTag(GroupLoanApplicationTestTags.SUBMIT),
+        ) {
+            Text(text = stringResource(Res.string.feature_loan_submit), style = AppTypography.bodyLarge)
+        }
+
+        state.activeDatePicker?.let { which -> ApplicationDatePicker(which, state, onAction) }
     }
-
-    state.activeDatePicker?.let { which -> ApplicationDatePicker(which, state, onAction) }
 }
 
 /** Projects a template option list to (id, label), dropping entries with no id. */
@@ -372,24 +441,27 @@ private fun Dropdown(
     options: List<GroupLoanOption>?,
     state: GroupLoanApplicationState,
     onAction: (GroupLoanApplicationAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     // Absent when the tenant configures no options for it.
     options ?: return
     if (options.isEmpty()) return
 
-    Spacer(Modifier.height(KptTheme.spacing.md))
-    AppTextFieldDropdown(
-        value = state.selections[field]?.label.orEmpty(),
-        onOptionSelected = { index, _ ->
-            options.getOrNull(index)
-                ?.let { onAction(GroupLoanApplicationAction.OnOptionSelected(field, it)) }
-        },
-        options = options.map { it.label },
-        label = stringResource(label),
-        readOnly = true,
-        errorMessage = state.errorFor(field),
-        modifier = Modifier.fillMaxWidth().testTag(GroupLoanApplicationTestTags.dropdown(field)),
-    )
+    Column(modifier = modifier) {
+        Spacer(Modifier.height(KptTheme.spacing.md))
+        AppTextFieldDropdown(
+            value = state.selections[field]?.label.orEmpty(),
+            onOptionSelected = { index, _ ->
+                options.getOrNull(index)
+                    ?.let { onAction(GroupLoanApplicationAction.OnOptionSelected(field, it)) }
+            },
+            options = options.map { it.label },
+            label = stringResource(label),
+            readOnly = true,
+            errorMessage = state.errorFor(field),
+            modifier = Modifier.fillMaxWidth().testTag(GroupLoanApplicationTestTags.dropdown(field)),
+        )
+    }
 }
 
 @Composable
@@ -398,17 +470,20 @@ private fun NumberField(
     label: StringResource,
     state: GroupLoanApplicationState,
     onAction: (GroupLoanApplicationAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Spacer(Modifier.height(KptTheme.spacing.md))
-    AppOutlinedTextField(
-        value = state.number(field),
-        onValueChange = { onAction(GroupLoanApplicationAction.OnNumberChanged(field, it)) },
-        label = stringResource(label),
-        keyboardType = KeyboardType.Number,
-        isError = field in state.errors,
-        errorText = state.errorFor(field),
-        modifier = Modifier.fillMaxWidth().testTag(GroupLoanApplicationTestTags.number(field)),
-    )
+    Column(modifier = modifier) {
+        Spacer(Modifier.height(KptTheme.spacing.md))
+        AppOutlinedTextField(
+            value = state.number(field),
+            onValueChange = { onAction(GroupLoanApplicationAction.OnNumberChanged(field, it)) },
+            label = stringResource(label),
+            keyboardType = KeyboardType.Number,
+            isError = field in state.errors,
+            errorText = state.errorFor(field),
+            modifier = Modifier.fillMaxWidth().testTag(GroupLoanApplicationTestTags.number(field)),
+        )
+    }
 }
 
 @Composable
@@ -418,14 +493,17 @@ private fun DateField(
     millis: Long,
     onAction: (GroupLoanApplicationAction) -> Unit,
     tag: String,
+    modifier: Modifier = Modifier,
 ) {
-    Spacer(Modifier.height(KptTheme.spacing.md))
-    AppDatePickerTextField(
-        value = DateHelper.getDateAsStringFromLong(millis),
-        label = stringResource(label),
-        openDatePicker = { onAction(GroupLoanApplicationAction.OpenDatePicker(field)) },
-        modifier = Modifier.fillMaxWidth().testTag(tag),
-    )
+    Column(modifier = modifier) {
+        Spacer(Modifier.height(KptTheme.spacing.md))
+        AppDatePickerTextField(
+            value = DateHelper.getDateAsStringFromLong(millis),
+            label = stringResource(label),
+            openDatePicker = { onAction(GroupLoanApplicationAction.OpenDatePicker(field)) },
+            modifier = Modifier.fillMaxWidth().testTag(tag),
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

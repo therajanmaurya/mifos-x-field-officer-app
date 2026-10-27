@@ -27,11 +27,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.AppTheme
-import kpt.core.designsystem.utils.nonLetterColorVisualTransformation
 import kpt.core.designsystem.utils.tabNavigation
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -60,11 +57,6 @@ fun AppPasswordField(
         label = label,
         value = value,
         onValueChange = onValueChange,
-        visualTransformation = when {
-            !showPassword -> PasswordVisualTransformation()
-            readOnly -> nonLetterColorVisualTransformation()
-            else -> VisualTransformation.None
-        },
         singleLine = singleLine,
         readOnly = readOnly,
         keyboardOptions = KeyboardOptions(

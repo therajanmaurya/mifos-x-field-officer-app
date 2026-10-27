@@ -95,17 +95,29 @@ internal class AuthCommandRepositoryImpl(
             ),
             policy = MutationPolicy.OnlineRequired,
         )
-        when (changed) {
-            is MutationResult.Applied -> Unit
-            is MutationResult.Blocked -> return changed
-            is MutationResult.Failed -> return changed
+        val failure: MutationResult<Unit>? = when (changed) {
+            is MutationResult.Applied -> null
+            is MutationResult.Blocked -> changed
+            is MutationResult.Failed -> changed
             // A password has no server copy to conflict with; treat it as the failure it would be.
-            is MutationResult.Conflicted -> return MutationResult.Failed(IllegalStateException("password change conflicted"), rolledBack = false)
+            is MutationResult.Conflicted -> MutationResult.Failed(
+                IllegalStateException("password change conflicted"),
+                rolledBack = false,
+            )
         }
-        val reauth = authenticate(PostAuthenticationRequest(password = newPassword, username = user.username.orEmpty()))
-        if (reauth is MutationResult.Applied && reauth.value.authenticated == true) return MutationResult.Applied(Unit, synced = true)
+        return failure ?: reauthenticate(username = user.username.orEmpty(), password = newPassword)
+    }
+
+    private suspend fun reauthenticate(username: String, password: String): MutationResult<Unit> {
+        val reauth = authenticate(PostAuthenticationRequest(password = password, username = username))
+        if (reauth is MutationResult.Applied && reauth.value.authenticated == true) {
+            return MutationResult.Applied(Unit, synced = true)
+        }
         signOut(clearLocalData = false)
-        return MutationResult.Failed(PasswordChangedSignInFailed((reauth as? MutationResult.Failed)?.cause), rolledBack = false)
+        return MutationResult.Failed(
+            PasswordChangedSignInFailed((reauth as? MutationResult.Failed)?.cause),
+            rolledBack = false,
+        )
     }
 
     private companion object {

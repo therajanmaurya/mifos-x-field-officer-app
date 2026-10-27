@@ -12,8 +12,8 @@ package kpt.feature.note.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.objects.note.Note
 import kpt.core.designsystem.theme.KptTheme
+import kpt.core.model.objects.note.Note
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /*

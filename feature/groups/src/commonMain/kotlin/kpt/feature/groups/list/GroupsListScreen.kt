@@ -10,7 +10,6 @@
 package kpt.feature.groups.list
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,10 +44,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.screen.ScreenContent
-import kpt.core.model.group.Group
 import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.DesignToken
+import kpt.core.model.group.Group
 import kpt.core.ui.components.OfflineDownloadDialog
 import kpt.core.ui.components.OfflineSelectionBar
 import kpt.feature.groups.generated.resources.Res

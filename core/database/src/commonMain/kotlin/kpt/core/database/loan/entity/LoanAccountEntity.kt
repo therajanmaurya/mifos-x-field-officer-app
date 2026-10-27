@@ -46,10 +46,22 @@ data class LoanAccountEntity(
 
     val currency: Currency? = null,
 
-    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNDEFINED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
+    @ColumnInfo(
+        index = true,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNDEFINED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
+    )
     val status: LoanStatusEntity? = null,
 
-    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNSPECIFIED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
+    @ColumnInfo(
+        index = true,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
+    )
     val loanType: LoanTypeEntity? = null,
 
     val loanCycle: Int? = null,

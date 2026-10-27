@@ -75,10 +75,14 @@ internal class CenterRepositoryImpl(
         null
     }
 
-    override fun centerWithMeetingStream(centerId: Int, scope: CoroutineScope): ScreenDataStream<CenterWithAssociations> =
+    override fun centerWithMeetingStream(
+        centerId: Int,
+        scope: CoroutineScope,
+    ): ScreenDataStream<CenterWithAssociations> =
         withMeetingStore.asScreenStream(
             key = centerId,
-            cacheKey = AppCacheKeys.CenterGetCenterWithGroupMembersAndCollectionMeetingCalendar.forKey(centerId.toString()),
+            cacheKey = AppCacheKeys.CenterGetCenterWithGroupMembersAndCollectionMeetingCalendar
+                .forKey(centerId.toString()),
             scope = scope,
             fetchPolicy = FetchPolicy.NETWORK_WITH_CACHE,
             ttl = AppStoreRegistry.Ttl.CENTER_GET_CENTER_WITH_GROUP_MEMBERS_AND_COLLECTION_MEETING_CALENDAR,

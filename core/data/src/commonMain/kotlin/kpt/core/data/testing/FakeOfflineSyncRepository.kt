@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.testing
 
@@ -58,7 +58,10 @@ class FakeOfflineSyncRepository(
 
     override suspend fun remove(target: SyncTarget) {
         calls += "remove:${target.kind}:${target.id}"
-        records.value = records.value.filterNot { (it.kind == target.kind && it.id == target.id) || (it.parentKind == target.kind && it.parentId == target.id) }
+        records.value = records.value.filterNot {
+            (it.kind == target.kind && it.id == target.id) ||
+                (it.parentKind == target.kind && it.parentId == target.id)
+        }
     }
 
     override suspend fun setRefresh(settings: RefreshSettings) {

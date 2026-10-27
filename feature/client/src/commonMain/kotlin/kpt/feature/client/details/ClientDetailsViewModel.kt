@@ -20,11 +20,11 @@ import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.data.client.ClientRepository
 import kpt.core.model.client.Client
 import kpt.core.model.objects.clients.AssignStaffRequest
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.ui.components.ResultStatus
 import kpt.core.ui.util.imageToByteArray
 import kpt.feature.client.details.components.ClientDetailsActionItem
@@ -219,7 +219,11 @@ internal sealed interface ClientDetailsEvent {
     data class OnActionClick(val action: ClientDetailsActionItem, val clientId: Int) : ClientDetailsEvent
     data class NavigateToUpdateDetails(val clientId: Int) : ClientDetailsEvent
     data class NavigateToUpdatePhoto(val clientId: Int, val name: String, val accountNo: String) : ClientDetailsEvent
-    data class NavigateToUpdateSignature(val clientId: Int, val name: String, val accountNo: String) : ClientDetailsEvent
+    data class NavigateToUpdateSignature(
+        val clientId: Int,
+        val name: String,
+        val accountNo: String,
+    ) : ClientDetailsEvent
     data class NavigateToActivate(val clientId: Int) : ClientDetailsEvent
 }
 

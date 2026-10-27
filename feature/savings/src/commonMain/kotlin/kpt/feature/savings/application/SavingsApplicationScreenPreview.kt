@@ -26,7 +26,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 private const val PREVIEW_DATE_MILLIS = 1_760_000_000_000L
 
 // i18n:skip — preview fixtures below
-private val previewProducts = listOf(SavingsProductOption(id = 1, name = "Voluntary Savings"), SavingsProductOption(id = 2, name = "Fixed Savings"))
+private val previewProducts = listOf(
+    SavingsProductOption(id = 1, name = "Voluntary Savings"),
+    SavingsProductOption(id = 2, name = "Fixed Savings"),
+)
 
 @Preview
 @Composable
@@ -46,7 +49,12 @@ internal fun SavingsApplicationContentGroupTemplateErrorPreview() {
     // The group endpoint is a different template; when it fails the form says so.
     KptTheme {
         SavingsApplicationContent(
-            state = SavingsApplicationState(ownerId = 11, isGroup = true, submittedOn = PREVIEW_DATE_MILLIS, templateError = true),
+            state = SavingsApplicationState(
+                ownerId = 11,
+                isGroup = true,
+                submittedOn = PREVIEW_DATE_MILLIS,
+                templateError = true,
+            ),
             products = ScreenState.Content(previewProducts),
             onAction = {},
         )

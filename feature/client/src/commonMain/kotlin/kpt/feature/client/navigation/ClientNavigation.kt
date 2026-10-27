@@ -11,7 +11,6 @@ package kpt.feature.client.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import co.touchlab.kermit.Logger
@@ -273,100 +272,6 @@ data class ClientDocumentPreviewRoute(
     val matchPrefix: String = "",
 )
 
-fun NavController.navigateToClientList(navOptions: NavOptions? = null) =
-    navigate(ClientListRoute, navOptions)
-
-fun NavController.navigateToClients(navOptions: NavOptions? = null) =
-    navigate(ClientDestination, navOptions)
-
-fun NavController.navigateToClientProfile(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientProfileRoute(clientId), navOptions)
-
-fun NavController.navigateToClientStaff(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientStaffRoute(clientId), navOptions)
-
-fun NavController.navigateToClientClosure(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientClosureRoute(clientId), navOptions)
-
-fun NavController.navigateToClientTransfer(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientTransferRoute(clientId), navOptions)
-
-fun NavController.navigateToClientCollateral(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientCollateralRoute(clientId), navOptions)
-
-fun NavController.navigateToClientGeneral(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientGeneralRoute(clientId), navOptions)
-
-fun NavController.navigateToClientIdentifiers(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientIdentifiersRoute(clientId), navOptions)
-
-fun NavController.navigateToClientApplyNew(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientApplyNewRoute(clientId), navOptions)
-
-fun NavController.navigateToClientDetails(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientDetailsRoute(clientId), navOptions)
-
-fun NavController.navigateToClientAddress(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientAddressRoute(clientId), navOptions)
-
-fun NavController.navigateToClientCollateralDetails(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientCollateralDetailsRoute(clientId), navOptions)
-
-fun NavController.navigateToClientLoanAccounts(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientLoanAccountsRoute(clientId), navOptions)
-
-fun NavController.navigateToCreateNewClient(navOptions: NavOptions? = null) =
-    navigate(CreateNewClientRoute, navOptions)
-
-fun NavController.navigateToClientEditDetails(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientEditDetailsRoute(clientId), navOptions)
-
-fun NavController.navigateToClientEditProfile(
-    clientId: Int,
-    clientName: String,
-    accountNo: String,
-    navOptions: NavOptions? = null,
-) = navigate(ClientEditProfileRoute(clientId, clientName, accountNo), navOptions)
-
-fun NavController.navigateToClientDefaultAccount(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientDefaultAccountRoute(clientId), navOptions)
-
-fun NavController.navigateToClientAddDocument(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientAddDocumentRoute(clientId), navOptions)
-
-fun NavController.navigateToClientAddAddress(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientAddAddressRoute(clientId), navOptions)
-
-fun NavController.navigateToClientAddIdentifier(clientId: Long, navOptions: NavOptions? = null) =
-    navigate(ClientAddIdentifierRoute(clientId), navOptions)
-
-fun NavController.navigateToClientShareAccounts(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientShareAccountsRoute(clientId), navOptions)
-
-fun NavController.navigateToShareApplication(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ShareApplicationRoute(clientId), navOptions)
-
-fun NavController.navigateToFixedDepositApplication(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(FixedDepositApplicationRoute(clientId), navOptions)
-
-fun NavController.navigateToClientDepositAccounts(
-    clientId: Int,
-    kind: DepositAccountKind,
-    navOptions: NavOptions? = null,
-) = navigate(ClientDepositAccountsRoute(clientId, kind.name), navOptions)
-
-fun NavController.navigateToClientSignature(
-    clientId: Int,
-    clientName: String,
-    accountNo: String,
-    navOptions: NavOptions? = null,
-) = navigate(ClientSignatureRoute(clientId, clientName, accountNo), navOptions)
-
-fun NavController.navigateToClientDocuments(clientId: Int, navOptions: NavOptions? = null) =
-    navigate(ClientDocumentsRoute(clientId), navOptions)
-
-fun NavController.navigateToClientDocumentPreview(route: ClientDocumentPreviewRoute) = navigate(route)
-
 /**
  * The client list — a TOP-LEVEL destination on the authenticated graph, so it is annotated and
  * collected into `GeneratedFeatureDestinations` by `:cmp-navigation:generateFeatureDestinations`.
@@ -454,6 +359,12 @@ fun NavGraphBuilder.clientListDestination(navController: NavController) {
         )
     }
 
+    clientDrillDownDestinations(navController)
+    clientAccountDestinations(navController)
+    clientFormDestinations(navController)
+}
+
+private fun NavGraphBuilder.clientDrillDownDestinations(navController: NavController) {
     // The client's general view. Nested drill-down, NOT annotated.
     composableWithPushTransitions<ClientGeneralRoute> {
         ClientGeneralScreen(
@@ -562,7 +473,9 @@ fun NavGraphBuilder.clientListDestination(navController: NavController) {
             onActivate = navController::navigateToActivateClient,
         )
     }
+}
 
+private fun NavGraphBuilder.clientAccountDestinations(navController: NavController) {
     // The client's postal addresses + attached documents. Nested drill-downs, NOT annotated.
     composableWithPushTransitions<ClientAddressRoute> {
         ClientAddressScreen(
@@ -655,7 +568,9 @@ fun NavGraphBuilder.clientListDestination(navController: NavController) {
             },
         )
     }
+}
 
+private fun NavGraphBuilder.clientFormDestinations(navController: NavController) {
     // Create a new client. Reached from the list's FAB. Nested drill-down, NOT annotated.
     composableWithPushTransitions<CreateNewClientRoute> {
         CreateNewClientScreen(

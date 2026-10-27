@@ -40,14 +40,6 @@ import kpt.feature.settings.generated.resources.feature_settings_sign_out_keep_d
 import kpt.feature.settings.generated.resources.feature_settings_sign_out_keep_data_detail
 import org.jetbrains.compose.resources.stringResource
 
-object SignOutTestTags {
-    const val ROW = "settings.sign_out"
-    const val CONFIRM = "settings.sign_out.confirm"
-    const val KEEP_DATA = "settings.sign_out.keep_data"
-    const val CLEAR_DATA = "settings.sign_out.clear_data"
-    const val FAILED = "settings.sign_out.failed"
-}
-
 /** The sign-out choice, shown while [SignOutState.confirming]. Stateless — [SignOutViewModel] owns it. */
 @Composable
 fun SignOutDialog(state: SignOutState, onAction: (SignOutAction) -> Unit) {

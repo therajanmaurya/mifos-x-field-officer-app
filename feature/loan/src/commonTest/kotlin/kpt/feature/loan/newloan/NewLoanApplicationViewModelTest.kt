@@ -13,13 +13,6 @@ package kpt.feature.loan.newloan
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -51,6 +44,13 @@ import kpt.core.model.objects.template.loan.TermFrequencyTypeOptions
 import kpt.core.model.objects.template.loan.TermPeriodFrequencyType
 import kpt.core.model.objects.template.loan.TransactionProcessingStrategyOptions
 import kpt.core.model.utils.ApiDateFormatter
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * The original walked from an empty form to submit with no validation, then crashed in the payload
@@ -96,7 +96,11 @@ class NewLoanApplicationViewModelTest {
         interestTypeOptions = listOf(InterestTypeOptions(id = 0, value = "Declining balance")),
         interestCalculationPeriodTypeOptions = listOf(InterestCalculationPeriodType(id = 1, value = "Daily")),
         transactionProcessingStrategyOptions = listOf(
-            TransactionProcessingStrategyOptions(id = 4, code = "mifos-standard-strategy", name = "Penalties, Fees, Interest, Principal order"),
+            TransactionProcessingStrategyOptions(
+                id = 4,
+                code = "mifos-standard-strategy",
+                name = "Penalties, Fees, Interest, Principal order",
+            ),
         ),
     )
 
@@ -294,7 +298,10 @@ class NewLoanApplicationViewModelTest {
         val idLess = template().copy(
             transactionProcessingStrategyOptions = listOf(
                 TransactionProcessingStrategyOptions(code = "creocore-strategy", name = "Creocore Unique"),
-                TransactionProcessingStrategyOptions(code = "mifos-standard-strategy", name = "Penalties, Fees, Interest, Principal order"),
+                TransactionProcessingStrategyOptions(
+                    code = "mifos-standard-strategy",
+                    name = "Penalties, Fees, Interest, Principal order",
+                ),
             ),
         )
         val vm = viewModel(
@@ -623,7 +630,7 @@ class NewLoanApplicationViewModelTest {
     // ---- drafts ----
 
     @Test
-    fun `an offline application is kept and resuming it restores the input over the template defaults`() = runTest(dispatcher) {
+    fun `an offline application is kept and resuming restores input over template defaults`() = runTest(dispatcher) {
         val drafts = FakeFormDraftRepository()
         val offline = viewModel(
             commands = FakeLoanCommandRepository(createLoanResult = { MutationResult.Blocked(BlockReason.OFFLINE) }),

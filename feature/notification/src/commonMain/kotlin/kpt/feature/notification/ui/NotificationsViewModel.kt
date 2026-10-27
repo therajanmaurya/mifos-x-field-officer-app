@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.notification.ui
 
@@ -39,7 +39,9 @@ internal class NotificationsViewModel(
             NotificationsAction.Retry -> stream.retry()
             NotificationsAction.MarkAllRead -> markAllRead()
             NotificationsAction.NavigateBack -> sendEvent(NotificationsEvent.NavigateBack)
-            is NotificationsAction.Open -> if (action.notification.opensRecord) sendEvent(NotificationsEvent.Open(action.notification))
+            is NotificationsAction.Open -> if (action.notification.opensRecord) {
+                sendEvent(NotificationsEvent.Open(action.notification))
+            }
         }
     }
 

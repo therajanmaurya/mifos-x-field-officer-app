@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 @file:OptIn(kpt.core.base.store.screen.ExperimentalScreenDataStreamTestingApi::class)
 
@@ -35,7 +35,11 @@ class FakeCenterRepository(
     override fun centersStream(scope: CoroutineScope) = screenDataStreamForTesting(centers)
 
     override fun centerWithMeetingStream(centerId: Int, scope: CoroutineScope) =
-        screenDataStreamForTesting(MutableStateFlow<ScreenState<CenterWithAssociations>>(ScreenState.Content(withMeeting[centerId] ?: CenterWithAssociations(id = centerId))))
+        screenDataStreamForTesting(
+            MutableStateFlow<ScreenState<CenterWithAssociations>>(
+                ScreenState.Content(withMeeting[centerId] ?: CenterWithAssociations(id = centerId)),
+            ),
+        )
 
     override fun centerSummaryStream(centerId: Int, scope: CoroutineScope) =
         screenDataStreamForTesting(MutableStateFlow<ScreenState<List<CenterInfo>>>(ScreenState.Content(emptyList())))

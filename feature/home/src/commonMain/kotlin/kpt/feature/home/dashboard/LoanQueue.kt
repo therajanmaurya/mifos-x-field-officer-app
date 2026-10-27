@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.home.dashboard
 
@@ -36,11 +36,12 @@ import androidx.navigation.toRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.Serializable
+import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.combineContent
 import kpt.core.base.store.screen.emptyIfContent
@@ -52,7 +53,6 @@ import kpt.core.data.session.SessionRepository
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.component.MoneyText
 import kpt.core.designsystem.component.MoneyTone
-import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.model.dashboard.DashboardLoan
 import kpt.core.model.dashboard.DashboardScope
 import kpt.core.model.dashboard.ownedBy

@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.config
 
@@ -30,18 +30,35 @@ import kotlin.test.assertNull
 class NetworkConfigRepositoryTest {
 
     private val main = AccessPoint(
-        id = "mifos", kind = AccessPointKind.REST, baseUrl = "https://apis.mifos.community/", basePath = "1.0/field/v1/",
-        loggableHost = "apis.mifos.community", isMain = true,
-        headers = listOf(HeaderSpec(name = "Fineract-Platform-TenantId", value = "mifos-bank-1"), HeaderSpec(name = "Authorization", runtimeKey = "mifos.auth")),
+        id = "mifos",
+        kind = AccessPointKind.REST,
+        baseUrl = "https://apis.mifos.community/",
+        basePath = "1.0/field/v1/",
+        loggableHost = "apis.mifos.community",
+        isMain = true,
+        headers = listOf(
+            HeaderSpec(name = "Fineract-Platform-TenantId", value = "mifos-bank-1"),
+            HeaderSpec(name = "Authorization", runtimeKey = "mifos.auth"),
+        ),
     )
     private val staging = AccessPoint(
-        id = "staging", kind = AccessPointKind.REST, baseUrl = "https://sandbox.mifos.community/", basePath = "fineract-provider/api/v1/",
-        loggableHost = "sandbox.mifos.community", headers = listOf(HeaderSpec(name = "Fineract-Platform-TenantId", value = "default")),
+        id = "staging",
+        kind = AccessPointKind.REST,
+        baseUrl = "https://sandbox.mifos.community/",
+        basePath = "fineract-provider/api/v1/",
+        loggableHost = "sandbox.mifos.community",
+        headers = listOf(HeaderSpec(name = "Fineract-Platform-TenantId", value = "default")),
     )
-    private val supabase = AccessPoint(id = "project", kind = AccessPointKind.SUPABASE, baseUrl = "https://abc.supabase.co", loggableHost = "abc.supabase.co")
+    private val supabase = AccessPoint(
+        id = "project",
+        kind = AccessPointKind.SUPABASE,
+        baseUrl = "https://abc.supabase.co",
+        loggableHost = "abc.supabase.co",
+    )
     private val registry = AccessPointRegistry(listOf(main, staging, supabase))
 
-    private fun repo(store: InMemoryNetworkConfigStore = InMemoryNetworkConfigStore()) = NetworkConfigRepository(registry, store)
+    private fun repo(store: InMemoryNetworkConfigStore = InMemoryNetworkConfigStore()) =
+        NetworkConfigRepository(registry, store)
 
     @Test
     fun withNoChangesEveryPointUsesWhatAppProfileDeclares() {
@@ -49,20 +66,30 @@ class NetworkConfigRepositoryTest {
         assertEquals("mifos", r.mainId)
         assertEquals(main.effectiveUrl, r.urlFor(main))
         assertEquals(staging.effectiveUrl, r.urlFor(staging))
-        assertEquals(mapOf("Fineract-Platform-TenantId" to "mifos-bank-1"), r.headersFor(main, mapOf("Fineract-Platform-TenantId" to "mifos-bank-1")))
+        assertEquals(
+            mapOf("Fineract-Platform-TenantId" to "mifos-bank-1"),
+            r.headersFor(main, mapOf("Fineract-Platform-TenantId" to "mifos-bank-1")),
+        )
     }
 
     @Test
     fun anEditIsAppliedPersistedAndReloadedAsARestartWould() {
         val store = InMemoryNetworkConfigStore()
-        repo(store).update("mifos", baseUrl = "https://branch.example.org:8443/fineract-provider/api/v1/", headers = mapOf("Fineract-Platform-TenantId" to "branch-7"))
+        repo(store).update(
+            "mifos",
+            baseUrl = "https://branch.example.org:8443/fineract-provider/api/v1/",
+            headers = mapOf("Fineract-Platform-TenantId" to "branch-7"),
+        )
 
         val reloaded = repo(store)
         assertEquals("https://branch.example.org:8443/fineract-provider/api/v1/", reloaded.urlFor(main))
         // The declared runtime header (Authorization) is kept; the tenant is replaced.
         assertEquals(
             mapOf("Fineract-Platform-TenantId" to "branch-7", "Authorization" to "Basic x"),
-            reloaded.headersFor(main, mapOf("Fineract-Platform-TenantId" to "mifos-bank-1", "Authorization" to "Basic x")),
+            reloaded.headersFor(
+                main,
+                mapOf("Fineract-Platform-TenantId" to "mifos-bank-1", "Authorization" to "Basic x"),
+            ),
         )
     }
 
@@ -72,7 +99,11 @@ class NetworkConfigRepositoryTest {
         r.setMain("staging")
         assertEquals(staging.effectiveUrl, r.urlFor(main), "main-bound clients follow the new main")
         assertEquals(staging.effectiveUrl, r.urlFor(staging), "the staging point's own clients are unchanged")
-        assertEquals("default", r.headersFor(main, emptyMap())["Fineract-Platform-TenantId"], "the main's headers come with it")
+        assertEquals(
+            "default",
+            r.headersFor(main, emptyMap())["Fineract-Platform-TenantId"],
+            "the main's headers come with it",
+        )
         r.setMain("mifos")
         assertNull(r.configs.value.mainId, "back to the declared main stores nothing")
     }
@@ -80,7 +111,13 @@ class NetworkConfigRepositoryTest {
     @Test
     fun aConfigAddedAtRuntimeCanBecomeMainAndBeRemoved() {
         val r = repo()
-        r.add(NetworkConfig(id = "custom", kind = AccessPointKind.REST, baseUrl = "http://10.0.2.2:8080/fineract-provider/api/v1/"))
+        r.add(
+            NetworkConfig(
+                id = "custom",
+                kind = AccessPointKind.REST,
+                baseUrl = "http://10.0.2.2:8080/fineract-provider/api/v1/",
+            ),
+        )
         r.setMain("custom")
         assertEquals("http://10.0.2.2:8080/fineract-provider/api/v1/", r.urlFor(main))
         assertFailsWith<IllegalArgumentException>("the main cannot be removed") { r.remove("custom") }

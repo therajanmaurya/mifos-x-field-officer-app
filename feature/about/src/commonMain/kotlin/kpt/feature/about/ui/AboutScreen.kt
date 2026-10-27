@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.about.ui
 
@@ -42,17 +42,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.ui.effects.EventsEffect
+import kpt.core.base.ui.util.ShareUtils
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.DesignToken
-import kpt.core.base.ui.util.ShareUtils
 import kpt.feature.about.generated.resources.Res
-import kpt.feature.about.generated.resources.feature_about_contact
-import kpt.feature.about.generated.resources.feature_about_community_sub
 import kpt.feature.about.generated.resources.feature_about_community
-import kpt.feature.about.generated.resources.feature_about_product_site_sub
-import kpt.feature.about.generated.resources.feature_about_product_site
-import kpt.feature.about.generated.resources.feature_about_section_help
+import kpt.feature.about.generated.resources.feature_about_community_sub
+import kpt.feature.about.generated.resources.feature_about_contact
 import kpt.feature.about.generated.resources.feature_about_contributors
 import kpt.feature.about.generated.resources.feature_about_contributors_sub
 import kpt.feature.about.generated.resources.feature_about_copyright
@@ -63,6 +60,9 @@ import kpt.feature.about.generated.resources.feature_about_license
 import kpt.feature.about.generated.resources.feature_about_license_sub
 import kpt.feature.about.generated.resources.feature_about_logo
 import kpt.feature.about.generated.resources.feature_about_logo_description
+import kpt.feature.about.generated.resources.feature_about_product_site
+import kpt.feature.about.generated.resources.feature_about_product_site_sub
+import kpt.feature.about.generated.resources.feature_about_section_help
 import kpt.feature.about.generated.resources.feature_about_section_open_source
 import kpt.feature.about.generated.resources.feature_about_section_organisation
 import kpt.feature.about.generated.resources.feature_about_source_code

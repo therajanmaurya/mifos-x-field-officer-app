@@ -19,8 +19,6 @@ import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.savings.SavingsCommandRepository
 import kpt.core.model.client.ClientAccounts
 import kpt.core.model.group.GroupAccounts
-import kpt.core.model.savings.SavingsAccountTransactionRequest
-import kpt.core.model.savings.SavingsAccountWithAssociations
 import kpt.core.model.objects.account.loan.SavingsApproval
 import kpt.core.model.objects.account.saving.SavingsActivationInput
 import kpt.core.model.objects.account.saving.SavingsApplicationInput
@@ -28,11 +26,13 @@ import kpt.core.model.objects.account.saving.SavingsApprovalInput
 import kpt.core.model.objects.account.saving.SavingsTransactionInput
 import kpt.core.model.objects.payloads.ChargesPayload
 import kpt.core.model.objects.payloads.SavingsPayload
+import kpt.core.model.savings.FixedDepositPayload
+import kpt.core.model.savings.SavingsAccountTransactionRequest
+import kpt.core.model.savings.SavingsAccountWithAssociations
+import kpt.core.model.savings.ShareAccountPayload
 import kpt.core.network.mifos.savings.api.FixedDepositApi
 import kpt.core.network.mifos.savings.api.SavingsAccountApi
 import kpt.core.network.mifos.savings.api.ShareAccountApi
-import kpt.core.model.savings.FixedDepositPayload
-import kpt.core.model.savings.ShareAccountPayload
 import kpt.core.store.config.AppStoreIds
 import kpt.core.store.savings.SavingsAccountKey
 import org.mobilenativefoundation.store.store5.Store
@@ -48,8 +48,9 @@ import org.mobilenativefoundation.store.store5.impl.extensions.fresh
  * read streams over those rows — the account screen, the client's / group's accounts list — re-emit
  * on their own.
  *
- * They used to end at the endpoint with `payload = Unit` and no local side: a deposit left the account screen on its pre-deposit balance, and a new application was
- * missing from the client's accounts until something happened to refetch them.
+ * They used to end at the endpoint with `payload = Unit` and no local side: a deposit left the account
+ * screen on its pre-deposit balance, and a new application was missing from the client's accounts until
+ * something happened to refetch them.
  *
  * `OnlineRequired` — none of these is queued offline (offline capture is
  * [kpt.core.data.sync.OfflineQueueRepository]'s job) — so `localApply` runs only with the server's
@@ -168,7 +169,11 @@ internal class SavingsCommandRepositoryImpl(
             localApply = { response ->
                 if (response != null) {
                     ingest {
-                        if (input.isGroup) groupAccountsStore.fresh(input.ownerId) else clientAccountsStore.fresh(input.ownerId)
+                        if (input.isGroup) {
+                            groupAccountsStore.fresh(input.ownerId)
+                        } else {
+                            clientAccountsStore.fresh(input.ownerId)
+                        }
                     }
                 }
             },

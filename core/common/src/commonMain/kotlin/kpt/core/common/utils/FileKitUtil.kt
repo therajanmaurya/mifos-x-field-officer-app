@@ -96,14 +96,16 @@ object FileKitUtil {
         fileName: String,
         fileExtension: String,
         filesByteArray: ByteArray,
-    ): Flow<Result<PlatformFile?>> = platformWriteFileToApplicationPrivateInternalStorage(fileName, fileExtension, filesByteArray)
+    ): Flow<Result<PlatformFile?>> =
+        platformWriteFileToApplicationPrivateInternalStorage(fileName, fileExtension, filesByteArray)
 
     // Use only if you are using a database service such as room or sql delight
     fun writeFileToApplicationInternalStorage(
         fileName: String,
         fileExtension: String,
         filesByteArray: ByteArray,
-    ): Flow<Result<PlatformFile?>> = platformWriteFileToApplicationInternalStorage(fileName, fileExtension, filesByteArray)
+    ): Flow<Result<PlatformFile?>> =
+        platformWriteFileToApplicationInternalStorage(fileName, fileExtension, filesByteArray)
 
     fun writeToSelectedDirectory(
         filesByteArray: ByteArray,

@@ -14,8 +14,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.v2.runComposeUiTest
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.objects.note.Note
 import kpt.core.designsystem.theme.KptTheme
+import kpt.core.model.objects.note.Note
 import kotlin.test.Test
 
 /**

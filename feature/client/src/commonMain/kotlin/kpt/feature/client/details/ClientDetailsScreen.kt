@@ -122,6 +122,17 @@ internal fun ClientDetailsScreen(
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val client by viewModel.client.collectAsStateWithLifecycle()
+    // The wired destination of each action row; an action with none (or not in the rendered list) is absent.
+    val actionHandlers = mapOf<ClientDetailsActionItem, ((Int) -> Unit)?>(
+        ClientDetailsActionItem.ApplyNewApplication to onApplyNewApplication,
+        ClientDetailsActionItem.ClosureApplication to onClosureApplication,
+        ClientDetailsActionItem.TransferClient to onTransferClient,
+        ClientDetailsActionItem.AssignStaff to onAssignStaff,
+        ClientDetailsActionItem.AddCharge to onAddCharge,
+        ClientDetailsActionItem.CreateCollateral to onCreateCollateral,
+        ClientDetailsActionItem.UpdateDefaultAccount to onUpdateDefaultAccount,
+        ClientDetailsActionItem.CreateStandingInstructions to onCreateStandingInstructions,
+    )
 
     EventsEffect(viewModel.eventFlow) { event ->
         when (event) {
@@ -133,23 +144,9 @@ internal fun ClientDetailsScreen(
                 onUpdateSignature?.invoke(event.clientId, event.name, event.accountNo)
             is ClientDetailsEvent.NavigateToActivate -> onActivate?.invoke(event.clientId)
 
-            is ClientDetailsEvent.OnActionClick -> when (event.action) {
-                ClientDetailsActionItem.ApplyNewApplication -> onApplyNewApplication?.invoke(event.clientId)
-                ClientDetailsActionItem.ClosureApplication -> onClosureApplication?.invoke(event.clientId)
-                ClientDetailsActionItem.TransferClient -> onTransferClient?.invoke(event.clientId)
-                ClientDetailsActionItem.AssignStaff -> onAssignStaff?.invoke(event.clientId)
-                ClientDetailsActionItem.AddCharge -> onAddCharge?.invoke(event.clientId)
-                ClientDetailsActionItem.CreateCollateral -> onCreateCollateral?.invoke(event.clientId)
-                ClientDetailsActionItem.UpdateDefaultAccount -> onUpdateDefaultAccount?.invoke(event.clientId)
-                ClientDetailsActionItem.CreateStandingInstructions ->
-                    onCreateStandingInstructions?.invoke(event.clientId)
-                // The original's three empty `{}` branches. Unreachable — they are not in the
-                // rendered list.
-                ClientDetailsActionItem.ClientScreenReports,
-                ClientDetailsActionItem.ViewStandingInstructions,
-                ClientDetailsActionItem.CreateSelfServiceUsers,
-                -> Unit
-            }
+            // The original's three empty `{}` branches (reports, view standing instructions, self-service
+            // users) have no handler: unreachable, as they are not in the rendered list.
+            is ClientDetailsEvent.OnActionClick -> actionHandlers[event.action]?.invoke(event.clientId)
         }
     }
 
@@ -164,16 +161,7 @@ internal fun ClientDetailsScreen(
         bottomBar = {
             val pending = (client as? ScreenState.Content)?.data?.active == false
             if (pending && onActivate != null) {
-                Button(
-                    onClick = { viewModel.trySendAction(ClientDetailsAction.OnActivateClick) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .navigationBarsPadding()
-                        .padding(horizontal = KptTheme.spacing.md, vertical = KptTheme.spacing.sm)
-                        .testTag(ClientDetailsTestTags.ACTIVATE),
-                ) {
-                    Text(stringResource(Res.string.feature_client_activate_client))
-                }
+                ActivateClientButton(onClick = { viewModel.trySendAction(ClientDetailsAction.OnActivateClick) })
             }
         },
     ) { scaffoldPadding ->
@@ -181,29 +169,8 @@ internal fun ClientDetailsScreen(
             state = state,
             client = client,
             onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
-            availableActions = remember(
-                onApplyNewApplication,
-                onClosureApplication,
-                onTransferClient,
-                onAssignStaff,
-                onAddCharge,
-                onCreateCollateral,
-                onUpdateDefaultAccount,
-                onCreateStandingInstructions,
-            ) {
-                clientDetailsActionItems.filter { item ->
-                    when (item) {
-                        ClientDetailsActionItem.ApplyNewApplication -> onApplyNewApplication != null
-                        ClientDetailsActionItem.ClosureApplication -> onClosureApplication != null
-                        ClientDetailsActionItem.TransferClient -> onTransferClient != null
-                        ClientDetailsActionItem.AssignStaff -> onAssignStaff != null
-                        ClientDetailsActionItem.AddCharge -> onAddCharge != null
-                        ClientDetailsActionItem.CreateCollateral -> onCreateCollateral != null
-                        ClientDetailsActionItem.UpdateDefaultAccount -> onUpdateDefaultAccount != null
-                        ClientDetailsActionItem.CreateStandingInstructions -> onCreateStandingInstructions != null
-                        else -> false
-                    }
-                }
+            availableActions = remember(actionHandlers) {
+                clientDetailsActionItems.filter { actionHandlers[it] != null }
             },
             canUpdateDetails = onUpdateDetails != null,
             canUpdatePhoto = onUpdatePhoto != null,
@@ -211,6 +178,20 @@ internal fun ClientDetailsScreen(
             modifier = modifier,
             scaffoldPadding = scaffoldPadding,
         )
+    }
+}
+
+@Composable
+private fun ActivateClientButton(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = KptTheme.spacing.md, vertical = KptTheme.spacing.sm)
+            .testTag(ClientDetailsTestTags.ACTIVATE),
+    ) {
+        Text(stringResource(Res.string.feature_client_activate_client))
     }
 }
 
@@ -407,7 +388,10 @@ internal fun ClientDetailsContent(
  * fallback for every blank value.
  */
 @Composable
-private fun detailCards(client: Client, notAvailable: String): List<Map<org.jetbrains.compose.resources.StringResource, String>> {
+private fun detailCards(
+    client: Client,
+    notAvailable: String,
+): List<Map<org.jetbrains.compose.resources.StringResource, String>> {
     fun String?.orNa() = this?.takeIf { it.isNotBlank() } ?: notAvailable
 
     val personal = mapOf(

@@ -16,9 +16,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.designsystem.theme.KptTheme
 import kpt.core.model.loan.LoanAccount
 import kpt.core.model.loan.LoanStatus
-import kpt.core.designsystem.theme.KptTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -5,29 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/mifos-x-field-officer-app/blob/master/LICENSE.md
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.searchrecord.ui
 
-import kpt.feature.searchrecord.generated.resources.Res
-import kpt.feature.searchrecord.generated.resources.search_record_address
-import kpt.feature.searchrecord.generated.resources.search_record_address_line_1
-import kpt.feature.searchrecord.generated.resources.search_record_address_line_2
-import kpt.feature.searchrecord.generated.resources.search_record_address_line_3
-import kpt.feature.searchrecord.generated.resources.search_record_city
-import kpt.feature.searchrecord.generated.resources.search_record_clear_icon_desc
-import kpt.feature.searchrecord.generated.resources.search_record_country
-import kpt.feature.searchrecord.generated.resources.search_record_empty_state
-import kpt.feature.searchrecord.generated.resources.search_record_error
-import kpt.feature.searchrecord.generated.resources.search_record_generic_searchLabel
-import kpt.feature.searchrecord.generated.resources.search_record_identifiers
-import kpt.feature.searchrecord.generated.resources.search_record_input_placeholder
-import kpt.feature.searchrecord.generated.resources.search_record_label_format
-import kpt.feature.searchrecord.generated.resources.search_record_no_results_description
-import kpt.feature.searchrecord.generated.resources.search_record_no_results_title
-import kpt.feature.searchrecord.generated.resources.search_record_postal_code
-import kpt.feature.searchrecord.generated.resources.search_record_province
-import kpt.feature.searchrecord.generated.resources.search_record_search_icon_desc
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,10 +38,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kpt.core.base.designsystem.theme.KptTheme
+import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.common.utils.Constants
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.icon.AppIcons
@@ -71,11 +54,28 @@ import kpt.core.ui.components.AppActionsIdentifierListingComponent
 import kpt.core.ui.components.AppAddressCard
 import kpt.core.ui.components.AppAlertDialog
 import kpt.core.ui.components.AppProgressIndicator
-import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.ui.utils.getClientIdentifierStatus
+import kpt.feature.searchrecord.generated.resources.Res
+import kpt.feature.searchrecord.generated.resources.search_record_address
+import kpt.feature.searchrecord.generated.resources.search_record_address_line_1
+import kpt.feature.searchrecord.generated.resources.search_record_address_line_2
+import kpt.feature.searchrecord.generated.resources.search_record_address_line_3
+import kpt.feature.searchrecord.generated.resources.search_record_city
+import kpt.feature.searchrecord.generated.resources.search_record_clear_icon_desc
+import kpt.feature.searchrecord.generated.resources.search_record_country
+import kpt.feature.searchrecord.generated.resources.search_record_empty_state
+import kpt.feature.searchrecord.generated.resources.search_record_error
+import kpt.feature.searchrecord.generated.resources.search_record_generic_searchLabel
+import kpt.feature.searchrecord.generated.resources.search_record_identifiers
+import kpt.feature.searchrecord.generated.resources.search_record_input_placeholder
+import kpt.feature.searchrecord.generated.resources.search_record_label_format
+import kpt.feature.searchrecord.generated.resources.search_record_no_results_description
+import kpt.feature.searchrecord.generated.resources.search_record_no_results_title
+import kpt.feature.searchrecord.generated.resources.search_record_postal_code
+import kpt.feature.searchrecord.generated.resources.search_record_province
+import kpt.feature.searchrecord.generated.resources.search_record_search_icon_desc
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kpt.core.base.designsystem.theme.KptTheme
 
 @Composable
 internal fun SearchRecordScreen(
@@ -304,9 +304,12 @@ private fun AddressRecordCard(
         AppAddressCard(
             title = record.name,
             addressList = mapOf(
-                stringResource(Res.string.search_record_address_line_1) to (record.metadata[Constants.ADDRESS_LINE_1] ?: ""),
-                stringResource(Res.string.search_record_address_line_2) to (record.metadata[Constants.ADDRESS_LINE_2] ?: ""),
-                stringResource(Res.string.search_record_address_line_3) to (record.metadata[Constants.ADDRESS_LINE_3] ?: ""),
+                stringResource(Res.string.search_record_address_line_1) to
+                    (record.metadata[Constants.ADDRESS_LINE_1] ?: ""),
+                stringResource(Res.string.search_record_address_line_2) to
+                    (record.metadata[Constants.ADDRESS_LINE_2] ?: ""),
+                stringResource(Res.string.search_record_address_line_3) to
+                    (record.metadata[Constants.ADDRESS_LINE_3] ?: ""),
                 stringResource(Res.string.search_record_city) to (record.metadata[Constants.CITY] ?: ""),
                 stringResource(Res.string.search_record_province) to (record.metadata[Constants.STATE] ?: ""),
                 stringResource(Res.string.search_record_country) to (record.metadata[Constants.COUNTRY] ?: ""),

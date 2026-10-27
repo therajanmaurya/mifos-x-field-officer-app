@@ -74,8 +74,12 @@ class RecurringDepositViewModelTest {
         interestCompoundingPeriodTypeOptions = listOf(InterestCompoundingPeriodTypeOption(id = 1, value = "Daily")),
         interestPostingPeriodTypeOptions = listOf(InterestPostingPeriodTypeOption(id = 4, value = "Monthly")),
         interestCalculationTypeOptions = listOf(InterestCalculationTypeOption(id = 1, value = "Daily Balance")),
-        interestCalculationDaysInYearTypeOptions = listOf(InterestCalculationDaysInYearTypeOption(id = 365, value = "365 Days")),
-        preClosurePenalInterestOnTypeOptions = listOf(PreClosurePenalInterestOnTypeOption(id = 1, value = "Whole term")),
+        interestCalculationDaysInYearTypeOptions = listOf(
+            InterestCalculationDaysInYearTypeOption(id = 365, value = "365 Days"),
+        ),
+        preClosurePenalInterestOnTypeOptions = listOf(
+            PreClosurePenalInterestOnTypeOption(id = 1, value = "Whole term"),
+        ),
         chargeOptions = listOf(ChargeOption(id = 11, name = "Account maintenance")),
     )
 
@@ -101,7 +105,10 @@ class RecurringDepositViewModelTest {
         vm.trySendAction(RecurringDepositAction.OnNumberChanged(RecurringField.DEPOSIT_AMOUNT, "500"))
         vm.trySendAction(RecurringDepositAction.OnNumberChanged(RecurringField.RECURRING_FREQUENCY, "1"))
         vm.trySendAction(
-            RecurringDepositAction.OnOptionSelected(RecurringField.RECURRING_FREQUENCY_TYPE, RecurringOption(2, "Months")),
+            RecurringDepositAction.OnOptionSelected(
+                RecurringField.RECURRING_FREQUENCY_TYPE,
+                RecurringOption(2, "Months"),
+            ),
         )
         vm.trySendAction(RecurringDepositAction.OnNumberChanged(RecurringField.DEPOSIT_PERIOD, "12"))
         vm.trySendAction(
@@ -114,7 +121,10 @@ class RecurringDepositViewModelTest {
             RecurringDepositAction.OnOptionSelected(RecurringField.POSTING_PERIOD, RecurringOption(4, "Monthly")),
         )
         vm.trySendAction(
-            RecurringDepositAction.OnOptionSelected(RecurringField.CALCULATION_TYPE, RecurringOption(1, "Daily Balance")),
+            RecurringDepositAction.OnOptionSelected(
+                RecurringField.CALCULATION_TYPE,
+                RecurringOption(1, "Daily Balance"),
+            ),
         )
         vm.trySendAction(
             RecurringDepositAction.OnOptionSelected(RecurringField.DAYS_IN_YEAR, RecurringOption(365, "365 Days")),
@@ -219,7 +229,10 @@ class RecurringDepositViewModelTest {
         // Typed, then the checkbox left CLEAR. The original sent whatever had been typed.
         vm.trySendAction(RecurringDepositAction.OnNumberChanged(RecurringField.PENALTY_INTEREST, "2.5"))
         vm.trySendAction(
-            RecurringDepositAction.OnOptionSelected(RecurringField.PENALTY_INTEREST_ON, RecurringOption(1, "Whole term")),
+            RecurringDepositAction.OnOptionSelected(
+                RecurringField.PENALTY_INTEREST_ON,
+                RecurringOption(1, "Whole term"),
+            ),
         )
         advanceToLast(vm)
         vm.trySendAction(RecurringDepositAction.OnSubmit)
@@ -241,7 +254,10 @@ class RecurringDepositViewModelTest {
         vm.trySendAction(RecurringDepositAction.OnToggled(RecurringToggle.PRE_CLOSURE_PENALTY, true))
         vm.trySendAction(RecurringDepositAction.OnNumberChanged(RecurringField.PENALTY_INTEREST, "2.5"))
         vm.trySendAction(
-            RecurringDepositAction.OnOptionSelected(RecurringField.PENALTY_INTEREST_ON, RecurringOption(1, "Whole term")),
+            RecurringDepositAction.OnOptionSelected(
+                RecurringField.PENALTY_INTEREST_ON,
+                RecurringOption(1, "Whole term"),
+            ),
         )
         advanceToLast(vm)
         vm.trySendAction(RecurringDepositAction.OnSubmit)

@@ -10,15 +10,14 @@
 package kpt.core.store.charge
 
 import kotlinx.coroutines.flow.map
-import kpt.core.model.charge.Charges
-import kpt.core.store.mapping.toEntity
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
 import kpt.core.database.charge.dao.ChargeDao
-import kpt.core.database.charge.entity.ChargesEntity
+import kpt.core.model.charge.Charges
 import kpt.core.network.mifos.charge.api.ChargeApi
+import kpt.core.store.mapping.toEntity
+import kpt.core.store.mapping.toModel
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.MutableStore
 import org.mobilenativefoundation.store.store5.SourceOfTruth
@@ -65,7 +64,9 @@ fun provideChargeStore(
     sourceOfTruth = SourceOfTruth.of(
         // An empty table reads as an empty LIST, never as null — a null reader made Store5 emit
         // Loading and refetch instead of showing "no charges" (see NullReaderStreamTest).
-        reader = { key: ChargeKey -> dao.observeCharges(key.resourceType, key.resourceId).map { rows -> rows.map { it.toModel() } } },
+        reader = { key: ChargeKey ->
+            dao.observeCharges(key.resourceType, key.resourceId).map { rows -> rows.map { it.toModel() } }
+        },
         // REPLACE, not upsert: the fetch is the owner's whole list, so a charge it no longer
         // contains was removed on the server. Stamps the owner, which the endpoints do not echo.
         writer = { key: ChargeKey, charges: List<Charges> ->
@@ -93,7 +94,9 @@ fun provideChargeItemStore(
     dao: ChargeDao,
 ): MutableStore<ChargeItemKey, Charges> = StoreFactory.createOfflineMutableStore(
     sourceOfTruth = SourceOfTruth.of(
-        reader = { key: ChargeItemKey -> dao.observeCharge(key.resourceType, key.resourceId, key.chargeId).map { it?.toModel() } },
+        reader = { key: ChargeItemKey ->
+            dao.observeCharge(key.resourceType, key.resourceId, key.chargeId).map { it?.toModel() }
+        },
         writer = { key: ChargeItemKey, charge: Charges ->
             dao.upsertCharge(key.resourceType, key.resourceId, charge.toEntity())
         },

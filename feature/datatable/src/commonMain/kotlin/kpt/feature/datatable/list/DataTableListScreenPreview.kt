@@ -11,8 +11,8 @@ package kpt.feature.datatable.list
 
 import androidx.compose.runtime.Composable
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.datatable.DataTable
 import kpt.core.designsystem.theme.KptTheme
+import kpt.core.model.datatable.DataTable
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /*

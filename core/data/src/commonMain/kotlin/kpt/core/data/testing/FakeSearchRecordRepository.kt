@@ -38,7 +38,10 @@ class FakeSearchRecordRepository(
     val records = MutableStateFlow(initial)
     val requested = mutableListOf<SearchRecordKey>()
 
-    override fun searchStream(keys: Flow<SearchRecordKey>, scope: CoroutineScope): ScreenDataStream<List<GenericSearchRecord>> =
+    override fun searchStream(
+        keys: Flow<SearchRecordKey>,
+        scope: CoroutineScope,
+    ): ScreenDataStream<List<GenericSearchRecord>> =
         screenDataStreamForTesting(
             combine(keys, records) { key, all ->
                 requested += key

@@ -97,7 +97,11 @@ internal class ActivateViewModel(
                     Logger.e(tag = TAG, throwable = result.cause) { "activate ${state.type} failed" }
                     // The server's own reason (e.g. a 403 "Insufficient privileges"), as every other
                     // write screen shows it — the generic line alone told the officer nothing.
-                    state.copy(isSubmitting = false, result = ActivateResult.Failed, failureReason = result.cause.serverErrorMessage())
+                    state.copy(
+                        isSubmitting = false,
+                        result = ActivateResult.Failed,
+                        failureReason = result.cause.serverErrorMessage(),
+                    )
                 }
 
                 is MutationResult.Conflicted ->

@@ -11,10 +11,10 @@ package kpt.core.data.collectionsheet
 
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.model.collectionsheet.CollectionSheetPayload
-import kpt.core.model.collectionsheet.ProductiveCollectionSheetPayload
-import kpt.core.model.shared.GenericResponse
 import kpt.core.model.collectionsheet.IndividualCollectionSheetPayload
+import kpt.core.model.collectionsheet.ProductiveCollectionSheetPayload
 import kpt.core.model.collectionsheet.RequestCollectionSheetPayload
+import kpt.core.model.shared.GenericResponse
 
 /**
  * Every collectionsheet write, as an explicit outcome.
@@ -41,7 +41,10 @@ interface CollectionSheetCommandRepository {
         payload: IndividualCollectionSheetPayload?,
     ): MutationResult<GenericResponse>
 
-    suspend fun submitProductiveSheet(centerId: Int, payload: ProductiveCollectionSheetPayload?): MutationResult<GenericResponse>
+    suspend fun submitProductiveSheet(
+        centerId: Int,
+        payload: ProductiveCollectionSheetPayload?,
+    ): MutationResult<GenericResponse>
 
     suspend fun submitCollectionSheet(groupId: Int, payload: CollectionSheetPayload?): MutationResult<GenericResponse>
 }

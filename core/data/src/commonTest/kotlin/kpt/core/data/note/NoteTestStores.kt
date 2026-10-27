@@ -19,16 +19,16 @@ import kpt.core.model.objects.note.Note
 import kpt.core.network.mifos.note.api.NoteApi
 import kpt.core.network.mifos.note.mapper.toModel
 import kpt.core.store.note.NOTE_CLIENT_RESOURCE
-import kpt.core.store.note.NoteKey
 import kpt.core.store.note.NoteItemKey
+import kpt.core.store.note.NoteKey
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.StoreBuilder
 
 /**
  * The note stores wired the way `NoteStore.kt` wires them — REAL Store5 stores over one in-memory
- * table of `Note` rows that emit `Note` models — so a write through the item store is visible to the list store with nothing
- * refreshed in between.
+ * table of `Note` rows that emit `Note` models — so a write through the item store is visible to the
+ * list store with nothing refreshed in between.
  */
 internal class NoteTestStores(api: NoteApi) {
 
@@ -37,7 +37,9 @@ internal class NoteTestStores(api: NoteApi) {
     /** The owner type of each row (by note id) — the real table's `resourceType` column. */
     private val typeOf = mutableMapOf<Long, String>()
 
-    private fun Note.ownedBy(key: NoteKey) = clientId == key.resourceId && (typeOf[id] ?: NOTE_CLIENT_RESOURCE) == key.resourceType
+    private fun Note.ownedBy(
+        key: NoteKey,
+    ) = clientId == key.resourceId && (typeOf[id] ?: NOTE_CLIENT_RESOURCE) == key.resourceType
 
     fun rowsOf(clientId: Long, resourceType: String = NOTE_CLIENT_RESOURCE) =
         table.value.filter { it.ownedBy(NoteKey(resourceType, clientId)) }
@@ -53,7 +55,8 @@ internal class NoteTestStores(api: NoteApi) {
             // Mirrors NoteDao.replaceFor — scoped to (resourceType, owner id).
             writer = { key: NoteKey, notes: List<Note> ->
                 notes.forEach { note -> note.id?.let { typeOf[it] = key.resourceType } }
-                table.value = table.value.filterNot { it.ownedBy(key) } + notes.map { it.copy(clientId = key.resourceId) }
+                table.value = table.value.filterNot { it.ownedBy(key) } +
+                    notes.map { it.copy(clientId = key.resourceId) }
             },
         ),
     ).build()

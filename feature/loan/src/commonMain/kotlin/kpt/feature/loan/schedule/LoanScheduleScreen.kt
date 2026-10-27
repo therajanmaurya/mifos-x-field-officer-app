@@ -96,7 +96,6 @@ internal fun LoanScheduleScreen(
     LoanScheduleContent(
         schedule = schedule,
         onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
-        onBackPressed = onBackPressed,
         modifier = modifier,
     )
 }
@@ -106,7 +105,6 @@ internal fun LoanScheduleScreen(
 internal fun LoanScheduleContent(
     schedule: ScreenState<RepaymentScheduleTableData>,
     onAction: (LoanScheduleAction) -> Unit,
-    onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AppScaffold(

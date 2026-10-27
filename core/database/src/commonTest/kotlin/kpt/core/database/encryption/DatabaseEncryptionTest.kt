@@ -124,7 +124,13 @@ class DatabaseEncryptionTest {
 
     @Test
     fun rowCountMismatchKeepsPlaintext() {
-        val f = FakeFiles(DatabaseFileState.PLAINTEXT, exported = DatabaseSnapshot(15, mapOf("Client" to 10L, "framework_submit_drafts" to 3L)))
+        val f = FakeFiles(
+            DatabaseFileState.PLAINTEXT,
+            exported = DatabaseSnapshot(
+                15,
+                mapOf("Client" to 10L, "framework_submit_drafts" to 3L),
+            ),
+        )
         assertEquals(EncryptionOutcome.MIGRATION_DEFERRED, prepareEncryptedDatabase(f, "k"))
         assertEquals(false, "promote" in f.calls)
         assertEquals(DatabaseFileState.PLAINTEXT, f.state)
@@ -132,7 +138,13 @@ class DatabaseEncryptionTest {
 
     @Test
     fun userVersionMismatchKeepsPlaintext() {
-        val f = FakeFiles(DatabaseFileState.PLAINTEXT, exported = DatabaseSnapshot(0, mapOf("Client" to 11L, "framework_submit_drafts" to 3L)))
+        val f = FakeFiles(
+            DatabaseFileState.PLAINTEXT,
+            exported = DatabaseSnapshot(
+                0,
+                mapOf("Client" to 11L, "framework_submit_drafts" to 3L),
+            ),
+        )
         assertEquals(EncryptionOutcome.MIGRATION_DEFERRED, prepareEncryptedDatabase(f, "k"))
         assertEquals(false, "promote" in f.calls)
     }

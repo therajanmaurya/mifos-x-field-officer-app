@@ -24,8 +24,10 @@ import kpt.core.base.database.annotation.DbEntity
     ignoredColumns = [],
     // NO foreign keys.
     //
-    // This entity used to declare one naming SavingsTransactionDateEntity as the PARENT of its own `id`, which inverts the
-    // relationship: it made every insert conditional on a transaction's own date block ALREADY existing as a row. Since that
+    // This entity used to declare one naming SavingsTransactionDateEntity as the PARENT of its own `id`,
+    // which inverts the
+    // relationship: it made every insert conditional on a transaction's own date block ALREADY
+    // existing as a row. Since that
     // detail is an embedded FIELD on this class, no such row is ever written first, so SQLite refused
     // every insert with `787 FOREIGN KEY constraint failed` — and Store5 swallowed the failure, so the
     // screen rendered an empty list rather than an error. Measured on device 2026-10-02: the clients
@@ -34,7 +36,13 @@ import kpt.core.base.database.annotation.DbEntity
 @Serializable
 data class SavingsAccountTransactionEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNSPECIFIED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
+    @ColumnInfo(
+        index = true,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
+    )
     val id: Int = 0,
 
     val savingsAccountId: Int? = null,

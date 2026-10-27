@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.pathtracking.ui
 
@@ -142,7 +142,12 @@ private fun PathCard(path: TrackedPath, onOpenRoute: (TrackedPath) -> Unit) {
         )
         Text(
             modifier = Modifier.padding(sp.sm),
-            text = stringResource(Res.string.feature_path_tracking_when, path.date.orEmpty(), path.startTime.orEmpty(), path.stopTime.orEmpty()),
+            text = stringResource(
+                Res.string.feature_path_tracking_when,
+                path.date.orEmpty(),
+                path.startTime.orEmpty(),
+                path.stopTime.orEmpty(),
+            ),
             style = KptTheme.typography.bodySmall,
         )
     }
@@ -174,14 +179,21 @@ private fun RouteSketch(points: List<UserLatLng>) {
             val scale = minOf(size.width, size.height) / span.toFloat()
             val offX = (size.width - ((maxLng - minLng) * scale).toFloat()) / 2
             val offY = (size.height - ((maxLat - minLat) * scale).toFloat()) / 2
-            fun at(p: UserLatLng) = Offset(offX + ((p.lng - minLng) * scale).toFloat(), offY + ((maxLat - p.lat) * scale).toFloat())
+            fun at(p: UserLatLng) = Offset(
+                offX + ((p.lng - minLng) * scale).toFloat(),
+                offY + ((maxLat - p.lat) * scale).toFloat(),
+            )
             val dot = inset.toPx() / 3
             if (points.size > 1) {
                 val route = Path().apply {
                     moveTo(at(points.first()).x, at(points.first()).y)
                     points.drop(1).forEach { lineTo(at(it).x, at(it).y) }
                 }
-                drawPath(route, line, style = Stroke(width = dot * 0.8f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+                drawPath(
+                    route,
+                    line,
+                    style = Stroke(width = dot * 0.8f, cap = StrokeCap.Round, join = StrokeJoin.Round),
+                )
             }
             drawCircle(start, radius = dot, center = at(points.first()))
             if (points.size > 1) drawCircle(end, radius = dot, center = at(points.last()))
@@ -197,10 +209,23 @@ private fun NoPaths() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(sp.sm, Alignment.CenterVertically),
     ) {
-        Box(Modifier.size(EMPTY_BOX).background(KptTheme.colorScheme.primaryContainer, CircleShape), contentAlignment = Alignment.Center) {
-            Icon(AppIcons.PersonPinCircle, contentDescription = null, tint = KptTheme.colorScheme.primary, modifier = Modifier.size(sp.lg + sp.xs))
+        Box(
+            Modifier.size(EMPTY_BOX).background(KptTheme.colorScheme.primaryContainer, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                AppIcons.PersonPinCircle,
+                contentDescription = null,
+                tint = KptTheme.colorScheme.primary,
+                modifier = Modifier.size(sp.lg + sp.xs),
+            )
         }
-        Text(stringResource(Res.string.feature_path_tracking_no_path_tracking_found), style = KptTheme.typography.titleMedium, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        Text(
+            stringResource(Res.string.feature_path_tracking_no_path_tracking_found),
+            style = KptTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
         Text(
             stringResource(Res.string.feature_path_tracking_no_path_tracking_body),
             style = KptTheme.typography.bodyMedium,

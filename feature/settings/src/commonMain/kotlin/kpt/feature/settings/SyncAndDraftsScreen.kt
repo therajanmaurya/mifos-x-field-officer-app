@@ -248,7 +248,11 @@ internal fun DraftRow(
                 )
             }
             extras?.subtitle?.let {
-                Text(text = it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(sp.sm)) {
                 extras?.onOpen?.let { open ->

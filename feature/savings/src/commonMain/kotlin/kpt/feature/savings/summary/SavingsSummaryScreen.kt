@@ -207,85 +207,88 @@ private fun AccountHeader(
     canOpenCharges: Boolean,
     canOpenMoreInfo: Boolean,
     onAction: (SavingsSummaryAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = KptTheme.spacing.sm),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = summary.clientName
-                    ?: stringResource(Res.string.feature_savings_client_name_unknown),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-                text = summary.productName
-                    ?: stringResource(Res.string.feature_savings_product_name_unknown),
-                style = AppTypography.labelLarge,
-            )
-            Text(text = summary.accountNo, style = AppTypography.bodyMedium)
-        }
-
-        // The original's two-item overflow menu — "More savings account info" (the account's
-        // datatables, `m_savings_account`) and Documents — plus Charges (feature/charge; the original
-        // had no savings charge screen at all). Each entry needs a destination, and the icon is
-        // absent when none has one.
-        if (canOpenMoreInfo || canOpenDocuments || canOpenCharges) {
-            var expanded by remember { mutableStateOf(false) }
-            IconButton(
-                onClick = { expanded = !expanded },
-                modifier = Modifier.testTag(SavingsSummaryTestTags.OVERFLOW),
-            ) {
-                Icon(
-                    AppIcons.MoreVert,
-                    contentDescription = stringResource(Res.string.feature_savings_more_options),
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = KptTheme.spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = summary.clientName
+                        ?: stringResource(Res.string.feature_savings_client_name_unknown),
+                    style = MaterialTheme.typography.titleMedium,
                 )
+                Text(
+                    text = summary.productName
+                        ?: stringResource(Res.string.feature_savings_product_name_unknown),
+                    style = AppTypography.labelLarge,
+                )
+                Text(text = summary.accountNo, style = AppTypography.bodyMedium)
             }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                if (canOpenMoreInfo) {
-                    AppMenuDropDownItem(
-                        option = stringResource(Res.string.feature_savings_more_savings_account_info),
-                        onClick = {
-                            expanded = false
-                            onAction(SavingsSummaryAction.MoreInfoClicked)
-                        },
-                        modifier = Modifier.testTag(SavingsSummaryTestTags.MORE_INFO),
+
+            // The original's two-item overflow menu — "More savings account info" (the account's
+            // datatables, `m_savings_account`) and Documents — plus Charges (feature/charge; the original
+            // had no savings charge screen at all). Each entry needs a destination, and the icon is
+            // absent when none has one.
+            if (canOpenMoreInfo || canOpenDocuments || canOpenCharges) {
+                var expanded by remember { mutableStateOf(false) }
+                IconButton(
+                    onClick = { expanded = !expanded },
+                    modifier = Modifier.testTag(SavingsSummaryTestTags.OVERFLOW),
+                ) {
+                    Icon(
+                        AppIcons.MoreVert,
+                        contentDescription = stringResource(Res.string.feature_savings_more_options),
                     )
                 }
-                if (canOpenDocuments) {
-                    AppMenuDropDownItem(
-                        option = stringResource(Res.string.feature_savings_documents),
-                        onClick = {
-                            expanded = false
-                            onAction(SavingsSummaryAction.DocumentsClicked)
-                        },
-                        modifier = Modifier.testTag(SavingsSummaryTestTags.DOCUMENTS),
-                    )
-                }
-                if (canOpenCharges) {
-                    AppMenuDropDownItem(
-                        option = stringResource(Res.string.feature_savings_charges),
-                        onClick = {
-                            expanded = false
-                            onAction(SavingsSummaryAction.ChargesClicked)
-                        },
-                        modifier = Modifier.testTag(SavingsSummaryTestTags.CHARGES),
-                    )
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    if (canOpenMoreInfo) {
+                        AppMenuDropDownItem(
+                            option = stringResource(Res.string.feature_savings_more_savings_account_info),
+                            onClick = {
+                                expanded = false
+                                onAction(SavingsSummaryAction.MoreInfoClicked)
+                            },
+                            modifier = Modifier.testTag(SavingsSummaryTestTags.MORE_INFO),
+                        )
+                    }
+                    if (canOpenDocuments) {
+                        AppMenuDropDownItem(
+                            option = stringResource(Res.string.feature_savings_documents),
+                            onClick = {
+                                expanded = false
+                                onAction(SavingsSummaryAction.DocumentsClicked)
+                            },
+                            modifier = Modifier.testTag(SavingsSummaryTestTags.DOCUMENTS),
+                        )
+                    }
+                    if (canOpenCharges) {
+                        AppMenuDropDownItem(
+                            option = stringResource(Res.string.feature_savings_charges),
+                            onClick = {
+                                expanded = false
+                                onAction(SavingsSummaryAction.ChargesClicked)
+                            },
+                            modifier = Modifier.testTag(SavingsSummaryTestTags.CHARGES),
+                        )
+                    }
                 }
             }
         }
-    }
 
-    Column(
-        modifier = Modifier.fillMaxWidth().testTag(SavingsSummaryTestTags.TOTALS),
-        verticalArrangement = Arrangement.spacedBy(KptTheme.spacing.xs),
-    ) {
-        // Every figure formatted with the ACCOUNT's currency — see the ViewModel on why the
-        // original's two currency sources could disagree.
-        Figure(stringResource(Res.string.feature_savings_account_balance), summary.accountBalance, summary)
-        Figure(stringResource(Res.string.feature_savings_total_deposits), summary.totalDeposits, summary)
-        Figure(stringResource(Res.string.feature_savings_total_withdrawals), summary.totalWithdrawals, summary)
-        Figure(stringResource(Res.string.feature_savings_interest_earned), summary.interestEarned, summary)
+        Column(
+            modifier = Modifier.fillMaxWidth().testTag(SavingsSummaryTestTags.TOTALS),
+            verticalArrangement = Arrangement.spacedBy(KptTheme.spacing.xs),
+        ) {
+            // Every figure formatted with the ACCOUNT's currency — see the ViewModel on why the
+            // original's two currency sources could disagree.
+            Figure(stringResource(Res.string.feature_savings_account_balance), summary.accountBalance, summary)
+            Figure(stringResource(Res.string.feature_savings_total_deposits), summary.totalDeposits, summary)
+            Figure(stringResource(Res.string.feature_savings_total_withdrawals), summary.totalWithdrawals, summary)
+            Figure(stringResource(Res.string.feature_savings_interest_earned), summary.interestEarned, summary)
+        }
     }
 }
 

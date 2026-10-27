@@ -125,6 +125,7 @@ private fun ScrollableState.DraggableScrollbarThumb(
     interactionSource: InteractionSource,
     orientation: Orientation,
 ) {
+    val colorState = scrollbarThumbColor(this, interactionSource)
     Box(
         modifier = Modifier
             .run {
@@ -133,7 +134,7 @@ private fun ScrollableState.DraggableScrollbarThumb(
                     Horizontal -> height(DesignToken.sizes.boxDp12).fillMaxWidth()
                 }
             }
-            .scrollThumb(this, interactionSource),
+            .scrollThumb { colorState.value },
     )
 }
 
@@ -145,6 +146,7 @@ private fun ScrollableState.DecorativeScrollbarThumb(
     interactionSource: InteractionSource,
     orientation: Orientation,
 ) {
+    val colorState = scrollbarThumbColor(this, interactionSource)
     Box(
         modifier = Modifier
             .run {
@@ -153,18 +155,12 @@ private fun ScrollableState.DecorativeScrollbarThumb(
                     Horizontal -> height(DesignToken.strokes.dp2).fillMaxWidth()
                 }
             }
-            .scrollThumb(this, interactionSource),
+            .scrollThumb { colorState.value },
     )
 }
 
-@Composable
-private fun Modifier.scrollThumb(
-    scrollableState: ScrollableState,
-    interactionSource: InteractionSource,
-): Modifier {
-    val colorState = scrollbarThumbColor(scrollableState, interactionSource)
-    return this then ScrollThumbElement { colorState.value }
-}
+private fun Modifier.scrollThumb(colorProducer: ColorProducer): Modifier =
+    this then ScrollThumbElement(colorProducer)
 
 private data class ScrollThumbElement(val colorProducer: ColorProducer) :
     ModifierNodeElement<ScrollThumbNode>() {

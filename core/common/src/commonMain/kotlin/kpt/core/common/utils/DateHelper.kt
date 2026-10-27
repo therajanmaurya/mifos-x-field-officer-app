@@ -59,7 +59,10 @@ object DateHelper {
         val stringBuilder = StringBuilder()
         stringBuilder.append(integersOfDate[2])
             .append(' ')
-            .append(getMonthName(integersOfDate[1]))
+            .append(
+                shortMonthNames.getOrNull(integersOfDate[1] - 1)
+                    ?: throw IllegalArgumentException("Month should be between 1 and 12"),
+            )
             .append(' ')
             .append(integersOfDate[0])
         return stringBuilder.toString()
@@ -72,6 +75,15 @@ object DateHelper {
             dateString = getDateAsString(integersOfDate.map { it.toInt() }),
         )
     }
+
+    private val shortMonthNames = listOf(
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    )
+
+    private val fullMonthNames = listOf(
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December",
+    )
 
     private val monthMap = mapOf(
         "Jan" to 1, "Feb" to 2, "Mar" to 3, "Apr" to 4,
@@ -146,28 +158,6 @@ object DateHelper {
     }
 
     /**
-     * @param month an integer from 1 to 12
-     * @return string representation of the month like Jan or Feb..etc
-     */
-    private fun getMonthName(month: Int): String {
-        return when (month) {
-            1 -> "Jan"
-            2 -> "Feb"
-            3 -> "Mar"
-            4 -> "Apr"
-            5 -> "May"
-            6 -> "Jun"
-            7 -> "Jul"
-            8 -> "Aug"
-            9 -> "Sep"
-            10 -> "Oct"
-            11 -> "Nov"
-            12 -> "Dec"
-            else -> throw IllegalArgumentException("Month should be between 1 and 12")
-        }
-    }
-
-    /**
      * Input timestamp string in milliseconds
      * Example timestamp "1698278400000"
      * Output examples: "dd-MM-yyyy" - "14-04-2016"
@@ -205,21 +195,8 @@ object DateHelper {
         require(integersOfDate.size == 2) { "integersOfDate must have exactly 2 elements" }
         val (day, month) = integersOfDate
 
-        val monthName = when (month) {
-            1 -> "January"
-            2 -> "February"
-            3 -> "March"
-            4 -> "April"
-            5 -> "May"
-            6 -> "June"
-            7 -> "July"
-            8 -> "August"
-            9 -> "September"
-            10 -> "October"
-            11 -> "November"
-            12 -> "December"
-            else -> throw IllegalArgumentException("Invalid month value: $month")
-        }
+        val monthName = fullMonthNames.getOrNull(month - 1)
+            ?: throw IllegalArgumentException("Invalid month value: $month")
 
         return "$day $monthName"
     }
@@ -234,21 +211,8 @@ object DateHelper {
         require(integersOfDate.size == 3) { "integersOfDate must have exactly 3 elements" }
         val (day, month, year) = integersOfDate
 
-        val monthName = when (month) {
-            1 -> "January"
-            2 -> "February"
-            3 -> "March"
-            4 -> "April"
-            5 -> "May"
-            6 -> "June"
-            7 -> "July"
-            8 -> "August"
-            9 -> "September"
-            10 -> "October"
-            11 -> "November"
-            12 -> "December"
-            else -> throw IllegalArgumentException("Invalid month value: $month")
-        }
+        val monthName = fullMonthNames.getOrNull(month - 1)
+            ?: throw IllegalArgumentException("Invalid month value: $month")
 
         val formattedDay = if (day < 10) "0$day" else "$day"
 

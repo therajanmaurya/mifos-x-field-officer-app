@@ -9,10 +9,6 @@
  */
 package kpt.core.store.loan
 
-import kpt.core.store.mapping.toEntity
-import kpt.core.model.loan.LoanRepaymentTemplate
-import kpt.core.model.loan.LoanTemplate as LoanTemplateModel
-import kpt.core.store.mapping.toModel
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import kpt.core.base.store.annotation.CacheKey
@@ -20,15 +16,17 @@ import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
 import kpt.core.database.loan.dao.LoanDao
 import kpt.core.database.loan.entity.LoanDisburseTemplateCacheEntity
-import kpt.core.database.loan.entity.LoanRepaymentTemplateEntity
-import kpt.core.database.loan.entity.LoanTemplate
 import kpt.core.database.loan.entity.LoanTemplateCacheEntity
 import kpt.core.database.utils.getCurrentTimeInMillis
+import kpt.core.model.loan.LoanRepaymentTemplate
 import kpt.core.model.objects.account.loan.loanDisburse.LoanDisburseTemplate
 import kpt.core.network.mifos.loan.api.LoanApi
+import kpt.core.store.mapping.toEntity
+import kpt.core.store.mapping.toModel
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.Store
+import kpt.core.model.loan.LoanTemplate as LoanTemplateModel
 import kpt.core.network.mifos.loan.mapper.toDomain as disburseTemplateToDomain
 
 private val templateJson = Json { ignoreUnknownKeys = true }

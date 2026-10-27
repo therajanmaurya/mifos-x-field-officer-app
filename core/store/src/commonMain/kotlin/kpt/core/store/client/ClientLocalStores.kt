@@ -20,8 +20,8 @@ import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
 import kpt.core.database.cache.dao.ApiResponseCacheDao
 import kpt.core.database.cache.entity.ApiResponseCacheEntity
-import kpt.core.model.client.Client
 import kpt.core.database.utils.getCurrentTimeInMillis
+import kpt.core.model.client.Client
 import kpt.core.model.objects.clients.ClientAddressResponse
 import kpt.core.model.objects.noncoreobjects.Identifier
 import kpt.core.network.mifos.client.api.ClientApi
@@ -171,8 +171,9 @@ internal inline fun <Key : Any, reified Item : Any> cachedListItem(
             val row = dao.observe(rowKeyOf(key)).first()
             if (row != null) {
                 val items = cacheJson.decodeFromString(serializer<List<Item>>(), row.payload)
+                val kept = items.filterNot { matches(key, it) }
                 dao.upsert(
-                    row.copy(payload = cacheJson.encodeToString(serializer<List<Item>>(), items.filterNot { matches(key, it) })),
+                    row.copy(payload = cacheJson.encodeToString(serializer<List<Item>>(), kept)),
                 )
             }
         },

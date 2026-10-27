@@ -10,9 +10,9 @@
 package kpt.core.data.datatable
 
 import kpt.core.base.store.mutation.MutationResult
+import kpt.core.model.datatable.DeleteDataTablesDatatableAppTableIdDatatableIdResponse
 import kpt.core.model.objects.users.UserLocation
 import kpt.core.model.shared.GenericResponse
-import kpt.core.model.datatable.DeleteDataTablesDatatableAppTableIdDatatableIdResponse
 
 /**
  * Every datatable write, as an explicit outcome.
@@ -28,11 +28,23 @@ import kpt.core.model.datatable.DeleteDataTablesDatatableAppTableIdDatatableIdRe
  */
 interface DataTableCommandRepository {
 
-    suspend fun deleteDatatableEntry(datatable: String, apptableId: Long, datatableId: Long): MutationResult<DeleteDataTablesDatatableAppTableIdDatatableIdResponse>
+    suspend fun deleteDatatableEntry(
+        datatable: String,
+        apptableId: Long,
+        datatableId: Long,
+    ): MutationResult<DeleteDataTablesDatatableAppTableIdDatatableIdResponse>
 
-    suspend fun createEntryInDataTable(dataTableName: String, entityId: Int, requestPayload: Map<String, String>): MutationResult<GenericResponse>
+    suspend fun createEntryInDataTable(
+        dataTableName: String,
+        entityId: Int,
+        requestPayload: Map<String, String>,
+    ): MutationResult<GenericResponse>
 
-    suspend fun deleteEntryOfDataTableManyToMany(dataTableName: String, entityId: Int, dataTableRowId: Int): MutationResult<GenericResponse>
+    suspend fun deleteEntryOfDataTableManyToMany(
+        dataTableName: String,
+        entityId: Int,
+        dataTableRowId: Int,
+    ): MutationResult<GenericResponse>
 
     suspend fun addUserPathTracking(userId: Int, userLocation: UserLocation?): MutationResult<GenericResponse>
 }

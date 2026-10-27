@@ -26,7 +26,9 @@ import kpt.core.model.auth.PostAuthenticationResponse
 interface AuthCommandRepository {
 
     /** Sign in. On a granted sign-in the session is already persisted when this returns `Applied`. */
-    suspend fun authenticate(postAuthenticationRequest: PostAuthenticationRequest): MutationResult<PostAuthenticationResponse>
+    suspend fun authenticate(
+        postAuthenticationRequest: PostAuthenticationRequest,
+    ): MutationResult<PostAuthenticationResponse>
 
     /** Mark the stored session unlocked again (after a biometric check). */
     suspend fun resumeStoredSession(): MutationResult<Unit>
@@ -51,4 +53,7 @@ interface AuthCommandRepository {
 }
 
 /** The password changed, but signing in with it failed; the session was ended (data kept). */
-class PasswordChangedSignInFailed(cause: Throwable? = null) : Exception("password changed; sign-in with it failed", cause)
+class PasswordChangedSignInFailed(cause: Throwable? = null) : Exception(
+    "password changed; sign-in with it failed",
+    cause,
+)

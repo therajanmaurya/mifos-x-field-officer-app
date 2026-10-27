@@ -22,10 +22,10 @@ import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.emptyIfContent
 import kpt.core.base.store.screen.mapContent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.charge.ChargeCommandRepository
 import kpt.core.data.charge.ChargeRepository
 import kpt.core.model.objects.charge.ChargeResource
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.feature.charge.ui.ChargeUi
 import kpt.feature.charge.ui.chargeResource
 import kpt.feature.charge.ui.chargeResourceId
@@ -115,14 +115,21 @@ internal class ChargeListViewModel(
                 // that REPLACED the still-correct list.
                 is MutationResult.Blocked -> state.copy(
                     isDeleting = false,
-                    writeError = if (result.reason == BlockReason.OFFLINE) ChargeWriteError.Offline else ChargeWriteError.Failed(),
+                    writeError = if (result.reason == BlockReason.OFFLINE) {
+                        ChargeWriteError.Offline
+                    } else {
+                        ChargeWriteError.Failed()
+                    },
                 )
 
                 is MutationResult.Failed -> {
                     Logger.e(tag = TAG, throwable = result.cause) { "delete charge failed" }
                     // Fineract's reason ("cannot be deleted as the loan is not pending approval")
                     // is what the officer can act on.
-                    state.copy(isDeleting = false, writeError = ChargeWriteError.Failed(result.cause.serverErrorMessage()))
+                    state.copy(
+                        isDeleting = false,
+                        writeError = ChargeWriteError.Failed(result.cause.serverErrorMessage()),
+                    )
                 }
 
                 is MutationResult.Conflicted -> state.copy(isDeleting = false, writeError = ChargeWriteError.Failed())

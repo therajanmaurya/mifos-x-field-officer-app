@@ -48,20 +48,33 @@ class ServerInstancesTest {
     private class MemoryDao : ServerInstanceDao {
         val rows = MutableStateFlow<List<ServerInstanceEntity>>(emptyList())
         override fun observeAll(): Flow<List<ServerInstanceEntity>> = rows
-        override suspend fun insertAll(instances: List<ServerInstanceEntity>) { rows.value = rows.value + instances }
-        override suspend fun deleteAll() { rows.value = emptyList() }
+        override suspend fun insertAll(instances: List<ServerInstanceEntity>) {
+            rows.value = rows.value + instances
+        }
+        override suspend fun deleteAll() {
+            rows.value = emptyList()
+        }
     }
 
     // As the server returns them: already filtered to this app by `supported_apps`, in sort_order.
     private val remoteRows = listOf(
         RemoteServerInstanceDto(
-            label = "Remote", protocol = "https://", endpoint = "remote.example.org", path = "/fineract-provider/api/v1/",
-            platformTenantId = "t", supportedApps = listOf("field-officer"),
+            label = "Remote",
+            protocol = "https://",
+            endpoint = "remote.example.org",
+            path = "/fineract-provider/api/v1/",
+            platformTenantId = "t",
+            supportedApps = listOf("field-officer"),
             demoAccounts = listOf(RemoteDemoAccountDto("Officer", "u", "p")),
         ),
         RemoteServerInstanceDto(
-            label = "Second", protocol = "http://", endpoint = "localhost", path = "/fineract-provider/api/v1/",
-            port = "8080", platformTenantId = "default", supportedApps = listOf("field-officer"),
+            label = "Second",
+            protocol = "http://",
+            endpoint = "localhost",
+            path = "/fineract-provider/api/v1/",
+            port = "8080",
+            platformTenantId = "default",
+            supportedApps = listOf("field-officer"),
         ),
     )
 
@@ -73,21 +86,34 @@ class ServerInstancesTest {
         assertEquals(listOf("Remote", "Second"), list.map { it.name })
         assertEquals(listOf(DemoCredentials("Officer", "u", "p")), list.first().demoAccounts)
         assertEquals(listOf(AppServerConfig.APP_ID), api.asked, "the server is asked for THIS app's rows")
-        assertEquals(listOf("Remote", "Second"), dao.rows.value.sortedBy { it.position }.map { it.name }, "kept in the database")
+        assertEquals(
+            listOf("Remote", "Second"),
+            dao.rows.value.sortedBy { it.position }.map { it.name },
+            "kept in the database",
+        )
     }
 
     @Test
     fun aFailedFetchServesWhatTheDatabaseAlreadyHas() = runTest {
         val dao = MemoryDao()
         provideServerInstancesStore(FakeServerInstanceApi(remoteRows), dao).fresh(Unit)
-        val offline = provideServerInstancesStore(FakeServerInstanceApi(emptyList(), failure = RuntimeException("offline")), dao)
+        val offline = provideServerInstancesStore(
+            FakeServerInstanceApi(emptyList(), failure = RuntimeException("offline")),
+            dao,
+        )
         assertEquals(listOf("Remote", "Second"), offline.get(Unit).map { it.name })
     }
 
     @Test
     fun noKeyOrNoRowsForThisAppUsesTheListShippedInTheApp() = runTest {
         val bundled = BundledInstanceConfigLoader.load()
-        assertEquals(bundled, provideServerInstancesStore(FakeServerInstanceApi(remoteRows, isConfigured = false), MemoryDao()).fresh(Unit))
+        assertEquals(
+            bundled,
+            provideServerInstancesStore(
+                FakeServerInstanceApi(remoteRows, isConfigured = false),
+                MemoryDao(),
+            ).fresh(Unit),
+        )
         assertEquals(bundled, provideServerInstancesStore(FakeServerInstanceApi(emptyList()), MemoryDao()).fresh(Unit))
     }
 }

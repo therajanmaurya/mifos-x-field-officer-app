@@ -11,8 +11,8 @@ package kpt.feature.groups.list
 
 import androidx.compose.runtime.Composable
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.group.Group
 import kpt.core.designsystem.theme.KptTheme
+import kpt.core.model.group.Group
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /*

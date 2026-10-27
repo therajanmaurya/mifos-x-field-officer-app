@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.client.createnew
 
@@ -24,11 +24,28 @@ class ClientDataTablesTest {
     private val table = DataTable(
         registeredTableName = "client_extra",
         columnHeaderData = listOf(
-            ColumnHeader(dataTableColumnName = "client_id", columnDisplayType = "INTEGER", columnPrimaryKey = true, columnNullable = false),
-            ColumnHeader(dataTableColumnName = "household_size", columnDisplayType = ColumnType.INTEGER, columnNullable = false),
-            ColumnHeader(dataTableColumnName = "monthly_income", columnDisplayType = ColumnType.DECIMAL, columnNullable = true),
+            ColumnHeader(
+                dataTableColumnName = "client_id",
+                columnDisplayType = "INTEGER",
+                columnPrimaryKey = true,
+                columnNullable = false,
+            ),
+            ColumnHeader(
+                dataTableColumnName = "household_size",
+                columnDisplayType = ColumnType.INTEGER,
+                columnNullable = false,
+            ),
+            ColumnHeader(
+                dataTableColumnName = "monthly_income",
+                columnDisplayType = ColumnType.DECIMAL,
+                columnNullable = true,
+            ),
             ColumnHeader(dataTableColumnName = "joined_on", columnDisplayType = ColumnType.DATE, columnNullable = true),
-            ColumnHeader(dataTableColumnName = "owns_home", columnDisplayType = ColumnType.BOOLEAN, columnNullable = false),
+            ColumnHeader(
+                dataTableColumnName = "owns_home",
+                columnDisplayType = ColumnType.BOOLEAN,
+                columnNullable = false,
+            ),
             ColumnHeader(
                 dataTableColumnName = "occupation",
                 columnDisplayType = ColumnType.CODELOOKUP,
@@ -48,7 +65,11 @@ class ClientDataTablesTest {
             table.entryColumns().map { it.dataTableColumnName },
         )
         // A table with nothing to fill in is not shown at all.
-        assertTrue(listOf(DataTable(registeredTableName = "keys_only", columnHeaderData = listOf(table.columnHeaderData.first()))).withEntryColumns().isEmpty())
+        val keysOnly = DataTable(
+            registeredTableName = "keys_only",
+            columnHeaderData = listOf(table.columnHeaderData.first()),
+        )
+        assertTrue(listOf(keysOnly).withEntryColumns().isEmpty())
     }
 
     @Test

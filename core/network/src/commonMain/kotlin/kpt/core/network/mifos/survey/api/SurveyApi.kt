@@ -14,8 +14,8 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import kpt.core.base.network.annotation.ApiBinding
-import kpt.core.model.survey.Survey
 import kpt.core.model.objects.surveys.Scorecard
+import kpt.core.model.survey.Survey
 
 /**
  * @author

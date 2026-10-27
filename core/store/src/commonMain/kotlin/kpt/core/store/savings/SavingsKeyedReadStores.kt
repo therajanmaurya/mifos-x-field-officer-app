@@ -9,22 +9,19 @@
  */
 package kpt.core.store.savings
 
-import kpt.core.model.savings.SavingProductsTemplate as SavingProductsTemplateModel
-import kpt.core.model.savings.SavingsAccountTransactionTemplate
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
-import kpt.core.database.savings.entity.SavingProductsTemplate
-import kpt.core.database.savings.entity.SavingsAccountTransactionTemplateEntity
+import kpt.core.model.savings.FixedDepositTemplate
+import kpt.core.model.savings.SavingsAccountTransactionTemplate
+import kpt.core.model.savings.ShareTemplate
 import kpt.core.network.mifos.savings.api.FixedDepositApi
 import kpt.core.network.mifos.savings.api.SavingsAccountApi
 import kpt.core.network.mifos.savings.api.ShareAccountApi
-import kpt.core.model.savings.FixedDepositTemplate
-import kpt.core.model.savings.ShareTemplate
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys
 import org.mobilenativefoundation.store.store5.Store
+import kpt.core.model.savings.SavingProductsTemplate as SavingProductsTemplateModel
 
 /**
  * Keyed reads for savings with no table of their own — cached through the shared read cache so the
@@ -73,8 +70,15 @@ fun provideGetClientSavingsAccountTemplateByProductStore(
     cache: ApiResponseCacheDao,
 ): Store<GetClientSavingsAccountTemplateByProductKey, SavingProductsTemplateModel> = cachedRead(
     dao = cache,
-    keyOf = { key -> AppCacheKeys.SavingsGetClientSavingsAccountTemplateByProduct.forKey("${key.clientId}:${key.productId}") },
-    fetch = { key -> savingsAccountApi.getClientSavingsAccountTemplateByProduct(clientId = key.clientId, productId = key.productId) },
+    keyOf = { key ->
+        AppCacheKeys.SavingsGetClientSavingsAccountTemplateByProduct.forKey("${key.clientId}:${key.productId}")
+    },
+    fetch = { key ->
+        savingsAccountApi.getClientSavingsAccountTemplateByProduct(
+            clientId = key.clientId,
+            productId = key.productId,
+        )
+    },
 )
 
 @StoreProvider(id = "savingsGetGroupSavingsAccountTemplateByProduct", ttl = "12h")
@@ -84,8 +88,15 @@ fun provideGetGroupSavingsAccountTemplateByProductStore(
     cache: ApiResponseCacheDao,
 ): Store<GetGroupSavingsAccountTemplateByProductKey, SavingProductsTemplateModel> = cachedRead(
     dao = cache,
-    keyOf = { key -> AppCacheKeys.SavingsGetGroupSavingsAccountTemplateByProduct.forKey("${key.groupId}:${key.productId}") },
-    fetch = { key -> savingsAccountApi.getGroupSavingsAccountTemplateByProduct(groupId = key.groupId, productId = key.productId) },
+    keyOf = { key ->
+        AppCacheKeys.SavingsGetGroupSavingsAccountTemplateByProduct.forKey("${key.groupId}:${key.productId}")
+    },
+    fetch = { key ->
+        savingsAccountApi.getGroupSavingsAccountTemplateByProduct(
+            groupId = key.groupId,
+            productId = key.productId,
+        )
+    },
 )
 
 @StoreProvider(id = "savingsShareProductTemplate", ttl = "12h")
@@ -113,6 +124,16 @@ fun provideGetSavingsAccountTransactionTemplateStore(
     cache: ApiResponseCacheDao,
 ): Store<GetSavingsAccountTransactionTemplateKey, SavingsAccountTransactionTemplate> = cachedRead(
     dao = cache,
-    keyOf = { key -> AppCacheKeys.SavingsGetSavingsAccountTransactionTemplate.forKey("${key.savingsAccountType}:${key.savingsAccountId}:${key.transactionType}") },
-    fetch = { key -> savingsAccountApi.getSavingsAccountTransactionTemplate(savingsAccountType = key.savingsAccountType, savingsAccountId = key.savingsAccountId, transactionType = key.transactionType) },
+    keyOf = { key ->
+        AppCacheKeys.SavingsGetSavingsAccountTransactionTemplate.forKey(
+            "${key.savingsAccountType}:${key.savingsAccountId}:${key.transactionType}",
+        )
+    },
+    fetch = { key ->
+        savingsAccountApi.getSavingsAccountTransactionTemplate(
+            savingsAccountType = key.savingsAccountType,
+            savingsAccountId = key.savingsAccountId,
+            transactionType = key.transactionType,
+        )
+    },
 )

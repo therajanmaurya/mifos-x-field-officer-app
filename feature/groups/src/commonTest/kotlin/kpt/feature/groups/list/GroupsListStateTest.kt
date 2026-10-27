@@ -74,7 +74,8 @@ class GroupsListStateTest {
     @Test
     fun loadingAndErrorPassThroughUntouched() = runTest {
         val ui = GroupsListState()
-        assertIs<ScreenState.Loading>((ScreenState.Loading as ScreenState<List<kpt.core.model.group.Group>>).rendered(ui))
+        val loading = ScreenState.Loading as ScreenState<List<kpt.core.model.group.Group>>
+        assertIs<ScreenState.Loading>(loading.rendered(ui))
         val boom: ScreenState<List<kpt.core.model.group.Group>> = ScreenState.Error(RuntimeException("boom"))
         // Identity, not equality: a non-Content state must pass through UNTOUCHED, keeping its
         // cause and its freshness metadata.

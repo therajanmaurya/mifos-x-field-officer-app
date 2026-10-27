@@ -29,9 +29,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppEmptyCard(
+    modifier: Modifier = Modifier,
     msg: String? = stringResource(Res.string.core_ui_click_here_to_view_filled_state),
     title: String = stringResource(Res.string.core_ui_no_item_found),
-    modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     isButtonPresent: Boolean = false,
 ) {
@@ -65,7 +65,7 @@ fun AppEmptyCard(
 @Composable
 private fun AppEmptyCardPreview() {
     AppTheme {
-        AppEmptyCard("Add any to show", isButtonPresent = false)
+        AppEmptyCard(msg = "Add any to show", isButtonPresent = false)
     }
 }
 
@@ -73,6 +73,6 @@ private fun AppEmptyCardPreview() {
 @Composable
 private fun AppEmptyCardWithButtonPreview() {
     AppTheme {
-        AppEmptyCard("Add any to show", isButtonPresent = true)
+        AppEmptyCard(msg = "Add any to show", isButtonPresent = true)
     }
 }

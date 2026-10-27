@@ -100,8 +100,12 @@ internal class FixedDepositApplicationViewModel(
 
     /** This client's application that did not land — resumable here, listed in Sync & Drafts. */
     private val formDraft = FormDraftSlot(
-        drafts, viewModelScope, CreateForm.FIXED_DEPOSIT.key, ownerId = state.clientId.toLong(),
-        FixedDepositApplicationState.serializer(), FixedDepositPayload.serializer(),
+        drafts,
+        viewModelScope,
+        CreateForm.FIXED_DEPOSIT.key,
+        ownerId = state.clientId.toLong(),
+        FixedDepositApplicationState.serializer(),
+        FixedDepositPayload.serializer(),
     )
 
     val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
@@ -131,6 +135,17 @@ internal class FixedDepositApplicationViewModel(
             FixedDepositApplicationAction.NextStep -> moveTo(state.step.next())
             FixedDepositApplicationAction.PreviousStep -> moveTo(state.step.previous())
 
+            FixedDepositApplicationAction.Submit -> submit()
+
+            FixedDepositApplicationAction.DismissError ->
+                mutableStateFlow.value = state.copy(error = null, serverMessage = null)
+
+            else -> updateField(action)
+        }
+    }
+
+    private fun updateField(action: FixedDepositApplicationAction) {
+        when (action) {
             is FixedDepositApplicationAction.UpdateProduct ->
                 mutableStateFlow.value = state.copy(product = action.option, productError = false)
 
@@ -155,6 +170,13 @@ internal class FixedDepositApplicationViewModel(
                 mutableStateFlow.value =
                     state.copy(depositPeriodType = action.option, depositPeriodTypeError = false)
 
+            else -> updateTermsField(action)
+        }
+    }
+
+    // The interest, lock-in and penal terms — split from [updateField] to keep each `when` small.
+    private fun updateTermsField(action: FixedDepositApplicationAction) {
+        when (action) {
             is FixedDepositApplicationAction.UpdateInterestCompoundingPeriod ->
                 mutableStateFlow.value = state.copy(interestCompoundingPeriod = action.option)
 
@@ -182,10 +204,7 @@ internal class FixedDepositApplicationViewModel(
             is FixedDepositApplicationAction.UpdatePenalInterest ->
                 mutableStateFlow.value = state.copy(penalInterest = action.value)
 
-            FixedDepositApplicationAction.Submit -> submit()
-
-            FixedDepositApplicationAction.DismissError ->
-                mutableStateFlow.value = state.copy(error = null, serverMessage = null)
+            else -> Unit
         }
     }
 

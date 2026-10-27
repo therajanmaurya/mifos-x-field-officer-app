@@ -14,30 +14,27 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import androidx.room3.Update
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kpt.core.base.database.annotation.DbDao
 import kpt.core.database.payment.entity.PaymentTypeOptionEntity
 import kpt.core.database.savings.entity.SavingsAccountTransactionEntity
-import kpt.core.database.savings.entity.SavingsAccountTransactionRequestEntity
 import kpt.core.database.savings.entity.SavingsAccountTransactionTemplateEntity
 import kpt.core.database.savings.entity.SavingsAccountWithAssociationsEntity
 import kpt.core.database.savings.entity.SavingsTransactionDateEntity
 
 @DbDao
 @Dao
-interface SavingsDao {
-
+interface SavingsDao :
+    SavingsTransactionRequestDao {
     @Insert(entity = SavingsAccountTransactionEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllTransactions(transaction: List<SavingsAccountTransactionEntity>)
 
     @Insert(entity = SavingsAccountWithAssociationsEntity::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSavingsAccountWithAssociations(savingsAccountWithAssociations: SavingsAccountWithAssociationsEntity)
-
-    @Insert(entity = SavingsAccountTransactionRequestEntity::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSavingsAccountTransactionRequest(transactionRequest: SavingsAccountTransactionRequestEntity)
+    suspend fun insertSavingsAccountWithAssociations(
+        savingsAccountWithAssociations: SavingsAccountWithAssociationsEntity,
+    )
 
     @Insert(entity = PaymentTypeOptionEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllPaymentTypeOption(paymentTypeOption: List<PaymentTypeOptionEntity>)
@@ -45,24 +42,8 @@ interface SavingsDao {
     @Insert(entity = SavingsAccountTransactionTemplateEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSavingsAccountTransactionTemplate(transactionTemplate: SavingsAccountTransactionTemplateEntity)
 
-    @Update(entity = SavingsAccountTransactionRequestEntity::class, onConflict = OnConflictStrategy.NONE)
-    suspend fun updateSavingsAccountTransactionRequest(transactionRequest: SavingsAccountTransactionRequestEntity)
-
     @Query("SELECT * FROM TransactionTable WHERE savingsAccountId = :savingsAccountId")
     suspend fun getAllTransactions(savingsAccountId: Int): List<SavingsAccountTransactionEntity>
-
-    @Query("DELETE FROM SavingsAccountTransactionRequest where savingAccountId = :savingsAccountId")
-    suspend fun deleteSavingsAccountTransactionRequest(savingsAccountId: Int)
-
-    /** The logout purge for the offline savings-transaction queue. */
-    @Query("DELETE FROM SavingsAccountTransactionRequest")
-    suspend fun deleteAllSavingsAccountTransactionRequests()
-
-    @Query("SELECT * FROM SavingsAccountTransactionRequest")
-    fun getAllSavingsAccountTransactionRequest(): Flow<List<SavingsAccountTransactionRequestEntity>>
-
-    @Query("SELECT * FROM SavingsAccountTransactionRequest where savingAccountId = :savingsAccountId")
-    fun getSavingsAccountTransactionRequest(savingsAccountId: Int): Flow<SavingsAccountTransactionRequestEntity?>
 
     @Query("SELECT * FROM SavingsAccountTransactionTemplate where accountId = :savingsAccountId")
     fun getSavingsAccountTransactionTemplate(savingsAccountId: Int): Flow<SavingsAccountTransactionTemplateEntity?>
@@ -154,23 +135,4 @@ interface SavingsDao {
         getSavingsAccountTransactionTemplate(savingsAccountId).map { template ->
             template?.copy(paymentTypeOptions = getAllPaymentTypeOption().first())
         }
-
-    /**
-     * Queue an offline savings transaction, stamping the account, its type and the transaction kind.
-     * Was `SavingsDaoHelper.saveSavingsAccountTransaction`.
-     */
-    suspend fun saveTransactionRequestFor(
-        savingsAccountType: String?,
-        savingsAccountId: Int,
-        transactionType: String?,
-        request: SavingsAccountTransactionRequestEntity,
-    ) {
-        insertSavingsAccountTransactionRequest(
-            request.copy(
-                savingAccountId = savingsAccountId,
-                savingsAccountType = savingsAccountType,
-                transactionType = transactionType,
-            ),
-        )
-    }
 }

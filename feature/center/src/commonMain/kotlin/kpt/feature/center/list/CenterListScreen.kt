@@ -44,10 +44,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.screen.ScreenContent
-import kpt.core.model.center.Center
 import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.DesignToken
+import kpt.core.model.center.Center
 import kpt.core.ui.components.OfflineDownloadDialog
 import kpt.core.ui.components.OfflineSelectionBar
 import kpt.feature.center.generated.resources.Res
@@ -65,9 +65,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun CenterListScreen(
     onCenterClick: ((Int) -> Unit)?,
+    modifier: Modifier = Modifier,
     /** The original's create-center FAB. Null draws no FAB — never one that goes nowhere. */
     onCreateCenter: (() -> Unit)? = null,
-    modifier: Modifier = Modifier,
     viewModel: CenterListViewModel = koinViewModel(),
 ) {
     // TWO flows, deliberately. `screenState` is the stream (Loading / Content / Empty / NoNetwork),

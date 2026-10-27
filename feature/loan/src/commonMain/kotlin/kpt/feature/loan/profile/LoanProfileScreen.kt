@@ -112,7 +112,6 @@ internal fun LoanProfileScreen(
         loan = loan,
         status = status,
         onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
-        onBackPressed = onBackPressed,
         // Intersected with the canonical list so the ORDER is always the profile's own, whatever
         // order the caller happened to list them in.
         availableDetails = remember(onDetail, availableDetails) {
@@ -132,7 +131,6 @@ internal fun LoanProfileContent(
     loan: ScreenState<LoanWithAssociations>,
     status: ScreenState<LoanProfileStatus>,
     onAction: (LoanProfileAction) -> Unit,
-    onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
     availableDetails: List<LoanProfileActionItem> = emptyList(),
     availableActions: Set<LoanPrimaryAction> = emptySet(),

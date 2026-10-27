@@ -141,10 +141,10 @@ fun AppBasicDialog(
 fun AppBasicDialog(
     onConfirm: () -> Unit,
     onDismissRequest: () -> Unit,
+    title: String,
     confirmText: String = "Ok",
     dismissText: String = "Cancel",
     isConfirmEnabled: Boolean = true,
-    title: String,
     content: @Composable () -> Unit,
 ) {
     AlertDialog(

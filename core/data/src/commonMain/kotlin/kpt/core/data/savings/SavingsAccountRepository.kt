@@ -11,11 +11,11 @@ package kpt.core.data.savings
 
 import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.store.screen.ScreenDataStream
+import kpt.core.model.objects.organisations.ProductSavings
+import kpt.core.model.savings.FixedDepositTemplate
 import kpt.core.model.savings.SavingProductsTemplate
 import kpt.core.model.savings.SavingsAccountTransactionTemplate
 import kpt.core.model.savings.SavingsAccountWithAssociations
-import kpt.core.model.objects.organisations.ProductSavings
-import kpt.core.model.savings.FixedDepositTemplate
 import kpt.core.model.savings.ShareTemplate
 
 interface SavingsAccountRepository {

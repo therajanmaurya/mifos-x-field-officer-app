@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 @file:OptIn(kpt.core.base.store.screen.ExperimentalScreenDataStreamTestingApi::class)
 
@@ -41,9 +41,17 @@ class FakeCollectionSheetRepository(
     override fun centerDetailsStream(officeId: Int, staffId: Int, meetingDate: String, scope: CoroutineScope) =
         screenDataStreamForTesting(flowOf<ScreenState<List<CenterDetail>>>(ScreenState.Empty))
 
-    override suspend fun individualCollectionSheet(request: RequestCollectionSheetPayload): IndividualCollectionSheet? = null
+    override suspend fun individualCollectionSheet(
+        request: RequestCollectionSheetPayload,
+    ): IndividualCollectionSheet? = null
 
-    override suspend fun productiveSheet(centerId: Int, request: CollectionSheetRequestPayload): CollectionSheetResponse? = null
+    override suspend fun productiveSheet(
+        centerId: Int,
+        request: CollectionSheetRequestPayload,
+    ): CollectionSheetResponse? = null
 
-    override suspend fun groupCollectionSheet(groupId: Int, request: CollectionSheetRequestPayload): CollectionSheetResponse? = null
+    override suspend fun groupCollectionSheet(
+        groupId: Int,
+        request: CollectionSheetRequestPayload,
+    ): CollectionSheetResponse? = null
 }

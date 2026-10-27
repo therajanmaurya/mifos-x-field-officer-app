@@ -19,11 +19,11 @@ import kpt.core.data.center.CenterCommandRepository
 import kpt.core.model.center.Center
 import kpt.core.model.center.CenterPayload
 import kpt.core.model.center.CenterWithAssociations
+import kpt.core.model.center.PostCentersCenterIdRequest
+import kpt.core.model.collectionsheet.payload.CollectionSheetPayload
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.databaseobjects.CollectionSheet
 import kpt.core.network.mifos.center.api.CenterApi
-import kpt.core.model.center.PostCentersCenterIdRequest
-import kpt.core.model.collectionsheet.payload.CollectionSheetPayload
 import kpt.core.store.center.CenterCollectionSheetKey
 import kpt.core.store.config.AppStoreIds
 import org.mobilenativefoundation.store.core5.ExperimentalStoreApi
@@ -61,11 +61,21 @@ internal class CenterCommandRepositoryImpl(
 ) : CenterCommandRepository {
 
     /** A center state command (`close`, ...). The resulting status is the server's. */
-    override suspend fun activate2(centerId: Long, postCentersCenterIdRequest: PostCentersCenterIdRequest, command: String?) =
+    override suspend fun activate2(
+        centerId: Long,
+        postCentersCenterIdRequest: PostCentersCenterIdRequest,
+        command: String?,
+    ) =
         gateway.command(
             CommandSpec(
                 payload = postCentersCenterIdRequest,
-                endpoint = { centerApi.activate2(centerId = centerId, postCentersCenterIdRequest = it, command = command) },
+                endpoint = {
+                    centerApi.activate2(
+                        centerId = centerId,
+                        postCentersCenterIdRequest = it,
+                        command = command,
+                    )
+                },
                 localApply = { response -> if (response != null) record(centerId.toInt()) },
             ),
             policy = MutationPolicy.OnlineRequired,
@@ -80,8 +90,17 @@ internal class CenterCommandRepositoryImpl(
         gateway.command(
             CommandSpec(
                 payload = centerId,
-                endpoint = { centerApi.saveCollectionSheet(centerId = it, collectionSheetPayload = collectionSheetPayload) },
-                localApply = { response -> if (response != null) recordSheet(collectionSheetPayload?.let { CenterCollectionSheetKey.of(centerId.toLong(), it) }) },
+                endpoint = {
+                    centerApi.saveCollectionSheet(
+                        centerId = it,
+                        collectionSheetPayload = collectionSheetPayload,
+                    )
+                },
+                localApply = { response ->
+                    if (response != null) {
+                        recordSheet(collectionSheetPayload?.let { CenterCollectionSheetKey.of(centerId.toLong(), it) })
+                    }
+                },
             ),
             policy = MutationPolicy.OnlineRequired,
         )
@@ -90,8 +109,17 @@ internal class CenterCommandRepositoryImpl(
         gateway.command(
             CommandSpec(
                 payload = centerId,
-                endpoint = { centerApi.saveCollectionSheetAsync(centerId = it, collectionSheetPayload = collectionSheetPayload) },
-                localApply = { response -> if (response != null) recordSheet(collectionSheetPayload?.let { CenterCollectionSheetKey.of(centerId.toLong(), it) }) },
+                endpoint = {
+                    centerApi.saveCollectionSheetAsync(
+                        centerId = it,
+                        collectionSheetPayload = collectionSheetPayload,
+                    )
+                },
+                localApply = { response ->
+                    if (response != null) {
+                        recordSheet(collectionSheetPayload?.let { CenterCollectionSheetKey.of(centerId.toLong(), it) })
+                    }
+                },
             ),
             policy = MutationPolicy.OnlineRequired,
         )

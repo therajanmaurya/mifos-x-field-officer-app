@@ -17,8 +17,8 @@ import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
 import io.ktor.client.statement.HttpResponse
 import kpt.core.base.network.annotation.ApiBinding
-import kpt.core.model.group.GroupAccounts
 import kpt.core.model.group.Group
+import kpt.core.model.group.GroupAccounts
 import kpt.core.model.group.GroupPayload
 import kpt.core.model.group.GroupWithAssociations
 import kpt.core.model.objects.clients.ActivatePayload
@@ -31,7 +31,10 @@ interface GroupApi {
 
     /**
      * List Groups
-     * The default implementation of listing Groups returns 200 entries with support for pagination and sorting. Using the parameter limit with description -1 returns all entries.  Example Requests:    groups    groups?fields&#x3D;name,officeName,joinedDate    groups?offset&#x3D;10&amp;limit&#x3D;50    groups?orderBy&#x3D;name&amp;sortOrder&#x3D;DESC
+     * The default implementation of listing Groups returns 200 entries with support for pagination and sorting. Using
+     * the parameter limit with description -1 returns all entries.  Example Requests:    groups
+     * groups?fields&#x3D;name,officeName,joinedDate    groups?offset&#x3D;10&amp;limit&#x3D;50
+     * groups?orderBy&#x3D;name&amp;sortOrder&#x3D;DESC
      * Responses:
      *  - 200: OK
      *

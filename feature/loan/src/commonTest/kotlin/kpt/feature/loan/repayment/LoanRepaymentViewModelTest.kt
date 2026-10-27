@@ -30,10 +30,10 @@ import kpt.core.data.testing.FakeOfflineQueueRepository
 import kpt.core.data.testing.fineractRejection
 import kpt.core.model.loan.LoanRepaymentRequest
 import kpt.core.model.loan.LoanRepaymentTemplate
-import kpt.core.model.payment.PaymentTypeOption
-import kpt.core.model.savings.SavingAccountCurrency
 import kpt.core.model.objects.account.loan.loanWithAssociations.LoanAccountSummary
 import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
+import kpt.core.model.payment.PaymentTypeOption
+import kpt.core.model.savings.SavingAccountCurrency
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

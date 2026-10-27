@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.dashboard.impl
 
@@ -85,7 +85,11 @@ internal class DashboardRepositoryImpl(
             ttl = AppStoreRegistry.Ttl.DASHBOARD_SAVINGS,
         )
 
-    override fun dueTodayStream(date: String, loanIds: List<Long>, scope: CoroutineScope): ScreenDataStream<List<DueTodayLoan>> =
+    override fun dueTodayStream(
+        date: String,
+        loanIds: List<Long>,
+        scope: CoroutineScope,
+    ): ScreenDataStream<List<DueTodayLoan>> =
         dueTodayStore.asScreenStream(
             key = DueTodayKey(date, loanIds),
             cacheKey = AppCacheKeys.DashboardDueToday.forKey("$date:${loanIds.sorted().hashCode()}"),

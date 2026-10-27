@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 @file:OptIn(kpt.core.base.store.screen.ExperimentalScreenDataStreamTestingApi::class)
 
@@ -52,13 +52,17 @@ class NewCollectionSheetViewModelTest {
 
     private val offices = object : OfficeRepository {
         override fun officesStream(scope: CoroutineScope) =
-            screenDataStreamForTesting(flowOf<ScreenState<List<Office>>>(ScreenState.Content(listOf(Office(id = 1, name = "Head Office")))))
+            screenDataStreamForTesting(
+                flowOf<ScreenState<List<Office>>>(ScreenState.Content(listOf(Office(id = 1, name = "Head Office")))),
+            )
     }
 
     private val staffAsked = mutableListOf<Int>()
     private val staff = object : StaffRepository {
         override fun staffStream(officeId: Int, scope: CoroutineScope) = screenDataStreamForTesting(
-            flowOf<ScreenState<List<Staff>>>(ScreenState.Content(listOf(Staff(id = officeId * 10, displayName = "Officer $officeId")))),
+            flowOf<ScreenState<List<Staff>>>(
+                ScreenState.Content(listOf(Staff(id = officeId * 10, displayName = "Officer $officeId"))),
+            ),
         ).also { staffAsked += officeId }
     }
 
@@ -68,7 +72,8 @@ class NewCollectionSheetViewModelTest {
     fun anOfficeIsRequiredStaffIsNot() = runTest(dispatcher) {
         val vm = vm()
         assertFalse(vm.stateFlow.value.canGenerate)
-        vm.trySendAction(NewCollectionSheetAction.SelectOffice(Choice(1, "Head Office"))); runCurrent()
+        vm.trySendAction(NewCollectionSheetAction.SelectOffice(Choice(1, "Head Office")))
+        runCurrent()
         assertTrue(vm.stateFlow.value.canGenerate)
     }
 
@@ -79,7 +84,8 @@ class NewCollectionSheetViewModelTest {
         vm.trySendAction(NewCollectionSheetAction.DatePicked(DAY))
         runCurrent()
         vm.eventFlow.test {
-            vm.trySendAction(NewCollectionSheetAction.Generate); runCurrent()
+            vm.trySendAction(NewCollectionSheetAction.Generate)
+            runCurrent()
             // The original sent staffId = 0 when none was chosen.
             assertEquals(NewCollectionSheetEvent.OpenSheet(1, null, ApiDateFormatter.formatForApi(DAY)), awaitItem())
         }
@@ -89,10 +95,12 @@ class NewCollectionSheetViewModelTest {
     fun changingOfficeClearsTheStaffAndLoadsThatOfficesStaff() = runTest(dispatcher) {
         val vm = vm()
         backgroundScope.launch { vm.staffOptions.collect {} }
-        vm.trySendAction(NewCollectionSheetAction.SelectOffice(Choice(1, "Head Office"))); runCurrent()
+        vm.trySendAction(NewCollectionSheetAction.SelectOffice(Choice(1, "Head Office")))
+        runCurrent()
         assertEquals(listOf(10), vm.staffOptions.value.map { it.id })
         vm.trySendAction(NewCollectionSheetAction.SelectStaff(Choice(10, "Officer 1")))
-        vm.trySendAction(NewCollectionSheetAction.SelectOffice(Choice(2, "Branch"))); runCurrent()
+        vm.trySendAction(NewCollectionSheetAction.SelectOffice(Choice(2, "Branch")))
+        runCurrent()
         assertNull(vm.stateFlow.value.staff)
         assertEquals(listOf(20), vm.staffOptions.value.map { it.id })
         assertEquals(listOf(1, 2), staffAsked)
@@ -102,7 +110,8 @@ class NewCollectionSheetViewModelTest {
     fun clearResetsTheForm() = runTest(dispatcher) {
         val vm = vm()
         vm.trySendAction(NewCollectionSheetAction.SelectOffice(Choice(1, "Head Office")))
-        vm.trySendAction(NewCollectionSheetAction.Clear); runCurrent()
+        vm.trySendAction(NewCollectionSheetAction.Clear)
+        runCurrent()
         assertNull(vm.stateFlow.value.office)
     }
 

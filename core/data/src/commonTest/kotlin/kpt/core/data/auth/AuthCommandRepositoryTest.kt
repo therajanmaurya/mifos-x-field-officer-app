@@ -22,10 +22,10 @@ import kpt.core.data.auth.impl.AuthCommandRepositoryImpl
 import kpt.core.data.infra.testMutationGateway
 import kpt.core.datastore.prefs.ProjectPreferencesRepositoryImpl
 import kpt.core.datastore.prefs.UserPreferencesRepositoryImpl
-import kpt.core.network.mifos.auth.api.AuthApi
 import kpt.core.model.auth.ChangePasswordRequest
 import kpt.core.model.auth.PostAuthenticationRequest
 import kpt.core.model.auth.PostAuthenticationResponse
+import kpt.core.network.mifos.auth.api.AuthApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -73,7 +73,12 @@ class AuthCommandRepositoryTest {
                 username = postAuthenticationRequest.username,
                 userId = 7,
                 // The key depends on the password, as Fineract's Basic key does.
-                base64EncodedAuthenticationKey = if (postAuthenticationRequest.password == request.password) "a2V5" else "key-${postAuthenticationRequest.password}",
+                base64EncodedAuthenticationKey =
+                if (postAuthenticationRequest.password == request.password) {
+                    "a2V5"
+                } else {
+                    "key-${postAuthenticationRequest.password}"
+                },
                 officeId = 1,
                 officeName = "Head Office",
             )
@@ -97,7 +102,11 @@ class AuthCommandRepositoryTest {
 
     private val cache = FakeCacheManager()
 
-    private fun repository(authenticated: Boolean = true, online: Boolean = true, cacheManager: StoreCacheManager = cache) =
+    private fun repository(
+        authenticated: Boolean = true,
+        online: Boolean = true,
+        cacheManager: StoreCacheManager = cache,
+    ) =
         AuthCommandRepositoryImpl(api(authenticated), testMutationGateway(isOnline = online), preferences, cacheManager)
 
     private val request = PostAuthenticationRequest(username = "officer", password = "s3cret!")

@@ -5,10 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.dashboard
 
+import kotlinx.serialization.json.Json
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
@@ -23,7 +24,6 @@ import kpt.core.network.mifos.dashboard.dto.LoanListItemDto
 import kpt.core.network.mifos.dashboard.dto.LoanScheduleDto
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys
-import kotlinx.serialization.json.Json
 import org.mobilenativefoundation.store.store5.Store
 
 /**
@@ -59,7 +59,12 @@ fun provideDashboardUserStore(
     fetch = { userId -> dashboardApi.getUser(userId) },
     map = { dto ->
         DashboardUser(
-            id = dto.id, firstname = dto.firstname, lastname = dto.lastname, officeId = dto.officeId, officeName = dto.officeName, staffId = dto.staff?.id?.takeIf { it > 0 },
+            id = dto.id,
+            firstname = dto.firstname,
+            lastname = dto.lastname,
+            officeId = dto.officeId,
+            officeName = dto.officeName,
+            staffId = dto.staff?.id?.takeIf { it > 0 },
             staffName = dto.staff?.displayName,
             email = dto.email?.takeIf { it.isNotBlank() },
             roles = dto.selectedRoles.mapNotNull { it.name?.takeIf(String::isNotBlank) },
@@ -132,7 +137,11 @@ fun provideDashboardDueTodayStore(
         val answers = key.loanIds.chunked(SCHEDULE_BATCH).flatMap { ids ->
             dashboardApi.batch(
                 ids.mapIndexed { i, id ->
-                    BatchRequestDto(requestId = i + 1L, relativeUrl = "loans/$id?associations=repaymentSchedule&fields=id,clientId,currency,repaymentSchedule")
+                    BatchRequestDto(
+                        requestId = i + 1L,
+                        relativeUrl = "loans/$id?associations=repaymentSchedule" +
+                            "&fields=id,clientId,currency,repaymentSchedule",
+                    )
                 },
             )
         }
@@ -150,7 +159,8 @@ fun provideDashboardDueTodayStore(
 internal fun LoanScheduleDto.dueOn(date: String): DueTodayLoan? {
     val today = repaymentSchedule?.periods.orEmpty().filter { p ->
         p.period != null && p.dueDate.size >= 3 &&
-            "${p.dueDate[0]}-${p.dueDate[1].toString().padStart(2, '0')}-${p.dueDate[2].toString().padStart(2, '0')}" == date
+            "${p.dueDate[0]}-${p.dueDate[1].toString().padStart(2, '0')}-" +
+            p.dueDate[2].toString().padStart(2, '0') == date
     }
     if (today.isEmpty()) return null
     return DueTodayLoan(

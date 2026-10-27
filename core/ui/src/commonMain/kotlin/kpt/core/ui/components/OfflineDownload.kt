@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.ui.components
 
@@ -99,7 +99,11 @@ fun OfflineDownloadDialog(
         title = {
             Text(
                 stringResource(
-                    if (progress.finished) Res.string.core_ui_offline_downloaded else Res.string.core_ui_offline_downloading,
+                    if (progress.finished) {
+                        Res.string.core_ui_offline_downloaded
+                    } else {
+                        Res.string.core_ui_offline_downloading
+                    },
                 ),
             )
         },
@@ -110,11 +114,19 @@ fun OfflineDownloadDialog(
                     modifier = Modifier.fillMaxWidth().testTag(OfflineDownloadTestTags.PROGRESS),
                 )
                 Text(
-                    text = stringResource(Res.string.core_ui_offline_progress, progress.completed, progress.total, progress.records),
+                    text = stringResource(
+                        Res.string.core_ui_offline_progress,
+                        progress.completed,
+                        progress.total,
+                        progress.records,
+                    ),
                     style = KptTheme.typography.bodyMedium,
                 )
                 progress.current?.let {
-                    Text(text = stringResource(Res.string.core_ui_offline_current, it), style = KptTheme.typography.bodySmall)
+                    Text(
+                        text = stringResource(Res.string.core_ui_offline_current, it),
+                        style = KptTheme.typography.bodySmall,
+                    )
                 }
                 if (progress.failures.isNotEmpty()) {
                     Text(

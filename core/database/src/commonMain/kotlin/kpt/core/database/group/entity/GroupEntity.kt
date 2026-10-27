@@ -47,7 +47,13 @@ data class GroupEntity(
 
     val active: Boolean? = null,
 
-    @ColumnInfo(index = true, name = ColumnInfo.INHERIT_FIELD_NAME, typeAffinity = ColumnInfo.UNDEFINED, collate = ColumnInfo.UNSPECIFIED, defaultValue = ColumnInfo.VALUE_UNSPECIFIED)
+    @ColumnInfo(
+        index = true,
+        name = ColumnInfo.INHERIT_FIELD_NAME,
+        typeAffinity = ColumnInfo.UNDEFINED,
+        collate = ColumnInfo.UNSPECIFIED,
+        defaultValue = ColumnInfo.VALUE_UNSPECIFIED,
+    )
     val groupDate: GroupDateEntity? = null,
 
     val activationDate: List<Int> = emptyList(),

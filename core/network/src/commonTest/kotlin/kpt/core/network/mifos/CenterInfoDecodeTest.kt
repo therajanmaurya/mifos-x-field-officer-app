@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.mifos
 
@@ -17,7 +17,10 @@ import kotlin.test.assertEquals
 /** `runreports/GroupSummaryCounts` as the gateway answers it (lower-case keys, 2026-10-25). */
 class CenterInfoDecodeTest {
 
-    private val json = Json { ignoreUnknownKeys = true; isLenient = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
 
     @Test
     fun theReportsLowerCaseKeysDecodeIntoEveryCount() {

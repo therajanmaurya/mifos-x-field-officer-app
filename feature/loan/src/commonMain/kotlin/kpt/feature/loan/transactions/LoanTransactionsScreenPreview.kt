@@ -22,7 +22,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 
 // i18n:skip — preview fixtures below
-private fun previewTransaction(n: Int, type: TransactionType, amount: String, balance: String, reversed: Boolean = false) = TransactionRow(
+private fun previewTransaction(
+    n: Int,
+    type: TransactionType,
+    amount: String,
+    balance: String,
+    reversed: Boolean = false,
+) = TransactionRow(
     number = "$n", id = "${100 + n}", office = "Head Office", externalId = "", transactionDate = "1$n Oct 2025",
     transactionType = type, amount = amount, principal = amount, interest = "0.00", fees = "0.00", penalties = "0.00",
     loanBalance = balance, manuallyReversed = reversed,
@@ -41,7 +47,6 @@ internal fun LoanTransactionsContentPreview() {
                 ),
             ),
             onAction = {},
-            onBackPressed = {},
         )
     }
 }

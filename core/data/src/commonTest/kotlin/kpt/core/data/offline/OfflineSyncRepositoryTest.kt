@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.offline
 
@@ -96,10 +96,25 @@ class OfflineSyncRepositoryTest {
 
     private val engine = OfflineSyncEngine(
         entities = EntityStores(
-            centre = store { _: Int -> CenterWithAssociations(id = 1, name = "North", groupMembers = listOf(Group(id = 10, name = "Weavers"))) },
+            centre = store { _: Int ->
+                CenterWithAssociations(
+                    id = 1,
+                    name = "North",
+                    groupMembers = listOf(Group(id = 10, name = "Weavers")),
+                )
+            },
             centreAccounts = store { _: Int -> CenterAccounts() },
             centreItem = mutableRows<Center>(),
-            group = store { _: Int -> GroupWithAssociations(id = 10, name = "Weavers", clientMembers = listOf(Client(id = 100, displayName = "Asha"), Client(id = 101, displayName = "Bimal"))) },
+            group = store { _: Int ->
+                GroupWithAssociations(
+                    id = 10,
+                    name = "Weavers",
+                    clientMembers = listOf(
+                        Client(id = 100, displayName = "Asha"),
+                        Client(id = 101, displayName = "Bimal"),
+                    ),
+                )
+            },
             groupRow = store { id: Int -> Group(id = id) },
             groupAccounts = store { _: Int -> GroupAccounts() },
             groupItem = mutableRows<Group>(),
@@ -178,13 +193,22 @@ class OfflineSyncRepositoryTest {
     @Test
     fun retryFailedReRunsOnlyTheRecordsThatFailed() = runTest {
         signIn()
-        repository.download(listOf(SyncTarget(RecordKind.CENTRE, 1, "North"), SyncTarget(RecordKind.CLIENT, 100, "Asha")))
+        repository.download(
+            listOf(
+                SyncTarget(RecordKind.CENTRE, 1, "North"),
+                SyncTarget(RecordKind.CLIENT, 100, "Asha"),
+            ),
+        )
         repository.runPending(refreshAll = false)
 
         refuseClient101 = false
         repository.retryFailed()
         val waiting = repository.records.first().filter { it.chosen && it.status == RecordSyncStatus.WAITING }
-        assertEquals(listOf(RecordKind.CENTRE to 1), waiting.map { it.kind to it.id }, "Asha synced fine — only the centre re-runs")
+        assertEquals(
+            listOf(RecordKind.CENTRE to 1),
+            waiting.map { it.kind to it.id },
+            "Asha synced fine — only the centre re-runs",
+        )
 
         repository.runPending(refreshAll = false)
         assertEquals(RecordSyncStatus.SYNCED, repository.records.first().single { it.kind == RecordKind.CENTRE }.status)
@@ -193,7 +217,12 @@ class OfflineSyncRepositoryTest {
     @Test
     fun aRecordChosenAndAlsoUnderAChosenCentreStaysChosen() = runTest {
         signIn()
-        repository.download(listOf(SyncTarget(RecordKind.CLIENT, 100, "Asha"), SyncTarget(RecordKind.CENTRE, 1, "North")))
+        repository.download(
+            listOf(
+                SyncTarget(RecordKind.CLIENT, 100, "Asha"),
+                SyncTarget(RecordKind.CENTRE, 1, "North"),
+            ),
+        )
         repository.runPending(refreshAll = false)
 
         val asha = repository.records.first().single { it.kind == RecordKind.CLIENT && it.id == 100 }
@@ -204,7 +233,20 @@ class OfflineSyncRepositoryTest {
     fun cancellingPutsUnfinishedRecordsBackToWaiting() = runTest {
         signIn()
         repository.download(listOf(SyncTarget(RecordKind.CENTRE, 1, "North")))
-        dao.insertJob(SyncJobEntity(userId = USER, status = "RUNNING", targets = "", done = 0, total = 1, reads = 3, currentLabel = "x", failures = "", startedAtMs = NOW, finishedAtMs = null))
+        dao.insertJob(
+            SyncJobEntity(
+                userId = USER,
+                status = "RUNNING",
+                targets = "",
+                done = 0,
+                total = 1,
+                reads = 3,
+                currentLabel = "x",
+                failures = "",
+                startedAtMs = NOW,
+                finishedAtMs = null,
+            ),
+        )
         dao.setStatus(USER, "CENTRE", 1, "SYNCING")
 
         repository.cancel()
@@ -219,19 +261,41 @@ class OfflineSyncRepositoryTest {
         signIn()
         repository.download(listOf(SyncTarget(RecordKind.CENTRE, 1, "North")))
         // The process died mid-job: its row says RUNNING and the centre says SYNCING.
-        dao.insertJob(SyncJobEntity(userId = USER, status = "RUNNING", targets = "", done = 0, total = 1, reads = 40, currentLabel = "x", failures = "", startedAtMs = NOW, finishedAtMs = null))
+        dao.insertJob(
+            SyncJobEntity(
+                userId = USER,
+                status = "RUNNING",
+                targets = "",
+                done = 0,
+                total = 1,
+                reads = 40,
+                currentLabel = "x",
+                failures = "",
+                startedAtMs = NOW,
+                finishedAtMs = null,
+            ),
+        )
         dao.setStatus(USER, "CENTRE", 1, "SYNCING")
 
         repository.runPending(refreshAll = false)
 
-        assertEquals(RecordSyncStatus.FAILED, repository.records.first().single { it.kind == RecordKind.CENTRE }.status, "re-walked (Bimal still refused)")
+        assertEquals(
+            RecordSyncStatus.FAILED,
+            repository.records.first().single { it.kind == RecordKind.CENTRE }.status,
+            "re-walked (Bimal still refused)",
+        )
         assertEquals(SyncJobStatus.FINISHED, repository.latestJob.first()!!.status)
     }
 
     @Test
     fun removingACentreRemovesWhatCameInOnlyThroughIt() = runTest {
         signIn()
-        repository.download(listOf(SyncTarget(RecordKind.CENTRE, 1, "North"), SyncTarget(RecordKind.CLIENT, 100, "Asha")))
+        repository.download(
+            listOf(
+                SyncTarget(RecordKind.CENTRE, 1, "North"),
+                SyncTarget(RecordKind.CLIENT, 100, "Asha"),
+            ),
+        )
         repository.runPending(refreshAll = false)
 
         repository.remove(SyncTarget(RecordKind.CENTRE, 1, "North"))
@@ -314,7 +378,9 @@ private class InMemoryOfflineSyncDao : OfflineSyncDao {
     }
 
     override suspend fun deleteChildren(userId: Long, parentKind: String, parentId: Int) {
-        records.value = records.value.filterValues { !(it.userId == userId && it.parentKind == parentKind && it.parentId == parentId && !it.chosen) }
+        records.value = records.value.filterValues {
+            !(it.userId == userId && it.parentKind == parentKind && it.parentId == parentId && !it.chosen)
+        }
     }
 
     override suspend fun children(userId: Long, parentKind: String, parentId: Int) =
@@ -323,7 +389,9 @@ private class InMemoryOfflineSyncDao : OfflineSyncDao {
     override fun observeLatestJob(userId: Long): Flow<SyncJobEntity?> =
         jobs.map { all -> all.values.filter { it.userId == userId }.maxByOrNull { it.id } }
 
-    override suspend fun runningJob(userId: Long) = jobs.value.values.filter { it.userId == userId && it.status == "RUNNING" }.maxByOrNull { it.id }
+    override suspend fun runningJob(
+        userId: Long,
+    ) = jobs.value.values.filter { it.userId == userId && it.status == "RUNNING" }.maxByOrNull { it.id }
 
     override suspend fun insertJob(job: SyncJobEntity): Long {
         val id = if (job.id == 0L) nextId++ else job.id
@@ -336,7 +404,11 @@ private class InMemoryOfflineSyncDao : OfflineSyncDao {
     }
 
     override suspend fun trimJobs(userId: Long, keep: Int) {
-        val keepIds = jobs.value.values.filter { it.userId == userId }.sortedByDescending { it.id }.take(keep).map { it.id }.toSet()
+        val keepIds = jobs.value.values.filter { it.userId == userId }
+            .sortedByDescending { it.id }
+            .take(keep)
+            .map { it.id }
+            .toSet()
         jobs.value = jobs.value.filterValues { it.userId != userId || it.id in keepIds }
     }
 }

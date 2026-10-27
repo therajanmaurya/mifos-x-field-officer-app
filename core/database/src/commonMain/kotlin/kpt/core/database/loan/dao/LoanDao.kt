@@ -14,24 +14,17 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import androidx.room3.Update
-import androidx.room3.Upsert
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kpt.core.base.database.annotation.DbDao
 import kpt.core.database.loan.entity.ActualDisbursementDateEntity
-import kpt.core.database.loan.entity.LoanDisburseTemplateCacheEntity
-import kpt.core.database.loan.entity.LoanRepaymentRequestEntity
-import kpt.core.database.loan.entity.LoanRepaymentTemplateEntity
-import kpt.core.database.loan.entity.LoanTemplateCacheEntity
 import kpt.core.database.loan.entity.LoanWithAssociationsEntity
-import kpt.core.database.payment.entity.PaymentTypeOptionEntity
-import kpt.core.database.utils.getCurrentTimeInMillis
 
 @DbDao
 @Dao
-interface LoanDao {
-
+interface LoanDao :
+    LoanRepaymentDao,
+    LoanTemplateCacheDao {
     @Insert(entity = LoanWithAssociationsEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveLoanWithAssociations(loanWithAssociations: LoanWithAssociationsEntity)
 
@@ -45,36 +38,6 @@ interface LoanDao {
     /** What the logout purge reaches through the `loans` store's `deleteAll`. */
     @Query("DELETE FROM LoanWithAssociations")
     suspend fun deleteAllLoans()
-
-    @Insert(entity = LoanRepaymentRequestEntity::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLoanRepaymentTransaction(request: LoanRepaymentRequestEntity)
-
-    @Insert(entity = PaymentTypeOptionEntity::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPaymentTypeOption(paymentTypeOption: PaymentTypeOptionEntity)
-
-    @Query("SELECT * FROM PaymentTypeOption")
-    fun getPaymentTypeOptions(): Flow<List<PaymentTypeOptionEntity>>
-
-    @Query("SELECT * FROM LoanRepaymentRequestEntity WHERE loanId = :loanId LIMIT 1")
-    suspend fun getLoanRepaymentRequest(loanId: Int): LoanRepaymentRequestEntity?
-
-    @Update(entity = LoanRepaymentRequestEntity::class, onConflict = OnConflictStrategy.NONE)
-    suspend fun updateLoanRepaymentRequest(loanRepaymentRequest: LoanRepaymentRequestEntity)
-
-    @Query("SELECT * FROM LoanRepaymentRequestEntity ORDER BY timeStamp ASC")
-    fun readAllLoanRepaymentTransaction(): Flow<List<LoanRepaymentRequestEntity>>
-
-    @Insert(entity = LoanRepaymentTemplateEntity::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLoanRepaymentTemplate(template: LoanRepaymentTemplateEntity)
-
-    @Query("SELECT * FROM LoanRepaymentTemplate WHERE loanId = :loanId LIMIT 1")
-    suspend fun getLoanRepaymentTemplate(loanId: Int): LoanRepaymentTemplateEntity?
-
-    @Query("DELETE FROM LoanRepaymentTemplate WHERE loanId = :loanId")
-    suspend fun deleteLoanRepaymentByLoanId(loanId: Int)
-
-    @Query("DELETE FROM LoanRepaymentTemplate")
-    suspend fun deleteAllLoanRepaymentTemplates()
 
     /**
      * Persist a loan, stamping its id onto the summary and timeline rows and splitting the
@@ -116,87 +79,4 @@ interface LoanDao {
                 ),
             )
         }
-
-    /**
-     * Queue an offline repayment, stamping the loan and the submission time (seconds, which is what
-     * the sync payload expects). Was `LoanDaoHelper.saveLoanRepaymentTransaction`.
-     */
-    suspend fun saveLoanRepaymentTransaction(loanId: Int, request: LoanRepaymentRequestEntity) {
-        insertLoanRepaymentTransaction(
-            request.copy(loanId = loanId, timeStamp = getCurrentTimeInMillis() / 1000),
-        )
-    }
-
-    /**
-     * Persist a repayment template with its payment-type options.
-     * Was `LoanDaoHelper.saveLoanRepaymentTemplate` — now atomic, so the template cannot land
-     * without the options a repayment form needs to render.
-     */
-    @Transaction
-    suspend fun saveLoanRepaymentTemplateFor(
-        loanId: Int,
-        template: LoanRepaymentTemplateEntity,
-    ): LoanRepaymentTemplateEntity {
-        val stamped = template.copy(loanId = loanId)
-        stamped.paymentTypeOptions?.forEach { insertPaymentTypeOption(it) }
-        insertLoanRepaymentTemplate(stamped)
-        return stamped
-    }
-
-    /**
-     * Read a repayment template back with its payment-type options attached — they live in a
-     * separate table. Was `LoanDaoHelper.getLoanRepayTemplate`.
-     */
-    fun observeLoanRepaymentTemplate(loanId: Int): Flow<LoanRepaymentTemplateEntity?> =
-        getPaymentTypeOptions().map { options ->
-            getLoanRepaymentTemplate(loanId)?.copy(paymentTypeOptions = options.toMutableList())
-        }
-
-    /**
-     * One queued offline repayment, keyed by loan — the table's own primary key is `timeStamp`, but
-     * every read, write and delete path addresses it by `loanId`, which is what the queue is keyed by.
-     */
-    @Query("SELECT * FROM LoanRepaymentRequestEntity WHERE loanId = :loanId LIMIT 1")
-    fun observeLoanRepaymentRequest(loanId: Int): Flow<LoanRepaymentRequestEntity?>
-
-    // ── Application + disbursement template caches ────────────────────────────────
-    //
-    // Both are payload-blob rows: an officer out of signal still needs the option lists to fill in
-    // an application or a disbursement, and those lists only ever travel whole.
-
-    @Query("SELECT * FROM loan_application_templates WHERE clientId = :clientId AND productId = :productId LIMIT 1")
-    fun observeLoanTemplate(clientId: Int, productId: Int): Flow<LoanTemplateCacheEntity?>
-
-    @Upsert
-    suspend fun upsertLoanTemplate(template: LoanTemplateCacheEntity)
-
-    @Query("SELECT * FROM loan_disburse_templates WHERE loanId = :loanId LIMIT 1")
-    fun observeLoanDisburseTemplate(loanId: Int): Flow<LoanDisburseTemplateCacheEntity?>
-
-    @Upsert
-    suspend fun upsertLoanDisburseTemplate(template: LoanDisburseTemplateCacheEntity)
-
-    @Query("DELETE FROM loan_application_templates WHERE clientId = :clientId AND productId = :productId")
-    suspend fun deleteLoanTemplate(clientId: Int, productId: Int)
-
-    @Query("DELETE FROM loan_application_templates")
-    suspend fun deleteAllLoanTemplates()
-
-    @Query("DELETE FROM loan_disburse_templates WHERE loanId = :loanId")
-    suspend fun deleteLoanDisburseTemplate(loanId: Int)
-
-    @Query("DELETE FROM loan_disburse_templates")
-    suspend fun deleteAllLoanDisburseTemplates()
-
-    /**
-     * Drop a QUEUED repayment. The queue store used `deleteLoanRepaymentByLoanId`, which deletes
-     * from `LoanRepaymentTemplate` — the cached form template — so clearing a synced or discarded
-     * repayment left the request queued (to be sent again) and wiped the template instead.
-     */
-    @Query("DELETE FROM LoanRepaymentRequestEntity WHERE loanId = :loanId")
-    suspend fun deleteLoanRepaymentRequestByLoanId(loanId: Int)
-
-    /** The logout purge for the offline repayment queue. */
-    @Query("DELETE FROM LoanRepaymentRequestEntity")
-    suspend fun deleteAllLoanRepaymentRequests()
 }

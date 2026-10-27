@@ -35,9 +35,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AppRowWithTextAndButton(
     onBtnClick: () -> Unit,
     btnText: String,
-    btnEnabled: Boolean = true,
     text: String,
     modifier: Modifier = Modifier,
+    btnEnabled: Boolean = true,
 ) {
     Row(
         modifier = modifier

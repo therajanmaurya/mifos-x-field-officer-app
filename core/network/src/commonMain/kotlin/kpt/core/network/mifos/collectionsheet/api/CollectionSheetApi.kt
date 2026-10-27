@@ -17,14 +17,14 @@ import de.jensklingenberg.ktorfit.http.Query
 import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.model.center.CenterWithAssociations
 import kpt.core.model.collectionsheet.CenterDetail
+import kpt.core.model.collectionsheet.CollectionSheetPayload
 import kpt.core.model.collectionsheet.CollectionSheetResponse
 import kpt.core.model.collectionsheet.IndividualCollectionSheet
-import kpt.core.model.collectionsheet.CollectionSheetPayload
+import kpt.core.model.collectionsheet.IndividualCollectionSheetPayload
 import kpt.core.model.collectionsheet.ProductiveCollectionSheetPayload
+import kpt.core.model.collectionsheet.RequestCollectionSheetPayload
 import kpt.core.model.objects.collectionsheets.CollectionSheetRequestPayload
 import kpt.core.model.shared.GenericResponse
-import kpt.core.model.collectionsheet.IndividualCollectionSheetPayload
-import kpt.core.model.collectionsheet.RequestCollectionSheetPayload
 
 /**
  * Created by Tarun on 06-07-2017.

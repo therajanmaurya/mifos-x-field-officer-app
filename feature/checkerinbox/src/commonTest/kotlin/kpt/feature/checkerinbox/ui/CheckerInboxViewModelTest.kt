@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.checkerinbox.ui
 
@@ -73,7 +73,8 @@ class CheckerInboxViewModelTest {
     fun newestFirstAndSearchMatchesTheMaker() = runTest(dispatcher) {
         val vm = started()
         assertEquals(listOf(3, 2, 1), vm.shown)
-        vm.trySendAction(CheckerInboxAction.QueryChanged("ASH")); runCurrent()
+        vm.trySendAction(CheckerInboxAction.QueryChanged("ASH"))
+        runCurrent()
         assertEquals(listOf(3, 1), vm.shown)
     }
 
@@ -107,8 +108,13 @@ class CheckerInboxViewModelTest {
     fun anInvertedDateRangeIsNotApplied() = runTest(dispatcher) {
         val vm = started()
         vm.trySendAction(CheckerInboxAction.FilterOpened)
-        vm.trySendAction(CheckerInboxAction.DraftChanged { it.copy(from = LocalDate.parse("2026-10-20"), to = LocalDate.parse("2026-10-01")) })
-        vm.trySendAction(CheckerInboxAction.FilterApplied); runCurrent()
+        vm.trySendAction(
+            CheckerInboxAction.DraftChanged {
+                it.copy(from = LocalDate.parse("2026-10-20"), to = LocalDate.parse("2026-10-01"))
+            },
+        )
+        vm.trySendAction(CheckerInboxAction.FilterApplied)
+        runCurrent()
         assertEquals(InboxFilter(), vm.stateFlow.value.filter)
         assertEquals(listOf(3, 2, 1), vm.shown)
     }
@@ -117,14 +123,19 @@ class CheckerInboxViewModelTest {
     fun aBulkDecisionReportsEachFailureAndKeepsItSelected() = runTest(dispatcher) {
         val inbox = FakeCheckerInboxRepository(tasks)
         val commands = FakeCheckerInboxCommandRepository(inbox) { id ->
-            if (id == 2) MutationResult.Failed(fineractRejection("Maker cannot check own task"), rolledBack = false) else MutationResult.Applied(kpt.core.model.shared.GenericResponse(), synced = true)
+            if (id == 2) {
+                MutationResult.Failed(fineractRejection("Maker cannot check own task"), rolledBack = false)
+            } else {
+                MutationResult.Applied(kpt.core.model.shared.GenericResponse(), synced = true)
+            }
         }
         val vm = started(inbox, commands)
         vm.trySendAction(CheckerInboxAction.TaskLongPressed(1))
         vm.trySendAction(CheckerInboxAction.TaskClicked(2)) // a tap while selecting toggles
         vm.trySendAction(CheckerInboxAction.TaskClicked(3))
         vm.trySendAction(CheckerInboxAction.DecideRequested(Decision.APPROVE))
-        vm.trySendAction(CheckerInboxAction.DecideConfirmed); runCurrent()
+        vm.trySendAction(CheckerInboxAction.DecideConfirmed)
+        runCurrent()
 
         assertEquals(listOf("approve" to 1, "approve" to 2, "approve" to 3), commands.decisions)
         val outcome = vm.stateFlow.value.outcome!!
@@ -143,7 +154,8 @@ class CheckerInboxViewModelTest {
         vm.trySendAction(CheckerInboxAction.TaskLongPressed(1))
         vm.trySendAction(CheckerInboxAction.TaskClicked(2))
         vm.trySendAction(CheckerInboxAction.DecideRequested(Decision.REJECT))
-        vm.trySendAction(CheckerInboxAction.DecideConfirmed); runCurrent()
+        vm.trySendAction(CheckerInboxAction.DecideConfirmed)
+        runCurrent()
 
         assertEquals(1, commands.decisions.size)
         assertTrue(vm.stateFlow.value.outcome!!.offline)
@@ -155,11 +167,14 @@ class CheckerInboxViewModelTest {
         val inbox = FakeCheckerInboxRepository(tasks)
         val commands = FakeCheckerInboxCommandRepository(inbox)
         val vm = started(inbox, commands)
-        vm.trySendAction(CheckerInboxAction.TaskClicked(3)); runCurrent()
+        vm.trySendAction(CheckerInboxAction.TaskClicked(3))
+        runCurrent()
         assertEquals(3, vm.stateFlow.value.expanded)
-        vm.trySendAction(CheckerInboxAction.DecideRequested(Decision.DELETE, id = 3)); runCurrent()
+        vm.trySendAction(CheckerInboxAction.DecideRequested(Decision.DELETE, id = 3))
+        runCurrent()
         assertEquals(PendingDecision(Decision.DELETE, setOf(3)), vm.stateFlow.value.confirm)
-        vm.trySendAction(CheckerInboxAction.DecideCancelled); runCurrent()
+        vm.trySendAction(CheckerInboxAction.DecideCancelled)
+        runCurrent()
         assertTrue(commands.decisions.isEmpty())
         assertNull(vm.stateFlow.value.confirm)
     }
@@ -169,7 +184,8 @@ class CheckerInboxViewModelTest {
         val request = RescheduleLoansTask(id = 4, loanId = 77, clientName = "Asha")
         val vm = started(FakeCheckerInboxRepository(reschedules = listOf(request)))
         vm.eventFlow.test {
-            vm.trySendAction(CheckerInboxAction.RescheduleClicked(request)); runCurrent()
+            vm.trySendAction(CheckerInboxAction.RescheduleClicked(request))
+            runCurrent()
             assertEquals(CheckerInboxEvent.OpenLoanReschedules(77), awaitItem())
         }
     }

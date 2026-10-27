@@ -153,7 +153,9 @@ internal fun ChargeDetailContent(
                         DetailRow(stringResource(Res.string.feature_charge_amount_outstanding), row.outstanding)
                         DetailRow(
                             stringResource(Res.string.feature_charge_penalty),
-                            stringResource(if (row.penalty) Res.string.feature_charge_yes else Res.string.feature_charge_no),
+                            stringResource(
+                                if (row.penalty) Res.string.feature_charge_yes else Res.string.feature_charge_no,
+                            ),
                         )
                     }
                 }

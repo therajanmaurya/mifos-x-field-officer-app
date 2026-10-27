@@ -28,16 +28,20 @@ fun ReportTypeEntity.toDomain(): ClientReportTypeItem = ClientReportTypeItem(
  * cached; the caller drops those rather than inventing a 0 that would collide.
  */
 fun ClientReportTypeItem.toEntityOrNull(): ReportTypeEntity? {
-    val report = reportId ?: return null
-    val parameter = parameterId ?: return null
-    return ReportTypeEntity(
-        reportId = report,
-        parameterId = parameter,
-        reportName = reportName,
-        reportCategory = reportCategory,
-        parameterName = parameterName,
-        reportParameterName = reportParameterName,
-        reportSubtype = reportSubtype,
-        reportType = reportType,
-    )
+    val report = reportId
+    val parameter = parameterId
+    return if (report == null || parameter == null) {
+        null
+    } else {
+        ReportTypeEntity(
+            reportId = report,
+            parameterId = parameter,
+            reportName = reportName,
+            reportCategory = reportCategory,
+            parameterName = parameterName,
+            reportParameterName = reportParameterName,
+            reportSubtype = reportSubtype,
+            reportType = reportType,
+        )
+    }
 }

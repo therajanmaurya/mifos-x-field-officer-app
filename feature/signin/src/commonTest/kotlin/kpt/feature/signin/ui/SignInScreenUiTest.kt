@@ -180,7 +180,8 @@ class SignInScreenUiTest {
 
     @Test
     fun lockoutDisablesSubmitButKeepsTheWayOut() = runComposeUiTest {
-        setContent(content(SignInState(isLockedOut = true, failedAttempts = 5, instanceHost = "h", instanceTenant = "t")))
+        val locked = SignInState(isLockedOut = true, failedAttempts = 5, instanceHost = "h", instanceTenant = "t")
+        setContent(content(locked))
 
         onNodeWithTag(SignInTestTags.LOCKOUT_NOTICE, useUnmergedTree = true).assertIsDisplayed()
         onNodeWithTag(SignInTestTags.SUBMIT).assertIsNotEnabled()

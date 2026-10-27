@@ -152,7 +152,11 @@ internal fun DashboardTopBar(
 @Composable
 private fun ConnectionPill(online: Boolean) {
     val f = MaterialTheme.finance
-    val (container, content) = if (online) f.moneyPositiveContainer to f.moneyPositive else f.moneyNegativeContainer to f.moneyNegative
+    val (container, content) = if (online) {
+        f.moneyPositiveContainer to f.moneyPositive
+    } else {
+        f.moneyNegativeContainer to f.moneyNegative
+    }
     Row(
         modifier = Modifier
             .background(container, CircleShape)

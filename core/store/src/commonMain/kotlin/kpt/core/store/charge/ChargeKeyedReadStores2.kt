@@ -9,12 +9,10 @@
  */
 package kpt.core.store.charge
 
-import kpt.core.model.charge.Charges
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
-import kpt.core.database.charge.entity.ChargesEntity
+import kpt.core.model.charge.Charges
 import kpt.core.model.objects.clients.Page
 import kpt.core.network.mifos.charge.api.ChargeApi
 import kpt.core.store.cache.cachedRead
@@ -54,8 +52,19 @@ fun provideGetListOfPagingChargesStore(
     cache: ApiResponseCacheDao,
 ): Store<GetListOfPagingChargesKey, Page<Charges>> = cachedRead(
     dao = cache,
-    keyOf = { key -> AppCacheKeys.ChargeGetListOfPagingCharges.forKey("${key.resourceType}:${key.resourceId}:${key.offset}:${key.limit}") },
-    fetch = { key -> chargeApi.getListOfPagingCharges(resourceType = key.resourceType, resourceId = key.resourceId, offset = key.offset, limit = key.limit) },
+    keyOf = { key ->
+        AppCacheKeys.ChargeGetListOfPagingCharges.forKey(
+            "${key.resourceType}:${key.resourceId}:${key.offset}:${key.limit}",
+        )
+    },
+    fetch = { key ->
+        chargeApi.getListOfPagingCharges(
+            resourceType = key.resourceType,
+            resourceId = key.resourceId,
+            offset = key.offset,
+            limit = key.limit,
+        )
+    },
 )
 
 @StoreProvider(id = "chargeGetListOfOtherAccountCharge", ttl = "12h")
@@ -66,7 +75,12 @@ fun provideGetListOfOtherAccountChargeStore(
 ): Store<GetListOfOtherAccountChargeKey, List<Charges>> = cachedRead(
     dao = cache,
     keyOf = { key -> AppCacheKeys.ChargeGetListOfOtherAccountCharge.forKey("${key.resourceType}:${key.resourceId}") },
-    fetch = { key -> chargeApi.getListOfOtherAccountCharge(resourceType = key.resourceType, resourceId = key.resourceId) },
+    fetch = { key ->
+        chargeApi.getListOfOtherAccountCharge(
+            resourceType = key.resourceType,
+            resourceId = key.resourceId,
+        )
+    },
 )
 
 @StoreProvider(id = "chargeGetCharge", ttl = "12h")
@@ -77,5 +91,11 @@ fun provideGetChargeStore(
 ): Store<GetChargeKey, Charges> = cachedRead(
     dao = cache,
     keyOf = { key -> AppCacheKeys.ChargeGetCharge.forKey("${key.resourceType}:${key.resourceId}:${key.chargeId}") },
-    fetch = { key -> chargeApi.getCharge(resourceType = key.resourceType, resourceId = key.resourceId, chargeId = key.chargeId) },
+    fetch = { key ->
+        chargeApi.getCharge(
+            resourceType = key.resourceType,
+            resourceId = key.resourceId,
+            chargeId = key.chargeId,
+        )
+    },
 )

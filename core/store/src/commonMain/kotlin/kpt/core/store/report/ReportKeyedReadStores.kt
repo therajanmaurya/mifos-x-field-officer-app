@@ -71,7 +71,12 @@ fun provideGetReportFullParameterListStore(
 ): Store<GetReportFullParameterListKey, FullParameterListResponse> = cachedRead(
     dao = cache,
     keyOf = { key -> AppCacheKeys.ReportGetReportFullParameterList.forKey("${key.reportName}:${key.parameterType}") },
-    fetch = { key -> runReportsApi.getReportFullParameterList(reportName = key.reportName, parameterType = key.parameterType) },
+    fetch = { key ->
+        runReportsApi.getReportFullParameterList(
+            reportName = key.reportName,
+            parameterType = key.parameterType,
+        )
+    },
 )
 
 @StoreProvider(id = "reportGetReportParameterDetails", ttl = "12h")
@@ -82,7 +87,12 @@ fun provideGetReportParameterDetailsStore(
 ): Store<GetReportParameterDetailsKey, FullParameterListResponse> = cachedRead(
     dao = cache,
     keyOf = { key -> AppCacheKeys.ReportGetReportParameterDetails.forKey("${key.parameterName}:${key.parameterType}") },
-    fetch = { key -> runReportsApi.getReportParameterDetails(parameterName = key.parameterName, parameterType = key.parameterType) },
+    fetch = { key ->
+        runReportsApi.getReportParameterDetails(
+            parameterName = key.parameterName,
+            parameterType = key.parameterType,
+        )
+    },
 )
 
 @StoreProvider(id = "reportGetReportOffice", ttl = "12h")
@@ -92,8 +102,16 @@ fun provideGetReportOfficeStore(
     cache: ApiResponseCacheDao,
 ): Store<GetReportOfficeKey, FullParameterListResponse> = cachedRead(
     dao = cache,
-    keyOf = { key -> AppCacheKeys.ReportGetReportOffice.forKey("${key.parameterName}:${key.office}:${key.parameterType}") },
-    fetch = { key -> runReportsApi.getReportOffice(parameterName = key.parameterName, office = key.office, parameterType = key.parameterType) },
+    keyOf = { key ->
+        AppCacheKeys.ReportGetReportOffice.forKey("${key.parameterName}:${key.office}:${key.parameterType}")
+    },
+    fetch = { key ->
+        runReportsApi.getReportOffice(
+            parameterName = key.parameterName,
+            office = key.office,
+            parameterType = key.parameterType,
+        )
+    },
 )
 
 @StoreProvider(id = "reportGetReportProduct", ttl = "12h")
@@ -103,8 +121,16 @@ fun provideGetReportProductStore(
     cache: ApiResponseCacheDao,
 ): Store<GetReportProductKey, FullParameterListResponse> = cachedRead(
     dao = cache,
-    keyOf = { key -> AppCacheKeys.ReportGetReportProduct.forKey("${key.parameterName}:${key.currency}:${key.parameterType}") },
-    fetch = { key -> runReportsApi.getReportProduct(parameterName = key.parameterName, currency = key.currency, parameterType = key.parameterType) },
+    keyOf = { key ->
+        AppCacheKeys.ReportGetReportProduct.forKey("${key.parameterName}:${key.currency}:${key.parameterType}")
+    },
+    fetch = { key ->
+        runReportsApi.getReportProduct(
+            parameterName = key.parameterName,
+            currency = key.currency,
+            parameterType = key.parameterType,
+        )
+    },
 )
 
 @StoreProvider(id = "reportGetRunReportWithQuery", ttl = "12h")
@@ -126,7 +152,12 @@ fun provideGetCenterSummaryInfoStore(
 ): Store<GetCenterSummaryInfoKey, List<CenterInfo>> = cachedRead(
     dao = cache,
     keyOf = { key -> AppCacheKeys.ReportGetCenterSummaryInfo.forKey("${key.centerId}:${key.genericResultSet}") },
-    fetch = { key -> runReportsApi.getCenterSummaryInfo(centerId = key.centerId, genericResultSet = key.genericResultSet) },
+    fetch = { key ->
+        runReportsApi.getCenterSummaryInfo(
+            centerId = key.centerId,
+            genericResultSet = key.genericResultSet,
+        )
+    },
 )
 
 /**

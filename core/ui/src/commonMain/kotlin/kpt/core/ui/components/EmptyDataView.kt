@@ -27,11 +27,11 @@ import kpt.core.designsystem.theme.AppTheme
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.ui.generated.resources.Res
 import kpt.core.ui.generated.resources.core_ui_no_internet
-import kpt.core.ui.util.DevicePreview
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun EmptyDataView(
@@ -92,7 +92,7 @@ fun EmptyDataView(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun EmptyDataViewPreview(
     modifier: Modifier = Modifier,
@@ -106,7 +106,7 @@ private fun EmptyDataViewPreview(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun EmptyDataViewPreviewForIcon(
     modifier: Modifier = Modifier,

@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 @file:OptIn(kpt.core.base.store.screen.ExperimentalScreenDataStreamTestingApi::class)
 
@@ -37,9 +37,15 @@ class FakeReportRepository(
 
     override fun reportTypesStream(scope: CoroutineScope) = screenDataStreamForTesting(reports)
 
-    override fun reportParametersStream(reportName: String, scope: CoroutineScope) = screenDataStreamForTesting(parameters)
+    override fun reportParametersStream(
+        reportName: String,
+        scope: CoroutineScope,
+    ) = screenDataStreamForTesting(parameters)
 
-    override suspend fun parameterOptions(parameterName: String, parentValues: Map<String, String>): List<ReportOption>? {
+    override suspend fun parameterOptions(
+        parameterName: String,
+        parentValues: Map<String, String>,
+    ): List<ReportOption>? {
         optionRequests += parameterName to parentValues
         return options(parameterName, parentValues)
     }

@@ -10,8 +10,6 @@
 package kpt.feature.center.list
 
 import app.cash.turbine.test
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -31,6 +29,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * `CenterListStateTest` covers the derived view (search / filter / sort). This covers the half it
@@ -163,7 +163,13 @@ class CenterListViewModelTest {
             vm.trySendAction(CenterListAction.DownloadSelected)
             testScheduler.advanceUntilIdle()
             // The background job finishes; the dialog follows its durable row.
-            downloads.latestJob.value = SyncJob(1, SyncJobStatus.FINISHED, listOf(SyncTarget(RecordKind.CENTRE, 2, "x")), done = 1, startedAtMs = 1)
+            downloads.latestJob.value = SyncJob(
+                1,
+                SyncJobStatus.FINISHED,
+                listOf(SyncTarget(RecordKind.CENTRE, 2, "x")),
+                done = 1,
+                startedAtMs = 1,
+            )
             testScheduler.advanceUntilIdle()
             cancelAndIgnoreRemainingEvents()
         }

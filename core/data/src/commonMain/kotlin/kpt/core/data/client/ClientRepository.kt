@@ -13,11 +13,11 @@ import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.model.client.AddressConfiguration
 import kpt.core.model.client.AddressTemplate
-import kpt.core.model.client.ClientAccounts
 import kpt.core.model.client.Client
-import kpt.core.model.client.ClientsTemplate
+import kpt.core.model.client.ClientAccounts
 import kpt.core.model.client.ClientCloseTemplateResponse
 import kpt.core.model.client.ClientTemplateOptions
+import kpt.core.model.client.ClientsTemplate
 import kpt.core.model.objects.clients.ClientAddressEntity
 import kpt.core.model.objects.clients.ClientAddressResponse
 import kpt.core.model.objects.noncoreobjects.Identifier

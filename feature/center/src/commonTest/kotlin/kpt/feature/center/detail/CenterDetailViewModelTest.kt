@@ -11,9 +11,6 @@
 
 package kpt.feature.center.detail
 
-import kpt.core.data.testing.FakeRecentRecordsRepository
-import kpt.core.model.center.CenterWithAssociations
-import kpt.core.model.objects.groups.CenterInfo
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
@@ -22,8 +19,11 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.data.testing.FakeRecentRecordsRepository
 import kpt.core.model.center.Center
+import kpt.core.model.center.CenterWithAssociations
 import kpt.core.model.group.Group
+import kpt.core.model.objects.groups.CenterInfo
 import kpt.feature.center.testing.FakeCenterRepository
 import kpt.feature.center.testing.center
 import kpt.feature.center.testing.group

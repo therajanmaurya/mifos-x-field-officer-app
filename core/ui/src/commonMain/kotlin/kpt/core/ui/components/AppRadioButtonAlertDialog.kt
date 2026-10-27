@@ -30,9 +30,9 @@ import kpt.core.designsystem.theme.AppTheme
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.ui.generated.resources.Res
 import kpt.core.ui.generated.resources.core_ui_core_common_working
-import kpt.core.ui.util.DevicePreview
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,7 +85,7 @@ fun AppRadioButtonDialog(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun PreviewRadioButtonDialog() {
     AppTheme {

@@ -30,11 +30,21 @@ import kpt.core.model.objects.note.UpdateNoteResponseDto
  */
 interface NoteCommandRepository {
 
-    suspend fun addNewNote(resourceType: String, resourceId: Long, noteRequestDto: NoteRequestDto, idempotencyKey: String): MutationResult<CreateNoteResponseDto>
+    suspend fun addNewNote(
+        resourceType: String,
+        resourceId: Long,
+        noteRequestDto: NoteRequestDto,
+        idempotencyKey: String,
+    ): MutationResult<CreateNoteResponseDto>
 
     suspend fun deleteNote(resourceType: String, resourceId: Long, noteId: Long): MutationResult<DeleteNoteResponseDto>
 
-    suspend fun updateNote(resourceType: String, resourceId: Long, noteId: Long, noteRequestDto: NoteRequestDto): MutationResult<UpdateNoteResponseDto>
+    suspend fun updateNote(
+        resourceType: String,
+        resourceId: Long,
+        noteId: Long,
+        noteRequestDto: NoteRequestDto,
+    ): MutationResult<UpdateNoteResponseDto>
 
     /**
      * Send one [NoteDraft] — create or update, decided by `noteId`.

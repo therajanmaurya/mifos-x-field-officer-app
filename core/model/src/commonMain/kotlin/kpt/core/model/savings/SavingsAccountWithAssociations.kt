@@ -18,8 +18,9 @@ import kpt.core.model.objects.account.saving.InterestPostingPeriodType
 import kpt.core.model.objects.account.saving.LockinPeriodFrequencyType
 
 /**
- * GENERATED twin — what every layer above `core/store` sees of `core/database`'s `SavingsAccountWithAssociationsEntity`.
- * Same field names as the row; `core/store/mapping/EntityModelMappers.kt` converts between them.
+ * GENERATED twin — what every layer above `core/store` sees of `core/database`'s
+ * `SavingsAccountWithAssociationsEntity`.
+ * Same field names as the row; the `core/store/mapping` mappers convert between them.
  */
 @Serializable
 data class SavingsAccountWithAssociations(

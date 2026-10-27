@@ -122,8 +122,8 @@ internal fun CreateGroupContent(
     state: CreateGroupState,
     offices: ScreenState<List<Office>>,
     onAction: (CreateGroupAction) -> Unit,
-    offeredDraft: SavedFormDraft? = null,
     modifier: Modifier = Modifier,
+    offeredDraft: SavedFormDraft? = null,
     scaffoldPadding: PaddingValues = PaddingValues(),
 ) {
     ScreenContent(

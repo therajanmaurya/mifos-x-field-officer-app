@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.collectionsheet.ui.newsheet
 
@@ -132,7 +132,9 @@ internal fun NewCollectionSheetContent(
                     value = state.office?.label.orEmpty(),
                     // The OPTION is dispatched, resolved from the same list that supplied the labels.
                     onOptionSelected = { index, label ->
-                        officeList.getOrNull(index)?.let { onAction(NewCollectionSheetAction.SelectOffice(Choice(it.id, label))) }
+                        officeList.getOrNull(index)?.let {
+                            onAction(NewCollectionSheetAction.SelectOffice(Choice(it.id, label)))
+                        }
                     },
                     options = officeList.map { it.name.orEmpty() },
                     label = stringResource(Res.string.feature_collection_sheet_office),
@@ -147,7 +149,9 @@ internal fun NewCollectionSheetContent(
                 AppTextFieldDropdown(
                     value = state.staff?.label.orEmpty(),
                     onOptionSelected = { index, label ->
-                        staff.getOrNull(index)?.id?.let { onAction(NewCollectionSheetAction.SelectStaff(Choice(it, label))) }
+                        staff.getOrNull(index)?.id?.let {
+                            onAction(NewCollectionSheetAction.SelectStaff(Choice(it, label)))
+                        }
                     },
                     options = staff.map { it.displayName.orEmpty() },
                     label = stringResource(Res.string.feature_collection_sheet_staff_optional),

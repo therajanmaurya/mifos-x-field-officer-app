@@ -76,20 +76,28 @@ internal fun rememberCreateDraftExtras(navController: NavController): (DraftReco
 
 /** The form [saved] came from, for the same owner — its banner then offers the draft to resume. */
 internal fun NavController.openCreateDraft(form: CreateForm, saved: SavedFormDraft) {
-    val owner = saved.draft.ownerId?.toInt()
     when (form) {
         CreateForm.CLIENT -> navigateToCreateNewClient()
         CreateForm.GROUP -> navigateToCreateGroup()
         CreateForm.CENTER -> navigateToCreateCenter()
-        CreateForm.LOAN -> owner?.let { navigateToNewLoanApplication(it) }
-        CreateForm.GROUP_LOAN -> owner?.let { navigateToGroupLoanApplication(it) }
-        CreateForm.SAVINGS -> owner?.let { navigateToSavingsApplication(it, isGroup = saved.draft.ownerKind == "group") }
-        CreateForm.ADDRESS -> owner?.let { navigateToClientAddAddress(it) }
-        CreateForm.FIXED_DEPOSIT -> owner?.let { navigateToFixedDepositApplication(it) }
-        CreateForm.RECURRING_DEPOSIT -> owner?.let { navigateToRecurringDepositApplication(it) }
-        CreateForm.SHARE -> owner?.let { navigateToShareApplication(it) }
-        CreateForm.COLLATERAL -> owner?.let { navigateToClientCollateral(it) }
-        CreateForm.DEFAULT_ACCOUNT -> owner?.let { navigateToClientDefaultAccount(it) }
+        else -> saved.draft.ownerId?.toInt()?.let { openOwnedDraft(form, it, saved) }
+    }
+}
+
+/** The forms that hang off an existing owner (client or group) — [owner] is its id. */
+private fun NavController.openOwnedDraft(form: CreateForm, owner: Int, saved: SavedFormDraft) {
+    when (form) {
+        CreateForm.LOAN -> navigateToNewLoanApplication(owner)
+        CreateForm.GROUP_LOAN -> navigateToGroupLoanApplication(owner)
+        CreateForm.SAVINGS ->
+            navigateToSavingsApplication(owner, isGroup = saved.draft.ownerKind == "group")
+        CreateForm.ADDRESS -> navigateToClientAddAddress(owner)
+        CreateForm.FIXED_DEPOSIT -> navigateToFixedDepositApplication(owner)
+        CreateForm.RECURRING_DEPOSIT -> navigateToRecurringDepositApplication(owner)
+        CreateForm.SHARE -> navigateToShareApplication(owner)
+        CreateForm.COLLATERAL -> navigateToClientCollateral(owner)
+        CreateForm.DEFAULT_ACCOUNT -> navigateToClientDefaultAccount(owner)
+        CreateForm.CLIENT, CreateForm.GROUP, CreateForm.CENTER -> Unit
     }
 }
 

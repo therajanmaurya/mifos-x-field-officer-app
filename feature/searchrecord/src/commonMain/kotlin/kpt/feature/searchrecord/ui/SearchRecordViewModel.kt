@@ -11,7 +11,6 @@ package kpt.feature.searchrecord.ui
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +29,6 @@ import kpt.core.model.objects.searchrecord.RecordType
 import kpt.core.model.objects.searchrecord.SearchRecordKey
 import kpt.feature.searchrecord.generated.resources.Res
 import kpt.feature.searchrecord.generated.resources.error_searching_records
-import kpt.feature.searchrecord.navigation.SearchRecordRoute
 import org.jetbrains.compose.resources.StringResource
 
 /**
@@ -51,7 +49,7 @@ internal class SearchRecordViewModel(
     repository: SearchRecordRepository,
 ) : BaseViewModel<SearchRecordInput, SearchRecordEvent, SearchRecordAction>(
     initialState = SearchRecordInput(
-        recordType = RecordType.valueOf(savedStateHandle.toRoute<SearchRecordRoute>().type),
+        recordType = RecordType.valueOf(requireNotNull(savedStateHandle.get<String>("type"))),
     ),
 ) {
 

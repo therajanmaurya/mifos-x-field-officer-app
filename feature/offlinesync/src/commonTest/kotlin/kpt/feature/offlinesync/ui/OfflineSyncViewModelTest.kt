@@ -5,12 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 @file:OptIn(kpt.core.data.testing.ExperimentalDataTestingApi::class)
 
 package kpt.feature.offlinesync.ui
 
+import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -49,16 +50,59 @@ class OfflineSyncViewModelTest {
 
     @AfterTest fun tearDown() = Dispatchers.resetMain()
 
-    private val centre = OfflineRecord(RecordKind.CENTRE, 10, "Centro Arin", chosen = true, groups = 1, clients = 2, status = RecordSyncStatus.SYNCED, refreshedAtMs = NOW - HOUR)
-    private val group = OfflineRecord(RecordKind.GROUP, 84, "MARIPOSAS MONARCAS", parentKind = RecordKind.CENTRE, parentId = 10, parentName = "Centro Arin", clients = 2, status = RecordSyncStatus.SYNCED, refreshedAtMs = NOW - HOUR)
-    private val asha = OfflineRecord(RecordKind.CLIENT, 192, "FOTest Asha", parentKind = RecordKind.GROUP, parentId = 84, parentName = "MARIPOSAS MONARCAS", status = RecordSyncStatus.SYNCED, refreshedAtMs = NOW - HOUR)
-    private val irving = OfflineRecord(RecordKind.CLIENT, 205, "Irving Zamora", chosen = true, status = RecordSyncStatus.SYNCED, refreshedAtMs = NOW - 2 * DAY)
-    private val waiting = OfflineRecord(RecordKind.CENTRE, 18, "Arin Savings", chosen = true, status = RecordSyncStatus.WAITING)
+    private val centre = OfflineRecord(
+        RecordKind.CENTRE,
+        10,
+        "Centro Arin",
+        chosen = true,
+        groups = 1,
+        clients = 2,
+        status = RecordSyncStatus.SYNCED,
+        refreshedAtMs = NOW - HOUR,
+    )
+    private val group = OfflineRecord(
+        RecordKind.GROUP,
+        84,
+        "MARIPOSAS MONARCAS",
+        parentKind = RecordKind.CENTRE,
+        parentId = 10,
+        parentName = "Centro Arin",
+        clients = 2,
+        status = RecordSyncStatus.SYNCED,
+        refreshedAtMs = NOW - HOUR,
+    )
+    private val asha = OfflineRecord(
+        RecordKind.CLIENT,
+        192,
+        "FOTest Asha",
+        parentKind = RecordKind.GROUP,
+        parentId = 84,
+        parentName = "MARIPOSAS MONARCAS",
+        status = RecordSyncStatus.SYNCED,
+        refreshedAtMs = NOW - HOUR,
+    )
+    private val irving = OfflineRecord(
+        RecordKind.CLIENT,
+        205,
+        "Irving Zamora",
+        chosen = true,
+        status = RecordSyncStatus.SYNCED,
+        refreshedAtMs = NOW - 2 * DAY,
+    )
+    private val waiting = OfflineRecord(
+        RecordKind.CENTRE,
+        18,
+        "Arin Savings",
+        chosen = true,
+        status = RecordSyncStatus.WAITING,
+    )
 
     private fun vm(
         repo: FakeOfflineSyncRepository = FakeOfflineSyncRepository(listOf(centre, group, asha, irving, waiting)),
         network: FakeNetworkMonitor = FakeNetworkMonitor(),
-        centers: FakeCenterRepository = FakeCenterRepository(listOf(Center(id = 10, name = "Centro Arin"), Center(id = 27, name = "Centro Las Flores"))),
+        centers: FakeCenterRepository = FakeCenterRepository(
+            listOf(Center(id = 10, name = "Centro Arin"), Center(id = 27, name = "Centro Las Flores")),
+        ),
     ) = OfflineSyncViewModel(repo, centers, FakeGroupRepository(), FakeClientRepository(), network, nowMs = { NOW })
 
     @Test
@@ -99,7 +143,8 @@ class OfflineSyncViewModelTest {
 
     @Test
     fun aRunningJobIsTheSyncingStateAndDisablesSyncNow() = runTest(dispatcher) {
-        val repo = FakeOfflineSyncRepository(listOf(centre), job = SyncJob(1, SyncJobStatus.RUNNING, listOf(centre.target), reads = 312, startedAtMs = NOW))
+        val job = SyncJob(1, SyncJobStatus.RUNNING, listOf(centre.target), reads = 312, startedAtMs = NOW)
+        val repo = FakeOfflineSyncRepository(listOf(centre), job = job)
         val vm = vm(repo)
         advanceUntilIdle()
 
@@ -113,8 +158,22 @@ class OfflineSyncViewModelTest {
 
     @Test
     fun aFinishedJobWithFailuresIsThePartialFailureStateAndRetriesOnlyFailures() = runTest(dispatcher) {
-        val failures = listOf(DownloadFailure("Loan 000001475 · documents", "Access denied (403): User has no authority to: READ_DOCUMENT"))
-        val repo = FakeOfflineSyncRepository(listOf(centre), job = SyncJob(1, SyncJobStatus.FINISHED, listOf(centre.target), done = 1, reads = 1037, failures = failures, startedAtMs = NOW))
+        val failures = listOf(
+            DownloadFailure(
+                "Loan 000001475 · documents",
+                "Access denied (403): User has no authority to: READ_DOCUMENT",
+            ),
+        )
+        val job = SyncJob(
+            1,
+            SyncJobStatus.FINISHED,
+            listOf(centre.target),
+            done = 1,
+            reads = 1037,
+            failures = failures,
+            startedAtMs = NOW,
+        )
+        val repo = FakeOfflineSyncRepository(listOf(centre), job = job)
         val vm = vm(repo)
         advanceUntilIdle()
 
@@ -202,7 +261,7 @@ class OfflineSyncViewModelTest {
         }
     }
 
-    private suspend fun app.cash.turbine.ReceiveTurbine<ScreenState<List<PickerRow>>>.expectMostRecentContent(): List<PickerRow> {
+    private suspend fun ReceiveTurbine<ScreenState<List<PickerRow>>>.expectMostRecentContent(): List<PickerRow> {
         while (true) {
             val item = awaitItem()
             if (item is ScreenState.Content) return item.data

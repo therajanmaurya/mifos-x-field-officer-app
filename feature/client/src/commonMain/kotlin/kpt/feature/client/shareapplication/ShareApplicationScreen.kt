@@ -156,7 +156,7 @@ internal fun ShareApplicationContent(
                 }
                 when (state.step) {
                     ShareStep.DETAILS -> DetailsPage(state, options, onAction)
-                    ShareStep.TERMS -> TermsPage(state, options, onAction)
+                    ShareStep.TERMS -> TermsPage(state, onAction)
                     ShareStep.CHARGES -> ChargesPage(options)
                     ShareStep.PREVIEW -> PreviewPage(state)
                 }
@@ -187,96 +187,99 @@ private fun DetailsPage(
     template: ShareTemplate,
     onAction: (ShareApplicationAction) -> Unit,
 ) {
-    val products = template.productOptions
-    // Required: say so when the tenant has none (gateway, 2026-10-26), as the deposit wizards do.
-    if (products.isEmpty()) {
-        Text(
-            text = stringResource(Res.string.feature_client_shareapp_no_products),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.fillMaxWidth().testTag(ShareApplicationTestTags.NO_PRODUCTS),
+    Column {
+        val products = template.productOptions
+        // Required: say so when the tenant has none (gateway, 2026-10-26), as the deposit wizards do.
+        if (products.isEmpty()) {
+            Text(
+                text = stringResource(Res.string.feature_client_shareapp_no_products),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.fillMaxWidth().testTag(ShareApplicationTestTags.NO_PRODUCTS),
+            )
+        }
+        AppTextFieldDropdown(
+            value = state.product?.label.orEmpty(),
+            onOptionSelected = { index, label ->
+                products.getOrNull(index)?.id?.let {
+                    onAction(ShareApplicationAction.UpdateProduct(ShareOption(it, label)))
+                }
+            },
+            options = products.mapNotNull { it.name },
+            label = stringResource(Res.string.feature_client_shareapp_product),
+            errorMessage = state.productError
+                .errorOr(Res.string.feature_client_shareapp_error_product_required),
+            modifier = Modifier.fillMaxWidth().testTag(ShareApplicationTestTags.PRODUCT),
+        )
+
+        val savings = template.savingsAccountOptions.orEmpty()
+        AppTextFieldDropdown(
+            value = state.savingsAccount?.label.orEmpty(),
+            onOptionSelected = { index, label ->
+                savings.getOrNull(index)?.id?.let {
+                    onAction(ShareApplicationAction.UpdateSavingsAccount(ShareOption(it, label)))
+                }
+            },
+            options = savings.mapNotNull { it.accountNo },
+            label = stringResource(Res.string.feature_client_shareapp_savings_account),
+            errorMessage = state.savingsAccountError
+                .errorOr(Res.string.feature_client_shareapp_error_savings_required),
+            modifier = Modifier.fillMaxWidth().testTag(ShareApplicationTestTags.SAVINGS_ACCOUNT),
+        )
+
+        AppOutlinedTextField(
+            value = state.totalShares,
+            onValueChange = { onAction(ShareApplicationAction.UpdateTotalShares(it)) },
+            label = stringResource(Res.string.feature_client_shareapp_total_shares),
+            isError = state.totalSharesError,
+            errorText = state.totalSharesError
+                .errorOr(Res.string.feature_client_shareapp_error_shares_required),
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier.fillMaxWidth().testTag(ShareApplicationTestTags.TOTAL_SHARES),
+        )
+
+        AppOutlinedTextField(
+            value = state.externalId,
+            onValueChange = { onAction(ShareApplicationAction.UpdateExternalId(it)) },
+            label = stringResource(Res.string.feature_client_shareapp_external_id),
+            modifier = Modifier.fillMaxWidth(),
         )
     }
-    AppTextFieldDropdown(
-        value = state.product?.label.orEmpty(),
-        onOptionSelected = { index, label ->
-            products.getOrNull(index)?.id?.let {
-                onAction(ShareApplicationAction.UpdateProduct(ShareOption(it, label)))
-            }
-        },
-        options = products.mapNotNull { it.name },
-        label = stringResource(Res.string.feature_client_shareapp_product),
-        errorMessage = state.productError
-            .errorOr(Res.string.feature_client_shareapp_error_product_required),
-        modifier = Modifier.fillMaxWidth().testTag(ShareApplicationTestTags.PRODUCT),
-    )
-
-    val savings = template.savingsAccountOptions.orEmpty()
-    AppTextFieldDropdown(
-        value = state.savingsAccount?.label.orEmpty(),
-        onOptionSelected = { index, label ->
-            savings.getOrNull(index)?.id?.let {
-                onAction(ShareApplicationAction.UpdateSavingsAccount(ShareOption(it, label)))
-            }
-        },
-        options = savings.mapNotNull { it.accountNo },
-        label = stringResource(Res.string.feature_client_shareapp_savings_account),
-        errorMessage = state.savingsAccountError
-            .errorOr(Res.string.feature_client_shareapp_error_savings_required),
-        modifier = Modifier.fillMaxWidth().testTag(ShareApplicationTestTags.SAVINGS_ACCOUNT),
-    )
-
-    AppOutlinedTextField(
-        value = state.totalShares,
-        onValueChange = { onAction(ShareApplicationAction.UpdateTotalShares(it)) },
-        label = stringResource(Res.string.feature_client_shareapp_total_shares),
-        isError = state.totalSharesError,
-        errorText = state.totalSharesError
-            .errorOr(Res.string.feature_client_shareapp_error_shares_required),
-        keyboardType = KeyboardType.Number,
-        modifier = Modifier.fillMaxWidth().testTag(ShareApplicationTestTags.TOTAL_SHARES),
-    )
-
-    AppOutlinedTextField(
-        value = state.externalId,
-        onValueChange = { onAction(ShareApplicationAction.UpdateExternalId(it)) },
-        label = stringResource(Res.string.feature_client_shareapp_external_id),
-        modifier = Modifier.fillMaxWidth(),
-    )
 }
 
 @Composable
 private fun TermsPage(
     state: ShareApplicationState,
-    template: ShareTemplate,
     onAction: (ShareApplicationAction) -> Unit,
 ) {
-    AppOutlinedTextField(
-        value = state.minimumActivePeriod,
-        onValueChange = { onAction(ShareApplicationAction.UpdateMinimumActivePeriod(it)) },
-        label = stringResource(Res.string.feature_client_shareapp_min_active_period),
-        keyboardType = KeyboardType.Number,
-        modifier = Modifier.fillMaxWidth(),
-    )
-
-    AppOutlinedTextField(
-        value = state.lockInPeriod,
-        onValueChange = { onAction(ShareApplicationAction.UpdateLockInPeriod(it)) },
-        label = stringResource(Res.string.feature_client_shareapp_lock_in_period),
-        keyboardType = KeyboardType.Number,
-        modifier = Modifier.fillMaxWidth(),
-    )
-
-    androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(
-            checked = state.isDividendAllowed,
-            onCheckedChange = { onAction(ShareApplicationAction.UpdateDividendAllowed(it)) },
-            modifier = Modifier.testTag(ShareApplicationTestTags.DIVIDEND),
+    Column {
+        AppOutlinedTextField(
+            value = state.minimumActivePeriod,
+            onValueChange = { onAction(ShareApplicationAction.UpdateMinimumActivePeriod(it)) },
+            label = stringResource(Res.string.feature_client_shareapp_min_active_period),
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier.fillMaxWidth(),
         )
-        Text(
-            text = stringResource(Res.string.feature_client_shareapp_dividend_allowed),
-            style = AppTypography.bodyMedium,
+
+        AppOutlinedTextField(
+            value = state.lockInPeriod,
+            onValueChange = { onAction(ShareApplicationAction.UpdateLockInPeriod(it)) },
+            label = stringResource(Res.string.feature_client_shareapp_lock_in_period),
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier.fillMaxWidth(),
         )
+
+        androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = state.isDividendAllowed,
+                onCheckedChange = { onAction(ShareApplicationAction.UpdateDividendAllowed(it)) },
+                modifier = Modifier.testTag(ShareApplicationTestTags.DIVIDEND),
+            )
+            Text(
+                text = stringResource(Res.string.feature_client_shareapp_dividend_allowed),
+                style = AppTypography.bodyMedium,
+            )
+        }
     }
 }
 
@@ -300,13 +303,15 @@ private fun ChargesPage(template: ShareTemplate) {
 /** What will be sent, from the SAME state the payload is built from. */
 @Composable
 private fun PreviewPage(state: ShareApplicationState) {
-    PreviewRow(stringResource(Res.string.feature_client_shareapp_product), state.product?.label.orEmpty())
-    PreviewRow(
-        stringResource(Res.string.feature_client_shareapp_savings_account),
-        state.savingsAccount?.label.orEmpty(),
-    )
-    PreviewRow(stringResource(Res.string.feature_client_shareapp_total_shares), state.totalShares)
-    PreviewRow(stringResource(Res.string.feature_client_shareapp_external_id), state.externalId)
+    Column {
+        PreviewRow(stringResource(Res.string.feature_client_shareapp_product), state.product?.label.orEmpty())
+        PreviewRow(
+            stringResource(Res.string.feature_client_shareapp_savings_account),
+            state.savingsAccount?.label.orEmpty(),
+        )
+        PreviewRow(stringResource(Res.string.feature_client_shareapp_total_shares), state.totalShares)
+        PreviewRow(stringResource(Res.string.feature_client_shareapp_external_id), state.externalId)
+    }
 }
 
 @Composable

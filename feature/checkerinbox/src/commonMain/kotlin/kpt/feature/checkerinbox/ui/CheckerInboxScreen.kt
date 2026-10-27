@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.checkerinbox.ui
 
@@ -24,8 +24,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -163,13 +163,24 @@ internal fun CheckerInboxContent(
                 Tab(
                     selected = state.tab == InboxTab.APPROVALS,
                     onClick = { onAction(CheckerInboxAction.TabSelected(InboxTab.APPROVALS)) },
-                    text = { Text(stringResource(Res.string.feature_checkerinbox_tab_approvals, inbox.dataOrNull?.total ?: 0)) },
+                    text = {
+                        Text(
+                            stringResource(Res.string.feature_checkerinbox_tab_approvals, inbox.dataOrNull?.total ?: 0),
+                        )
+                    },
                     modifier = Modifier.testTag(CheckerInboxTestTags.TAB_APPROVALS),
                 )
                 Tab(
                     selected = state.tab == InboxTab.RESCHEDULES,
                     onClick = { onAction(CheckerInboxAction.TabSelected(InboxTab.RESCHEDULES)) },
-                    text = { Text(stringResource(Res.string.feature_checkerinbox_tab_reschedules, reschedules.dataOrNull?.size ?: 0)) },
+                    text = {
+                        Text(
+                            stringResource(
+                                Res.string.feature_checkerinbox_tab_reschedules,
+                                reschedules.dataOrNull?.size ?: 0,
+                            ),
+                        )
+                    },
                     modifier = Modifier.testTag(CheckerInboxTestTags.TAB_RESCHEDULES),
                 )
             }
@@ -198,7 +209,8 @@ private fun Approvals(
             SelectionBar(state.selected.size, onAction)
         } else {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = KptTheme.spacing.md, vertical = KptTheme.spacing.sm),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = KptTheme.spacing.md, vertical = KptTheme.spacing.sm),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 AppOutlinedTextField(
@@ -207,9 +219,15 @@ private fun Approvals(
                     label = stringResource(Res.string.feature_checkerinbox_search_by_user),
                     modifier = Modifier.weight(1f).testTag(CheckerInboxTestTags.SEARCH),
                 )
-                IconButton(onClick = { onAction(CheckerInboxAction.FilterOpened) }, modifier = Modifier.testTag(CheckerInboxTestTags.FILTER)) {
+                IconButton(
+                    onClick = { onAction(CheckerInboxAction.FilterOpened) },
+                    modifier = Modifier.testTag(CheckerInboxTestTags.FILTER),
+                ) {
                     BadgedBox(badge = { if (state.filter.isActive) Badge() }) {
-                        Icon(AppIcons.FilterList, contentDescription = stringResource(Res.string.feature_checkerinbox_filter))
+                        Icon(
+                            AppIcons.FilterList,
+                            contentDescription = stringResource(Res.string.feature_checkerinbox_filter),
+                        )
                     }
                 }
             }
@@ -245,7 +263,10 @@ private fun SelectionBar(count: Int, onAction: (CheckerInboxAction) -> Unit) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { onAction(CheckerInboxAction.SelectionCleared) }) {
-                Icon(AppIcons.Close, contentDescription = stringResource(Res.string.feature_checkerinbox_clear_selection))
+                Icon(
+                    AppIcons.Close,
+                    contentDescription = stringResource(Res.string.feature_checkerinbox_clear_selection),
+                )
             }
             Text(
                 text = stringResource(Res.string.feature_checkerinbox_selected, count),
@@ -259,15 +280,42 @@ private fun SelectionBar(count: Int, onAction: (CheckerInboxAction) -> Unit) {
 
 /** Approve · reject · delete — for one task ([id]) or for the selection (null). */
 @Composable
-private fun DecisionIcons(onAction: (CheckerInboxAction) -> Unit, id: Int?) {
-    IconButton(onClick = { onAction(CheckerInboxAction.DecideRequested(Decision.APPROVE, id)) }, modifier = Modifier.testTag(CheckerInboxTestTags.APPROVE)) {
-        Icon(AppIcons.Check, contentDescription = stringResource(Res.string.feature_checkerinbox_approve), tint = KptTheme.colorScheme.primary)
-    }
-    IconButton(onClick = { onAction(CheckerInboxAction.DecideRequested(Decision.REJECT, id)) }, modifier = Modifier.testTag(CheckerInboxTestTags.REJECT)) {
-        Icon(AppIcons.Cancel, contentDescription = stringResource(Res.string.feature_checkerinbox_reject), tint = KptTheme.colorScheme.tertiary)
-    }
-    IconButton(onClick = { onAction(CheckerInboxAction.DecideRequested(Decision.DELETE, id)) }, modifier = Modifier.testTag(CheckerInboxTestTags.DELETE)) {
-        Icon(AppIcons.Delete, contentDescription = stringResource(Res.string.feature_checkerinbox_delete), tint = KptTheme.colorScheme.error)
+private fun DecisionIcons(
+    onAction: (CheckerInboxAction) -> Unit,
+    id: Int?,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = modifier) {
+        IconButton(
+            onClick = { onAction(CheckerInboxAction.DecideRequested(Decision.APPROVE, id)) },
+            modifier = Modifier.testTag(CheckerInboxTestTags.APPROVE),
+        ) {
+            Icon(
+                AppIcons.Check,
+                contentDescription = stringResource(Res.string.feature_checkerinbox_approve),
+                tint = KptTheme.colorScheme.primary,
+            )
+        }
+        IconButton(
+            onClick = { onAction(CheckerInboxAction.DecideRequested(Decision.REJECT, id)) },
+            modifier = Modifier.testTag(CheckerInboxTestTags.REJECT),
+        ) {
+            Icon(
+                AppIcons.Cancel,
+                contentDescription = stringResource(Res.string.feature_checkerinbox_reject),
+                tint = KptTheme.colorScheme.tertiary,
+            )
+        }
+        IconButton(
+            onClick = { onAction(CheckerInboxAction.DecideRequested(Decision.DELETE, id)) },
+            modifier = Modifier.testTag(CheckerInboxTestTags.DELETE),
+        ) {
+            Icon(
+                AppIcons.Delete,
+                contentDescription = stringResource(Res.string.feature_checkerinbox_delete),
+                tint = KptTheme.colorScheme.error,
+            )
+        }
     }
 }
 
@@ -292,9 +340,13 @@ private fun TaskCard(task: CheckerTask, selected: Boolean, expanded: Boolean, on
             headlineContent = { Text(task.label) },
             supportingContent = {
                 Column {
-                    Text(stringResource(Res.string.feature_checkerinbox_resource, task.resourceId), style = KptTheme.typography.bodySmall)
                     Text(
-                        "${stringResource(Res.string.feature_checkerinbox_create_by)} ${task.maker} · ${task.getDate()}",
+                        stringResource(Res.string.feature_checkerinbox_resource, task.resourceId),
+                        style = KptTheme.typography.bodySmall,
+                    )
+                    val createBy = stringResource(Res.string.feature_checkerinbox_create_by)
+                    Text(
+                        "$createBy ${task.maker} · ${task.getDate()}",
                         style = KptTheme.typography.bodySmall,
                     )
                 }
@@ -321,7 +373,9 @@ private fun Reschedules(
             return@RefreshableScreenContent
         }
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(top = KptTheme.spacing.sm).testTag(CheckerInboxTestTags.RESCHEDULES),
+            modifier = Modifier.fillMaxSize()
+                .padding(top = KptTheme.spacing.sm)
+                .testTag(CheckerInboxTestTags.RESCHEDULES),
             verticalArrangement = Arrangement.spacedBy(KptTheme.spacing.sm),
         ) {
             items(list, key = { it.id }) { request ->
@@ -329,7 +383,9 @@ private fun Reschedules(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = KptTheme.spacing.md)
-                        .clickable(enabled = request.loanId != null) { onAction(CheckerInboxAction.RescheduleClicked(request)) }
+                        .clickable(enabled = request.loanId != null) {
+                            onAction(CheckerInboxAction.RescheduleClicked(request))
+                        }
                         .testTag(CheckerInboxTestTags.RESCHEDULE),
                 ) {
                     ListItem(
@@ -339,12 +395,16 @@ private fun Reschedules(
                             Text(
                                 listOfNotNull(
                                     request.loanAccountNumber.ifBlank { null },
-                                    request.rescheduleFromDate.toIsoDate()?.let { stringResource(Res.string.feature_checkerinbox_reschedule_from, it) },
+                                    request.rescheduleFromDate.toIsoDate()?.let {
+                                        stringResource(Res.string.feature_checkerinbox_reschedule_from, it)
+                                    },
                                     request.rescheduleReasonCodeValue?.name?.ifBlank { null },
                                 ).joinToString(" · "),
                             )
                         },
-                        trailingContent = { if (request.loanId != null) Icon(AppIcons.ChevronRight, contentDescription = null) },
+                        trailingContent = {
+                            if (request.loanId != null) Icon(AppIcons.ChevronRight, contentDescription = null)
+                        },
                     )
                 }
             }
@@ -363,7 +423,11 @@ private fun Empty(message: org.jetbrains.compose.resources.StringResource) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FilterSheet(draft: InboxFilter, template: CheckerInboxSearchTemplate, onAction: (CheckerInboxAction) -> Unit) {
+private fun FilterSheet(
+    draft: InboxFilter,
+    template: CheckerInboxSearchTemplate,
+    onAction: (CheckerInboxAction) -> Unit,
+) {
     val all = stringResource(Res.string.feature_checkerinbox_all)
     ModalBottomSheet(onDismissRequest = { onAction(CheckerInboxAction.FilterClosed) }) {
         Column(
@@ -371,10 +435,20 @@ private fun FilterSheet(draft: InboxFilter, template: CheckerInboxSearchTemplate
                 .testTag(CheckerInboxTestTags.FILTER_SHEET),
             verticalArrangement = Arrangement.spacedBy(KptTheme.spacing.sm),
         ) {
-            NameDropdown(stringResource(Res.string.feature_checkerinbox_action), all, draft.action, template.actionNames) { value ->
+            NameDropdown(
+                stringResource(Res.string.feature_checkerinbox_action),
+                all,
+                draft.action,
+                template.actionNames,
+            ) { value ->
                 onAction(CheckerInboxAction.DraftChanged { it.copy(action = value) })
             }
-            NameDropdown(stringResource(Res.string.feature_checkerinbox_entity), all, draft.entity, template.entityNames) { value ->
+            NameDropdown(
+                stringResource(Res.string.feature_checkerinbox_entity),
+                all,
+                draft.entity,
+                template.entityNames,
+            ) { value ->
                 onAction(CheckerInboxAction.DraftChanged { it.copy(entity = value) })
             }
             AppOutlinedTextField(
@@ -383,7 +457,11 @@ private fun FilterSheet(draft: InboxFilter, template: CheckerInboxSearchTemplate
                 label = stringResource(Res.string.feature_checkerinbox_resource_id),
                 modifier = Modifier.fillMaxWidth(),
             )
-            val rangeError = if (draft.isValid) null else stringResource(Res.string.feature_checkerinbox_invalid_date_range)
+            val rangeError = if (draft.isValid) {
+                null
+            } else {
+                stringResource(Res.string.feature_checkerinbox_invalid_date_range)
+            }
             AppDatePickerTextField(
                 value = draft.from?.toString().orEmpty(),
                 label = stringResource(Res.string.feature_checkerinbox_from_date),
@@ -429,18 +507,28 @@ private fun NameDropdown(label: String, all: String, value: String?, names: List
 private fun DateDialog(field: DateField, draft: InboxFilter?, onAction: (CheckerInboxAction) -> Unit) {
     // The picker speaks UTC-midnight millis; convert both ways in UTC so no time zone shifts the day.
     val current = if (field == DateField.FROM) draft?.from else draft?.to
-    val picker = rememberDatePickerState(initialSelectedDateMillis = current?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds())
+    val picker = rememberDatePickerState(
+        initialSelectedDateMillis = current?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
+    )
     DatePickerDialog(
         onDismissRequest = { onAction(CheckerInboxAction.CloseDatePicker) },
         confirmButton = {
             TextButton(onClick = {
-                val date = picker.selectedDateMillis?.let { Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.UTC).date }
-                onAction(CheckerInboxAction.DraftChanged { if (field == DateField.FROM) it.copy(from = date) else it.copy(to = date) })
+                val date = picker.selectedDateMillis?.let {
+                    Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.UTC).date
+                }
+                onAction(
+                    CheckerInboxAction.DraftChanged {
+                        if (field == DateField.FROM) it.copy(from = date) else it.copy(to = date)
+                    },
+                )
                 onAction(CheckerInboxAction.CloseDatePicker)
             }) { Text(stringResource(Res.string.feature_checkerinbox_select)) }
         },
         dismissButton = {
-            TextButton(onClick = { onAction(CheckerInboxAction.CloseDatePicker) }) { Text(stringResource(Res.string.feature_checkerinbox_cancel)) }
+            TextButton(onClick = { onAction(CheckerInboxAction.CloseDatePicker) }) {
+                Text(stringResource(Res.string.feature_checkerinbox_cancel))
+            }
         },
     ) { DatePicker(state = picker) }
 }
@@ -456,12 +544,17 @@ private fun ConfirmDialog(pending: PendingDecision, onAction: (CheckerInboxActio
         onDismissRequest = { onAction(CheckerInboxAction.DecideCancelled) },
         text = { Text(stringResource(question, pending.ids.size)) },
         confirmButton = {
-            TextButton(onClick = { onAction(CheckerInboxAction.DecideConfirmed) }, modifier = Modifier.testTag(CheckerInboxTestTags.CONFIRM)) {
+            TextButton(
+                onClick = { onAction(CheckerInboxAction.DecideConfirmed) },
+                modifier = Modifier.testTag(CheckerInboxTestTags.CONFIRM),
+            ) {
                 Text(stringResource(Res.string.feature_checkerinbox_yes))
             }
         },
         dismissButton = {
-            TextButton(onClick = { onAction(CheckerInboxAction.DecideCancelled) }) { Text(stringResource(Res.string.feature_checkerinbox_no)) }
+            TextButton(onClick = { onAction(CheckerInboxAction.DecideCancelled) }) {
+                Text(stringResource(Res.string.feature_checkerinbox_no))
+            }
         },
     )
 }
@@ -473,9 +566,14 @@ private fun OutcomeDialog(outcome: DecisionOutcome, onAction: (CheckerInboxActio
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(KptTheme.spacing.sm)) {
                 if (outcome.done > 0) Text(stringResource(Res.string.feature_checkerinbox_done, outcome.done))
-                if (outcome.offline) Text(stringResource(Res.string.feature_checkerinbox_offline), color = KptTheme.colorScheme.error)
+                if (outcome.offline) {
+                    Text(stringResource(Res.string.feature_checkerinbox_offline), color = KptTheme.colorScheme.error)
+                }
                 if (outcome.failures.isNotEmpty()) {
-                    Text(stringResource(Res.string.feature_checkerinbox_failures, outcome.failures.size), color = KptTheme.colorScheme.error)
+                    Text(
+                        stringResource(Res.string.feature_checkerinbox_failures, outcome.failures.size),
+                        color = KptTheme.colorScheme.error,
+                    )
                     Column(Modifier.heightIn(max = 200.dp).verticalScroll(rememberScrollState())) {
                         outcome.failures.forEach { failure ->
                             Text(
@@ -488,7 +586,9 @@ private fun OutcomeDialog(outcome: DecisionOutcome, onAction: (CheckerInboxActio
             }
         },
         confirmButton = {
-            TextButton(onClick = { onAction(CheckerInboxAction.OutcomeDismissed) }) { Text(stringResource(Res.string.feature_checkerinbox_ok)) }
+            TextButton(onClick = { onAction(CheckerInboxAction.OutcomeDismissed) }) {
+                Text(stringResource(Res.string.feature_checkerinbox_ok))
+            }
         },
         modifier = Modifier.testTag(CheckerInboxTestTags.OUTCOME),
     )

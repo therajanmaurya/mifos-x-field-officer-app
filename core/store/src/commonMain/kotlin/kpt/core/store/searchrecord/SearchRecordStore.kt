@@ -73,7 +73,9 @@ private inline fun <T> ApiResponseCacheEntity.decode(block: (String) -> List<T>)
     runCatching { block(payload) }.getOrDefault(emptyList())
 
 internal fun searchAddresses(rows: List<ApiResponseCacheEntity>, query: String): List<GenericSearchRecord> =
-    rows.flatMap { row -> row.decode { cacheJson.decodeFromString(ListSerializer(ClientAddressEntity.serializer()), it) } }
+    rows.flatMap { row ->
+        row.decode { cacheJson.decodeFromString(ListSerializer(ClientAddressEntity.serializer()), it) }
+    }
         .filter { a ->
             listOf(a.addressLine1, a.addressLine2, a.addressLine3, a.city, a.stateName, a.countryName, a.postalCode)
                 .any { it.hit(query) }

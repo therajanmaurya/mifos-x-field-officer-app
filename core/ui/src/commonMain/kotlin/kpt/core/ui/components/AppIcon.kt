@@ -20,9 +20,9 @@ import kpt.core.designsystem.theme.AppTheme
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.ui.generated.resources.Res
 import kpt.core.ui.generated.resources.core_ui_ic_centers_24dp
-import kpt.core.ui.util.DevicePreview
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppIcon(
@@ -41,7 +41,7 @@ fun AppIcon(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun AppMobileIconPreview(
     modifier: Modifier = Modifier,

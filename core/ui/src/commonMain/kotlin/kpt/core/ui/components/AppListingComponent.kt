@@ -32,7 +32,6 @@ import kpt.core.base.designsystem.KptTheme
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.AppColors
-import kpt.core.designsystem.theme.AppTheme
 import kpt.core.designsystem.theme.AppTypography
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.ui.generated.resources.Res
@@ -74,7 +73,6 @@ import kpt.core.ui.generated.resources.core_ui_type
 import kpt.core.ui.generated.resources.core_ui_waived
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppListingComponentOutline(
@@ -104,9 +102,10 @@ fun AppListingComponentOutline(
 fun AppListingRowItem(
     keyContent: @Composable () -> Unit,
     valueContent: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -131,9 +130,10 @@ fun AppListingRowItem(
 fun AppListingColumnItem(
     keyContent: @Composable () -> Unit,
     valueContent: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     ) {
         keyContent()
         valueContent()
@@ -144,12 +144,14 @@ fun AppListingColumnItem(
 fun AppListingColumnItem(
     key: String,
     value: String,
+    modifier: Modifier = Modifier,
     keyStyle: TextStyle = AppTypography.labelSmall,
     keyColor: Color = KptTheme.colorScheme.secondary,
     valueStyle: TextStyle = AppTypography.bodySmall,
     valueColor: Color = KptTheme.colorScheme.onSurface,
 ) {
     AppListingColumnItem(
+        modifier = modifier,
         keyContent = {
             Text(
                 text = key,
@@ -173,11 +175,13 @@ fun AppListingColumnItem(
 fun AppListingRowItem(
     key: String,
     value: String,
+    modifier: Modifier = Modifier,
     keyStyle: TextStyle = AppTypography.labelMediumEmphasized,
     valueStyle: TextStyle = AppTypography.labelMedium,
     valueColor: Color = KptTheme.colorScheme.onSurface,
 ) {
     AppListingRowItem(
+        modifier = modifier,
         keyContent = {
             if (key.isNotBlank()) {
                 Text(
@@ -202,9 +206,11 @@ fun AppListingRowItem(
 @Composable
 fun AppListingRowItemHeader(
     text: String,
+    modifier: Modifier = Modifier,
     keyStyle: TextStyle = AppTypography.labelMediumEmphasized,
 ) {
     AppListingRowItem(
+        modifier = modifier,
         keyContent = {
             if (text.isNotBlank()) {
                 Text(text = text, style = keyStyle)
@@ -221,10 +227,12 @@ fun AppListingRowItemHeader(
 
 @Composable
 fun AppDefaultListingComponent(
-    color: Color = KptTheme.colorScheme.primary.copy(alpha = 0.5f),
     data: Map<String, String>,
+    modifier: Modifier = Modifier,
+    color: Color = KptTheme.colorScheme.primary.copy(alpha = 0.5f),
 ) {
     AppListingComponentOutline(
+        modifier = modifier,
         borderColor = color,
     ) {
         Column(
@@ -243,12 +251,14 @@ fun AppDefaultListingComponent(
 
 @Composable
 fun AppDefaultListingComponentFromStringResources(
+    data: Map<StringResource, String>,
+    modifier: Modifier = Modifier,
     borderColor: Color = KptTheme.colorScheme.primary.copy(alpha = 0.5f),
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(DesignToken.padding.extraExtraSmall),
     backgroundColor: Color = KptTheme.colorScheme.surface,
-    data: Map<StringResource, String>,
 ) {
     AppListingComponentOutline(
+        modifier = modifier,
         borderColor = borderColor,
         backgroundColor = backgroundColor,
     ) {
@@ -274,8 +284,9 @@ fun AppClientFeeListingComponent(
     paid: String,
     waived: String,
     outstanding: String,
+    modifier: Modifier = Modifier,
 ) {
-    AppListingComponentOutline {
+    AppListingComponentOutline(modifier = modifier) {
         Column(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -327,8 +338,9 @@ fun AppLoanListingComponent(
     amountPaid: String,
     loanBalance: String,
     type: String,
+    modifier: Modifier = Modifier,
 ) {
-    AppListingComponentOutline {
+    AppListingComponentOutline(modifier = modifier) {
         Column(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -378,8 +390,9 @@ fun AppSavingsListingComponent(
     savingsProduct: String,
     lastActive: String,
     balance: String,
+    modifier: Modifier = Modifier,
 ) {
-    AppListingComponentOutline {
+    AppListingComponentOutline(modifier = modifier) {
         Column(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -418,8 +431,9 @@ fun AppCollateralDataListingComponent(
     quantity: String,
     totalValue: String,
     totalCollateralValue: String,
+    modifier: Modifier = Modifier,
 ) {
-    AppListingComponentOutline {
+    AppListingComponentOutline(modifier = modifier) {
         Column(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -460,8 +474,9 @@ fun AppIdentifierListingComponent(
     status: Status,
     description: String,
     identifyDocuments: String,
+    modifier: Modifier = Modifier,
 ) {
-    AppListingComponentOutline {
+    AppListingComponentOutline(modifier = modifier) {
         Column {
             AppListingRowItem(
                 key = stringResource(Res.string.core_ui_document_type),
@@ -512,8 +527,9 @@ fun AppDelinquencyListingComponent(
     isPause: Boolean,
     startDate: String,
     endDate: String,
+    modifier: Modifier = Modifier,
 ) {
-    AppListingComponentOutline {
+    AppListingComponentOutline(modifier = modifier) {
         Column {
             AppListingRowItem(
                 value = "$date; $time",
@@ -552,8 +568,9 @@ fun AppChargesListingComponent(
     paid: String,
     waived: String,
     outstanding: String,
+    modifier: Modifier = Modifier,
 ) {
-    AppListingComponentOutline {
+    AppListingComponentOutline(modifier = modifier) {
         Column {
             AppListingRowItem(
                 key = "",
@@ -614,8 +631,9 @@ fun AppSellLoanListingComponent(
     transferExternalId: String,
     settlementDate: String,
     purchasePriceRatio: String,
+    modifier: Modifier = Modifier,
 ) {
-    AppListingComponentOutline {
+    AppListingComponentOutline(modifier = modifier) {
         Column {
             AppListingRowItem(
                 value = when (status) {
@@ -653,147 +671,5 @@ fun AppSellLoanListingComponent(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun AppDefaultListingComponentPreview() {
-    val sampleData = mapOf(
-        "Name" to "John Doe",
-        "Email" to "john.doe@example.com",
-        "Role" to "Developer",
-        "Location" to "Remote",
-    )
-
-    AppTheme {
-        AppDefaultListingComponent(data = sampleData)
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAppClientFeeListingComponent() {
-    KptTheme {
-        AppClientFeeListingComponent(
-            name = "John Doe",
-            dueAsOf = "2025-08-19",
-            due = "$1000",
-            paid = "$400",
-            waived = "$50",
-            outstanding = "$550",
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAppLoanListingComponent() {
-    KptTheme {
-        AppLoanListingComponent(
-            accountNo = "LN12345",
-            loanProduct = "Personal Loan",
-            originalLoan = "$5000",
-            amountPaid = "$2000",
-            loanBalance = "$3000",
-            type = "Active",
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAppSavingsListingComponent() {
-    KptTheme {
-        AppSavingsListingComponent(
-            accountNo = "SV9876",
-            savingsProduct = "Regular Savings",
-            lastActive = "2025-08-15",
-            balance = "$1200",
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAppCollateralDataListingComponent() {
-    KptTheme {
-        AppCollateralDataListingComponent(
-            name = "Gold Jewelry",
-            quantity = "5",
-            totalValue = "$2500",
-            totalCollateralValue = "$2500",
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAppIdentifierListingComponent() {
-    KptTheme {
-        AppIdentifierListingComponent(
-            type = "Passport",
-            id = "P1234567",
-            key = "Government ID",
-            status = Status.Active,
-            description = "Primary identification document",
-            identifyDocuments = "Passport Scan",
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAppDelinquencyListingComponent() {
-    KptTheme {
-        AppDelinquencyListingComponent(
-            date = "2025-08-01",
-            time = "10:00 AM",
-            isPause = false,
-            startDate = "2025-07-01",
-            endDate = "2025-07-31",
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAppChargesListingComponent() {
-    KptTheme {
-        AppChargesListingComponent(
-            title = "Processing Fee",
-            type = "Flat",
-            dueAsOf = "2025-08-19",
-            calculationType = "Fixed",
-            due = "$100",
-            paid = "$50",
-            waived = "$10",
-            outstanding = "$40",
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAppSellLoanListingComponent() {
-    KptTheme {
-        AppSellLoanListingComponent(
-            status = Status.Pending,
-            effectiveForm = "2025-08-20",
-            ownerExternalId = "OWN123",
-            transferExternalId = "TRF456",
-            settlementDate = "2025-08-25",
-            purchasePriceRatio = "0.85",
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAppHeader() {
-    KptTheme {
-        AppListingRowItemHeader(
-            text = "Hello",
-        )
     }
 }

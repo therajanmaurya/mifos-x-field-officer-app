@@ -39,7 +39,6 @@ import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.ScreenContent
 import kpt.core.common.utils.DateHelper
-import kpt.core.model.office.Office
 import kpt.core.designsystem.component.AppDatePickerTextField
 import kpt.core.designsystem.component.AppOutlinedButton
 import kpt.core.designsystem.component.AppOutlinedTextField
@@ -49,6 +48,7 @@ import kpt.core.designsystem.component.AppTextFieldDropdown
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.AppTypography
 import kpt.core.designsystem.theme.DesignToken
+import kpt.core.model.office.Office
 import kpt.core.ui.components.AppStatusDialog
 import kpt.core.ui.components.ResultStatus
 import kpt.feature.client.generated.resources.Res

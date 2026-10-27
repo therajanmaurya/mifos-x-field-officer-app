@@ -266,6 +266,14 @@ internal fun ClientLoanAccountsContent(
     }
 }
 
+private fun loanMenu(loan: LoanAccount, canViewAccount: Boolean, canMakeRepayment: Boolean) = buildList {
+    if (loan.id != null && canViewAccount) add(Actions.ViewAccount())
+    // Make Repayment only for an ACTIVE loan — the original's rule.
+    if (loan.id != null && canMakeRepayment && loan.status?.active == true) {
+        add(Actions.MakeRepayment())
+    }
+}
+
 @Composable
 private fun LoanAccountCard(
     loan: LoanAccount,
@@ -282,13 +290,7 @@ private fun LoanAccountCard(
     // offers no actions rather than sending `0` — the original passed `loan.id ?: 0`, and loan 0
     // is a request for a loan that does not exist.
     val loanId = loan.id
-    val menu = buildList {
-        if (loanId != null && canViewAccount) add(Actions.ViewAccount())
-        // Make Repayment only for an ACTIVE loan — the original's rule.
-        if (loanId != null && canMakeRepayment && loan.status?.active == true) {
-            add(Actions.MakeRepayment())
-        }
-    }
+    val menu = loanMenu(loan, canViewAccount, canMakeRepayment)
 
     AppActionsLoanListingComponent(
         accountNo = loan.accountNo ?: notAvailable,

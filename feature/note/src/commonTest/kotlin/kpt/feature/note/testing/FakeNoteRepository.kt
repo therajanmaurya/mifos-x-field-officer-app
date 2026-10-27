@@ -21,10 +21,10 @@ import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.screenDataStreamForTesting
 import kpt.core.data.note.NoteCommandRepository
 import kpt.core.data.note.NoteRepository
-import kpt.core.model.objects.note.Note
 import kpt.core.model.note.NoteDraft
 import kpt.core.model.objects.note.CreateNoteResponseDto
 import kpt.core.model.objects.note.DeleteNoteResponseDto
+import kpt.core.model.objects.note.Note
 import kpt.core.model.objects.note.NoteRequestDto
 import kpt.core.model.objects.note.UpdateNoteResponseDto
 

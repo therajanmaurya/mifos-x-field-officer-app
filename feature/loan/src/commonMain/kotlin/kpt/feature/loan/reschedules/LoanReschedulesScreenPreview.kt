@@ -23,15 +23,34 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // i18n:skip — preview fixtures below
 private val previewRows = listOf(
-    RescheduleRow(id = 3, status = RescheduleStatusCode.PENDING, rescheduleFrom = "15 Oct 2025", reason = "Crop failure", submittedOn = "09 Oct 2025", submittedBy = "Arif Hossain"),
-    RescheduleRow(id = 1, status = RescheduleStatusCode.APPROVED, rescheduleFrom = "01 Mar 2025", reason = "Medical emergency", submittedOn = "20 Feb 2025", submittedBy = "Arif Hossain"),
+    RescheduleRow(
+        id = 3,
+        status = RescheduleStatusCode.PENDING,
+        rescheduleFrom = "15 Oct 2025",
+        reason = "Crop failure",
+        submittedOn = "09 Oct 2025",
+        submittedBy = "Arif Hossain",
+    ),
+    RescheduleRow(
+        id = 1,
+        status = RescheduleStatusCode.APPROVED,
+        rescheduleFrom = "01 Mar 2025",
+        reason = "Medical emergency",
+        submittedOn = "20 Feb 2025",
+        submittedBy = "Arif Hossain",
+    ),
 )
 
 @Preview
 @Composable
 internal fun LoanReschedulesContentPreview() {
     KptTheme {
-        LoanReschedulesContent(state = LoanReschedulesState(loanId = 7), history = ScreenState.Content(previewRows), onAction = {}, canPropose = true)
+        LoanReschedulesContent(
+            state = LoanReschedulesState(loanId = 7),
+            history = ScreenState.Content(previewRows),
+            onAction = {},
+            canPropose = true,
+        )
     }
 }
 
@@ -39,6 +58,11 @@ internal fun LoanReschedulesContentPreview() {
 @Composable
 internal fun LoanReschedulesContentEmptyPreview() {
     KptTheme {
-        LoanReschedulesContent(state = LoanReschedulesState(loanId = 7), history = ScreenState.Empty, onAction = {}, canPropose = true)
+        LoanReschedulesContent(
+            state = LoanReschedulesState(loanId = 7),
+            history = ScreenState.Empty,
+            onAction = {},
+            canPropose = true,
+        )
     }
 }

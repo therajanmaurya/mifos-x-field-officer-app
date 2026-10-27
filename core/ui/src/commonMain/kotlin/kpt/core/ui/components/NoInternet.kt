@@ -30,9 +30,9 @@ import kpt.core.designsystem.theme.AppTheme
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.ui.generated.resources.Res
 import kpt.core.ui.generated.resources.core_ui_no_internet
-import kpt.core.ui.util.DevicePreview
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun NoInternet(
@@ -70,7 +70,7 @@ fun NoInternet(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun NoInternetPreview(
     modifier: Modifier = Modifier,

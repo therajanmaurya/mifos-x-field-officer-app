@@ -71,7 +71,8 @@ class DocumentRepositoryTest {
             // Mirrors DocumentStore: an empty table is an empty list (see NullReaderStreamTest).
             reader = { key: DocumentKey -> documents.map { rowsOf(key) } },
             writer = { key: DocumentKey, docs: List<Document> ->
-                documents.value = documents.value.filterNot { it.entityType == key.entityType && it.entityId == key.entityId } +
+                documents.value = documents.value
+                    .filterNot { it.entityType == key.entityType && it.entityId == key.entityId } +
                     docs.map { Row(key.entityType, key.entityId, it) }
             },
         ),
@@ -79,12 +80,16 @@ class DocumentRepositoryTest {
 
     private val itemStore = StoreFactory.createOfflineMutableStore(
         sourceOfTruth = SourceOfTruth.of(
-            reader = { key: DocumentItemKey -> documents.map { rows -> rows.firstOrNull { it.doc.id == key.documentId }?.doc } },
+            reader = { key: DocumentItemKey ->
+                documents.map { rows -> rows.firstOrNull { it.doc.id == key.documentId }?.doc }
+            },
             writer = { key: DocumentItemKey, doc: Document ->
                 documents.value = documents.value.filterNot { it.doc.id == key.documentId } +
                     Row(key.entityType, key.entityId, doc)
             },
-            delete = { key: DocumentItemKey -> documents.value = documents.value.filterNot { it.doc.id == key.documentId } },
+            delete = { key: DocumentItemKey ->
+                documents.value = documents.value.filterNot { it.doc.id == key.documentId }
+            },
         ),
     )
 
@@ -206,7 +211,12 @@ class DocumentRepositoryTest {
 
     @Test
     fun anOfflineUploadIsBlockedAndWritesNothing() = runTest {
-        val offlineCommands = DocumentCommandRepositoryImpl(api, testMutationGateway(isOnline = false), itemStore, contentLocalStore)
+        val offlineCommands = DocumentCommandRepositoryImpl(
+            api,
+            testMutationGateway(isOnline = false),
+            itemStore,
+            contentLocalStore,
+        )
 
         assertIs<MutationResult.Blocked>(offlineCommands.createDocument("clients", 1, scan))
         assertEquals(emptyList(), documents.value)

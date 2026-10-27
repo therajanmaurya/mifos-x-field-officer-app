@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.config
 
@@ -36,7 +36,8 @@ object AppServerConfig {
     const val TENANT_HEADER = "Fineract-Platform-TenantId"
 
     /** The shipped server as the screen shows it — the declared main access point's config. */
-    val DEFAULT: ServerConfig = AppAccessPoints.points.single { it.id == ACCESS_POINT }.toNetworkConfig().toServerConfig()
+    val DEFAULT: ServerConfig =
+        AppAccessPoints.points.single { it.id == ACCESS_POINT }.toNetworkConfig().toServerConfig()
 
     /** This app's id in the shared `app_config` instance list's `supportedApps` (see [InstanceConfigLoader]). */
     const val APP_ID = "field-officer"
@@ -49,7 +50,10 @@ object AppServerConfig {
 fun NetworkConfig.toServerConfig(): ServerConfig = requireNotNull(
     serverConfigOf(
         url = baseUrl,
-        tenant = headers.entries.firstOrNull { it.key.equals(AppServerConfig.TENANT_HEADER, ignoreCase = true) }?.value.orEmpty(),
+        tenant = headers.entries
+            .firstOrNull { it.key.equals(AppServerConfig.TENANT_HEADER, ignoreCase = true) }
+            ?.value
+            .orEmpty(),
     ),
 ) { "network config '$id' base URL '$baseUrl' is not scheme://host[:port][/path]" }
 

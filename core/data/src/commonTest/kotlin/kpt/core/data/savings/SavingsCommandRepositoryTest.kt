@@ -9,12 +9,6 @@
  */
 package kpt.core.data.savings
 
-import kpt.core.model.client.ClientAccounts as ClientAccountsModel
-import kpt.core.model.savings.SavingsAccountSummary
-import kpt.core.model.savings.SavingsAccountWithAssociations
-import kpt.core.model.savings.SavingsAccount
-import kpt.core.model.savings.SavingsAccountTransactionRequest
-import kpt.core.model.savings.SavingsAccountStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runTest
@@ -31,12 +25,17 @@ import kpt.core.model.objects.account.saving.SavingsApplicationInput
 import kpt.core.model.objects.account.saving.SavingsApprovalInput
 import kpt.core.model.objects.account.saving.SavingsTransactionInput
 import kpt.core.model.objects.payloads.SavingsPayload
+import kpt.core.model.savings.FixedDepositPayload
+import kpt.core.model.savings.SavingsAccount
+import kpt.core.model.savings.SavingsAccountStatus
+import kpt.core.model.savings.SavingsAccountSummary
+import kpt.core.model.savings.SavingsAccountTransactionRequest
+import kpt.core.model.savings.SavingsAccountWithAssociations
+import kpt.core.model.savings.ShareAccountPayload
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.savings.api.FixedDepositApi
 import kpt.core.network.mifos.savings.api.SavingsAccountApi
 import kpt.core.network.mifos.savings.api.ShareAccountApi
-import kpt.core.model.savings.FixedDepositPayload
-import kpt.core.model.savings.ShareAccountPayload
 import kpt.core.store.savings.SavingsAccountKey
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
@@ -46,6 +45,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kpt.core.model.client.ClientAccounts as ClientAccountsModel
 
 /**
  * The savings commands over REAL Store5 read stores wired the way `core/store` wires them, each over
@@ -57,7 +57,8 @@ class SavingsCommandRepositoryTest {
     /** The server. `readsFail` makes every GET throw, as a connection dropping after the POST does. */
     private var readsFail = false
     private val serverAccounts = mutableMapOf(1 to account(balance = 100.0, status = "Approved"))
-    private val serverClientAccounts = mutableMapOf(CLIENT to ClientAccounts(savingsAccounts = listOf(SavingsAccount(id = 1))))
+    private val serverClientAccounts =
+        mutableMapOf(CLIENT to ClientAccounts(savingsAccounts = listOf(SavingsAccount(id = 1))))
     private val serverGroupAccounts = mutableMapOf<Int, GroupAccounts>()
     private var posts = 0
 
@@ -115,9 +116,17 @@ class SavingsCommandRepositoryTest {
     }
 
     private val savingsApi = object : SavingsAccountApi {
-        override suspend fun getSavingsAccountWithAssociations(savingsAccountType: String, savingsAccountId: Int, association: String?) =
+        override suspend fun getSavingsAccountWithAssociations(
+            savingsAccountType: String,
+            savingsAccountId: Int,
+            association: String?,
+        ) =
             error("reads go through the store")
-        override suspend fun getSavingsAccountTransactionTemplate(savingsAccountType: String, savingsAccountId: Int, transactionType: String?) =
+        override suspend fun getSavingsAccountTransactionTemplate(
+            savingsAccountType: String,
+            savingsAccountId: Int,
+            transactionType: String?,
+        ) =
             error("reads go through the store")
 
         override suspend fun processTransaction(
@@ -135,15 +144,23 @@ class SavingsCommandRepositoryTest {
             return SavingsAccountTransactionResponse(resourceId = 99)
         }
 
-        override suspend fun activateSavings(savingsAccountId: Int, genericRequest: HashMap<String, String>): GenericResponse {
+        override suspend fun activateSavings(
+            savingsAccountId: Int,
+            genericRequest: HashMap<String, String>,
+        ): GenericResponse {
             posts++
-            serverAccounts[savingsAccountId] = serverAccounts.getValue(savingsAccountId).copy(status = SavingsAccountStatus(value = "Active"))
+            serverAccounts[savingsAccountId] = serverAccounts.getValue(savingsAccountId)
+                .copy(status = SavingsAccountStatus(value = "Active"))
             return GenericResponse()
         }
 
-        override suspend fun approveSavingsApplication(savingsAccountId: Int, savingsApproval: SavingsApproval?): GenericResponse {
+        override suspend fun approveSavingsApplication(
+            savingsAccountId: Int,
+            savingsApproval: SavingsApproval?,
+        ): GenericResponse {
             posts++
-            serverAccounts[savingsAccountId] = serverAccounts.getValue(savingsAccountId).copy(status = SavingsAccountStatus(value = "Approved"))
+            serverAccounts[savingsAccountId] = serverAccounts.getValue(savingsAccountId)
+                .copy(status = SavingsAccountStatus(value = "Approved"))
             return GenericResponse()
         }
 
@@ -160,12 +177,21 @@ class SavingsCommandRepositoryTest {
         }
 
         override suspend fun savingsAccountTemplate() = error("reads go through the store")
-        override suspend fun getClientSavingsAccountTemplateByProduct(clientId: Int, productId: Int) = error("reads go through the store")
-        override suspend fun getGroupSavingsAccountTemplateByProduct(groupId: Int, productId: Int) = error("reads go through the store")
+        override suspend fun getClientSavingsAccountTemplateByProduct(
+            clientId: Int,
+            productId: Int,
+        ) = error("reads go through the store")
+        override suspend fun getGroupSavingsAccountTemplateByProduct(
+            groupId: Int,
+            productId: Int,
+        ) = error("reads go through the store")
     }
 
     private val fixedDepositApi = object : FixedDepositApi {
-        override suspend fun fixedDepositProductTemplate(clientId: Int, productId: Int?) = error("reads go through the store")
+        override suspend fun fixedDepositProductTemplate(
+            clientId: Int,
+            productId: Int?,
+        ) = error("reads go through the store")
         override suspend fun createFixedDepositAccount(fixedDepositPayload: FixedDepositPayload) =
             OkHttpResponse.also { opened(fixedDepositPayload.clientId!!, 30) }
     }

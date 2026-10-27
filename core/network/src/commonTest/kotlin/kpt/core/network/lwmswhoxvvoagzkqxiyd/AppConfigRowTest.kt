@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.lwmswhoxvvoagzkqxiyd
 
@@ -23,11 +23,13 @@ class AppConfigRowTest {
 
     private val liveRows = """
         [{"id":"63514c6d-65e0-4dc5-9b1d-f2ffa5505a59","instances":[
-          {"path": "/fineract-provider/api/v1/", "label": "Mifos Bank 2 Instance", "endpoint": "mifos-bank-2.mifos.community",
-           "protocol": "https://", "isDefault": true, "interbankServers": [{"path": "/v1.0/vnext2/", "label": "Mifos Bank 2 Interbank",
-           "endpoint": "apis.flexcore.mx", "protocol": "https://", "isDefault": true}], "platformTenantId": "mifos-bank-2"},
-          {"path": "/fineract-provider/api/v1/", "label": "TT Instance", "endpoint": "tt.mifos.community", "protocol": "https://",
-           "isDefault": false, "interbankServers": [], "platformTenantId": "default"}
+          {"path": "/fineract-provider/api/v1/", "label": "Mifos Bank 2 Instance",
+           "endpoint": "mifos-bank-2.mifos.community", "protocol": "https://", "isDefault": true,
+           "interbankServers": [{"path": "/v1.0/vnext2/", "label": "Mifos Bank 2 Interbank",
+           "endpoint": "apis.flexcore.mx", "protocol": "https://", "isDefault": true}],
+           "platformTenantId": "mifos-bank-2"},
+          {"path": "/fineract-provider/api/v1/", "label": "TT Instance", "endpoint": "tt.mifos.community",
+           "protocol": "https://", "isDefault": false, "interbankServers": [], "platformTenantId": "default"}
         ],"created_at":"2026-02-09T10:55:00+00:00"}]
     """
 
@@ -39,8 +41,15 @@ class AppConfigRowTest {
         // mifos-pay's rows name no `supportedApps` yet, so none is offered to the field-officer app...
         assertEquals(emptyList(), parseInstances(wrapped))
         // ...and a row that names it is.
-        val tagged = wrapped.replace("\"platformTenantId\": \"default\"", "\"platformTenantId\": \"default\", \"supportedApps\": [\"field-officer\"]")
-            .replace("\"platformTenantId\":\"default\"", "\"platformTenantId\":\"default\",\"supportedApps\":[\"field-officer\"]")
+        val tagged = wrapped
+            .replace(
+                "\"platformTenantId\": \"default\"",
+                "\"platformTenantId\": \"default\", \"supportedApps\": [\"field-officer\"]",
+            )
+            .replace(
+                "\"platformTenantId\":\"default\"",
+                "\"platformTenantId\":\"default\",\"supportedApps\":[\"field-officer\"]",
+            )
         assertEquals(listOf("TT Instance"), parseInstances(tagged).map { it.name })
     }
 }

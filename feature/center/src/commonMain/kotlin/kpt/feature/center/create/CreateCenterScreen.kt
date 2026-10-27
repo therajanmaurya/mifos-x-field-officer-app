@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.center.create
 
@@ -31,13 +31,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
-import kpt.core.base.ui.generated.resources.Res as BaseRes
 import kpt.core.base.ui.generated.resources.draft_save
 import kpt.core.base.ui.generated.resources.draft_saved
 import kpt.core.base.ui.generated.resources.draft_saved_offline
@@ -62,7 +59,6 @@ import kpt.feature.center.generated.resources.feature_center_center_name_empty
 import kpt.feature.center.generated.resources.feature_center_center_name_should_be_more_than_4_characters
 import kpt.feature.center.generated.resources.feature_center_center_name_should_not_contains_special_characters_or_numbers
 import kpt.feature.center.generated.resources.feature_center_create_new_center
-import kpt.feature.center.generated.resources.feature_center_create_offline
 import kpt.feature.center.generated.resources.feature_center_failed_to_create_center
 import kpt.feature.center.generated.resources.feature_center_office_required
 import kpt.feature.center.generated.resources.feature_center_ok
@@ -71,6 +67,9 @@ import kpt.feature.center.generated.resources.feature_center_select_office
 import kpt.feature.center.generated.resources.feature_center_submit
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kpt.core.base.ui.generated.resources.Res as BaseRes
 
 /** Ported from `6b66e8a43:feature/center/createCenter/CreateNewCenterScreen.kt` — see [CreateCenterViewModel]. */
 @Composable
@@ -146,7 +145,11 @@ internal fun CreateCenterContent(
                     },
                     options = officeList.map { it.name.orEmpty() },
                     label = stringResource(Res.string.feature_center_office_required),
-                    errorMessage = if (state.officeMissing) stringResource(Res.string.feature_center_select_office) else null,
+                    errorMessage = if (state.officeMissing) {
+                        stringResource(Res.string.feature_center_select_office)
+                    } else {
+                        null
+                    },
                     modifier = Modifier.fillMaxWidth().testTag(CreateCenterTestTags.OFFICE),
                 )
                 AppCheckBox(
@@ -177,58 +180,84 @@ internal fun CreateCenterContent(
             }
         }
 
-        if (state.datePickerOpen) {
-            val picker = rememberDatePickerState(initialSelectedDateMillis = state.activationDateMillis, selectableDates = NotInTheFuture)
-            DatePickerDialog(
-                onDismissRequest = { onAction(CreateCenterAction.CloseDatePicker) },
-                confirmButton = {
-                    TextButton(onClick = {
-                        picker.selectedDateMillis?.let { onAction(CreateCenterAction.DatePicked(it)) }
-                            ?: onAction(CreateCenterAction.CloseDatePicker)
-                    }) { Text(stringResource(Res.string.feature_center_select)) }
-                },
-                dismissButton = {
-                    TextButton(onClick = { onAction(CreateCenterAction.CloseDatePicker) }) {
-                        Text(stringResource(Res.string.feature_center_cancel))
-                    }
-                },
-            ) { DatePicker(state = picker) }
-        }
+        if (state.datePickerOpen) CreateCenterDatePicker(state, onAction)
     }
 
-    state.dialog?.let { dialog ->
-        val failed = stringResource(Res.string.feature_center_failed_to_create_center)
-        val text = when (dialog) {
-            CreateCenterState.Dialog.Created -> stringResource(Res.string.feature_center_center_created_successfully)
-            CreateCenterState.Dialog.Offline -> stringResource(BaseRes.string.draft_saved_offline)
-            is CreateCenterState.Dialog.Failed -> dialog.serverMessage?.let { "$failed\n$it" } ?: failed
-        }
-        AlertDialog(
-            onDismissRequest = { onAction(CreateCenterAction.DismissDialog) },
-            confirmButton = {
-                TextButton(onClick = { onAction(CreateCenterAction.DismissDialog) }) { Text(stringResource(Res.string.feature_center_ok)) }
-            },
-            // A refused create can be kept and resumed later (Settings › Sync & Drafts).
-            dismissButton = if (dialog is CreateCenterState.Dialog.Failed && !state.draftSaved) {
-                {
-                    TextButton(
-                        onClick = { onAction(CreateCenterAction.SaveDraft) },
-                        modifier = Modifier.testTag(FormDraftTestTags.SAVE),
-                    ) { Text(stringResource(BaseRes.string.draft_save)) }
-                }
-            } else {
-                null
-            },
-            text = { Text(if (dialog is CreateCenterState.Dialog.Failed && state.draftSaved) "$text\n\n${stringResource(BaseRes.string.draft_saved)}" else text) },
-            modifier = Modifier.testTag(CreateCenterTestTags.DIALOG),
-        )
+    state.dialog?.let { CreateCenterResultDialog(state, it, onAction) }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CreateCenterDatePicker(state: CreateCenterState, onAction: (CreateCenterAction) -> Unit) {
+    val picker = rememberDatePickerState(
+        initialSelectedDateMillis = state.activationDateMillis,
+        selectableDates = NotInTheFuture,
+    )
+    DatePickerDialog(
+        onDismissRequest = { onAction(CreateCenterAction.CloseDatePicker) },
+        confirmButton = {
+            TextButton(onClick = {
+                picker.selectedDateMillis?.let { onAction(CreateCenterAction.DatePicked(it)) }
+                    ?: onAction(CreateCenterAction.CloseDatePicker)
+            }) { Text(stringResource(Res.string.feature_center_select)) }
+        },
+        dismissButton = {
+            TextButton(onClick = { onAction(CreateCenterAction.CloseDatePicker) }) {
+                Text(stringResource(Res.string.feature_center_cancel))
+            }
+        },
+    ) { DatePicker(state = picker) }
+}
+
+@Composable
+private fun CreateCenterResultDialog(
+    state: CreateCenterState,
+    dialog: CreateCenterState.Dialog,
+    onAction: (CreateCenterAction) -> Unit,
+) {
+    val failed = stringResource(Res.string.feature_center_failed_to_create_center)
+    val text = when (dialog) {
+        CreateCenterState.Dialog.Created -> stringResource(Res.string.feature_center_center_created_successfully)
+        CreateCenterState.Dialog.Offline -> stringResource(BaseRes.string.draft_saved_offline)
+        is CreateCenterState.Dialog.Failed -> dialog.serverMessage?.let { "$failed\n$it" } ?: failed
     }
+    val savedNote = stringResource(BaseRes.string.draft_saved)
+    val canSaveDraft = dialog is CreateCenterState.Dialog.Failed && !state.draftSaved
+    AlertDialog(
+        onDismissRequest = { onAction(CreateCenterAction.DismissDialog) },
+        confirmButton = {
+            TextButton(onClick = { onAction(CreateCenterAction.DismissDialog) }) {
+                Text(stringResource(Res.string.feature_center_ok))
+            }
+        },
+        // A refused create can be kept and resumed later (Settings › Sync & Drafts).
+        dismissButton = if (canSaveDraft) {
+            {
+                TextButton(
+                    onClick = { onAction(CreateCenterAction.SaveDraft) },
+                    modifier = Modifier.testTag(FormDraftTestTags.SAVE),
+                ) { Text(stringResource(BaseRes.string.draft_save)) }
+            }
+        } else {
+            null
+        },
+        text = {
+            val shown = if (dialog is CreateCenterState.Dialog.Failed && state.draftSaved) {
+                "$text\n\n$savedNote"
+            } else {
+                text
+            }
+            Text(shown)
+        },
+        modifier = Modifier.testTag(CreateCenterTestTags.DIALOG),
+    )
 }
 
 private fun CenterNameError.message() = when (this) {
     CenterNameError.EMPTY -> Res.string.feature_center_center_name_empty
     CenterNameError.TOO_SHORT -> Res.string.feature_center_center_name_should_be_more_than_4_characters
-    CenterNameError.INVALID_CHARACTERS -> Res.string.feature_center_center_name_should_not_contains_special_characters_or_numbers
+    CenterNameError.INVALID_CHARACTERS ->
+        Res.string.feature_center_center_name_should_not_contains_special_characters_or_numbers
 }
 
 /** A center is activated today or earlier — never in the future (the original allowed ONLY the future). */

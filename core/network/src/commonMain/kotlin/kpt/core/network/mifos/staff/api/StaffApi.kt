@@ -12,15 +12,18 @@ package kpt.core.network.mifos.staff.api
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
 import kpt.core.base.network.annotation.ApiBinding
-import kpt.core.model.staff.Staff
 import kpt.core.model.shared.RetrieveOneResponse
+import kpt.core.model.staff.Staff
 
 @ApiBinding("mifos")
 interface StaffApi {
 
     /**
      * Retrieve Staff
-     * Returns the list of staff members.  Example Requests:  staff     Retrieve a Staff by status  Returns the details of a Staff based on status.  By default it Returns all the ACTIVE Staff.  If status&#x3D;INACTIVE, then it returns all INACTIVE Staff.  and for status&#x3D;ALL, it Returns both ACTIVE and INACTIVE Staff.  Example Requests:  staff?status&#x3D;active
+     * Returns the list of staff members.  Example Requests:  staff     Retrieve a Staff by status  Returns the details
+     * of a Staff based on status.  By default it Returns all the ACTIVE Staff.  If status&#x3D;INACTIVE, then it
+     * returns all INACTIVE Staff.  and for status&#x3D;ALL, it Returns both ACTIVE and INACTIVE Staff.  Example
+     * Requests:  staff?status&#x3D;active
      * Responses:
      *  - 200: OK
      *

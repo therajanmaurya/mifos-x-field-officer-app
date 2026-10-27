@@ -30,7 +30,6 @@ import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
-import kpt.core.base.ui.generated.resources.Res as BaseRes
 import kpt.core.base.ui.generated.resources.draft_save
 import kpt.core.base.ui.generated.resources.draft_saved
 import kpt.core.base.ui.generated.resources.draft_saved_offline
@@ -58,6 +57,7 @@ import kpt.feature.client.generated.resources.feature_client_dialog_continue
 import kpt.feature.client.generated.resources.feature_client_update_default_account_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kpt.core.base.ui.generated.resources.Res as BaseRes
 
 /**
  * Nominate one of a client's savings accounts as their default — carried over from
@@ -163,13 +163,13 @@ internal fun ClientDefaultAccountContent(
                 .fillMaxSize()
                 .padding(horizontal = KptTheme.spacing.md),
         ) {
-                offeredDraft?.let {
-                    FormDraftBanner(
-                        failureReason = it.errorMessage,
-                        onResume = { onAction(ClientDefaultAccountAction.ResumeDraft) },
-                        onDiscard = { onAction(ClientDefaultAccountAction.DiscardDraft) },
-                    )
-                }
+            offeredDraft?.let {
+                FormDraftBanner(
+                    failureReason = it.errorMessage,
+                    onResume = { onAction(ClientDefaultAccountAction.ResumeDraft) },
+                    onDiscard = { onAction(ClientDefaultAccountAction.DiscardDraft) },
+                )
+            }
             val selected = options.selectionFor(state.selectedAccountId, defaultAccountId)
 
             if (selected != null) {
@@ -289,7 +289,8 @@ private fun ClientDefaultAccountDialogs(
             successMessage = stringResource(Res.string.feature_client_defaultaccount_success_message),
             failureTitle = stringResource(Res.string.feature_client_defaultaccount_failure_title),
             failureMessage = dialog.msg,
-            secondaryBtnText = stringResource(BaseRes.string.draft_save).takeIf { dialog.status == ResultStatus.FAILURE && !dialog.draftSaved },
+            secondaryBtnText = stringResource(BaseRes.string.draft_save)
+                .takeIf { dialog.status == ResultStatus.FAILURE && !dialog.draftSaved },
             onSecondary = { onAction(ClientDefaultAccountAction.SaveDraft) },
             note = when {
                 !dialog.draftSaved -> null

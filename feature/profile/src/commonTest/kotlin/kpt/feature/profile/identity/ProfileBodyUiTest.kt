@@ -34,14 +34,26 @@ class ProfileBodyUiTest {
         fullName = "IRVING ZEPEDA",
         roles = listOf("OFICIAL DE CAMPO"),
         name = NameState.Loaded,
-        server = ServerSession("Mifos field officer gateway", known = true, url = "https://apis.mifos.community/1.0/field/v1/", tenant = "mifos-bank-1"),
+        server = ServerSession(
+            "Mifos field officer gateway",
+            known = true,
+            url = "https://apis.mifos.community/1.0/field/v1/",
+            tenant = "mifos-bank-1",
+        ),
     )
 
     @Test
     fun everyDeclaredSectionRendersAndTheNameReadsAsAName() = runComposeUiTest {
-        setContent { KptTheme { ProfileBodyContent(irving, onAction = {}, onBack = {}, onServerSettings = {}, onSignOut = {}) } }
-        listOf(TestTags.Profile.IDENTITY, TestTags.Profile.SCOPE, TestTags.Profile.ROLES, TestTags.Profile.SERVER, TestTags.Profile.ACTIONS)
-            .forEach { onNodeWithTag(it).performScrollTo().assertIsDisplayed() }
+        setContent {
+            KptTheme { ProfileBodyContent(irving, onAction = {}, onBack = {}, onServerSettings = {}, onSignOut = {}) }
+        }
+        listOf(
+            TestTags.Profile.IDENTITY,
+            TestTags.Profile.SCOPE,
+            TestTags.Profile.ROLES,
+            TestTags.Profile.SERVER,
+            TestTags.Profile.ACTIONS,
+        ).forEach { onNodeWithTag(it).performScrollTo().assertIsDisplayed() }
         // Fineract sends IRVING ZEPEDA; the screen shows a name, not a shout.
         onNodeWithTag(TestTags.Profile.FULL_NAME).performScrollTo().assertIsDisplayed().assert(hasText("Irving Zepeda"))
         onNodeWithTag(TestTags.Profile.LIVE).performScrollTo().assertIsDisplayed()
@@ -53,7 +65,13 @@ class ProfileBodyUiTest {
         val actions = mutableListOf<ProfileAction>()
         setContent {
             KptTheme {
-                ProfileBodyContent(irving, onAction = { actions += it }, onBack = { taps += "back" }, onServerSettings = { taps += "server" }, onSignOut = { taps += "signOut" })
+                ProfileBodyContent(
+                    irving,
+                    onAction = { actions += it },
+                    onBack = { taps += "back" },
+                    onServerSettings = { taps += "server" },
+                    onSignOut = { taps += "signOut" },
+                )
             }
         }
         onNodeWithTag(TestTags.Profile.SERVER_SETTINGS).performScrollTo().performClick()
@@ -65,7 +83,17 @@ class ProfileBodyUiTest {
 
     @Test
     fun offlineShowsTheBannerAndDisablesChangePasswordButNotSignOut() = runComposeUiTest {
-        setContent { KptTheme { ProfileBodyContent(irving.copy(online = false), onAction = {}, onBack = {}, onServerSettings = {}, onSignOut = {}) } }
+        setContent {
+            KptTheme {
+                ProfileBodyContent(
+                    irving.copy(online = false),
+                    onAction = {},
+                    onBack = {},
+                    onServerSettings = {},
+                    onSignOut = {},
+                )
+            }
+        }
         onNodeWithTag(TestTags.Profile.OFFLINE_BANNER).assertIsDisplayed()
         onNodeWithTag(TestTags.Profile.CHANGE_PASSWORD).performScrollTo().assertIsNotEnabled()
         onNodeWithTag(TestTags.Profile.SIGN_OUT).performScrollTo().assertIsEnabled()
@@ -77,7 +105,13 @@ class ProfileBodyUiTest {
         val actions = mutableListOf<ProfileAction>()
         setContent {
             KptTheme {
-                ProfileBodyContent(irving.copy(fullName = null, name = NameState.Failed("Server error (500).")), onAction = { actions += it }, onBack = {}, onServerSettings = {}, onSignOut = {})
+                ProfileBodyContent(
+                    irving.copy(fullName = null, name = NameState.Failed("Server error (500).")),
+                    onAction = { actions += it },
+                    onBack = {},
+                    onServerSettings = {},
+                    onSignOut = {},
+                )
             }
         }
         onNodeWithTag(TestTags.Profile.NAME_ERROR).assertIsDisplayed()
@@ -87,14 +121,26 @@ class ProfileBodyUiTest {
 
     @Test
     fun saveIsDisabledUntilThePasswordsMatch() = runComposeUiTest {
-        setContent { KptTheme { PasswordSheetBody(PasswordForm(new = "Field#Office2026", repeat = "Field#Office20"), onAction = {}) } }
+        setContent {
+            KptTheme {
+                PasswordSheetBody(PasswordForm(new = "Field#Office2026", repeat = "Field#Office20"), onAction = {})
+            }
+        }
         onNodeWithTag(TestTags.Profile.PASSWORD_SAVE).assertIsNotEnabled()
     }
 
     @Test
     fun aServerRefusalIsShownOnTheSheet() = runComposeUiTest {
-        setContent { KptTheme { PasswordSheetBody(PasswordForm(new = "abc", repeat = "abc", error = PasswordError.Server("Password must be 12 to 50 characters long")), onAction = {}) } }
-        onNodeWithTag(TestTags.Profile.PASSWORD_ERROR).assertIsDisplayed().assert(hasText("Password must be 12 to 50 characters long"))
+        val refusal = "Password must be 12 to 50 characters long"
+        setContent {
+            KptTheme {
+                PasswordSheetBody(
+                    PasswordForm(new = "abc", repeat = "abc", error = PasswordError.Server(refusal)),
+                    onAction = {},
+                )
+            }
+        }
+        onNodeWithTag(TestTags.Profile.PASSWORD_ERROR).assertIsDisplayed().assert(hasText(refusal))
         onNodeWithTag(TestTags.Profile.PASSWORD_SAVE).assertIsEnabled()
     }
 }

@@ -9,18 +9,18 @@
  */
 package kpt.core.data.note
 
-import kpt.core.store.note.NOTE_CLIENT_RESOURCE
-import kpt.core.store.note.NoteKey
 import kotlinx.coroutines.test.runTest
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.infra.testMutationGateway
 import kpt.core.model.note.NoteDraft
-import kpt.core.network.mifos.note.api.NoteApi
 import kpt.core.model.objects.note.CreateNoteResponseDto
 import kpt.core.model.objects.note.DeleteNoteResponseDto
-import kpt.core.network.mifos.note.dto.NoteDto
 import kpt.core.model.objects.note.NoteRequestDto
 import kpt.core.model.objects.note.UpdateNoteResponseDto
+import kpt.core.network.mifos.note.api.NoteApi
+import kpt.core.network.mifos.note.dto.NoteDto
+import kpt.core.store.note.NOTE_CLIENT_RESOURCE
+import kpt.core.store.note.NoteKey
 import org.mobilenativefoundation.store.store5.impl.extensions.fresh
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -56,11 +56,22 @@ class NoteRepositoryTest {
         ): CreateNoteResponseDto {
             val id = nextId++
             serverType[id] = resourceType
-            server += NoteDto(id = id, clientId = resourceId, note = noteRequestDto.note, createdByUsername = "mifos", createdOn = "2026-10-23")
+            server += NoteDto(
+                id = id,
+                clientId = resourceId,
+                note = noteRequestDto.note,
+                createdByUsername = "mifos",
+                createdOn = "2026-10-23",
+            )
             return CreateNoteResponseDto(clientId = resourceId, resourceId = id)
         }
 
-        override suspend fun updateNote(resourceType: String, resourceId: Long, noteId: Long, noteRequestDto: NoteRequestDto): UpdateNoteResponseDto {
+        override suspend fun updateNote(
+            resourceType: String,
+            resourceId: Long,
+            noteId: Long,
+            noteRequestDto: NoteRequestDto,
+        ): UpdateNoteResponseDto {
             val i = server.indexOfFirst { it.id == noteId }
             server[i] = server[i].copy(note = noteRequestDto.note, updatedByUsername = "mifos")
             return UpdateNoteResponseDto(resourceId = noteId)
@@ -134,7 +145,13 @@ class NoteRepositoryTest {
     fun aReplayThatProvesADuplicateStillShowsTheNote() = runTest {
         // The first attempt reached the server unseen; the replay is skipped — and the duplicate
         // check, reading through the store, has put the accepted note in the table on the way.
-        val draft = NoteDraft(resourceId = 7L, text = "Visited", noteId = null, resourceType = "clients", idempotencyKey = "k-1")
+        val draft = NoteDraft(
+            resourceId = 7L,
+            text = "Visited",
+            noteId = null,
+            resourceType = "clients",
+            idempotencyKey = "k-1",
+        )
 
         commands.submitDraft(draft)
 

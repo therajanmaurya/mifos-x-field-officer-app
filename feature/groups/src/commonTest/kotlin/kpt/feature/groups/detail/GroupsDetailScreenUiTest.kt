@@ -16,8 +16,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.group.Group
 import kpt.core.designsystem.theme.KptTheme
+import kpt.core.model.group.Group
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

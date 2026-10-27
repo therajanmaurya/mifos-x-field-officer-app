@@ -182,14 +182,43 @@ internal fun SavingsTermsPage(
             onAction = onAction,
         )
 
-        SavingsDropdown(SavingsField.COMPOUNDING_PERIOD, Res.string.feature_savings_compounding_period, template.interestCompoundingPeriodTypeOptions.orEmpty().toOptions(), state, onAction)
-        SavingsDropdown(SavingsField.POSTING_PERIOD, Res.string.feature_savings_posting_period, template.interestPostingPeriodTypeOptions.orEmpty().toOptions(), state, onAction)
-        SavingsDropdown(SavingsField.CALCULATION_TYPE, Res.string.feature_savings_interest_calculation_type, template.interestCalculationTypeOptions.orEmpty().toOptions(), state, onAction)
-        SavingsDropdown(SavingsField.DAYS_IN_YEAR, Res.string.feature_savings_days_in_year, template.interestCalculationDaysInYearTypeOptions.orEmpty().toOptions(), state, onAction)
+        SavingsDropdown(
+            SavingsField.COMPOUNDING_PERIOD,
+            Res.string.feature_savings_compounding_period,
+            template.interestCompoundingPeriodTypeOptions.orEmpty().toOptions(),
+            state,
+            onAction,
+        )
+        SavingsDropdown(
+            SavingsField.POSTING_PERIOD,
+            Res.string.feature_savings_posting_period,
+            template.interestPostingPeriodTypeOptions.orEmpty().toOptions(),
+            state,
+            onAction,
+        )
+        SavingsDropdown(
+            SavingsField.CALCULATION_TYPE,
+            Res.string.feature_savings_interest_calculation_type,
+            template.interestCalculationTypeOptions.orEmpty().toOptions(),
+            state,
+            onAction,
+        )
+        SavingsDropdown(
+            SavingsField.DAYS_IN_YEAR,
+            Res.string.feature_savings_days_in_year,
+            template.interestCalculationDaysInYearTypeOptions.orEmpty().toOptions(),
+            state,
+            onAction,
+        )
 
         SavingsFieldGap()
         SavingsToggleRow(SavingsToggle.ALLOW_OVERDRAFT, Res.string.feature_savings_allow_overdraft, state, onAction)
-        SavingsToggleRow(SavingsToggle.ENFORCE_MIN_BALANCE, Res.string.feature_savings_enforce_min_balance, state, onAction)
+        SavingsToggleRow(
+            SavingsToggle.ENFORCE_MIN_BALANCE,
+            Res.string.feature_savings_enforce_min_balance,
+            state,
+            onAction,
+        )
 
         SavingsFieldGap()
     }

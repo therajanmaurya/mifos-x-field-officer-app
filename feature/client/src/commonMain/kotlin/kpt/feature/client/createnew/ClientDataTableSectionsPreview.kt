@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.client.createnew
 
@@ -53,7 +53,9 @@ internal fun ClientDataTableSectionsPreview() {
                             DataTableField("client_household", "owns_home") to "true",
                             DataTableField("client_household", "occupation") to "42",
                         ),
-                        dataTableErrors = mapOf(DataTableField("client_household", "household_size") to DataTableFieldError.REQUIRED),
+                        dataTableErrors = mapOf(
+                            DataTableField("client_household", "household_size") to DataTableFieldError.REQUIRED,
+                        ),
                     ),
                     onAction = {},
                 )

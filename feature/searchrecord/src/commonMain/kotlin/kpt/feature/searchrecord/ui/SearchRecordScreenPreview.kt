@@ -29,7 +29,11 @@ private val previewRecords = listOf(
         name = "Home Address",
         description = "Delhi, India",
         type = RecordType.ADDRESS.name,
-        metadata = mapOf(Constants.ADDRESS_LINE_1 to "123 Main", Constants.CITY to "Delhi", Constants.COUNTRY to "India"),
+        metadata = mapOf(
+            Constants.ADDRESS_LINE_1 to "123 Main",
+            Constants.CITY to "Delhi",
+            Constants.COUNTRY to "India",
+        ),
     ),
     GenericSearchRecord(
         id = 2,
@@ -45,7 +49,13 @@ private val previewRecords = listOf(
 internal fun SearchRecordScreenResultsPreview() {
     KptTheme {
         // i18n:skip — preview fixture
-        SearchRecordScreen(state = SearchRecordState(recordType = RecordType.ADDRESS, searchQuery = "Kartikey", searchRecords = previewRecords))
+        SearchRecordScreen(
+            state = SearchRecordState(
+                recordType = RecordType.ADDRESS,
+                searchQuery = "Kartikey",
+                searchRecords = previewRecords,
+            ),
+        )
     }
 }
 
@@ -53,7 +63,12 @@ internal fun SearchRecordScreenResultsPreview() {
 @Composable
 internal fun SearchRecordScreenLoadingPreview() {
     KptTheme {
-        SearchRecordScreen(state = SearchRecordState(recordType = RecordType.IDENTIFIER, dialogState = SearchRecordState.DialogState.Loading))
+        SearchRecordScreen(
+            state = SearchRecordState(
+                recordType = RecordType.IDENTIFIER,
+                dialogState = SearchRecordState.DialogState.Loading,
+            ),
+        )
     }
 }
 
@@ -62,7 +77,13 @@ internal fun SearchRecordScreenLoadingPreview() {
 internal fun SearchRecordScreenNoResultsPreview() {
     KptTheme {
         // i18n:skip — preview fixture
-        SearchRecordScreen(state = SearchRecordState(recordType = RecordType.ADDRESS, searchQuery = "Unknown", isNoResultsFound = true))
+        SearchRecordScreen(
+            state = SearchRecordState(
+                recordType = RecordType.ADDRESS,
+                searchQuery = "Unknown",
+                isNoResultsFound = true,
+            ),
+        )
     }
 }
 
@@ -71,6 +92,11 @@ internal fun SearchRecordScreenNoResultsPreview() {
 internal fun SearchRecordScreenErrorPreview() {
     KptTheme {
         // i18n:skip — preview fixture
-        SearchRecordScreen(state = SearchRecordState(recordType = RecordType.ADDRESS, dialogState = SearchRecordState.DialogState.Error("Network Timeout")))
+        SearchRecordScreen(
+            state = SearchRecordState(
+                recordType = RecordType.ADDRESS,
+                dialogState = SearchRecordState.DialogState.Error("Network Timeout"),
+            ),
+        )
     }
 }

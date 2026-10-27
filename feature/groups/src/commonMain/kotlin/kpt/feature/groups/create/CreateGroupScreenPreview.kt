@@ -11,8 +11,8 @@ package kpt.feature.groups.create
 
 import androidx.compose.runtime.Composable
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.office.Office
 import kpt.core.designsystem.theme.KptTheme
+import kpt.core.model.office.Office
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /* @Preview siblings for the device-free CMP render tier (see GroupsListScreenPreview). */

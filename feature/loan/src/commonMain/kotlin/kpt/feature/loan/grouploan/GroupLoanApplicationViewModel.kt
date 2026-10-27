@@ -12,8 +12,6 @@ package kpt.feature.loan.grouploan
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -37,6 +35,8 @@ import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.model.objects.template.loan.GroupLoanTemplate
 import kpt.core.model.utils.ApiDateFormatter
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * Apply for a GROUP loan — ported from
@@ -111,8 +111,12 @@ internal class GroupLoanApplicationViewModel(
 
     /** This group's application that did not land — the officer's input; the template is re-fetched. */
     private val formDraft = FormDraftSlot(
-        drafts, viewModelScope, CreateForm.GROUP_LOAN.key, ownerId = state.groupId.toLong(),
-        GroupLoanFormSnapshot.serializer(), GroupLoanPayload.serializer(),
+        drafts,
+        viewModelScope,
+        CreateForm.GROUP_LOAN.key,
+        ownerId = state.groupId.toLong(),
+        GroupLoanFormSnapshot.serializer(),
+        GroupLoanPayload.serializer(),
     )
 
     val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
@@ -147,6 +151,33 @@ internal class GroupLoanApplicationViewModel(
             GroupLoanApplicationAction.CloseDialog ->
                 mutableStateFlow.value = state.copy(dialogState = null)
 
+            GroupLoanApplicationAction.ResumeDraft,
+            GroupLoanApplicationAction.DiscardDraft,
+            GroupLoanApplicationAction.SaveDraft,
+            -> handleDraftAction(action)
+
+            is GroupLoanApplicationAction.OnProductSelected -> {
+                mutableStateFlow.value = state.copy(product = action.product)
+                loadTemplate(action.product.id)
+            }
+
+            GroupLoanApplicationAction.OnRetryTemplate ->
+                state.product?.let { loadTemplate(it.id) }
+
+            is GroupLoanApplicationAction.OnOptionSelected,
+            is GroupLoanApplicationAction.OnNumberChanged,
+            is GroupLoanApplicationAction.OnExactDaysToggled,
+            is GroupLoanApplicationAction.OnDateChanged,
+            is GroupLoanApplicationAction.OpenDatePicker,
+            GroupLoanApplicationAction.CloseDatePicker,
+            -> handleFormEdit(action)
+
+            GroupLoanApplicationAction.OnSubmit -> validateThenSubmit()
+        }
+    }
+
+    private fun handleDraftAction(action: GroupLoanApplicationAction) {
+        when (action) {
             GroupLoanApplicationAction.ResumeDraft -> formDraft.resume()?.let { restored ->
                 val product = restored.product ?: return@let
                 mutableStateFlow.value = state.copy(product = product)
@@ -158,15 +189,12 @@ internal class GroupLoanApplicationViewModel(
                 keepDraft(payload, failure = failed?.msg ?: FAILED_MSG)
                 mutableStateFlow.value = state.copy(dialogState = failed?.copy(draftSaved = true))
             }
+            else -> Unit
+        }
+    }
 
-            is GroupLoanApplicationAction.OnProductSelected -> {
-                mutableStateFlow.value = state.copy(product = action.product)
-                loadTemplate(action.product.id)
-            }
-
-            GroupLoanApplicationAction.OnRetryTemplate ->
-                state.product?.let { loadTemplate(it.id) }
-
+    private fun handleFormEdit(action: GroupLoanApplicationAction) {
+        when (action) {
             is GroupLoanApplicationAction.OnOptionSelected -> mutableStateFlow.value = state.copy(
                 selections = state.selections + (action.field to action.option),
                 errors = state.errors - action.field,
@@ -191,7 +219,7 @@ internal class GroupLoanApplicationViewModel(
             GroupLoanApplicationAction.CloseDatePicker ->
                 mutableStateFlow.value = state.copy(activeDatePicker = null)
 
-            GroupLoanApplicationAction.OnSubmit -> validateThenSubmit()
+            else -> Unit
         }
     }
 
@@ -224,54 +252,62 @@ internal class GroupLoanApplicationViewModel(
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun validateThenSubmit() {
         if (state.isSubmitting) return
 
-        val errors = buildSet {
-            if (state.product == null) add(GroupLoanField.PRODUCT)
-            // Every numeric field must parse and be positive. The original called `.toInt()` and
-            // `.toDouble()` on them unguarded, so a non-numeric crashed the submit.
-            GroupLoanField.numeric.forEach { field ->
-                if (!state.number(field).isPositiveNumber()) add(field)
-            }
-            // The four dropdowns Fineract requires on a loan application.
-            GroupLoanField.requiredSelections.forEach { field ->
-                if (state.selections[field] == null) add(field)
-            }
-        }
-
+        val errors = validationErrors()
         mutableStateFlow.value = state.copy(errors = errors)
-        if (errors.isNotEmpty()) return
+        if (errors.isEmpty()) buildDraft()?.let(::submit)
+    }
 
-        submit(
-            GroupLoanDraft(
-                productId = state.product?.id ?: return,
-                submittedOn = state.submittedOn,
-                expectedDisbursement = state.expectedDisbursement,
-                principal = state.number(GroupLoanField.PRINCIPAL).trim(),
-                numberOfRepayments = state.number(GroupLoanField.NUMBER_OF_REPAYMENTS).trim(),
-                interestRatePerPeriod = state.number(GroupLoanField.NOMINAL_INTEREST)
-                    .trim()
-                    .toDoubleOrNull() ?: return,
-                repaymentEvery = state.number(GroupLoanField.REPAID_EVERY).trim(),
-                loanTermFrequency = state.number(GroupLoanField.LOAN_TERM)
-                    .trim()
-                    .toIntOrNull() ?: return,
-                loanTermFrequencyType = state.selectionId(GroupLoanField.LOAN_TERM_TYPE) ?: return,
-                repaymentFrequencyType = state.selectionId(GroupLoanField.REPAYMENT_FREQUENCY_TYPE)
-                    ?: return,
-                amortizationType = state.selectionId(GroupLoanField.AMORTIZATION) ?: return,
-                interestType = state.selectionId(GroupLoanField.INTEREST_TYPE) ?: return,
-                interestCalculationPeriodType =
-                state.selectionId(GroupLoanField.INTEREST_CALCULATION_PERIOD),
-                transactionProcessingStrategyId =
-                state.selectionId(GroupLoanField.REPAYMENT_STRATEGY),
-                loanPurposeId = state.selectionId(GroupLoanField.LOAN_PURPOSE),
-                fundId = state.selectionId(GroupLoanField.FUND),
-                loanOfficerId = state.selectionId(GroupLoanField.LOAN_OFFICER),
-                calculateExactDays = state.calculateExactDays,
-            ),
+    private fun validationErrors(): Set<GroupLoanField> = buildSet {
+        if (state.product == null) add(GroupLoanField.PRODUCT)
+        // Every numeric field must parse and be positive. The original called `.toInt()` and
+        // `.toDouble()` on them unguarded, so a non-numeric crashed the submit.
+        GroupLoanField.numeric.forEach { field ->
+            if (!state.number(field).isPositiveNumber()) add(field)
+        }
+        // The four dropdowns Fineract requires on a loan application.
+        GroupLoanField.requiredSelections.forEach { field ->
+            if (state.selections[field] == null) add(field)
+        }
+    }
+
+    /** The four required dropdown ids, or null when any is missing. */
+    private fun requiredSelectionIds(): List<Int>? = listOfNotNull(
+        state.selectionId(GroupLoanField.LOAN_TERM_TYPE),
+        state.selectionId(GroupLoanField.REPAYMENT_FREQUENCY_TYPE),
+        state.selectionId(GroupLoanField.AMORTIZATION),
+        state.selectionId(GroupLoanField.INTEREST_TYPE),
+    ).takeIf { it.size == REQUIRED_SELECTION_COUNT }
+
+    private fun buildDraft(): GroupLoanDraft? {
+        val productId = state.product?.id
+        val rate = state.number(GroupLoanField.NOMINAL_INTEREST).trim().toDoubleOrNull()
+        val term = state.number(GroupLoanField.LOAN_TERM).trim().toIntOrNull()
+        val ids = requiredSelectionIds()
+        // Rate and term travel together, keeping the null check to three conditions (ComplexCondition).
+        val terms = rate?.let { r -> term?.let { t -> r to t } }
+        if (productId == null || terms == null || ids == null) return null
+        return GroupLoanDraft(
+            productId = productId,
+            submittedOn = state.submittedOn,
+            expectedDisbursement = state.expectedDisbursement,
+            principal = state.number(GroupLoanField.PRINCIPAL).trim(),
+            numberOfRepayments = state.number(GroupLoanField.NUMBER_OF_REPAYMENTS).trim(),
+            interestRatePerPeriod = terms.first,
+            repaymentEvery = state.number(GroupLoanField.REPAID_EVERY).trim(),
+            loanTermFrequency = terms.second,
+            loanTermFrequencyType = ids[0],
+            repaymentFrequencyType = ids[1],
+            amortizationType = ids[2],
+            interestType = ids[3],
+            interestCalculationPeriodType = state.selectionId(GroupLoanField.INTEREST_CALCULATION_PERIOD),
+            transactionProcessingStrategyId = state.selectionId(GroupLoanField.REPAYMENT_STRATEGY),
+            loanPurposeId = state.selectionId(GroupLoanField.LOAN_PURPOSE),
+            fundId = state.selectionId(GroupLoanField.FUND),
+            loanOfficerId = state.selectionId(GroupLoanField.LOAN_OFFICER),
+            calculateExactDays = state.calculateExactDays,
         )
     }
 
@@ -359,6 +395,7 @@ internal class GroupLoanApplicationViewModel(
         /** Fineract's `loanType` for a loan attached to a GROUP. */
         const val GROUP_LOAN_TYPE = "group"
         const val STATE_TIMEOUT_MS = 5_000L
+        const val REQUIRED_SELECTION_COUNT = 4
 
         const val OFFLINE_MSG = "No connection — the application was not submitted."
         const val FAILED_MSG = "Could not submit this loan application."
@@ -490,6 +527,7 @@ internal data class GroupLoanApplicationState(
     sealed interface DialogState {
         /** [loanId] is Fineract's new loan id, shown so the officer can find it. */
         data class Created(val loanId: Int?) : DialogState
+
         /** [draftSaved] = kept (offline automatically, or "Save as draft"), in Sync & Drafts. */
         data class Failed(val msg: String, val offline: Boolean = false, val draftSaved: Boolean = false) : DialogState
     }
@@ -532,7 +570,12 @@ internal data class GroupLoanFormSnapshot(
 ) {
     companion object {
         fun of(state: GroupLoanApplicationState) = GroupLoanFormSnapshot(
-            state.product, state.numbers, state.selections, state.calculateExactDays, state.submittedOn, state.expectedDisbursement,
+            state.product,
+            state.numbers,
+            state.selections,
+            state.calculateExactDays,
+            state.submittedOn,
+            state.expectedDisbursement,
         )
     }
 }

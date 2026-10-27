@@ -9,9 +9,6 @@
  */
 package kpt.core.data.collectionsheet
 
-import kpt.core.model.collectionsheet.CenterDetail as CenterDetailModel
-import kpt.core.model.collectionsheet.CollectionSheetResponse as CollectionSheetResponseModel
-import kpt.core.model.collectionsheet.IndividualCollectionSheet as IndividualCollectionSheetModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kpt.core.base.store.mutation.MutationResult
@@ -20,15 +17,15 @@ import kpt.core.data.collectionsheet.impl.CollectionSheetRepositoryImpl
 import kpt.core.data.infra.testMutationGateway
 import kpt.core.model.center.CenterWithAssociations
 import kpt.core.model.collectionsheet.CenterDetail
+import kpt.core.model.collectionsheet.CollectionSheetPayload
 import kpt.core.model.collectionsheet.CollectionSheetResponse
 import kpt.core.model.collectionsheet.IndividualCollectionSheet
-import kpt.core.model.collectionsheet.CollectionSheetPayload
+import kpt.core.model.collectionsheet.IndividualCollectionSheetPayload
 import kpt.core.model.collectionsheet.ProductiveCollectionSheetPayload
+import kpt.core.model.collectionsheet.RequestCollectionSheetPayload
 import kpt.core.model.objects.collectionsheets.CollectionSheetRequestPayload
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.collectionsheet.api.CollectionSheetApi
-import kpt.core.model.collectionsheet.IndividualCollectionSheetPayload
-import kpt.core.model.collectionsheet.RequestCollectionSheetPayload
 import kpt.core.store.collectionsheet.CollectionSheetKey
 import kpt.core.store.collectionsheet.GeneratedSheetKey
 import kotlin.test.Test
@@ -36,6 +33,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kpt.core.model.collectionsheet.CenterDetail as CenterDetailModel
+import kpt.core.model.collectionsheet.CollectionSheetResponse as CollectionSheetResponseModel
+import kpt.core.model.collectionsheet.IndividualCollectionSheet as IndividualCollectionSheetModel
 
 /**
  * The collection-sheet repositories over REAL Store5 stores. The read repository and the command
@@ -62,7 +62,9 @@ class CollectionSheetRepositoryTest {
         override suspend fun getIndividualCollectionSheet(payload: RequestCollectionSheetPayload?) =
             IndividualCollectionSheet(dueDate = "sheet-${generate()}")
 
-        override suspend fun saveIndividualCollectionSheet(payload: IndividualCollectionSheetPayload?): GenericResponse {
+        override suspend fun saveIndividualCollectionSheet(
+            payload: IndividualCollectionSheetPayload?,
+        ): GenericResponse {
             saves++
             return GenericResponse()
         }
@@ -70,7 +72,10 @@ class CollectionSheetRepositoryTest {
         override suspend fun fetchProductiveSheet(centerId: Int, payload: CollectionSheetRequestPayload?) =
             CollectionSheetResponse(dueDate = intArrayOf(generate()))
 
-        override suspend fun submitProductiveSheet(centerId: Int, payload: ProductiveCollectionSheetPayload?): GenericResponse {
+        override suspend fun submitProductiveSheet(
+            centerId: Int,
+            payload: ProductiveCollectionSheetPayload?,
+        ): GenericResponse {
             saves++
             return GenericResponse()
         }
@@ -96,22 +101,40 @@ class CollectionSheetRepositoryTest {
 
     // ---- core/database (the read cache) + core/store, as in CollectionSheetKeyedReadStores.kt ----
 
-    private val individualCache = MutableStateFlow<Map<RequestCollectionSheetPayload, IndividualCollectionSheetModel>>(emptyMap())
+    private val individualCache =
+        MutableStateFlow<Map<RequestCollectionSheetPayload, IndividualCollectionSheetModel>>(emptyMap())
     private val productiveCache = MutableStateFlow<Map<GeneratedSheetKey, CollectionSheetResponseModel>>(emptyMap())
     private val groupCache = MutableStateFlow<Map<GeneratedSheetKey, CollectionSheetResponseModel>>(emptyMap())
 
     private val individualStore = keyedReadStore(individualCache) { key -> api.getIndividualCollectionSheet(key) }
-    private val productiveStore = keyedReadStore(productiveCache) { key -> api.fetchProductiveSheet(key.ownerId, key.request) }
+    private val productiveStore = keyedReadStore(productiveCache) { key ->
+        api.fetchProductiveSheet(
+            key.ownerId,
+            key.request,
+        )
+    }
     private val groupStore = keyedReadStore(groupCache) { key -> api.fetchCollectionSheet(key.ownerId, key.request) }
-    private val rosterStore = keyedReadStore(MutableStateFlow<Map<CollectionSheetKey, List<CenterDetailModel>>>(emptyMap())) {
+    private val rosterStore = keyedReadStore(
+        MutableStateFlow<Map<CollectionSheetKey, List<CenterDetailModel>>>(emptyMap()),
+    ) {
         error("not used")
     }
 
     private val repository = CollectionSheetRepositoryImpl(rosterStore, individualStore, productiveStore, groupStore)
     private fun commands(isOnline: Boolean = true) =
-        CollectionSheetCommandRepositoryImpl(api, testMutationGateway(isOnline), individualStore, productiveStore, groupStore)
+        CollectionSheetCommandRepositoryImpl(
+            api,
+            testMutationGateway(isOnline),
+            individualStore,
+            productiveStore,
+            groupStore,
+        )
 
-    private val individual = RequestCollectionSheetPayload(officeId = 1, staffId = 2, transactionDate = "01 October 2026")
+    private val individual = RequestCollectionSheetPayload(
+        officeId = 1,
+        staffId = 2,
+        transactionDate = "01 October 2026",
+    )
     private val meeting = CollectionSheetRequestPayload(calendarId = 4, transactionDate = "01 October 2026")
 
     // ---- reads ----
@@ -163,7 +186,10 @@ class CollectionSheetRepositoryTest {
     fun aSavedIndividualSheetReplacesThePreSaveOne() = runTest {
         repository.individualCollectionSheet(individual)
 
-        commands().saveIndividualCollectionSheet(individual, IndividualCollectionSheetPayload(transactionDate = "01 October 2026"))
+        commands().saveIndividualCollectionSheet(
+            individual,
+            IndividualCollectionSheetPayload(transactionDate = "01 October 2026"),
+        )
 
         online = false
         assertEquals("sheet-1", repository.individualCollectionSheet(individual)?.dueDate)

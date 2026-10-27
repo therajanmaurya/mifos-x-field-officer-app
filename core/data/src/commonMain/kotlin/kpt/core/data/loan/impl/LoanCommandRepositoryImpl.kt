@@ -18,8 +18,12 @@ import kpt.core.base.store.mutation.MutationGateway
 import kpt.core.base.store.mutation.MutationPolicy
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.loan.LoanCommandRepository
+import kpt.core.model.loan.AssignLoanOfficerRequestDto
+import kpt.core.model.loan.GuarantorRequestDto
 import kpt.core.model.loan.Loan
+import kpt.core.model.loan.LoanChargeOffRequestDto
 import kpt.core.model.loan.LoanRepaymentRequest
+import kpt.core.model.loan.RejectLoanRequestDto
 import kpt.core.model.objects.account.loan.LoanApplicationInput
 import kpt.core.model.objects.account.loan.LoanApproval
 import kpt.core.model.objects.account.loan.RepaymentSchedule
@@ -32,12 +36,8 @@ import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleResponse
 import kpt.core.model.objects.account.loan.transfer.AccountTransferRequest
 import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.network.mifos.loan.api.LoanApi
-import kpt.core.model.loan.AssignLoanOfficerRequestDto
-import kpt.core.model.loan.GuarantorRequestDto
-import kpt.core.model.loan.LoanChargeOffRequestDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseRequestDto
 import kpt.core.network.mifos.loan.dto.LoansPayload
-import kpt.core.model.loan.RejectLoanRequestDto
 import kpt.core.store.config.AppStoreIds
 import org.mobilenativefoundation.store.store5.Store
 import org.mobilenativefoundation.store.store5.impl.extensions.fresh

@@ -41,13 +41,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
-import kpt.core.base.ui.generated.resources.Res as BaseRes
 import kpt.core.base.ui.generated.resources.draft_save
 import kpt.core.base.ui.generated.resources.draft_saved
 import kpt.core.base.ui.generated.resources.draft_saved_offline
@@ -119,6 +116,9 @@ import kpt.feature.savings.generated.resources.feature_savings_summary_submitted
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kpt.core.base.ui.generated.resources.Res as BaseRes
 
 /**
  * The new recurring-deposit application wizard — see [RecurringDepositViewModel] for the unguarded
@@ -209,6 +209,14 @@ internal fun RecurringDepositContent(
         ApplicationDatePicker(state, onAction)
     }
 
+    RecurringStatusDialog(state, onAction)
+}
+
+@Composable
+private fun RecurringStatusDialog(
+    state: RecurringDepositState,
+    onAction: (RecurringDepositAction) -> Unit,
+) {
     when (val dialog = state.dialogState) {
         null -> Unit
         RecurringDialog.Created -> AppStatusDialog(
@@ -268,7 +276,13 @@ private fun DetailsPage(
             )
         }
         Dropdown(RecurringField.PRODUCT, Res.string.feature_savings_product, form.products, state, onAction)
-        Dropdown(RecurringField.FIELD_OFFICER, Res.string.feature_savings_field_officer, form.fieldOfficers, state, onAction)
+        Dropdown(
+            RecurringField.FIELD_OFFICER,
+            Res.string.feature_savings_field_officer,
+            form.fieldOfficers,
+            state,
+            onAction,
+        )
 
         Gap()
         AppDatePickerTextField(
@@ -298,13 +312,30 @@ private fun TermsPage(
 ) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         NumberField(RecurringField.DEPOSIT_AMOUNT, Res.string.feature_savings_rd_deposit_amount, state, onAction)
-        NumberField(RecurringField.RECURRING_FREQUENCY, Res.string.feature_savings_rd_recurring_frequency, state, onAction)
-        Dropdown(RecurringField.RECURRING_FREQUENCY_TYPE, Res.string.feature_savings_rd_recurring_frequency_type, form.periodFrequencies, state, onAction)
+        NumberField(
+            RecurringField.RECURRING_FREQUENCY,
+            Res.string.feature_savings_rd_recurring_frequency,
+            state,
+            onAction,
+        )
+        Dropdown(
+            RecurringField.RECURRING_FREQUENCY_TYPE,
+            Res.string.feature_savings_rd_recurring_frequency_type,
+            form.periodFrequencies,
+            state,
+            onAction,
+        )
         NumberField(RecurringField.DEPOSIT_PERIOD, Res.string.feature_savings_rd_deposit_period, state, onAction)
         // Its OWN dropdown, from the same option list as the recurring frequency but a separate
         // selection — the original kept them in two different nested state objects, which is how
         // one could end up holding an index from the other's list.
-        Dropdown(RecurringField.DEPOSIT_PERIOD_TYPE, Res.string.feature_savings_rd_deposit_period_type, form.periodFrequencies, state, onAction)
+        Dropdown(
+            RecurringField.DEPOSIT_PERIOD_TYPE,
+            Res.string.feature_savings_rd_deposit_period_type,
+            form.periodFrequencies,
+            state,
+            onAction,
+        )
 
         Gap()
         Toggle(RecurringToggle.MANDATORY_DEPOSIT, Res.string.feature_savings_rd_mandatory, state, onAction)
@@ -322,13 +353,43 @@ private fun InterestPage(
     onAction: (RecurringDepositAction) -> Unit,
 ) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        Dropdown(RecurringField.COMPOUNDING_PERIOD, Res.string.feature_savings_compounding_period, form.compoundingPeriods, state, onAction)
-        Dropdown(RecurringField.POSTING_PERIOD, Res.string.feature_savings_posting_period, form.postingPeriods, state, onAction)
-        Dropdown(RecurringField.CALCULATION_TYPE, Res.string.feature_savings_interest_calculation_type, form.calculationTypes, state, onAction)
-        Dropdown(RecurringField.DAYS_IN_YEAR, Res.string.feature_savings_days_in_year, form.daysInYearTypes, state, onAction)
+        Dropdown(
+            RecurringField.COMPOUNDING_PERIOD,
+            Res.string.feature_savings_compounding_period,
+            form.compoundingPeriods,
+            state,
+            onAction,
+        )
+        Dropdown(
+            RecurringField.POSTING_PERIOD,
+            Res.string.feature_savings_posting_period,
+            form.postingPeriods,
+            state,
+            onAction,
+        )
+        Dropdown(
+            RecurringField.CALCULATION_TYPE,
+            Res.string.feature_savings_interest_calculation_type,
+            form.calculationTypes,
+            state,
+            onAction,
+        )
+        Dropdown(
+            RecurringField.DAYS_IN_YEAR,
+            Res.string.feature_savings_days_in_year,
+            form.daysInYearTypes,
+            state,
+            onAction,
+        )
 
         NumberField(RecurringField.LOCKIN_PERIOD, Res.string.feature_savings_lockin_period, state, onAction)
-        Dropdown(RecurringField.LOCKIN_PERIOD_TYPE, Res.string.feature_savings_lockin_period_type, form.lockinFrequencies, state, onAction)
+        Dropdown(
+            RecurringField.LOCKIN_PERIOD_TYPE,
+            Res.string.feature_savings_lockin_period_type,
+            form.lockinFrequencies,
+            state,
+            onAction,
+        )
 
         Gap()
         Toggle(RecurringToggle.PRE_CLOSURE_PENALTY, Res.string.feature_savings_rd_pre_closure_penalty, state, onAction)
@@ -337,8 +398,19 @@ private fun InterestPage(
         // The original rendered them always and sent whatever had been typed even with the
         // checkbox clear, so a penalty the officer had unchecked still reached the server.
         if (state.toggle(RecurringToggle.PRE_CLOSURE_PENALTY)) {
-            NumberField(RecurringField.PENALTY_INTEREST, Res.string.feature_savings_rd_penalty_interest, state, onAction)
-            Dropdown(RecurringField.PENALTY_INTEREST_ON, Res.string.feature_savings_rd_penalty_interest_on, form.penaltyInterestOnTypes, state, onAction)
+            NumberField(
+                RecurringField.PENALTY_INTEREST,
+                Res.string.feature_savings_rd_penalty_interest,
+                state,
+                onAction,
+            )
+            Dropdown(
+                RecurringField.PENALTY_INTEREST_ON,
+                Res.string.feature_savings_rd_penalty_interest_on,
+                form.penaltyInterestOnTypes,
+                state,
+                onAction,
+            )
         }
         Gap()
     }

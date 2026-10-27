@@ -9,14 +9,10 @@
  */
 package kpt.core.store.client
 
-import kpt.core.model.client.Client
-import kpt.core.model.client.ClientAccounts as ClientAccountsModel
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
-import kpt.core.database.client.entity.ClientAccounts
-import kpt.core.database.client.entity.ClientEntity
+import kpt.core.model.client.Client
 import kpt.core.model.client.ClientTemplateOptions
 import kpt.core.model.client.SavingAccountOption
 import kpt.core.model.objects.clients.ClientAddressEntity
@@ -31,17 +27,12 @@ import kpt.core.network.mifos.client.dto.GetClientsClientIdAccountsResponse
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys
 import org.mobilenativefoundation.store.store5.Store
+import kpt.core.model.client.ClientAccounts as ClientAccountsModel
 
 /**
  * Keyed reads for client with no table of their own — cached through the shared read cache so the
  * last-known answer still renders with no signal.
  */
-
-/** Addresses one `getClientIdentifiers` read. */
-data class GetClientIdentifiersKey(
-    val clientId: Long,
-    val identifierId: Long,
-)
 
 @StoreProvider(id = "clientRetrieveAssociatedAccounts", ttl = "12h")
 @CacheKey(fn = "forKey", key = "clientRetrieveAssociatedAccounts:{key}", params = ["key:String"])
@@ -132,7 +123,12 @@ fun provideGetClientIdentifiersStore(
 ): Store<GetClientIdentifiersKey, Identifier> = cachedRead(
     dao = cache,
     keyOf = { key -> AppCacheKeys.ClientGetClientIdentifiers.forKey("${key.clientId}:${key.identifierId}") },
-    fetch = { key -> clientIdentifierApi.getClientIdentifiers(clientId = key.clientId, identifierId = key.identifierId) },
+    fetch = { key ->
+        clientIdentifierApi.getClientIdentifiers(
+            clientId = key.clientId,
+            identifierId = key.identifierId,
+        )
+    },
 )
 
 @StoreProvider(id = "clientGetClientIdentifierTemplate", ttl = "12h")

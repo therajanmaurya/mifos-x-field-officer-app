@@ -10,9 +10,17 @@
 package kpt.core.data.loan
 
 import kpt.core.base.store.mutation.MutationResult
+import kpt.core.model.loan.AssignLoanOfficerRequestDto
+import kpt.core.model.loan.AssignLoanOfficerResponseDto
+import kpt.core.model.loan.CreateGuarantorResponseDto
+import kpt.core.model.loan.GuarantorRequestDto
 import kpt.core.model.loan.Loan
+import kpt.core.model.loan.LoanChargeOffRequestDto
+import kpt.core.model.loan.LoanChargeOffResponseDto
 import kpt.core.model.loan.LoanRepaymentRequest
 import kpt.core.model.loan.LoanRepaymentResponse
+import kpt.core.model.loan.RejectLoanRequestDto
+import kpt.core.model.loan.RejectLoanResponseDto
 import kpt.core.model.objects.account.loan.LoanApplicationInput
 import kpt.core.model.objects.account.loan.LoanApproval
 import kpt.core.model.objects.account.loan.RepaymentSchedule
@@ -23,14 +31,6 @@ import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRequest
 import kpt.core.model.objects.account.loan.transfer.AccountTransferRequest
 import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.model.shared.GenericResponse
-import kpt.core.model.loan.AssignLoanOfficerRequestDto
-import kpt.core.model.loan.AssignLoanOfficerResponseDto
-import kpt.core.model.loan.CreateGuarantorResponseDto
-import kpt.core.model.loan.GuarantorRequestDto
-import kpt.core.model.loan.LoanChargeOffRequestDto
-import kpt.core.model.loan.LoanChargeOffResponseDto
-import kpt.core.model.loan.RejectLoanRequestDto
-import kpt.core.model.loan.RejectLoanResponseDto
 /**
  * Every loan write, as an explicit outcome.
  *
@@ -41,8 +41,9 @@ import kpt.core.model.loan.RejectLoanResponseDto
  * ## Policy is per method, not per repository
  *
  * Anything that moves money or changes a loan's legal state — approve, reject, disburse, repay,
- * charge-off, reschedule, officer reassignment — is [OnlineRequired][kpt.core.base.store.mutation.MutationPolicy.OnlineRequired]:
- * it awaits the server and writes NOTHING offline, surfacing `Blocked(OFFLINE)` instead. An
+ * charge-off, reschedule, officer reassignment — is
+ * [OnlineRequired][kpt.core.base.store.mutation.MutationPolicy.OnlineRequired]: it awaits the server and
+ * writes NOTHING offline, surfacing `Blocked(OFFLINE)` instead. An
  * optimistic approval is a lie the officer would act on — telling them a loan is approved when the
  * server never saw it is worse than telling them to find signal.
  *
@@ -84,7 +85,10 @@ interface LoanCommandRepository {
 
     suspend fun chargeOff(loanId: Int, request: LoanChargeOffRequestDto): MutationResult<LoanChargeOffResponseDto>
 
-    suspend fun assignLoanOfficer(loanId: Int, request: AssignLoanOfficerRequestDto): MutationResult<AssignLoanOfficerResponseDto>
+    suspend fun assignLoanOfficer(
+        loanId: Int,
+        request: AssignLoanOfficerRequestDto,
+    ): MutationResult<AssignLoanOfficerResponseDto>
 
     /**
      * Submit a new INDIVIDUAL loan application.

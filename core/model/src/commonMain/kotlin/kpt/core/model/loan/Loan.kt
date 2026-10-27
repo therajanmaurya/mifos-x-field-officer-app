@@ -10,7 +10,6 @@
 package kpt.core.model.loan
 
 import kotlinx.serialization.Serializable
-import kpt.core.model.loan.AmortizationType
 import kpt.core.model.objects.account.loan.Currency
 import kpt.core.model.objects.account.loan.InterestCalculationPeriodType
 import kpt.core.model.objects.account.loan.InterestRateFrequencyType
@@ -20,7 +19,7 @@ import kpt.core.model.objects.account.loan.TermPeriodFrequencyType
 
 /**
  * GENERATED twin — what every layer above `core/store` sees of `core/database`'s `Loan`.
- * Same field names as the row; `core/store/mapping/EntityModelMappers.kt` converts between them.
+ * Same field names as the row; the `core/store/mapping/` mappers convert between them.
  */
 @Serializable
 data class Loan(

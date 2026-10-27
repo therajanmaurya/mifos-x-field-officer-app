@@ -11,8 +11,8 @@ package kpt.feature.groups.detail
 
 import androidx.compose.runtime.Composable
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.group.Group
 import kpt.core.designsystem.theme.KptTheme
+import kpt.core.model.group.Group
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /* @Preview siblings for the device-free CMP render tier (see GroupsListScreenPreview). */
@@ -49,6 +49,10 @@ internal fun GroupsDetailContentPreview() {
 @Composable
 internal fun GroupsDetailContentPendingActivationPreview() {
     KptTheme {
-        GroupsDetailContent(group = ScreenState.Content(previewGroup.copy(active = false)), canActivate = true, onAction = {})
+        GroupsDetailContent(
+            group = ScreenState.Content(previewGroup.copy(active = false)),
+            canActivate = true,
+            onAction = {},
+        )
     }
 }

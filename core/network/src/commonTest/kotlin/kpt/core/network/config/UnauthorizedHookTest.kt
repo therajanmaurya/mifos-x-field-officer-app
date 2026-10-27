@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.config
 
@@ -31,7 +31,13 @@ import kotlin.test.assertEquals
 class UnauthorizedHookTest {
 
     private fun client(status: HttpStatusCode, seen: MutableList<String>) = HttpClient(
-        MockEngine { respond("""{"httpStatusCode":"${status.value}"}""", status, headersOf(HttpHeaders.ContentType, "application/json")) },
+        MockEngine {
+            respond(
+                """{"httpStatusCode":"${status.value}"}""",
+                status,
+                headersOf(HttpHeaders.ContentType, "application/json"),
+            )
+        },
     ) {
         setupDefaultHttpClient(baseUrl = "https://example.test/")()
         notifyUnauthorized("mifos", UnauthorizedHandler { seen += it })

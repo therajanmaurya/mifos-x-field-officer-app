@@ -35,13 +35,18 @@ interface OfflineQueueRepository {
     fun pendingCentersStream(scope: CoroutineScope): ScreenDataStream<List<CenterPayload>>
     fun pendingGroupsStream(scope: CoroutineScope): ScreenDataStream<List<GroupPayload>>
     fun pendingLoanRepaymentsStream(scope: CoroutineScope): ScreenDataStream<List<LoanRepaymentRequest>>
-    fun pendingSavingsTransactionsStream(scope: CoroutineScope): ScreenDataStream<List<SavingsAccountTransactionRequest>>
+    fun pendingSavingsTransactionsStream(
+        scope: CoroutineScope,
+    ): ScreenDataStream<List<SavingsAccountTransactionRequest>>
 
     suspend fun enqueueClient(id: Int, payload: ClientPayload): MutationResult<ClientPayload>
     suspend fun enqueueCenter(id: Int, payload: CenterPayload): MutationResult<CenterPayload>
     suspend fun enqueueGroup(id: Int, payload: GroupPayload): MutationResult<GroupPayload>
     suspend fun enqueueLoanRepayment(loanId: Int, request: LoanRepaymentRequest): MutationResult<LoanRepaymentRequest>
-    suspend fun enqueueSavingsTransaction(accountId: Int, request: SavingsAccountTransactionRequest): MutationResult<SavingsAccountTransactionRequest>
+    suspend fun enqueueSavingsTransaction(
+        accountId: Int,
+        request: SavingsAccountTransactionRequest,
+    ): MutationResult<SavingsAccountTransactionRequest>
 
     /** Drop a queued row — the sync accepted it, or the officer discarded it. */
     suspend fun discardClient(id: Int)

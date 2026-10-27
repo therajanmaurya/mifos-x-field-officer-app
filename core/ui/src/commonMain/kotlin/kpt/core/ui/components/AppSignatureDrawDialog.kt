@@ -41,6 +41,7 @@ import kpt.core.designsystem.theme.DesignToken
 fun AppSignatureDrawDialog(
     onSaveFile: (ImageBitmap) -> Unit,
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val signatureState = rememberSignatureState()
     var size = remember {
@@ -49,6 +50,7 @@ fun AppSignatureDrawDialog(
 
     AppCustomDialog(
         onDismiss = { onDismiss() },
+        modifier = modifier,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
             dismissOnBackPress = false,

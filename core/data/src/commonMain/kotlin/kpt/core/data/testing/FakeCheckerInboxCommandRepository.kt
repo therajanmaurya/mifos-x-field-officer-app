@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.testing
 
@@ -20,7 +20,12 @@ import kpt.core.model.shared.GenericResponse
 @ExperimentalDataTestingApi
 class FakeCheckerInboxCommandRepository(
     private val inbox: FakeCheckerInboxRepository? = null,
-    private val result: (auditId: Int) -> MutationResult<GenericResponse> = { MutationResult.Applied(GenericResponse(), synced = true) },
+    private val result: (auditId: Int) -> MutationResult<GenericResponse> = {
+        MutationResult.Applied(
+            GenericResponse(),
+            synced = true,
+        )
+    },
 ) : CheckerInboxCommandRepository {
 
     val decisions = mutableListOf<Pair<String, Int>>()

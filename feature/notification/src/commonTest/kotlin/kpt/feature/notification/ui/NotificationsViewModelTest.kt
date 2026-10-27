@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 @file:OptIn(kpt.core.data.testing.ExperimentalDataTestingApi::class)
 
@@ -34,6 +34,7 @@ class NotificationsViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
     @BeforeTest fun setUp() = Dispatchers.setMain(dispatcher)
+
     @AfterTest fun tearDown() = Dispatchers.resetMain()
 
     private fun n(id: Long, type: String, objectId: Long?, read: Boolean) =

@@ -16,10 +16,13 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
 import kpt.core.base.network.annotation.ApiBinding
-import kpt.core.model.center.CenterAccounts
 import kpt.core.model.center.Center
+import kpt.core.model.center.CenterAccounts
 import kpt.core.model.center.CenterPayload
 import kpt.core.model.center.CenterWithAssociations
+import kpt.core.model.center.PostCentersCenterIdRequest
+import kpt.core.model.center.PostCentersCenterIdResponse
+import kpt.core.model.collectionsheet.payload.CollectionSheetPayload
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.clients.Page
 import kpt.core.model.objects.databaseobjects.CollectionSheet
@@ -28,16 +31,16 @@ import kpt.core.model.objects.responses.SaveResponse
 import kpt.core.model.shared.GenericResponse
 import kpt.core.model.shared.Payload
 import kpt.core.network.mifos.center.dto.GetCentersResponse
-import kpt.core.model.center.PostCentersCenterIdRequest
-import kpt.core.model.center.PostCentersCenterIdResponse
-import kpt.core.model.collectionsheet.payload.CollectionSheetPayload
 
 @ApiBinding("mifos")
 interface CenterApi {
 
     /**
      * List Centers
-     * The default implementation supports pagination and sorting with the default pagination size set to 200 records. The parameter limit with description -1 will return all entries.  Example Requests:    centers    centers?fields&#x3D;name,officeName,joinedDate    centers?offset&#x3D;10&amp;limit&#x3D;50    centers?orderBy&#x3D;name&amp;sortOrder&#x3D;DESC
+     * The default implementation supports pagination and sorting with the default pagination size set to 200 records.
+     * The parameter limit with description -1 will return all entries.  Example Requests:    centers
+     * centers?fields&#x3D;name,officeName,joinedDate    centers?offset&#x3D;10&amp;limit&#x3D;50
+     * centers?orderBy&#x3D;name&amp;sortOrder&#x3D;DESC
      * Responses:
      *  - 200: OK
      *
@@ -74,8 +77,18 @@ interface CenterApi {
     ): GetCentersResponse
 
     /**
-     * Activate a Center | Generate Collection Sheet | Save Collection Sheet | Close a Center | Associate Groups | Disassociate Groups
-     * Activate a Center:  Centers can be created in a Pending state. This API exists to enable center activation. If the center happens to be already active, this API will result in an error.  Close a Center:  Centers can be closed if they don&#39;t have any non-closed groups or saving accounts. If the Center has any active groups or savings accounts, this API will result in an error.  Associate Groups:  This API allows associating existing groups to a center. The groups are listed from the office to which the center is associated. If group(s) is already associated with a center, this API will result in an error.  Disassociate Groups:  This API allows to disassociate groups from a center.  Generate Collection Sheet:  This Api retrieves repayment details of all jlg loans under a center as on a specified meeting date.  Save Collection Sheet:  This Api allows the loan officer to perform bulk repayments of JLG loans for a center on a given meeting date.  Showing Request/Response for Close a Center
+     * Activate a Center | Generate Collection Sheet | Save Collection Sheet | Close a Center | Associate Groups |
+     * Disassociate Groups
+     * Activate a Center:  Centers can be created in a Pending state. This API exists to enable center activation. If
+     * the center happens to be already active, this API will result in an error.  Close a Center:  Centers can be
+     * closed if they don&#39;t have any non-closed groups or saving accounts. If the Center has any active groups or
+     * savings accounts, this API will result in an error.  Associate Groups:  This API allows associating existing
+     * groups to a center. The groups are listed from the office to which the center is associated. If group(s) is
+     * already associated with a center, this API will result in an error.  Disassociate Groups:  This API allows to
+     * disassociate groups from a center.  Generate Collection Sheet:  This Api retrieves repayment details of all jlg
+     * loans under a center as on a specified meeting date.  Save Collection Sheet:  This Api allows the loan officer
+     * to perform bulk repayments of JLG loans for a center on a given meeting date.  Showing Request/Response for
+     * Close a Center
      * Responses:
      *  - 200: OK
      *

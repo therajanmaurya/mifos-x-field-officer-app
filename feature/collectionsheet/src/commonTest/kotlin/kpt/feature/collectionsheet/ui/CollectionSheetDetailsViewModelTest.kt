@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.collectionsheet.ui
 
@@ -59,14 +59,22 @@ class CollectionSheetDetailsViewModelTest {
                 clientId = 1,
                 clientName = "Asha",
                 loans = arrayListOf(
-                    LoanCollectionSheet(loanId = 11, accountId = "000011", productShortName = "GL", totalDue = 100.0, chargesDue = 5.0),
+                    LoanCollectionSheet(
+                        loanId = 11,
+                        accountId = "000011",
+                        productShortName = "GL",
+                        totalDue = 100.0,
+                        chargesDue = 5.0,
+                    ),
                     LoanCollectionSheet(loanId = 12, accountId = "000012", productShortName = "EL", totalDue = 50.0),
                 ),
             ),
             ClientCollectionSheet(
                 clientId = 2,
                 clientName = "Bimal",
-                loans = arrayListOf(LoanCollectionSheet(loanId = 21, accountId = "000021", productShortName = "GL", totalDue = 70.0)),
+                loans = arrayListOf(
+                    LoanCollectionSheet(loanId = 21, accountId = "000021", productShortName = "GL", totalDue = 70.0),
+                ),
             ),
         ),
         paymentTypeOptions = arrayListOf(PaymentTypeOptions(id = 3, name = "Cash")),
@@ -75,7 +83,9 @@ class CollectionSheetDetailsViewModelTest {
     private val repository = FakeCollectionSheetRepository(ScreenState.Content(sheet))
     private val commands = FakeCollectionSheetCommandRepository()
 
-    private fun TestScope.started(commands: FakeCollectionSheetCommandRepository = this@CollectionSheetDetailsViewModelTest.commands) =
+    private fun TestScope.started(
+        commands: FakeCollectionSheetCommandRepository = this@CollectionSheetDetailsViewModelTest.commands,
+    ) =
         CollectionSheetDetailsViewModel(
             SavedStateHandle(mapOf("officeId" to 1, "staffId" to 4, "transactionDate" to "24 October 2026")),
             repository,
@@ -109,10 +119,17 @@ class CollectionSheetDetailsViewModelTest {
     @Test
     fun anEditedPaymentIsExactlyWhatIsSubmitted() = runTest(dispatcher) {
         val vm = started()
-        vm.trySendAction(CollectionSheetDetailsAction.EditPayment(12)); runCurrent()
-        vm.trySendAction(CollectionSheetDetailsAction.EditorChanged { it.copy(amount = "30", paymentTypeId = 3, receiptNumber = " R-9 ") })
-        vm.trySendAction(CollectionSheetDetailsAction.SaveEditor); runCurrent()
-        vm.trySendAction(CollectionSheetDetailsAction.Submit); runCurrent()
+        vm.trySendAction(CollectionSheetDetailsAction.EditPayment(12))
+        runCurrent()
+        vm.trySendAction(
+            CollectionSheetDetailsAction.EditorChanged {
+                it.copy(amount = "30", paymentTypeId = 3, receiptNumber = " R-9 ")
+            },
+        )
+        vm.trySendAction(CollectionSheetDetailsAction.SaveEditor)
+        runCurrent()
+        vm.trySendAction(CollectionSheetDetailsAction.Submit)
+        runCurrent()
 
         // The ORIGINAL defect: the payment screen edited a route-JSON copy, so this was always the default.
         val sent = commands.saved.single().payload!!
@@ -128,33 +145,42 @@ class CollectionSheetDetailsViewModelTest {
     @Test
     fun aBadAmountIsRefusedNotSubmittedAsZero() = runTest(dispatcher) {
         val vm = started()
-        vm.trySendAction(CollectionSheetDetailsAction.EditPayment(11)); runCurrent()
+        vm.trySendAction(CollectionSheetDetailsAction.EditPayment(11))
+        runCurrent()
         vm.trySendAction(CollectionSheetDetailsAction.EditorChanged { it.copy(amount = "1o0") })
-        vm.trySendAction(CollectionSheetDetailsAction.SaveEditor); runCurrent()
+        vm.trySendAction(CollectionSheetDetailsAction.SaveEditor)
+        runCurrent()
         assertTrue(vm.stateFlow.value.editor!!.amountError)
         assertEquals(105.0, vm.rows.first().collect.transactionAmount)
 
         vm.trySendAction(CollectionSheetDetailsAction.EditorChanged { it.copy(amount = "-5") })
-        vm.trySendAction(CollectionSheetDetailsAction.SaveEditor); runCurrent()
+        vm.trySendAction(CollectionSheetDetailsAction.SaveEditor)
+        runCurrent()
         assertTrue(vm.stateFlow.value.editor!!.amountError)
     }
 
     @Test
     fun paymentDetailsTravelOnlyWithAPaymentType() = runTest(dispatcher) {
         val vm = started()
-        vm.trySendAction(CollectionSheetDetailsAction.EditPayment(21)); runCurrent()
+        vm.trySendAction(CollectionSheetDetailsAction.EditPayment(21))
+        runCurrent()
         vm.trySendAction(CollectionSheetDetailsAction.EditorChanged { it.copy(amount = "70", accountNumber = "A1") })
-        vm.trySendAction(CollectionSheetDetailsAction.SaveEditor); runCurrent()
+        vm.trySendAction(CollectionSheetDetailsAction.SaveEditor)
+        runCurrent()
         assertNull(vm.rows.last().collect.accountNumber)
     }
 
     @Test
     fun aRejectionKeepsTheSheetAndSaysWhy() = runTest(dispatcher) {
         val failing = FakeCollectionSheetCommandRepository {
-            MutationResult.Failed(fineractRejection("Repayment date is before the disbursement date"), rolledBack = false)
+            MutationResult.Failed(
+                fineractRejection("Repayment date is before the disbursement date"),
+                rolledBack = false,
+            )
         }
         val vm = started(failing)
-        vm.trySendAction(CollectionSheetDetailsAction.Submit); runCurrent()
+        vm.trySendAction(CollectionSheetDetailsAction.Submit)
+        runCurrent()
         assertEquals(
             CollectionSheetDetailsState.Dialog.Failed("Repayment date is before the disbursement date"),
             vm.stateFlow.value.dialog,
@@ -165,10 +191,12 @@ class CollectionSheetDetailsViewModelTest {
     @Test
     fun aSavedSheetCannotBeSubmittedTwice() = runTest(dispatcher) {
         val vm = started()
-        vm.trySendAction(CollectionSheetDetailsAction.Submit); runCurrent()
+        vm.trySendAction(CollectionSheetDetailsAction.Submit)
+        runCurrent()
         assertEquals(CollectionSheetDetailsState.Dialog.Submitted, vm.stateFlow.value.dialog)
         vm.eventFlow.test {
-            vm.trySendAction(CollectionSheetDetailsAction.DismissDialog); runCurrent()
+            vm.trySendAction(CollectionSheetDetailsAction.DismissDialog)
+            runCurrent()
             assertEquals(CollectionSheetDetailsEvent.NavigateBack, awaitItem())
         }
     }
@@ -178,7 +206,9 @@ class CollectionSheetDetailsViewModelTest {
         // A REAL arrived sheet with no loans — the device shape (one client with savings only). The
         // stream reports it as Content; the ViewModel must turn it into Empty.
         repository.sheet.value = ScreenState.Content(
-            IndividualCollectionSheet(clients = arrayListOf(ClientCollectionSheet(clientId = 1, clientName = "Nadia Islam"))),
+            IndividualCollectionSheet(
+                clients = arrayListOf(ClientCollectionSheet(clientId = 1, clientName = "Nadia Islam")),
+            ),
         )
         val vm = started()
         assertEquals(ScreenState.Empty, vm.sheet.value)

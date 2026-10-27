@@ -458,13 +458,15 @@ private fun EditDetailsFooter(
 
 @Composable
 private fun SectionLabel(label: StringResource) {
-    Spacer(Modifier.height(DesignToken.padding.largeIncreased))
-    Text(
-        text = stringResource(label),
-        style = AppTypography.labelLargeEmphasized,
-        color = KptTheme.colorScheme.onSurface,
-    )
-    Spacer(Modifier.height(KptTheme.spacing.sm))
+    Column {
+        Spacer(Modifier.height(DesignToken.padding.largeIncreased))
+        Text(
+            text = stringResource(label),
+            style = AppTypography.labelLargeEmphasized,
+            color = KptTheme.colorScheme.onSurface,
+        )
+        Spacer(Modifier.height(KptTheme.spacing.sm))
+    }
 }
 
 /** One editable text field, with whatever error the ViewModel has for it. */
@@ -477,15 +479,17 @@ private fun EditTextField(
     onAction: (ClientEditDetailsAction) -> Unit,
     keyboardType: KeyboardType = KeyboardType.Text,
 ) {
-    AppOutlinedTextField(
-        value = value,
-        onValueChange = { onAction(ClientEditDetailsAction.UpdateField(field, it)) },
-        label = stringResource(label),
-        error = state.errors[field]?.let { stringResource(it.messageFor(field)) },
-        keyboardType = keyboardType,
-        modifier = Modifier.fillMaxWidth().testTag(ClientEditDetailsTestTags.field(field)),
-    )
-    Spacer(Modifier.height(KptTheme.spacing.sm))
+    Column {
+        AppOutlinedTextField(
+            value = value,
+            onValueChange = { onAction(ClientEditDetailsAction.UpdateField(field, it)) },
+            label = stringResource(label),
+            error = state.errors[field]?.let { stringResource(it.messageFor(field)) },
+            keyboardType = keyboardType,
+            modifier = Modifier.fillMaxWidth().testTag(ClientEditDetailsTestTags.field(field)),
+        )
+        Spacer(Modifier.height(KptTheme.spacing.sm))
+    }
 }
 
 /**
@@ -501,16 +505,18 @@ private fun ReadOnlyField(
     label: StringResource,
     value: String?,
 ) {
-    AppOutlinedTextField(
-        value = value?.takeIf { it.isNotBlank() }
-            ?: stringResource(Res.string.feature_client_not_available),
-        onValueChange = {},
-        label = stringResource(label),
-        error = null,
-        readOnly = true,
-        modifier = Modifier.fillMaxWidth().testTag(tag),
-    )
-    Spacer(Modifier.height(KptTheme.spacing.sm))
+    Column {
+        AppOutlinedTextField(
+            value = value?.takeIf { it.isNotBlank() }
+                ?: stringResource(Res.string.feature_client_not_available),
+            onValueChange = {},
+            label = stringResource(label),
+            error = null,
+            readOnly = true,
+            modifier = Modifier.fillMaxWidth().testTag(tag),
+        )
+        Spacer(Modifier.height(KptTheme.spacing.sm))
+    }
 }
 
 /**
@@ -528,26 +534,28 @@ private fun OptionDropdown(
     options: List<EditOption>,
     onSelected: (EditOption) -> Unit,
 ) {
-    AppTextFieldDropdown(
-        enabled = options.isNotEmpty(),
-        value = selected?.label
-            ?: stringResource(
-                if (options.isEmpty()) {
-                    Res.string.feature_client_editdetails_no_options
-                } else {
-                    Res.string.feature_client_not_available
-                },
-            ),
-        // By INDEX into the list this dropdown was given, then resolved to that list's own option
-        // — never to a position held in state, which is how a product change left a stale index
-        // selecting a different option on the loan screens.
-        onOptionSelected = { index, _ -> options.getOrNull(index)?.let(onSelected) },
-        options = options.map { it.label },
-        label = stringResource(label),
-        readOnly = true,
-        modifier = Modifier.fillMaxWidth().testTag(tag),
-    )
-    Spacer(Modifier.height(KptTheme.spacing.sm))
+    Column {
+        AppTextFieldDropdown(
+            enabled = options.isNotEmpty(),
+            value = selected?.label
+                ?: stringResource(
+                    if (options.isEmpty()) {
+                        Res.string.feature_client_editdetails_no_options
+                    } else {
+                        Res.string.feature_client_not_available
+                    },
+                ),
+            // By INDEX into the list this dropdown was given, then resolved to that list's own option
+            // — never to a position held in state, which is how a product change left a stale index
+            // selecting a different option on the loan screens.
+            onOptionSelected = { index, _ -> options.getOrNull(index)?.let(onSelected) },
+            options = options.map { it.label },
+            label = stringResource(label),
+            readOnly = true,
+            modifier = Modifier.fillMaxWidth().testTag(tag),
+        )
+        Spacer(Modifier.height(KptTheme.spacing.sm))
+    }
 }
 
 @Composable

@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.client.createnew
 
@@ -84,7 +84,7 @@ private fun DataTableFieldInput(
     value: String,
     error: DataTableFieldError?,
     onChange: (String) -> Unit,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     // No "*" on a checkbox: it cannot be missing (unchecked is false), so "required" would mislead.
     val required = column.isRequired && column.columnDisplayType != ColumnType.BOOLEAN
@@ -105,52 +105,22 @@ private fun DataTableFieldInput(
         ColumnType.CODELOOKUP, ColumnType.CODEVALUE -> AppTextFieldDropdown(
             value = column.columnValues.firstOrNull { it.id?.toString() == value }?.value.orEmpty(),
             // The code value's ID is what Fineract stores — the label is only for the officer.
-            onOptionSelected = { index, _ -> column.columnValues.getOrNull(index)?.id?.let { onChange(it.toString()) } },
+            onOptionSelected = { index, _ ->
+                column.columnValues.getOrNull(index)?.id?.let { onChange(it.toString()) }
+            },
             options = column.columnValues.map { it.value.orEmpty() },
             label = label,
             errorMessage = errorText,
             modifier = modifier,
         )
 
-        ColumnType.DATE -> {
-            var open by rememberSaveable { mutableStateOf(false) }
-            AppDatePickerTextField(
-                value = value.toLongOrNull()?.let(DateHelper::getDateAsStringFromLong).orEmpty(),
-                label = label,
-                errorMessage = errorText,
-                openDatePicker = { open = true },
-                modifier = modifier,
-            )
-            if (open) {
-                // Any date: a datatable column is the tenant's own data (a birth date, an expiry), so
-                // there is no "not in the future" rule to impose — the original's future-only was wrong too.
-                val picker = rememberDatePickerState(initialSelectedDateMillis = value.toLongOrNull())
-                DatePickerDialog(
-                    onDismissRequest = { open = false },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            picker.selectedDateMillis?.let { onChange(it.toString()) }
-                            open = false
-                        }) { Text(stringResource(Res.string.feature_client_createnew_datatable_select)) }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { open = false }) {
-                            Text(stringResource(Res.string.feature_client_createnew_datatable_cancel))
-                        }
-                    },
-                ) { DatePicker(state = picker) }
-            }
-        }
+        ColumnType.DATE -> DataTableDateInput(value, label, errorText, onChange, modifier)
 
         else -> AppOutlinedTextField(
             value = value,
             onValueChange = onChange,
             label = label,
-            keyboardType = when (column.columnDisplayType) {
-                ColumnType.INTEGER -> KeyboardType.Number
-                ColumnType.DECIMAL -> KeyboardType.Decimal
-                else -> KeyboardType.Text
-            },
+            keyboardType = keyboardTypeFor(column.columnDisplayType),
             singleLine = column.columnDisplayType != ColumnType.TEXT,
             maxLines = if (column.columnDisplayType == ColumnType.TEXT) TEXT_MAX_LINES else 1,
             isError = error != null,
@@ -158,6 +128,50 @@ private fun DataTableFieldInput(
             modifier = modifier,
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DataTableDateInput(
+    value: String,
+    label: String,
+    errorText: String?,
+    onChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var open by rememberSaveable { mutableStateOf(false) }
+    AppDatePickerTextField(
+        value = value.toLongOrNull()?.let(DateHelper::getDateAsStringFromLong).orEmpty(),
+        label = label,
+        errorMessage = errorText,
+        openDatePicker = { open = true },
+        modifier = modifier,
+    )
+    if (open) {
+        // Any date: a datatable column is the tenant's own data (a birth date, an expiry), so
+        // there is no "not in the future" rule to impose — the original's future-only was wrong too.
+        val picker = rememberDatePickerState(initialSelectedDateMillis = value.toLongOrNull())
+        DatePickerDialog(
+            onDismissRequest = { open = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    picker.selectedDateMillis?.let { onChange(it.toString()) }
+                    open = false
+                }) { Text(stringResource(Res.string.feature_client_createnew_datatable_select)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { open = false }) {
+                    Text(stringResource(Res.string.feature_client_createnew_datatable_cancel))
+                }
+            },
+        ) { DatePicker(state = picker) }
+    }
+}
+
+private fun keyboardTypeFor(type: String?): KeyboardType = when (type) {
+    ColumnType.INTEGER -> KeyboardType.Number
+    ColumnType.DECIMAL -> KeyboardType.Decimal
+    else -> KeyboardType.Text
 }
 
 /** `loan_officer_notes` → `Loan officer notes`: datatable and column names are snake_case identifiers. */

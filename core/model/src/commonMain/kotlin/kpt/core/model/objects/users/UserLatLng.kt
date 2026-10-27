@@ -62,8 +62,11 @@ data class UserLatLng(
 //
 //    companion object {
 //        @JvmField
-//        val CREATOR: Creator<core.mifos.core.objects.users.UserLatLng> = object : Creator<core.mifos.core.objects.users.UserLatLng> {
-//            override fun createFromParcel(source: kpt.core.model.utils.Parcel): core.mifos.core.objects.users.UserLatLng {
+//        val CREATOR: Creator<core.mifos.core.objects.users.UserLatLng> =
+//            object : Creator<core.mifos.core.objects.users.UserLatLng> {
+//            override fun createFromParcel(
+//                source: kpt.core.model.utils.Parcel,
+//            ): core.mifos.core.objects.users.UserLatLng {
 //                return core.mifos.core.objects.users.UserLatLng(source)
 //            }
 //

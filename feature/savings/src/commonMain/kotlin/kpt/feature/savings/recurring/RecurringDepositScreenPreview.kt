@@ -26,7 +26,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 private const val PREVIEW_DATE_MILLIS = 1_760_000_000_000L
 
 // i18n:skip — preview fixtures below
-private fun options(vararg labels: String) = labels.mapIndexed { i, label -> RecurringOption(id = i + 1, label = label) }
+private fun options(vararg labels: String) =
+    labels.mapIndexed { i, label -> RecurringOption(id = i + 1, label = label) }
 
 private val previewForm = RecurringDepositForm(
     products = options("Monthly Recurring Deposit"),
@@ -57,6 +58,10 @@ internal fun RecurringDepositContentPreview() {
 @Composable
 internal fun RecurringDepositContentLoadingPreview() {
     KptTheme {
-        RecurringDepositContent(state = RecurringDepositState(clientId = 42, submittedOn = PREVIEW_DATE_MILLIS), template = ScreenState.Loading, onAction = {})
+        RecurringDepositContent(
+            state = RecurringDepositState(clientId = 42, submittedOn = PREVIEW_DATE_MILLIS),
+            template = ScreenState.Loading,
+            onAction = {},
+        )
     }
 }

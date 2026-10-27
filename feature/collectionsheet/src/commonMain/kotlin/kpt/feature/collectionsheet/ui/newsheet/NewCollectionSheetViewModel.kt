@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.collectionsheet.ui.newsheet
 
@@ -64,14 +64,19 @@ internal class NewCollectionSheetViewModel(
     /** One stream per office, kept: switching back to an office reuses its stream rather than re-opening one. */
     private val staffStreams = mutableMapOf<Int, ScreenDataStream<List<Staff>>>()
 
-    private fun staffStreamFor(officeId: Int) = staffStreams.getOrPut(officeId) { staff.staffStream(officeId, viewModelScope) }
+    private fun staffStreamFor(officeId: Int) =
+        staffStreams.getOrPut(officeId) { staff.staffStream(officeId, viewModelScope) }
 
     /** The chosen office's staff; empty until an office is chosen (or while it loads, or if it fails). */
     val staffOptions: StateFlow<List<Staff>> = stateFlow
         .map { it.office?.id }
         .distinctUntilChanged()
         .flatMapLatest { officeId ->
-            if (officeId == null) flowOf(emptyList()) else staffStreamFor(officeId).state.map { it.dataOrNull.orEmpty() }
+            if (officeId == null) {
+                flowOf(emptyList())
+            } else {
+                staffStreamFor(officeId).state.map { it.dataOrNull.orEmpty() }
+            }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STATE_TIMEOUT_MS), emptyList())
 
@@ -87,8 +92,9 @@ internal class NewCollectionSheetViewModel(
             NewCollectionSheetAction.CloseDatePicker -> mutableStateFlow.value = state.copy(datePickerOpen = false)
             is NewCollectionSheetAction.DatePicked ->
                 mutableStateFlow.value = state.copy(dateMillis = action.millis, datePickerOpen = false)
-            NewCollectionSheetAction.Clear -> mutableStateFlow.value =
-                NewCollectionSheetState(dateMillis = Clock.System.now().toEpochMilliseconds())
+            NewCollectionSheetAction.Clear ->
+                mutableStateFlow.value =
+                    NewCollectionSheetState(dateMillis = Clock.System.now().toEpochMilliseconds())
             NewCollectionSheetAction.Generate -> state.office?.let { office ->
                 sendEvent(
                     NewCollectionSheetEvent.OpenSheet(

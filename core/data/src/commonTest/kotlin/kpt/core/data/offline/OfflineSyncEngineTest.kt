@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.offline
 
@@ -75,11 +75,25 @@ class OfflineSyncEngineTest {
 
     private val activeLoan = LoanAccount(id = 501, status = LoanStatus(active = true))
     private val closedLoan = LoanAccount(id = 502, status = LoanStatus(active = false))
-    private val fixedDeposit = SavingsAccount(id = 601, status = SavingsAccountStatus(active = true), depositType = SavingAccountDepositType(id = 200))
+    private val fixedDeposit = SavingsAccount(
+        id = 601,
+        status = SavingsAccountStatus(active = true),
+        depositType = SavingAccountDepositType(id = 200),
+    )
 
     private val engine = OfflineSyncEngine(
         entities = EntityStores(
-            centre = store("centre") { id: Int -> if (id == 1) CenterWithAssociations(id = 1, name = "North", groupMembers = listOf(Group(id = 10, name = "Weavers"))) else null },
+            centre = store("centre") { id: Int ->
+                if (id == 1) {
+                    CenterWithAssociations(
+                        id = 1,
+                        name = "North",
+                        groupMembers = listOf(Group(id = 10, name = "Weavers")),
+                    )
+                } else {
+                    null
+                }
+            },
             centreAccounts = store("centreAccounts") { _: Int -> CenterAccounts() },
             centreItem = StoreFactory.createOfflineMutableStore(
                 sourceOfTruth = SourceOfTruth.of(
@@ -89,7 +103,18 @@ class OfflineSyncEngineTest {
             ),
             // Group 10 has two clients; client 101's detail is refused by the server.
             group = store("group") { id: Int ->
-                if (id == 10) GroupWithAssociations(id = 10, name = "Weavers", clientMembers = listOf(Client(id = 100, displayName = "Asha"), Client(id = 101, displayName = "Bimal"))) else null
+                if (id == 10) {
+                    GroupWithAssociations(
+                        id = 10,
+                        name = "Weavers",
+                        clientMembers = listOf(
+                            Client(id = 100, displayName = "Asha"),
+                            Client(id = 101, displayName = "Bimal"),
+                        ),
+                    )
+                } else {
+                    null
+                }
             },
             groupRow = store("groupRow") { id: Int -> Group(id = id, name = "Weavers") },
             groupAccounts = store("groupAccounts") { _: Int -> GroupAccounts() },
@@ -100,12 +125,18 @@ class OfflineSyncEngineTest {
                 ),
             ),
             client = store("client") { id: Int -> if (id == 100) Client(id = 100, displayName = "Asha") else null },
-            clientAccounts = store("clientAccounts") { _: Int -> ClientAccounts(loanAccounts = listOf(activeLoan, closedLoan), savingsAccounts = listOf(fixedDeposit)) },
+            clientAccounts = store("clientAccounts") { _: Int ->
+                ClientAccounts(
+                    loanAccounts = listOf(activeLoan, closedLoan),
+                    savingsAccounts = listOf(fixedDeposit),
+                )
+            },
             addresses = store("addresses") { _: Int -> emptyList() },
             identifiers = store("identifiers") { _: Long -> emptyList() },
             pinpoints = store("pinpoints") { _: Int -> emptyList() },
             collateral = store("collateral") { _: Int -> emptyList() },
-            image = store("image") { _: Int -> null }, // no photo: 404
+            // no photo: 404
+            image = store("image") { _: Int -> null },
         ),
         shared = SharedStores(
             notes = store("notes") { _ -> emptyList() },
@@ -227,10 +258,19 @@ class OfflineSyncEngineTest {
 
     @Test
     fun jobColumnsRoundTripEvenWithTabsAndNewlinesInNames() {
-        val targets = listOf(SyncTarget(RecordKind.CENTRE, 1, "North\tside"), SyncTarget(RecordKind.CLIENT, 9, "Ana\nRíos"))
-        assertEquals(listOf(SyncTarget(RecordKind.CENTRE, 1, "North side"), SyncTarget(RecordKind.CLIENT, 9, "Ana Ríos")), targets.encodeTargets().decodeTargets())
+        val targets = listOf(
+            SyncTarget(RecordKind.CENTRE, 1, "North\tside"),
+            SyncTarget(RecordKind.CLIENT, 9, "Ana\nRíos"),
+        )
+        assertEquals(
+            listOf(SyncTarget(RecordKind.CENTRE, 1, "North side"), SyncTarget(RecordKind.CLIENT, 9, "Ana Ríos")),
+            targets.encodeTargets().decodeTargets(),
+        )
 
-        val failures = listOf(DownloadFailure("Asha · notes", "Access denied"), DownloadFailure("Bimal · client", null))
+        val failures = listOf(
+            DownloadFailure("Asha · notes", "Access denied"),
+            DownloadFailure("Bimal · client", null),
+        )
         assertEquals(failures, failures.encodeFailures().decodeFailures())
     }
 

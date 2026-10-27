@@ -30,7 +30,10 @@ private val previewTemplate = LoanDisbursementTemplate(
     netDisbursalAmount = 25_000.0,
     currencyCode = "BDT",
     decimalPlaces = 2,
-    paymentTypes = listOf(DisbursePaymentType(id = 1, name = "Cash"), DisbursePaymentType(id = 2, name = "Bank transfer")),
+    paymentTypes = listOf(
+        DisbursePaymentType(id = 1, name = "Cash"),
+        DisbursePaymentType(id = 2, name = "Bank transfer"),
+    ),
 )
 
 @Preview
@@ -38,7 +41,14 @@ private val previewTemplate = LoanDisbursementTemplate(
 internal fun LoanDisbursementContentPreview() {
     KptTheme {
         LoanDisbursementContent(
-            state = LoanDisbursementState(loanId = 7, amount = "25000", date = PREVIEW_DATE_MILLIS, paymentTypeId = 1, paymentTypeName = "Cash", prefilled = true),
+            state = LoanDisbursementState(
+                loanId = 7,
+                amount = "25000",
+                date = PREVIEW_DATE_MILLIS,
+                paymentTypeId = 1,
+                paymentTypeName = "Cash",
+                prefilled = true,
+            ),
             template = ScreenState.Content(previewTemplate),
             onAction = {},
         )
@@ -49,6 +59,10 @@ internal fun LoanDisbursementContentPreview() {
 @Composable
 internal fun LoanDisbursementContentLoadingPreview() {
     KptTheme {
-        LoanDisbursementContent(state = LoanDisbursementState(loanId = 7, date = PREVIEW_DATE_MILLIS), template = ScreenState.Loading, onAction = {})
+        LoanDisbursementContent(
+            state = LoanDisbursementState(loanId = 7, date = PREVIEW_DATE_MILLIS),
+            template = ScreenState.Loading,
+            onAction = {},
+        )
     }
 }

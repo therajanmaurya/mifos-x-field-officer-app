@@ -125,8 +125,12 @@ internal class ClientDefaultAccountViewModel(
 
     /** This client's ClientDefaultAccount write that did not land — resumable here, listed in Sync & Drafts. */
     private val formDraft = FormDraftSlot(
-        drafts, viewModelScope, CreateForm.DEFAULT_ACCOUNT.key, ownerId = state.clientId.toLong(),
-        ClientDefaultAccountState.serializer(), UpdateSavingsAccountRequest.serializer(),
+        drafts,
+        viewModelScope,
+        CreateForm.DEFAULT_ACCOUNT.key,
+        ownerId = state.clientId.toLong(),
+        ClientDefaultAccountState.serializer(),
+        UpdateSavingsAccountRequest.serializer(),
     )
 
     val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
@@ -228,14 +232,14 @@ internal class ClientDefaultAccountViewModel(
                 is MutationResult.Blocked -> {
                     if (result.isOffline) keepDraft(payload, failure = null)
                     mutableStateFlow.value = state.copy(
-                    isSubmitting = false,
-                    dialogState = ClientDefaultAccountState.DialogState.ShowStatusDialog(
-                        status = ResultStatus.FAILURE,
-                        msg = if (result.reason == BlockReason.OFFLINE) OFFLINE_MSG else FAILED_MSG,
-                        offline = result.isOffline,
-                        draftSaved = result.isOffline,
-                    ),
-                )
+                        isSubmitting = false,
+                        dialogState = ClientDefaultAccountState.DialogState.ShowStatusDialog(
+                            status = ResultStatus.FAILURE,
+                            msg = if (result.reason == BlockReason.OFFLINE) OFFLINE_MSG else FAILED_MSG,
+                            offline = result.isOffline,
+                            draftSaved = result.isOffline,
+                        ),
+                    )
                 }
 
                 is MutationResult.Failed -> {

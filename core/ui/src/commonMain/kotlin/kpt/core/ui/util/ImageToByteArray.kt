@@ -20,11 +20,10 @@ fun imageToByteArray(image: String?): ByteArray? {
         .replace("\\s".toRegex(), "")
         .replace("[^A-Za-z0-9+/=]".toRegex(), "")
 
-    try {
+    return try {
         val decodedBytes = Base64.decode(cleanBase64)
-        val decodedBitmap = ImageUtil.compressImage(decodedBytes)
-        return decodedBitmap
+        ImageUtil.compressImage(decodedBytes)
     } catch (e: Exception) {
-        return null
+        null
     }
 }

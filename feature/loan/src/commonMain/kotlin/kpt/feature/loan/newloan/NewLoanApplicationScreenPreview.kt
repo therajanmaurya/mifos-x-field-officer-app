@@ -22,7 +22,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 
 // i18n:skip — preview fixtures below
-private val previewProducts = listOf(LoanProductOption(id = 1, name = "Business Loan"), LoanProductOption(id = 2, name = "Housing Loan"))
+private val previewProducts = listOf(
+    LoanProductOption(id = 1, name = "Business Loan"),
+    LoanProductOption(id = 2, name = "Housing Loan"),
+)
 
 @Preview
 @Composable
@@ -40,6 +43,10 @@ internal fun NewLoanApplicationContentPreview() {
 @Composable
 internal fun NewLoanApplicationContentProductsLoadingPreview() {
     KptTheme {
-        NewLoanApplicationContent(state = NewLoanApplicationState(clientId = 42), products = ScreenState.Loading, onAction = {})
+        NewLoanApplicationContent(
+            state = NewLoanApplicationState(clientId = 42),
+            products = ScreenState.Loading,
+            onAction = {},
+        )
     }
 }

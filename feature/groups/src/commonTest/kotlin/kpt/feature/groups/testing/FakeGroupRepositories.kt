@@ -11,8 +11,6 @@
 
 package kpt.feature.groups.testing
 
-import kpt.core.model.group.GroupWithAssociations
-import kpt.core.model.group.GroupAccounts
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,7 +22,9 @@ import kpt.core.base.store.screen.screenDataStreamForTesting
 import kpt.core.data.group.GroupCommandRepository
 import kpt.core.data.group.GroupRepository
 import kpt.core.model.group.Group
+import kpt.core.model.group.GroupAccounts
 import kpt.core.model.group.GroupPayload
+import kpt.core.model.group.GroupWithAssociations
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.responses.SaveResponse
 

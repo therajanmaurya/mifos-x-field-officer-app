@@ -9,11 +9,11 @@
  */
 package kpt.core.store.search
 
-import kpt.core.model.search.SearchResourcesKey
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
 import kpt.core.model.objects.SearchedEntity
+import kpt.core.model.search.SearchResourcesKey
 import kpt.core.network.mifos.search.api.SearchApi
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys
@@ -32,5 +32,11 @@ fun provideSearchResourcesStore(
 ): Store<SearchResourcesKey, List<SearchedEntity>> = cachedRead(
     dao = cache,
     keyOf = { key -> AppCacheKeys.SearchSearchResources.forKey("${key.query}:${key.resource}:${key.exactMatch}") },
-    fetch = { key -> searchApi.searchResources(query = key.query, resource = key.resource, exactMatch = key.exactMatch) },
+    fetch = { key ->
+        searchApi.searchResources(
+            query = key.query,
+            resource = key.resource,
+            exactMatch = key.exactMatch,
+        )
+    },
 )

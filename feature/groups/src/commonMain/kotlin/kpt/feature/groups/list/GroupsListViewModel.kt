@@ -14,6 +14,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kpt.core.base.store.screen.ScreenState
@@ -27,8 +29,6 @@ import kpt.core.model.offline.DownloadProgress
 import kpt.core.model.offline.RecordKind
 import kpt.core.model.offline.SyncTarget
 import kpt.core.model.offline.toDownloadProgress
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
 import kotlin.time.Clock
 
 /**
@@ -91,7 +91,9 @@ internal class GroupsListViewModel(
      */
     private fun downloadSelected() {
         val rows = (screenState.value as? ScreenState.Content)?.data.orEmpty()
-        val targets = rows.mapNotNull { g -> g.id?.takeIf { it in state.selected }?.let { SyncTarget(RecordKind.GROUP, it, g.name ?: "#$it") } }
+        val targets = rows.mapNotNull { g ->
+            g.id?.takeIf { it in state.selected }?.let { SyncTarget(RecordKind.GROUP, it, g.name ?: "#$it") }
+        }
         if (targets.isEmpty() || watch?.isActive == true) return
         mutableStateFlow.value = state.copy(selected = emptySet(), download = DownloadProgress(total = targets.size))
         val requestedAt = nowMs()
@@ -123,17 +125,12 @@ internal class GroupsListViewModel(
                 mutableStateFlow.value = state.copy(filtersVisible = !state.filtersVisible)
 
             // In selection mode a tap toggles the row, as in the original; otherwise it opens it.
-            is GroupsListAction.GroupClicked ->
-                if (state.selected.isNotEmpty()) {
-                    handleAction(GroupsListAction.SelectionToggled(action.groupId))
-                } else {
-                    sendEvent(GroupsListEvent.OpenGroup(action.groupId))
-                }
+            is GroupsListAction.GroupClicked -> onGroupClicked(action.groupId)
 
             GroupsListAction.Retry -> onRetry()
 
-            is GroupsListAction.SelectionToggled -> mutableStateFlow.value =
-                state.copy(selected = if (action.groupId in state.selected) state.selected - action.groupId else state.selected + action.groupId)
+            is GroupsListAction.SelectionToggled ->
+                mutableStateFlow.value = state.copy(selected = state.selected.toggle(action.groupId))
             GroupsListAction.SelectionCleared -> mutableStateFlow.value = state.copy(selected = emptySet())
             GroupsListAction.DownloadSelected -> downloadSelected()
             GroupsListAction.DownloadCancelled -> {
@@ -145,6 +142,14 @@ internal class GroupsListViewModel(
                 watch?.cancel()
                 mutableStateFlow.value = state.copy(download = null)
             }
+        }
+    }
+
+    private fun onGroupClicked(groupId: Int) {
+        if (state.selected.isNotEmpty()) {
+            handleAction(GroupsListAction.SelectionToggled(groupId))
+        } else {
+            sendEvent(GroupsListEvent.OpenGroup(groupId))
         }
     }
 

@@ -17,10 +17,10 @@ import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.search.SearchRepository
 import kpt.core.model.objects.SearchedEntity
+import kpt.core.model.search.SearchResourcesKey
 import kpt.core.store.config.AppCacheKeys
 import kpt.core.store.config.AppStoreIds
 import kpt.core.store.config.AppStoreRegistry
-import kpt.core.model.search.SearchResourcesKey
 import org.mobilenativefoundation.store.store5.Store
 
 @RepositoryBinding(binds = SearchRepository::class)

@@ -9,12 +9,10 @@
  */
 package kpt.core.store.loan
 
-import kpt.core.model.charge.Charges
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
-import kpt.core.database.charge.entity.ChargesEntity
+import kpt.core.model.charge.Charges
 import kpt.core.model.objects.clients.Page
 import kpt.core.network.mifos.loan.api.LoanApi
 import kpt.core.store.cache.cachedRead

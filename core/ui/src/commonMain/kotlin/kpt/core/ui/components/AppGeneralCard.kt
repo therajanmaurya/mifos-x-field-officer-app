@@ -57,9 +57,10 @@ fun AppGeneralCardComponentOutline(
 fun AppGeneralRowItem(
     keyContent: @Composable () -> Unit,
     valueContent: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -76,8 +77,8 @@ fun AppGeneralRowItem(
 
 @Composable
 fun AppGeneralCard(
-    modifier: Modifier = Modifier,
     contentMap: Map<String, String>,
+    modifier: Modifier = Modifier,
     separator: String = " : ",
 ) {
     AppGeneralCardComponentOutline {

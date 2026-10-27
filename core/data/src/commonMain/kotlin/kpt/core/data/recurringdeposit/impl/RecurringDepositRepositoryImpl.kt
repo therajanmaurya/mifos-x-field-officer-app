@@ -32,7 +32,10 @@ internal class RecurringDepositRepositoryImpl(
     // until something HAS been fetched, so on a clean install nothing ever loads. Room is still
     // served first, so the offline-first behaviour is unchanged. The ttl stays the declared
     // freshness bound — it drives the "updated N ago" indicator, never whether cache is served.
-    override fun templateStream(clientId: Int, scope: CoroutineScope): ScreenDataStream<RecurringDepositAccountTemplate> =
+    override fun templateStream(
+        clientId: Int,
+        scope: CoroutineScope,
+    ): ScreenDataStream<RecurringDepositAccountTemplate> =
         store.asScreenStream(
             key = clientId,
             cacheKey = AppCacheKeys.RecurringDepositTemplate.forClient(clientId),

@@ -9,9 +9,6 @@
  */
 package kpt.core.data.client
 
-import kpt.core.model.objects.noncoreobjects.DocumentUpload
-import kpt.core.model.client.ClientStatus
-import kpt.core.model.client.Client
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.statement.HttpResponse
@@ -32,7 +29,12 @@ import kpt.core.data.client.impl.ClientRepositoryImpl
 import kpt.core.data.infra.testMutationGateway
 import kpt.core.database.cache.dao.ApiResponseCacheDao
 import kpt.core.database.cache.entity.ApiResponseCacheEntity
+import kpt.core.model.client.Client
 import kpt.core.model.client.ClientPayload
+import kpt.core.model.client.ClientStatus
+import kpt.core.model.client.PostClientAddressRequest
+import kpt.core.model.client.PostClientAddressResponse
+import kpt.core.model.client.PostClientsClientIdRequest
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.clients.AssignStaffRequest
 import kpt.core.model.objects.clients.ClientAddressEntity
@@ -43,6 +45,7 @@ import kpt.core.model.objects.clients.CollateralPayload
 import kpt.core.model.objects.clients.ProposeTransferRequest
 import kpt.core.model.objects.clients.UpdateSavingsAccountRequest
 import kpt.core.model.objects.noncoreobjects.DocumentType
+import kpt.core.model.objects.noncoreobjects.DocumentUpload
 import kpt.core.model.objects.noncoreobjects.Identifier
 import kpt.core.model.objects.noncoreobjects.IdentifierPayload
 import kpt.core.model.shared.CollateralItemResult
@@ -50,9 +53,6 @@ import kpt.core.model.shared.GenericResponse
 import kpt.core.model.shared.PinpointLocationActionResponse
 import kpt.core.network.mifos.client.api.ClientApi
 import kpt.core.network.mifos.client.api.ClientIdentifierApi
-import kpt.core.model.client.PostClientAddressRequest
-import kpt.core.model.client.PostClientAddressResponse
-import kpt.core.model.client.PostClientsClientIdRequest
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.client.provideAddressConfigurationStore
 import kpt.core.store.client.provideAddressTemplateStore
@@ -96,7 +96,13 @@ class ClientRepositoryTest {
     // ---- the server ----
 
     private var online = true
-    private var client = Client(id = 1, displayName = "Asha", staffId = 7, staffName = "Ravi", status = ClientStatus(id = 300))
+    private var client = Client(
+        id = 1,
+        displayName = "Asha",
+        staffId = 7,
+        staffName = "Ravi",
+        status = ClientStatus(id = 300),
+    )
     private var pinpoints = listOf(ClientAddressResponse(id = 11, clientId = 1, placeAddress = "Market"))
     private var identifiers = listOf(Identifier(id = 21, clientId = 1, documentKey = "P-1"))
     private var image: String? = "data:image/png;base64,AAAA"
@@ -107,7 +113,9 @@ class ClientRepositoryTest {
     private val cacheRows = MutableStateFlow<Map<String, ApiResponseCacheEntity>>(emptyMap())
     private val cache = object : ApiResponseCacheDao {
         override fun observe(cacheKey: String) = cacheRows.map { it[cacheKey] }
-        override fun observeByPrefix(prefix: String) = cacheRows.map { rows -> rows.filterKeys { it.startsWith(prefix) }.values.toList() }
+        override fun observeByPrefix(
+            prefix: String,
+        ) = cacheRows.map { rows -> rows.filterKeys { it.startsWith(prefix) }.values.toList() }
         override suspend fun upsert(row: ApiResponseCacheEntity) {
             cacheRows.value += row.cacheKey to row
         }
@@ -136,7 +144,8 @@ class ClientRepositoryTest {
         cacheRows.value[key]?.let { json.decodeFromString<T>(it.payload) }
 
     private fun detail() = row<Client>(AppCacheKeys.ClientGetClient.forKey("1"))
-    private fun pinpointRow() = row<List<ClientAddressResponse>>(AppCacheKeys.ClientGetClientPinpointLocations.forKey("1"))
+    private fun pinpointRow() =
+        row<List<ClientAddressResponse>>(AppCacheKeys.ClientGetClientPinpointLocations.forKey("1"))
     private fun identifierRow() = row<List<Identifier>>(AppCacheKeys.ClientGetClientListIdentifiers.forKey("1"))
 
     // ---- core/network ----
@@ -187,13 +196,27 @@ class ClientRepositoryTest {
         }
 
         override suspend fun updateSavingsAccount(clientId: Int, payload: UpdateSavingsAccountRequest) = accepted
-        override suspend fun addClientPinpointLocation(clientId: Int, clientAddressRequest: ClientAddressRequest?): PinpointLocationActionResponse {
-            pinpoints = pinpoints + ClientAddressResponse(id = 12, clientId = 1, placeAddress = clientAddressRequest?.placeAddress)
+        override suspend fun addClientPinpointLocation(
+            clientId: Int,
+            clientAddressRequest: ClientAddressRequest?,
+        ): PinpointLocationActionResponse {
+            pinpoints = pinpoints + ClientAddressResponse(
+                id = 12,
+                clientId = 1,
+                placeAddress = clientAddressRequest?.placeAddress,
+            )
             return PinpointLocationActionResponse(resourceId = 1)
         }
 
-        override suspend fun deleteClientPinpointLocation(apptableId: Int, datatableId: Int) = PinpointLocationActionResponse()
-        override suspend fun updateClientPinpointLocation(apptableId: Int, datatableId: Int, address: ClientAddressRequest?) =
+        override suspend fun deleteClientPinpointLocation(
+            apptableId: Int,
+            datatableId: Int,
+        ) = PinpointLocationActionResponse()
+        override suspend fun updateClientPinpointLocation(
+            apptableId: Int,
+            datatableId: Int,
+            address: ClientAddressRequest?,
+        ) =
             PinpointLocationActionResponse()
 
         override suspend fun activateClient(clientId: Int, clientActivate: ActivatePayload?) = GenericResponse()
@@ -203,13 +226,21 @@ class ClientRepositoryTest {
         override suspend fun uploadClientImage(clientId: Int, body: MultiPartFormDataContent) {
             image = "data:image/png;base64,BBBB"
         }
-        override suspend fun createClientAddress(clientId: Int, addressTypeId: Int, addressPayload: PostClientAddressRequest) =
+        override suspend fun createClientAddress(
+            clientId: Int,
+            addressTypeId: Int,
+            addressPayload: PostClientAddressRequest,
+        ) =
             PostClientAddressResponse(resourceId = 5)
 
         override suspend fun createCollateral(clientId: Int, payload: CollateralPayload) = accepted
         override suspend fun proposeTransfer(clientId: Int, payload: ProposeTransferRequest) = accepted
 
-        override suspend fun activate1(clientId: Long, postClientsClientIdRequest: PostClientsClientIdRequest, command: String?) =
+        override suspend fun activate1(
+            clientId: Long,
+            postClientsClientIdRequest: PostClientsClientIdRequest,
+            command: String?,
+        ) =
             error("unused")
         override suspend fun retrieveAll21(
             officeId: Long?,
@@ -247,12 +278,24 @@ class ClientRepositoryTest {
         override suspend fun getClientIdentifiers(clientId: Long, identifierId: Long) = error("unused")
         override suspend fun getClientIdentifierTemplate(clientId: Long) = error("unused")
         override suspend fun deleteClientIdentifier(clientId: Long, identifierId: Long) = GenericResponse()
-        override suspend fun createClientIdentifier(clientId: Long, identifierPayload: IdentifierPayload): HttpResponse {
-            identifiers = identifiers + Identifier(id = 22, clientId = 1, documentKey = identifierPayload.documentKey, documentType = DocumentType(id = 3, name = "Passport"))
+        override suspend fun createClientIdentifier(
+            clientId: Long,
+            identifierPayload: IdentifierPayload,
+        ): HttpResponse {
+            identifiers = identifiers + Identifier(
+                id = 22,
+                clientId = 1,
+                documentKey = identifierPayload.documentKey,
+                documentType = DocumentType(id = 3, name = "Passport"),
+            )
             return accepted
         }
 
-        override suspend fun updateClientIdentifier(clientId: Long, identifierId: Long, identifierPayload: IdentifierPayload) = GenericResponse()
+        override suspend fun updateClientIdentifier(
+            clientId: Long,
+            identifierId: Long,
+            identifierPayload: IdentifierPayload,
+        ) = GenericResponse()
     }
 
     // ---- core/store, through the app's own providers ----
@@ -419,7 +462,10 @@ class ClientRepositoryTest {
 
     @Test
     fun anUploadedPhotoIsTheServersAndADeletedOneIsGone() = runTest {
-        commands().uploadClientImage(1, DocumentUpload(name = "photo", fileName = "photo.png", mimeType = "image/png", bytes = ByteArray(0)))
+        commands().uploadClientImage(
+            1,
+            DocumentUpload(name = "photo", fileName = "photo.png", mimeType = "image/png", bytes = ByteArray(0)),
+        )
         assertEquals("data:image/png;base64,BBBB", repository.clientImage(1))
 
         commands().deleteClientImage(1)

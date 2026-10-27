@@ -33,9 +33,36 @@ private val previewAccount = SavingsSummary(
     totalWithdrawals = 2_500.0,
     interestEarned = 210.0,
     transactions = listOf(
-        SavingsTransactionRow(id = 3, typeLabel = "Withdrawal", date = "05 Oct 2025", amount = 2_500.0, runningBalance = 12_500.0, isDeposit = false, isWithdrawal = true, isReversed = false),
-        SavingsTransactionRow(id = 2, typeLabel = "Deposit", date = "01 Oct 2025", amount = 5_000.0, runningBalance = 15_000.0, isDeposit = true, isWithdrawal = false, isReversed = false),
-        SavingsTransactionRow(id = 1, typeLabel = "Deposit", date = "15 Sep 2025", amount = 10_000.0, runningBalance = 10_000.0, isDeposit = true, isWithdrawal = false, isReversed = true),
+        SavingsTransactionRow(
+            id = 3,
+            typeLabel = "Withdrawal",
+            date = "05 Oct 2025",
+            amount = 2_500.0,
+            runningBalance = 12_500.0,
+            isDeposit = false,
+            isWithdrawal = true,
+            isReversed = false,
+        ),
+        SavingsTransactionRow(
+            id = 2,
+            typeLabel = "Deposit",
+            date = "01 Oct 2025",
+            amount = 5_000.0,
+            runningBalance = 15_000.0,
+            isDeposit = true,
+            isWithdrawal = false,
+            isReversed = false,
+        ),
+        SavingsTransactionRow(
+            id = 1,
+            typeLabel = "Deposit",
+            date = "15 Sep 2025",
+            amount = 10_000.0,
+            runningBalance = 10_000.0,
+            isDeposit = true,
+            isWithdrawal = false,
+            isReversed = true,
+        ),
     ),
     available = SavingsAction.TRANSACT,
 )
@@ -59,7 +86,9 @@ internal fun SavingsSummaryContentPreview() {
 internal fun SavingsSummaryContentAwaitingApprovalPreview() {
     KptTheme {
         SavingsSummaryContent(
-            account = ScreenState.Content(previewAccount.copy(transactions = emptyList(), available = SavingsAction.APPROVE)),
+            account = ScreenState.Content(
+                previewAccount.copy(transactions = emptyList(), available = SavingsAction.APPROVE),
+            ),
             onAction = {},
             canApprove = true,
         )

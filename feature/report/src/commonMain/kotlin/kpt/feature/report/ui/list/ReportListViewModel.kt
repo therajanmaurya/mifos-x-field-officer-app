@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.report.ui.list
 
@@ -42,7 +42,8 @@ internal class ReportListViewModel(
     override fun handleAction(action: ReportListAction) {
         when (action) {
             is ReportListAction.CategorySelected -> mutableStateFlow.value = state.copy(category = action.category)
-            is ReportListAction.ReportClicked -> action.report.reportName?.let { sendEvent(ReportListEvent.OpenReport(it)) }
+            is ReportListAction.ReportClicked ->
+                action.report.reportName?.let { sendEvent(ReportListEvent.OpenReport(it)) }
             ReportListAction.NavigateBack -> sendEvent(ReportListEvent.NavigateBack)
         }
     }
@@ -57,9 +58,17 @@ internal fun List<ClientReportTypeItem>.distinctReports(): List<ClientReportType
 
 /** The original's menu, in its order. [server] is Fineract's `report_category`; [ALL] filters nothing. */
 internal enum class ReportCategory(val server: String?) {
-    CLIENT("Client"), LOAN("Loan"), SAVINGS("Savings"), FUND("Fund"), ACCOUNTING("Accounting"), XBRL("XBRL"), ALL(null);
+    CLIENT("Client"),
+    LOAN("Loan"),
+    SAVINGS("Savings"),
+    FUND("Fund"),
+    ACCOUNTING("Accounting"),
+    XBRL("XBRL"),
+    ALL(null),
+    ;
 
-    fun matches(report: ClientReportTypeItem) = server == null || report.reportCategory.equals(server, ignoreCase = true)
+    fun matches(report: ClientReportTypeItem) =
+        server == null || report.reportCategory.equals(server, ignoreCase = true)
 }
 
 internal data class ReportListState(val category: ReportCategory = ReportCategory.CLIENT)

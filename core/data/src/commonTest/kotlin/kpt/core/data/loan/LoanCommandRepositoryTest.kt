@@ -9,8 +9,6 @@
  */
 package kpt.core.data.loan
 
-import kpt.core.model.loan.LoanRepaymentRequest
-import kpt.core.model.loan.LoanRepaymentResponse
 import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -20,11 +18,19 @@ import kpt.core.data.infra.OkHttpResponse
 import kpt.core.data.infra.testMutationGateway
 import kpt.core.data.loan.impl.LoanCommandRepositoryImpl
 import kpt.core.model.charge.Charges
-import kpt.core.model.loan.Loan
-import kpt.core.model.loan.Loan as LoanModel
+import kpt.core.model.loan.AssignLoanOfficerRequestDto
+import kpt.core.model.loan.AssignLoanOfficerResponseDto
+import kpt.core.model.loan.CreateGuarantorResponseDto
+import kpt.core.model.loan.GuarantorRequestDto
+import kpt.core.model.loan.LoanChargeOffRequestDto
+import kpt.core.model.loan.LoanChargeOffResponseDto
+import kpt.core.model.loan.LoanRepaymentRequest
+import kpt.core.model.loan.LoanRepaymentResponse
 import kpt.core.model.loan.LoanRepaymentTemplate
 import kpt.core.model.loan.LoanTemplate
 import kpt.core.model.loan.LoanTransactionTemplate
+import kpt.core.model.loan.RejectLoanRequestDto
+import kpt.core.model.loan.RejectLoanResponseDto
 import kpt.core.model.objects.account.loan.LoanApproval
 import kpt.core.model.objects.account.loan.RepaymentSchedule
 import kpt.core.model.objects.account.loan.loanDisburse.LoanDisburseInput
@@ -43,14 +49,8 @@ import kpt.core.model.objects.responses.SaveResponse
 import kpt.core.model.objects.template.loan.GroupLoanTemplate
 import kpt.core.model.shared.GenericResponse
 import kpt.core.network.mifos.loan.api.LoanApi
-import kpt.core.model.loan.AssignLoanOfficerRequestDto
-import kpt.core.model.loan.AssignLoanOfficerResponseDto
-import kpt.core.model.loan.CreateGuarantorResponseDto
 import kpt.core.network.mifos.loan.dto.GuarantorAccountTemplateDto
-import kpt.core.model.loan.GuarantorRequestDto
 import kpt.core.network.mifos.loan.dto.GuarantorTemplateDto
-import kpt.core.model.loan.LoanChargeOffRequestDto
-import kpt.core.model.loan.LoanChargeOffResponseDto
 import kpt.core.network.mifos.loan.dto.LoanChargeOffTemplateDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseRequestDto
 import kpt.core.network.mifos.loan.dto.LoanDisburseResponseDto
@@ -58,8 +58,6 @@ import kpt.core.network.mifos.loan.dto.LoanDisburseTemplateDto
 import kpt.core.network.mifos.loan.dto.LoanOfficerOptionsTemplateDto
 import kpt.core.network.mifos.loan.dto.LoanWithAssociationsDto
 import kpt.core.network.mifos.loan.dto.LoansPayload
-import kpt.core.model.loan.RejectLoanRequestDto
-import kpt.core.model.loan.RejectLoanResponseDto
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.StoreBuilder
@@ -67,6 +65,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
+import kpt.core.model.loan.Loan as LoanModel
 
 /**
  * The loan commands over REAL Store5 read stores wired as `core/store` wires them, each over an
@@ -119,13 +118,19 @@ class LoanCommandRepositoryTest {
             return GenericResponse()
         }
 
-        override suspend fun disburse(loanId: Int, loanDisburseRequest: LoanDisburseRequestDto): LoanDisburseResponseDto {
+        override suspend fun disburse(
+            loanId: Int,
+            loanDisburseRequest: LoanDisburseRequestDto,
+        ): LoanDisburseResponseDto {
             sent += "disburse"
             serverLoans[loanId] = serverLoans.getValue(loanId).copy(loanOfficerName = "disbursed")
             return LoanDisburseResponseDto(1, 1, loanId.toLong(), 50, 0)
         }
 
-        override suspend fun submitPayment(loanId: Int, loanRepaymentRequest: LoanRepaymentRequest?): LoanRepaymentResponse {
+        override suspend fun submitPayment(
+            loanId: Int,
+            loanRepaymentRequest: LoanRepaymentRequest?,
+        ): LoanRepaymentResponse {
             sent += "repay"
             // Fineract computes the new outstanding; the request only carries what was paid.
             serverLoans[loanId] = serverLoans.getValue(loanId).copy(principal = 4_000.0)
@@ -142,8 +147,17 @@ class LoanCommandRepositoryTest {
             return SaveResponse(resourceId = 78)
         }
 
-        override suspend fun approveLoanReschedule(scheduleId: Int, request: LoanRescheduleApprovalRequest): HttpResponse {
-            serverReschedules[1] = listOf(LoanRescheduleResponse(id = scheduleId, loanId = 1, rescheduleFromDate = listOf(2026, 1, 1)))
+        override suspend fun approveLoanReschedule(
+            scheduleId: Int,
+            request: LoanRescheduleApprovalRequest,
+        ): HttpResponse {
+            serverReschedules[1] = listOf(
+                LoanRescheduleResponse(
+                    id = scheduleId,
+                    loanId = 1,
+                    rescheduleFromDate = listOf(2026, 1, 1),
+                ),
+            )
             serverLoans[1] = serverLoans.getValue(1).copy(numberOfRepayments = 24)
             return OkHttpResponse
         }
@@ -156,17 +170,29 @@ class LoanCommandRepositoryTest {
         override suspend fun getLoanByIdWithAllAssociations(loanId: Int): LoanWithAssociationsDto = unused()
         override suspend fun getLoanRepaymentTemplate(loanId: Int): LoanRepaymentTemplate = unused()
         override suspend fun getChargeOffTemplate(loanId: Int): LoanChargeOffTemplateDto = unused()
-        override suspend fun chargeOff(loanId: Int, loanChargeOffRequest: LoanChargeOffRequestDto): LoanChargeOffResponseDto = unused()
+        override suspend fun chargeOff(
+            loanId: Int,
+            loanChargeOffRequest: LoanChargeOffRequestDto,
+        ): LoanChargeOffResponseDto = unused()
         override suspend fun rejectLoan(loanId: Int, request: RejectLoanRequestDto): RejectLoanResponseDto = unused()
         override suspend fun getLoanRepaymentSchedule(loanId: Int): LoanWithAssociationsDto = unused()
         override suspend fun getLoanWithTransactions(loanId: Int): LoanWithAssociationsDto = unused()
         override suspend fun getGuarantorTemplate(loanId: Int): GuarantorTemplateDto = unused()
-        override suspend fun createGuarantor(loanId: Int, request: GuarantorRequestDto): CreateGuarantorResponseDto = unused()
-        override suspend fun getGuarantorAccountTemplate(loanId: Int, clientId: Int): GuarantorAccountTemplateDto = unused()
+        override suspend fun createGuarantor(
+            loanId: Int,
+            request: GuarantorRequestDto,
+        ): CreateGuarantorResponseDto = unused()
+        override suspend fun getGuarantorAccountTemplate(
+            loanId: Int,
+            clientId: Int,
+        ): GuarantorAccountTemplateDto = unused()
         override suspend fun getAllLoans(): List<LoanProducts> = unused()
         override suspend fun calculateLoanSchedule(loansPayload: LoansPayload?): RepaymentSchedule = unused()
         override suspend fun getLoansAccountTemplate(clientId: Int, productId: Int): LoanTemplate = unused()
-        override suspend fun getLoanTransactionTemplate(loanId: Int, command: String?): LoanTransactionTemplate = unused()
+        override suspend fun getLoanTransactionTemplate(
+            loanId: Int,
+            command: String?,
+        ): LoanTransactionTemplate = unused()
         override suspend fun getGroupLoansAccountTemplate(groupId: Int, productId: Int): GroupLoanTemplate = unused()
         override suspend fun getListOfLoanCharges(loanId: Int): List<Charges> = unused()
         override suspend fun getListOfCharges(clientId: Int): Page<Charges> = unused()
@@ -183,14 +209,21 @@ class LoanCommandRepositoryTest {
         override suspend fun getLoanReschedules(loanId: Int): List<LoanRescheduleResponse> = unused()
         override suspend fun getLoanRescheduleTemplate(): LoanRescheduleTemplate = unused()
         override suspend fun submitLoanReschedule(request: LoanRescheduleRequest): HttpResponse = unused()
-        override suspend fun rejectLoanReschedule(scheduleId: Int, request: LoanRescheduleRejectionRequest): HttpResponse = unused()
+        override suspend fun rejectLoanReschedule(
+            scheduleId: Int,
+            request: LoanRescheduleRejectionRequest,
+        ): HttpResponse = unused()
         override suspend fun getLoanOfficerTemplate(
             loanId: Int,
             fields: String,
             staffInSelectedOfficeOnly: Boolean,
             template: Boolean,
         ): LoanOfficerOptionsTemplateDto = unused()
-        override suspend fun assignLoanOfficer(loanId: Int, command: String, request: AssignLoanOfficerRequestDto): AssignLoanOfficerResponseDto = unused()
+        override suspend fun assignLoanOfficer(
+            loanId: Int,
+            command: String,
+            request: AssignLoanOfficerRequestDto,
+        ): AssignLoanOfficerResponseDto = unused()
         override suspend fun getDisburseTemplate(loanId: Int): LoanDisburseTemplateDto = unused()
 
         private fun unused(): Nothing = error("not exercised; reads go through the stores")
@@ -232,7 +265,11 @@ class LoanCommandRepositoryTest {
 
     @Test
     fun approvingARescheduleRecordsBothTheListAndTheLoansNewSchedule() = runTest {
-        commands().approveLoanReschedule(loanId = 1, scheduleId = 30, request = LoanRescheduleApprovalRequest("1 Jan 2026", "dd MMMM yyyy", "en"))
+        commands().approveLoanReschedule(
+            loanId = 1,
+            scheduleId = 30,
+            request = LoanRescheduleApprovalRequest("1 Jan 2026", "dd MMMM yyyy", "en"),
+        )
 
         assertEquals(listOf(2026, 1, 1), reschedules.value.getValue(1).single().rescheduleFromDate)
         assertEquals(24, loans.value.getValue(1).numberOfRepayments)

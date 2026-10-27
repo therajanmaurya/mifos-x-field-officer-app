@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.component.AppOutlinedTextField
+import kpt.core.designsystem.component.AppPasswordToggle
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.model.utils.DemoCredentials
 import kpt.core.ui.components.AppProgressIndicatorOverlay
@@ -223,70 +225,13 @@ internal fun SignInContent(
 
                 TitleBlock()
 
-                AppOutlinedTextField(
-                    value = state.username,
-                    onValueChange = { onAction(SignInAction.UsernameChanged(it)) },
-                    label = stringResource(Res.string.feature_signin_username),
-                    placeholder = stringResource(Res.string.feature_signin_username_placeholder),
-                    leadingIcon = AppIcons.Person,
-                    enabled = !state.isSubmitting,
-                    // Fineract usernames are case-sensitive and the shared field defaults to
-                    // capitalising words, so an IME turned `fieldofficer` into `Fieldofficer` and
-                    // the server rejected it with a message the user could do nothing about.
-                    capitalization = KeyboardCapitalization.None,
-                    isError = state.error == SignInError.UsernameTooShort,
-                    errorText = (state.error == SignInError.UsernameTooShort)
-                        .takeIf { it }
-                        ?.let { stringResource(Res.string.feature_signin_error_username_length) },
-                    // D2 — v1 renders a trailing error icon on this field when its rule failed.
-                    trailingIcon = if (state.error == SignInError.UsernameTooShort) {
-                        {
-                            Icon(
-                                imageVector = AppIcons.Error,
-                                contentDescription = stringResource(Res.string.feature_signin_cd_username_error),
-                                tint = KptTheme.colorScheme.error,
-                                modifier = Modifier.testTag(SignInTestTags.USERNAME_ERROR_ICON),
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                    modifier = Modifier.fillMaxWidth().testTag(SignInTestTags.USERNAME),
-                )
+                UsernameField(state = state, onAction = onAction)
 
-                val passwordInvalid = state.error == SignInError.PasswordTooShort
-                AppOutlinedTextField(
-                    value = state.password,
-                    onValueChange = { onAction(SignInAction.PasswordChanged(it)) },
-                    label = stringResource(Res.string.feature_signin_password),
-                    placeholder = stringResource(Res.string.feature_signin_password_placeholder),
-                    leadingIcon = AppIcons.Lock,
-                    enabled = !state.isSubmitting,
-                    keyboardType = KeyboardType.Password,
-                    capitalization = KeyboardCapitalization.None,
-                    // D3 — the trailing slot is MUTUALLY EXCLUSIVE in v1: the visibility toggle only
-                    // while there is no error, an error icon instead when there is one. Disabling
-                    // the toggle is what hands the slot over.
-                    isPasswordToggleDisplayed = !passwordInvalid,
-                    isPasswordVisible = passwordVisible,
-                    onPasswordToggleClick = { passwordVisible = it },
-                    isError = passwordInvalid,
-                    errorText = passwordInvalid
-                        .takeIf { it }
-                        ?.let { stringResource(Res.string.feature_signin_error_password_length) },
-                    trailingIcon = if (passwordInvalid) {
-                        {
-                            Icon(
-                                imageVector = AppIcons.Error,
-                                contentDescription = stringResource(Res.string.feature_signin_cd_password_error),
-                                tint = KptTheme.colorScheme.error,
-                                modifier = Modifier.testTag(SignInTestTags.PASSWORD_ERROR_ICON),
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                    modifier = Modifier.fillMaxWidth().testTag(SignInTestTags.PASSWORD),
+                PasswordField(
+                    state = state,
+                    onAction = onAction,
+                    passwordVisible = passwordVisible,
+                    onVisibleChange = { passwordVisible = it },
                 )
 
                 // ui.yaml#components.lockout_notice. Two forms: a warning as the limit nears, and
@@ -365,6 +310,85 @@ internal fun SignInContent(
     }
 }
 
+@Composable
+private fun UsernameField(state: SignInState, onAction: (SignInAction) -> Unit) {
+    AppOutlinedTextField(
+        value = state.username,
+        onValueChange = { onAction(SignInAction.UsernameChanged(it)) },
+        label = stringResource(Res.string.feature_signin_username),
+        placeholder = stringResource(Res.string.feature_signin_username_placeholder),
+        leadingIcon = AppIcons.Person,
+        enabled = !state.isSubmitting,
+        // Fineract usernames are case-sensitive and the shared field defaults to
+        // capitalising words, so an IME turned `fieldofficer` into `Fieldofficer` and
+        // the server rejected it with a message the user could do nothing about.
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None),
+        isError = state.error == SignInError.UsernameTooShort,
+        errorText = (state.error == SignInError.UsernameTooShort)
+            .takeIf { it }
+            ?.let { stringResource(Res.string.feature_signin_error_username_length) },
+        // D2 — v1 renders a trailing error icon on this field when its rule failed.
+        trailingIcon = if (state.error == SignInError.UsernameTooShort) {
+            {
+                Icon(
+                    imageVector = AppIcons.Error,
+                    contentDescription = stringResource(Res.string.feature_signin_cd_username_error),
+                    tint = KptTheme.colorScheme.error,
+                    modifier = Modifier.testTag(SignInTestTags.USERNAME_ERROR_ICON),
+                )
+            }
+        } else {
+            null
+        },
+        modifier = Modifier.fillMaxWidth().testTag(SignInTestTags.USERNAME),
+    )
+}
+
+@Composable
+private fun PasswordField(
+    state: SignInState,
+    onAction: (SignInAction) -> Unit,
+    passwordVisible: Boolean,
+    onVisibleChange: (Boolean) -> Unit,
+) {
+    val passwordInvalid = state.error == SignInError.PasswordTooShort
+    AppOutlinedTextField(
+        value = state.password,
+        onValueChange = { onAction(SignInAction.PasswordChanged(it)) },
+        label = stringResource(Res.string.feature_signin_password),
+        placeholder = stringResource(Res.string.feature_signin_password_placeholder),
+        leadingIcon = AppIcons.Lock,
+        enabled = !state.isSubmitting,
+        keyboardType = KeyboardType.Password,
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None),
+        // D3 — the trailing slot is MUTUALLY EXCLUSIVE in v1: the visibility toggle only
+        // while there is no error, an error icon instead when there is one. Disabling
+        // the toggle is what hands the slot over.
+        passwordToggle = AppPasswordToggle(
+            isVisible = passwordVisible,
+            onClick = { onVisibleChange(it) },
+            isDisplayed = !passwordInvalid,
+        ),
+        isError = passwordInvalid,
+        errorText = passwordInvalid
+            .takeIf { it }
+            ?.let { stringResource(Res.string.feature_signin_error_password_length) },
+        trailingIcon = if (passwordInvalid) {
+            {
+                Icon(
+                    imageVector = AppIcons.Error,
+                    contentDescription = stringResource(Res.string.feature_signin_cd_password_error),
+                    tint = KptTheme.colorScheme.error,
+                    modifier = Modifier.testTag(SignInTestTags.PASSWORD_ERROR_ICON),
+                )
+            }
+        } else {
+            null
+        },
+        modifier = Modifier.fillMaxWidth().testTag(SignInTestTags.PASSWORD),
+    )
+}
+
 /**
  * The render's logo treatment: a 64dp soft rounded tinted tile. The thing inside it is the asset
  * `ui.yaml#components.logo` declares, not the render's substitute glyph (see the file header).
@@ -440,7 +464,11 @@ private fun InstanceChip(
                 // Blank host = the preference flow has not emitted yet, or genuinely nothing is
                 // configured. Either way the chip states what it DOES rather than rendering a
                 // bare separator, so it never reads as a glitch.
-                text = if (host.isBlank()) stringResource(Res.string.feature_signin_set_instance) else "$host · $tenant",
+                text = if (host.isBlank()) {
+                    stringResource(Res.string.feature_signin_set_instance)
+                } else {
+                    "$host · $tenant"
+                },
                 style = MaterialTheme.typography.labelMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

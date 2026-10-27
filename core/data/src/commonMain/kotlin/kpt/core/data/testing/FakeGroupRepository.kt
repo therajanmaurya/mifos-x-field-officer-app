@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 @file:OptIn(kpt.core.base.store.screen.ExperimentalScreenDataStreamTestingApi::class)
 
@@ -29,7 +29,11 @@ class FakeGroupRepository(groups: List<Group> = emptyList()) : GroupRepository {
     override fun groupsStream(scope: CoroutineScope) = screenDataStreamForTesting(groups)
 
     override fun groupWithMembersStream(groupId: Int, scope: CoroutineScope) =
-        screenDataStreamForTesting(MutableStateFlow<ScreenState<GroupWithAssociations>>(ScreenState.Content(GroupWithAssociations(id = groupId))))
+        screenDataStreamForTesting(
+            MutableStateFlow<ScreenState<GroupWithAssociations>>(
+                ScreenState.Content(GroupWithAssociations(id = groupId)),
+            ),
+        )
 
     override fun groupAccountsStream(groupId: Int, scope: CoroutineScope) =
         screenDataStreamForTesting(MutableStateFlow<ScreenState<GroupAccounts>>(ScreenState.Content(GroupAccounts())))

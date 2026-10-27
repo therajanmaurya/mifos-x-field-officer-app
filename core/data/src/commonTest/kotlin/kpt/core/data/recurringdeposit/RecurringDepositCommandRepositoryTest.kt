@@ -9,8 +9,6 @@
  */
 package kpt.core.data.recurringdeposit
 
-import kpt.core.model.client.ClientAccounts as ClientAccountsModel
-import kpt.core.model.savings.SavingsAccount
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runTest
@@ -22,6 +20,7 @@ import kpt.core.model.client.ClientAccounts
 import kpt.core.model.objects.payloads.RecurringDepositAccountPayload
 import kpt.core.model.recurringdeposit.RecurringDepositAccountTemplate
 import kpt.core.model.recurringdeposit.RecurringDepositApplicationInput
+import kpt.core.model.savings.SavingsAccount
 import kpt.core.network.mifos.recurringdeposit.api.RecurringAccountApi
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
@@ -30,6 +29,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kpt.core.model.client.ClientAccounts as ClientAccountsModel
 
 /** The recurring-deposit create over a REAL Store5 accounts-list store on an in-memory row. */
 class RecurringDepositCommandRepositoryTest {
@@ -49,14 +49,19 @@ class RecurringDepositCommandRepositoryTest {
     ).build()
 
     private val api = object : RecurringAccountApi {
-        override suspend fun createRecurringDepositAccount(recurringDepositAccountPayload: RecurringDepositAccountPayload?) =
+        override suspend fun createRecurringDepositAccount(
+            recurringDepositAccountPayload: RecurringDepositAccountPayload?,
+        ) =
             OkHttpResponse.also {
                 posts++
                 val owner = recurringDepositAccountPayload!!.clientId!!
                 serverClientAccounts[owner] = ClientAccounts(savingsAccounts = listOf(SavingsAccount(id = 50)))
             }
 
-        override suspend fun getRecurringDepositAccountTemplate(clientId: Int, productId: Int?): RecurringDepositAccountTemplate =
+        override suspend fun getRecurringDepositAccountTemplate(
+            clientId: Int,
+            productId: Int?,
+        ): RecurringDepositAccountTemplate =
             error("reads go through the store")
     }
 
@@ -84,7 +89,11 @@ class RecurringDepositCommandRepositoryTest {
 
     @Test
     fun offlineItIsBlockedAndWritesNothing() = runTest {
-        val commands = RecurringDepositCommandRepositoryImpl(api, testMutationGateway(isOnline = false), clientAccountsStore)
+        val commands = RecurringDepositCommandRepositoryImpl(
+            api,
+            testMutationGateway(isOnline = false),
+            clientAccountsStore,
+        )
 
         assertIs<MutationResult.Blocked>(commands.createRecurringDepositAccount(input))
 

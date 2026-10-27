@@ -9,17 +9,15 @@
  */
 package kpt.core.store.savings
 
-import kpt.core.model.savings.SavingProductsTemplate as SavingProductsTemplateModel
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
-import kpt.core.database.savings.entity.SavingProductsTemplate
 import kpt.core.model.objects.organisations.ProductSavings
 import kpt.core.network.mifos.savings.api.SavingsAccountApi
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys
 import org.mobilenativefoundation.store.store5.Store
+import kpt.core.model.savings.SavingProductsTemplate as SavingProductsTemplateModel
 
 /**
  * Catalogue and template reads for savings — option lists and form templates with no table of their

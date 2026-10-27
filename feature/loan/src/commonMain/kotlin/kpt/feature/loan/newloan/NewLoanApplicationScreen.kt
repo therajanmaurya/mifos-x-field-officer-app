@@ -31,13 +31,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
-import kpt.core.base.ui.generated.resources.Res as BaseRes
 import kpt.core.base.ui.generated.resources.draft_save
 import kpt.core.base.ui.generated.resources.draft_saved
 import kpt.core.base.ui.generated.resources.draft_saved_offline
@@ -73,6 +70,9 @@ import kpt.feature.loan.generated.resources.feature_loan_step_terms
 import kpt.feature.loan.generated.resources.feature_loan_submit
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kpt.core.base.ui.generated.resources.Res as BaseRes
 
 /**
  * The new INDIVIDUAL loan application wizard — ported from

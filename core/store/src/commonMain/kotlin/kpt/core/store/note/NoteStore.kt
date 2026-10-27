@@ -9,13 +9,11 @@
  */
 package kpt.core.store.note
 
-import kpt.core.store.note.toEntity
+import kotlinx.coroutines.flow.map
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
 import kpt.core.database.note.dao.NoteDao
-import kotlinx.coroutines.flow.map
-import kpt.core.database.note.entity.NoteEntity
 import kpt.core.model.objects.note.Note
 import kpt.core.network.mifos.note.api.NoteApi
 import kpt.core.network.mifos.note.mapper.toModel
@@ -36,7 +34,11 @@ import org.mobilenativefoundation.store.store5.Store
 data class NoteKey(val resourceType: String, val resourceId: Long)
 
 @StoreProvider(id = "notes", ttl = "15m")
-@CacheKey(fn = "forOwner", key = "notes:{resourceType}:{resourceId}", params = ["resourceType:String", "resourceId:Long"])
+@CacheKey(
+    fn = "forOwner",
+    key = "notes:{resourceType}:{resourceId}",
+    params = ["resourceType:String", "resourceId:Long"],
+)
 fun provideNoteStore(
     service: NoteApi,
     dao: NoteDao,
@@ -50,7 +52,9 @@ fun provideNoteStore(
         // goes from rows to null (measured 2026-10-23), so deleting an owner's last note through
         // `noteItem` would leave it on screen. The cost is "no notes" shown for a never-loaded
         // owner while offline.
-        reader = { key: NoteKey -> dao.getNotesFor(key.resourceType, key.resourceId).map { rows -> rows.map { it.toModel() } } },
+        reader = { key: NoteKey ->
+            dao.getNotesFor(key.resourceType, key.resourceId).map { rows -> rows.map { it.toModel() } }
+        },
         // REPLACE, not insert: a fetch is the server's whole list for the owner, so a row it no
         // longer contains was deleted and must leave the table. The owner is stamped onto each row
         // because it is what the reader filters on.
@@ -80,14 +84,20 @@ data class NoteItemKey(val resourceType: String, val resourceId: Long, val noteI
  * `logout = false`: the rows are purged by the paired read store's `deleteAll`.
  */
 @StoreProvider(id = "noteItem", logout = false)
-@CacheKey(fn = "item", key = "noteItem:{resourceType}:{resourceId}:{noteId}", params = ["resourceType:String", "resourceId:Long", "noteId:Long"])
+@CacheKey(
+    fn = "item",
+    key = "noteItem:{resourceType}:{resourceId}:{noteId}",
+    params = ["resourceType:String", "resourceId:Long", "noteId:Long"],
+)
 fun provideNoteItemStore(
     dao: NoteDao,
 ): MutableStore<NoteItemKey, Note> = StoreFactory.createOfflineMutableStore(
     sourceOfTruth = SourceOfTruth.of(
         reader = { key: NoteItemKey -> dao.observeById(key.noteId).map { it?.toModel() } },
         writer = { key: NoteItemKey, note: Note ->
-            dao.insertNotes(listOf(note.toEntity().copy(id = key.noteId, clientId = key.resourceId, resourceType = key.resourceType)))
+            val entity = note.toEntity()
+                .copy(id = key.noteId, clientId = key.resourceId, resourceType = key.resourceType)
+            dao.insertNotes(listOf(entity))
         },
         delete = { key: NoteItemKey -> dao.deleteById(key.noteId) },
     ),

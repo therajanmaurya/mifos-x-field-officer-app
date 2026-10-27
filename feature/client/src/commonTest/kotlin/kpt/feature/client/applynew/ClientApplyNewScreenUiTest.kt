@@ -15,9 +15,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import kpt.core.base.store.screen.ScreenState
+import kpt.core.designsystem.theme.AppTheme
 import kpt.core.model.client.Client
 import kpt.core.model.client.ClientStatus
-import kpt.core.designsystem.theme.AppTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

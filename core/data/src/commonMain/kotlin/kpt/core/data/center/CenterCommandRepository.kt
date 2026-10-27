@@ -11,12 +11,12 @@ package kpt.core.data.center
 
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.model.center.CenterPayload
-import kpt.core.model.objects.clients.ActivatePayload
-import kpt.core.model.objects.responses.SaveResponse
-import kpt.core.model.shared.GenericResponse
 import kpt.core.model.center.PostCentersCenterIdRequest
 import kpt.core.model.center.PostCentersCenterIdResponse
 import kpt.core.model.collectionsheet.payload.CollectionSheetPayload
+import kpt.core.model.objects.clients.ActivatePayload
+import kpt.core.model.objects.responses.SaveResponse
+import kpt.core.model.shared.GenericResponse
 
 /**
  * Every center write, as an explicit outcome.
@@ -33,11 +33,21 @@ import kpt.core.model.collectionsheet.payload.CollectionSheetPayload
  */
 interface CenterCommandRepository {
 
-    suspend fun activate2(centerId: Long, postCentersCenterIdRequest: PostCentersCenterIdRequest, command: String? = null): MutationResult<PostCentersCenterIdResponse>
+    suspend fun activate2(
+        centerId: Long,
+        postCentersCenterIdRequest: PostCentersCenterIdRequest,
+        command: String? = null,
+    ): MutationResult<PostCentersCenterIdResponse>
 
-    suspend fun saveCollectionSheet(centerId: Int, collectionSheetPayload: CollectionSheetPayload?): MutationResult<SaveResponse>
+    suspend fun saveCollectionSheet(
+        centerId: Int,
+        collectionSheetPayload: CollectionSheetPayload?,
+    ): MutationResult<SaveResponse>
 
-    suspend fun saveCollectionSheetAsync(centerId: Int, collectionSheetPayload: CollectionSheetPayload?): MutationResult<SaveResponse>
+    suspend fun saveCollectionSheetAsync(
+        centerId: Int,
+        collectionSheetPayload: CollectionSheetPayload?,
+    ): MutationResult<SaveResponse>
 
     suspend fun createCenter(centerPayload: CenterPayload?): MutationResult<SaveResponse>
 

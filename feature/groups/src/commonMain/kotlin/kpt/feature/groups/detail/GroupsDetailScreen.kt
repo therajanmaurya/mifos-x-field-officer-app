@@ -10,6 +10,7 @@
 package kpt.feature.groups.detail
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -66,21 +67,6 @@ import kpt.feature.groups.generated.resources.feature_groups_status_inactive
 import kpt.feature.groups.generated.resources.feature_groups_unnamed
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-
-internal object GroupsDetailTestTags {
-    const val SCREEN = "groups:detail"
-    const val ACTIVATE = "groups:detail:activate"
-    const val DOCUMENTS = "groups:detail:documents"
-    const val DATA_TABLES = "groups:detail:data-tables"
-    const val ADD_LOAN_ACCOUNT = "groups:detail:add-loan-account"
-    const val ADD_SAVINGS_ACCOUNT = "groups:detail:add-savings-account"
-    const val OVERFLOW = "groups:detail:overflow"
-    const val NOTES = "groups:detail:notes"
-    const val ACCOUNTS = "groups:detail:accounts"
-    const val LOAN_ACCOUNTS = "groups:detail:loan-accounts"
-    const val SAVINGS_ACCOUNTS = "groups:detail:savings-accounts"
-    const val CLIENTS = "groups:detail:clients"
-}
 
 @Composable
 internal fun GroupsDetailScreen(
@@ -148,6 +134,8 @@ internal fun GroupsDetailScreen(
 internal fun GroupsDetailContent(
     group: ScreenState<Group>,
     canActivate: Boolean,
+    onAction: (GroupsDetailAction) -> Unit,
+    modifier: Modifier = Modifier,
     canOpenDocuments: Boolean = false,
     canOpenDataTables: Boolean = false,
     canAddLoanAccount: Boolean = false,
@@ -158,8 +146,6 @@ internal fun GroupsDetailContent(
     canOpenLoan: Boolean = false,
     canOpenSavings: Boolean = false,
     canOpenClient: Boolean = false,
-    onAction: (GroupsDetailAction) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize().testTag(GroupsDetailTestTags.SCREEN),
@@ -238,7 +224,11 @@ internal fun GroupsDetailContent(
                             loaded.savingsAccounts.forEach { account ->
                                 SavingsAccountRow(
                                     account,
-                                    if (canOpenSavings) { id, endpoint -> onAction(GroupsDetailAction.SavingsClicked(id, endpoint)) } else null,
+                                    if (canOpenSavings) {
+                                        { id, endpoint -> onAction(GroupsDetailAction.SavingsClicked(id, endpoint)) }
+                                    } else {
+                                        null
+                                    },
                                 )
                             }
                         }
@@ -258,7 +248,14 @@ internal fun GroupsDetailContent(
                         tag = GroupsDetailTestTags.CLIENTS,
                     ) {
                         clients.forEach { client ->
-                            ClientRow(client, if (canOpenClient) { id -> onAction(GroupsDetailAction.ClientClicked(id)) } else null)
+                            ClientRow(
+                                client,
+                                if (canOpenClient) {
+                                    { id -> onAction(GroupsDetailAction.ClientClicked(id)) }
+                                } else {
+                                    null
+                                },
+                            )
                         }
                     }
                 }
@@ -312,72 +309,76 @@ private fun OverflowMenu(
     canOpenDataTables: Boolean,
     canOpenNotes: Boolean,
     onAction: (GroupsDetailAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    if (!canAddLoanAccount && !canAddSavingsAccount && !canOpenDocuments && !canOpenDataTables && !canOpenNotes) {
+    val anyItem = listOf(canAddLoanAccount, canAddSavingsAccount, canOpenDocuments, canOpenDataTables, canOpenNotes)
+    if (anyItem.none { it }) {
         return
     }
 
     var expanded by remember { mutableStateOf(false) }
 
-    IconButton(
-        onClick = { expanded = !expanded },
-        modifier = Modifier.testTag(GroupsDetailTestTags.OVERFLOW),
-    ) {
-        Icon(
-            AppIcons.MoreVert,
-            contentDescription = stringResource(Res.string.feature_groups_more_options),
-        )
-    }
-    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-        if (canAddLoanAccount) {
-            AppMenuDropDownItem(
-                option = stringResource(Res.string.feature_groups_add_loan_account),
-                onClick = {
-                    expanded = false
-                    onAction(GroupsDetailAction.AddLoanAccountClicked)
-                },
-                modifier = Modifier.testTag(GroupsDetailTestTags.ADD_LOAN_ACCOUNT),
+    Box(modifier = modifier) {
+        IconButton(
+            onClick = { expanded = !expanded },
+            modifier = Modifier.testTag(GroupsDetailTestTags.OVERFLOW),
+        ) {
+            Icon(
+                AppIcons.MoreVert,
+                contentDescription = stringResource(Res.string.feature_groups_more_options),
             )
         }
-        if (canAddSavingsAccount) {
-            AppMenuDropDownItem(
-                option = stringResource(Res.string.feature_groups_add_savings_account),
-                onClick = {
-                    expanded = false
-                    onAction(GroupsDetailAction.AddSavingsAccountClicked)
-                },
-                modifier = Modifier.testTag(GroupsDetailTestTags.ADD_SAVINGS_ACCOUNT),
-            )
-        }
-        if (canOpenDocuments) {
-            AppMenuDropDownItem(
-                option = stringResource(Res.string.feature_groups_documents),
-                onClick = {
-                    expanded = false
-                    onAction(GroupsDetailAction.DocumentsClicked)
-                },
-                modifier = Modifier.testTag(GroupsDetailTestTags.DOCUMENTS),
-            )
-        }
-        if (canOpenDataTables) {
-            AppMenuDropDownItem(
-                option = stringResource(Res.string.feature_groups_more_group_info),
-                onClick = {
-                    expanded = false
-                    onAction(GroupsDetailAction.DataTablesClicked)
-                },
-                modifier = Modifier.testTag(GroupsDetailTestTags.DATA_TABLES),
-            )
-        }
-        if (canOpenNotes) {
-            AppMenuDropDownItem(
-                option = stringResource(Res.string.feature_groups_notes),
-                onClick = {
-                    expanded = false
-                    onAction(GroupsDetailAction.NotesClicked)
-                },
-                modifier = Modifier.testTag(GroupsDetailTestTags.NOTES),
-            )
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            if (canAddLoanAccount) {
+                AppMenuDropDownItem(
+                    option = stringResource(Res.string.feature_groups_add_loan_account),
+                    onClick = {
+                        expanded = false
+                        onAction(GroupsDetailAction.AddLoanAccountClicked)
+                    },
+                    modifier = Modifier.testTag(GroupsDetailTestTags.ADD_LOAN_ACCOUNT),
+                )
+            }
+            if (canAddSavingsAccount) {
+                AppMenuDropDownItem(
+                    option = stringResource(Res.string.feature_groups_add_savings_account),
+                    onClick = {
+                        expanded = false
+                        onAction(GroupsDetailAction.AddSavingsAccountClicked)
+                    },
+                    modifier = Modifier.testTag(GroupsDetailTestTags.ADD_SAVINGS_ACCOUNT),
+                )
+            }
+            if (canOpenDocuments) {
+                AppMenuDropDownItem(
+                    option = stringResource(Res.string.feature_groups_documents),
+                    onClick = {
+                        expanded = false
+                        onAction(GroupsDetailAction.DocumentsClicked)
+                    },
+                    modifier = Modifier.testTag(GroupsDetailTestTags.DOCUMENTS),
+                )
+            }
+            if (canOpenDataTables) {
+                AppMenuDropDownItem(
+                    option = stringResource(Res.string.feature_groups_more_group_info),
+                    onClick = {
+                        expanded = false
+                        onAction(GroupsDetailAction.DataTablesClicked)
+                    },
+                    modifier = Modifier.testTag(GroupsDetailTestTags.DATA_TABLES),
+                )
+            }
+            if (canOpenNotes) {
+                AppMenuDropDownItem(
+                    option = stringResource(Res.string.feature_groups_notes),
+                    onClick = {
+                        expanded = false
+                        onAction(GroupsDetailAction.NotesClicked)
+                    },
+                    modifier = Modifier.testTag(GroupsDetailTestTags.NOTES),
+                )
+            }
         }
     }
 }

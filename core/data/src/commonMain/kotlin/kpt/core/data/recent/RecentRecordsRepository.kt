@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.recent
 
@@ -50,7 +50,24 @@ class RecentRecordsRepositoryImpl(
 }
 
 private fun RecentRecord.toEntity(userId: Long, at: Long) =
-    RecentRecordEntity(userId = userId, kind = kind.name, id = id, title = title, accountNo = accountNo, detail = detail, openedAtMs = at)
+    RecentRecordEntity(
+        userId = userId,
+        kind = kind.name,
+        id = id,
+        title = title,
+        accountNo = accountNo,
+        detail = detail,
+        openedAtMs = at,
+    )
 
 private fun RecentRecordEntity.toModel(): RecentRecord? =
-    RecentKind.entries.firstOrNull { it.name == kind }?.let { RecentRecord(it, id, title, accountNo, detail, openedAtMs) }
+    RecentKind.entries.firstOrNull { it.name == kind }?.let {
+        RecentRecord(
+            it,
+            id,
+            title,
+            accountNo,
+            detail,
+            openedAtMs,
+        )
+    }

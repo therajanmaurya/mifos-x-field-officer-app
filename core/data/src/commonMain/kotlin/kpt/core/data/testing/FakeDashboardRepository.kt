@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 @file:OptIn(kpt.core.base.store.screen.ExperimentalScreenDataStreamTestingApi::class)
 
@@ -34,24 +34,38 @@ class FakeDashboardRepository(
 
     val user = MutableStateFlow<ScreenState<DashboardUser>>(ScreenState.Content(user))
     val businessDate = MutableStateFlow<ScreenState<String>>(ScreenState.Content(businessDate))
-    val loans = loansByStatus.mapValues { MutableStateFlow<ScreenState<List<DashboardLoan>>>(ScreenState.Content(it.value)) }.toMutableMap()
-    val clientCounts = clientCounts.mapValues { MutableStateFlow<ScreenState<Int>>(ScreenState.Content(it.value)) }.toMutableMap()
+    val loans = loansByStatus
+        .mapValues { MutableStateFlow<ScreenState<List<DashboardLoan>>>(ScreenState.Content(it.value)) }
+        .toMutableMap()
+    val clientCounts = clientCounts
+        .mapValues { MutableStateFlow<ScreenState<Int>>(ScreenState.Content(it.value)) }
+        .toMutableMap()
     val savings = MutableStateFlow<ScreenState<List<DashboardSavings>>>(ScreenState.Content(savings))
     val dueToday = MutableStateFlow<ScreenState<List<DueTodayLoan>>>(ScreenState.Content(dueToday))
     val requested = mutableListOf<String>()
 
-    override fun userStream(userId: Long, scope: CoroutineScope) = screenDataStreamForTesting(user).also { requested += "user" }
+    override fun userStream(
+        userId: Long,
+        scope: CoroutineScope,
+    ) = screenDataStreamForTesting(user).also { requested += "user" }
 
-    override fun businessDateStream(scope: CoroutineScope) = screenDataStreamForTesting(businessDate).also { requested += "businessDate" }
+    override fun businessDateStream(
+        scope: CoroutineScope,
+    ) = screenDataStreamForTesting(businessDate).also { requested += "businessDate" }
 
     override fun loansStream(status: Int, scope: CoroutineScope) =
-        screenDataStreamForTesting(loans.getOrPut(status) { MutableStateFlow(ScreenState.Content(emptyList())) }).also { requested += "loans:$status" }
+        screenDataStreamForTesting(loans.getOrPut(status) { MutableStateFlow(ScreenState.Content(emptyList())) })
+            .also { requested += "loans:$status" }
 
     override fun clientCountStream(officeId: Long, status: String, scope: CoroutineScope) =
-        screenDataStreamForTesting(clientCounts.getOrPut(status) { MutableStateFlow(ScreenState.Content(0)) }).also { requested += "clients:$status" }
+        screenDataStreamForTesting(clientCounts.getOrPut(status) { MutableStateFlow(ScreenState.Content(0)) })
+            .also { requested += "clients:$status" }
 
-    override fun savingsStream(scope: CoroutineScope) = screenDataStreamForTesting(savings).also { requested += "savings" }
+    override fun savingsStream(
+        scope: CoroutineScope,
+    ) = screenDataStreamForTesting(savings).also { requested += "savings" }
 
     override fun dueTodayStream(date: String, loanIds: List<Long>, scope: CoroutineScope) =
-        screenDataStreamForTesting(dueToday).also { requested += "dueToday:$date:${loanIds.sorted().joinToString(",")}" }
+        screenDataStreamForTesting(dueToday)
+            .also { requested += "dueToday:$date:${loanIds.sorted().joinToString(",")}" }
 }

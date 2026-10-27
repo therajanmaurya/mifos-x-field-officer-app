@@ -16,14 +16,14 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import io.ktor.client.statement.HttpResponse
 import kpt.core.base.network.annotation.ApiBinding
-import kpt.core.model.savings.SavingProductsTemplate
-import kpt.core.model.savings.SavingsAccountTransactionRequest
-import kpt.core.model.savings.SavingsAccountTransactionTemplate
-import kpt.core.model.savings.SavingsAccountWithAssociations
 import kpt.core.model.objects.account.loan.SavingsApproval
 import kpt.core.model.objects.account.saving.SavingsAccountTransactionResponse
 import kpt.core.model.objects.organisations.ProductSavings
 import kpt.core.model.objects.payloads.SavingsPayload
+import kpt.core.model.savings.SavingProductsTemplate
+import kpt.core.model.savings.SavingsAccountTransactionRequest
+import kpt.core.model.savings.SavingsAccountTransactionTemplate
+import kpt.core.model.savings.SavingsAccountWithAssociations
 import kpt.core.model.shared.GenericResponse
 
 /**

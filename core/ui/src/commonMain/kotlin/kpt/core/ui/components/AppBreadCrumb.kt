@@ -110,11 +110,12 @@ fun BreadcrumbItem(
     text: String,
     isActive: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Text(
         text = text,
         color = if (isActive) KptTheme.colorScheme.primary else KptTheme.colorScheme.onBackground,
-        modifier = Modifier.clickable(
+        modifier = modifier.clickable(
             enabled = !isActive,
             interactionSource = MutableInteractionSource(),
             indication = LocalIndication.current,

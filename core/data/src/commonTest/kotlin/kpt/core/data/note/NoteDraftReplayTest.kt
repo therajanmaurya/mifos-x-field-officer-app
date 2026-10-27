@@ -12,12 +12,12 @@ package kpt.core.data.note
 import kotlinx.coroutines.test.runTest
 import kpt.core.data.note.impl.NoteCommandRepositoryImpl
 import kpt.core.model.note.NoteDraft
-import kpt.core.network.mifos.note.api.NoteApi
 import kpt.core.model.objects.note.CreateNoteResponseDto
 import kpt.core.model.objects.note.DeleteNoteResponseDto
-import kpt.core.network.mifos.note.dto.NoteDto
 import kpt.core.model.objects.note.NoteRequestDto
 import kpt.core.model.objects.note.UpdateNoteResponseDto
+import kpt.core.network.mifos.note.api.NoteApi
+import kpt.core.network.mifos.note.dto.NoteDto
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

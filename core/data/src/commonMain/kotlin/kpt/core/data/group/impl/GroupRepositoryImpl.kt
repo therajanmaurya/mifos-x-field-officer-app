@@ -27,7 +27,8 @@ import org.mobilenativefoundation.store.store5.Store
 @RepositoryBinding(binds = GroupRepository::class)
 internal class GroupRepositoryImpl(
     @FromStore(AppStoreIds.Groups) private val store: Store<Unit, List<Group>>,
-    @FromStore(AppStoreIds.GroupGetGroupWithAssociations) private val withMembersStore: Store<Int, GroupWithAssociations>,
+    @FromStore(AppStoreIds.GroupGetGroupWithAssociations)
+    private val withMembersStore: Store<Int, GroupWithAssociations>,
     @FromStore(AppStoreIds.GroupGetGroupAccounts) private val accountsStore: Store<Int, GroupAccounts>,
 ) : GroupRepository {
 

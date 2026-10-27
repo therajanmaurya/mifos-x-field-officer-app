@@ -29,10 +29,10 @@ import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.ScreenContent
-import kpt.core.model.client.Client
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.theme.AppTypography
 import kpt.core.designsystem.theme.DesignToken
+import kpt.core.model.client.Client
 import kpt.core.ui.components.AppRowCard
 import kpt.core.ui.util.TextUtil
 import kpt.feature.client.generated.resources.Res
@@ -96,6 +96,16 @@ internal fun ClientProfileScreen(
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val client by viewModel.client.collectAsStateWithLifecycle()
+    // The wired destination of each action row. FamilyMembers has none: the original's branch is an
+    // empty `{}` and the row is not in the list.
+    val actionHandlers = mapOf<ClientProfileActionItem, ((Int) -> Unit)?>(
+        ClientProfileActionItem.General to onViewAssociatedAccounts,
+        ClientProfileActionItem.Address to onViewAddress,
+        ClientProfileActionItem.Identifiers to onIdentifiers,
+        ClientProfileActionItem.Documents to onDocuments,
+        ClientProfileActionItem.Notes to onNotes,
+        ClientProfileActionItem.PinpointLocation to onPinpointLocation,
+    )
 
     EventsEffect(viewModel.eventFlow) { event ->
         when (event) {
@@ -107,17 +117,7 @@ internal fun ClientProfileScreen(
             is ClientProfileEvent.NavigateToGroupDetails ->
                 onNavigateToGroupDetails?.invoke(event.groupId)
 
-            is ClientProfileEvent.OnActionClick -> when (event.action) {
-                ClientProfileActionItem.General -> onViewAssociatedAccounts?.invoke(event.clientId)
-                ClientProfileActionItem.Address -> onViewAddress?.invoke(event.clientId)
-                ClientProfileActionItem.Identifiers -> onIdentifiers?.invoke(event.clientId)
-                ClientProfileActionItem.Documents -> onDocuments?.invoke(event.clientId)
-                ClientProfileActionItem.Notes -> onNotes?.invoke(event.clientId)
-                ClientProfileActionItem.PinpointLocation -> onPinpointLocation?.invoke(event.clientId)
-                // The original's branch is an empty `{}` and the row is not in the list, so this
-                // is unreachable. Kept so the `when` stays exhaustive without an `else`.
-                ClientProfileActionItem.FamilyMembers -> Unit
-            }
+            is ClientProfileEvent.OnActionClick -> actionHandlers[event.action]?.invoke(event.clientId)
         }
     }
 
@@ -133,25 +133,8 @@ internal fun ClientProfileScreen(
             onAction = remember(viewModel) { { viewModel.trySendAction(it) } },
             // A row is drawn only when its destination exists — absent, never inert
             // (RULE-IMPL-DEAD-CLICKABLE-001).
-            availableActions = remember(
-                onViewAssociatedAccounts,
-                onViewAddress,
-                onIdentifiers,
-                onDocuments,
-                onNotes,
-                onPinpointLocation,
-            ) {
-                clientsActionItems.filter { item ->
-                    when (item) {
-                        ClientProfileActionItem.General -> onViewAssociatedAccounts != null
-                        ClientProfileActionItem.Address -> onViewAddress != null
-                        ClientProfileActionItem.Identifiers -> onIdentifiers != null
-                        ClientProfileActionItem.Documents -> onDocuments != null
-                        ClientProfileActionItem.Notes -> onNotes != null
-                        ClientProfileActionItem.PinpointLocation -> onPinpointLocation != null
-                        ClientProfileActionItem.FamilyMembers -> false
-                    }
-                }
+            availableActions = remember(actionHandlers) {
+                clientsActionItems.filter { actionHandlers[it] != null }
             },
             modifier = modifier,
             scaffoldPadding = scaffoldPadding,

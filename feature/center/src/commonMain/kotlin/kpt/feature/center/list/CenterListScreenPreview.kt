@@ -11,8 +11,8 @@ package kpt.feature.center.list
 
 import androidx.compose.runtime.Composable
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.center.Center
 import kpt.core.designsystem.theme.KptTheme
+import kpt.core.model.center.Center
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /*
@@ -65,7 +65,11 @@ internal fun CenterListContentEmptyPreview() {
 @Composable
 internal fun CenterListSelectionPreview() {
     KptTheme {
-        CenterListContent(ui = CenterListState(selected = setOf(1, 2)), rows = ScreenState.Content(previewCenters), onAction = {})
+        CenterListContent(
+            ui = CenterListState(selected = setOf(1, 2)),
+            rows = ScreenState.Content(previewCenters),
+            onAction = {},
+        )
     }
 }
 
@@ -82,7 +86,12 @@ internal fun CenterListDownloadPreview() {
                     total = 2,
                     records = 37,
                     finished = true,
-                    failures = listOf(kpt.core.model.offline.DownloadFailure("Riverside Centre · loan #42", "Loan with identifier 42 does not exist")),
+                    failures = listOf(
+                        kpt.core.model.offline.DownloadFailure(
+                            "Riverside Centre · loan #42",
+                            "Loan with identifier 42 does not exist",
+                        ),
+                    ),
                 ),
             ),
             rows = ScreenState.Content(previewCenters.map { it.copy(sync = true) }),

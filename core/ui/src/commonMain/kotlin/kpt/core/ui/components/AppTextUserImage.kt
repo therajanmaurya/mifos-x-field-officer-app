@@ -27,14 +27,14 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.theme.AppTheme
-import kpt.core.ui.util.DevicePreview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.min
 
 @Composable
 fun AppTextUserImage(
     text: String,
-    color: Color? = null,
     modifier: Modifier = Modifier,
+    color: Color? = null,
 ) {
     var boxSize by remember { mutableStateOf(Size.Zero) }
     Box(
@@ -60,7 +60,7 @@ fun AppTextUserImage(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun AppTextUserImagePreview(
     modifier: Modifier = Modifier,

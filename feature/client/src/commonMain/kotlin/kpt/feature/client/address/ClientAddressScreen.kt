@@ -9,10 +9,6 @@
  */
 package kpt.feature.client.address
 
-import kpt.feature.client.generated.resources.feature_client_search_records_cd
-import kpt.feature.client.generated.resources.search
-import org.jetbrains.compose.resources.painterResource
-import androidx.compose.material3.IconButton
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,6 +56,9 @@ import kpt.feature.client.generated.resources.feature_client_identifiers_item
 import kpt.feature.client.generated.resources.feature_client_postal_code
 import kpt.feature.client.generated.resources.feature_client_province
 import kpt.feature.client.generated.resources.feature_client_screen_address
+import kpt.feature.client.generated.resources.feature_client_search_records_cd
+import kpt.feature.client.generated.resources.search
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

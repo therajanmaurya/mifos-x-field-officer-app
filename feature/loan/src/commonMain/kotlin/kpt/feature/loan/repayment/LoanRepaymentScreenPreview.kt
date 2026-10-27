@@ -42,7 +42,13 @@ private val previewForm = LoanRepaymentForm(
 internal fun LoanRepaymentContentPreview() {
     KptTheme {
         LoanRepaymentContent(
-            state = LoanRepaymentState(loanId = 7, amount = "2450", paymentTypeId = 1, paymentTypeName = "Cash", date = PREVIEW_DATE_MILLIS),
+            state = LoanRepaymentState(
+                loanId = 7,
+                amount = "2450",
+                paymentTypeId = 1,
+                paymentTypeName = "Cash",
+                date = PREVIEW_DATE_MILLIS,
+            ),
             form = ScreenState.Content(previewForm),
             onAction = {},
         )

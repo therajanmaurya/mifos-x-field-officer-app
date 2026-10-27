@@ -44,7 +44,6 @@ class LoanTransactionsScreenUiTest {
                 LoanTransactionsContent(
                     transactions = ScreenState.Content(listOf(row("1"))),
                     onAction = {},
-                    onBackPressed = {},
                 )
             }
         }
@@ -63,7 +62,6 @@ class LoanTransactionsScreenUiTest {
                 LoanTransactionsContent(
                     transactions = ScreenState.Content(listOf(row("1"), row("2", reversed = true))),
                     onAction = {},
-                    onBackPressed = {},
                 )
             }
         }
@@ -80,7 +78,6 @@ class LoanTransactionsScreenUiTest {
                 LoanTransactionsContent(
                     transactions = ScreenState.Empty,
                     onAction = {},
-                    onBackPressed = {},
                 )
             }
         }

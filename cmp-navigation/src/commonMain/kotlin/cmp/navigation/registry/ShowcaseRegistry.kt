@@ -28,11 +28,9 @@ object ShowcaseRegistry {
      * empty list on release builds (dev menu hidden) and, on a `--clean` fork where the
      * fenced block is stripped, the trailing `return emptyList()` is the whole body.
      */
-    fun devSettingsEntries(navController: NavController): List<DevMenuEntry> {
-        return emptyList()
-    }
+    val devSettingsEntries: (NavController) -> List<DevMenuEntry> = { _ -> emptyList() }
 
     /** Dev-only nav destinations registered inside the authenticated graph. */
-    val devDestinations: NavGraphBuilder.(NavController) -> Unit = { navController ->
+    val devDestinations: NavGraphBuilder.(NavController) -> Unit = { _ ->
     }
 }

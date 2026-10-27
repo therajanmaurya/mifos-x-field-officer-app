@@ -27,10 +27,10 @@ import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.data.testing.FakeSavingsAccountRepository
 import kpt.core.data.testing.FakeSavingsCommandRepository
-import kpt.core.model.savings.SavingProductsTemplate
 import kpt.core.model.objects.commonfiles.InterestType
 import kpt.core.model.objects.organisations.ProductSavings
 import kpt.core.model.objects.template.client.ChargeOptions
+import kpt.core.model.savings.SavingProductsTemplate
 import kpt.core.model.utils.ApiDateFormatter
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -451,7 +451,9 @@ class SavingsApplicationViewModelTest {
     fun `a group's and a client's drafts with the same id do not share a slot`() = runTest(dispatcher) {
         // ownerKind is part of the slot: group 31's application is not client 31's.
         val drafts = kpt.core.data.testing.FakeFormDraftRepository()
-        val offline = FakeSavingsCommandRepository(createResult = { MutationResult.Blocked(kpt.core.base.store.mutation.BlockReason.OFFLINE) })
+        val offline = FakeSavingsCommandRepository(
+            createResult = { MutationResult.Blocked(kpt.core.base.store.mutation.BlockReason.OFFLINE) },
+        )
         listOf(false, true).forEach { group ->
             val vm = viewModel(commands = offline, isGroup = group, drafts = drafts)
             chooseProduct(vm)

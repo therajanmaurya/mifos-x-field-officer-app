@@ -48,7 +48,12 @@ class ClientCollateralViewModelTest {
     private fun viewModel(
         commands: FakeClientCommandRepository = FakeClientCommandRepository(),
         clientId: Int = 42,
-    ) = ClientCollateralViewModel(repository, commands, SavedStateHandle(mapOf("clientId" to clientId)), kpt.core.data.testing.FakeFormDraftRepository())
+    ) = ClientCollateralViewModel(
+        repository,
+        commands,
+        SavedStateHandle(mapOf("clientId" to clientId)),
+        kpt.core.data.testing.FakeFormDraftRepository(),
+    )
 
     private fun item(id: Int, name: String, basePrice: Double, pctToBase: Double) = CollateralItem(
         quality = "A",

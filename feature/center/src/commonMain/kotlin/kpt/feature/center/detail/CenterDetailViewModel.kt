@@ -9,28 +9,28 @@
  */
 package kpt.feature.center.detail
 
-import kpt.core.model.recent.RecentRecord
-import kpt.core.model.recent.RecentKind
-import kpt.core.data.recent.RecentRecordsRepository
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.filterIsInstance
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.emptyIfContent
 import kpt.core.base.store.screen.mapContent
 import kpt.core.base.ui.viewmodel.BaseViewModel
 import kpt.core.data.center.CenterRepository
+import kpt.core.data.recent.RecentRecordsRepository
 import kpt.core.model.center.Center
 import kpt.core.model.center.CenterWithAssociations
 import kpt.core.model.group.Group
 import kpt.core.model.objects.groups.CenterInfo
+import kpt.core.model.recent.RecentKind
+import kpt.core.model.recent.RecentRecord
 
 /**
  * Center detail — ports BOTH `6b66e8a43:feature/center/centerDetails/CenterDetailsViewModel.kt` and
@@ -117,7 +117,11 @@ internal class CenterDetailViewModel(
     init {
         // Home's "Recently opened": record this visit once, when the record first loads.
         center.filterIsInstance<ScreenState.Content<Center>>().take(1)
-            .onEach { content -> content.data.let { recents.record(RecentRecord(RecentKind.CENTER, (it.id ?: centerId).toLong(), it.name.orEmpty(), it.accountNo)) } }
+            .onEach { content ->
+                val c = content.data
+                val id = (c.id ?: centerId).toLong()
+                recents.record(RecentRecord(RecentKind.CENTER, id, c.name.orEmpty(), c.accountNo))
+            }
             .launchIn(viewModelScope)
     }
 

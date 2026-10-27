@@ -170,38 +170,11 @@ fun NavGraphBuilder.loanDestinations(navController: NavController) {
     composableWithPushTransitions<LoanProfileRoute> {
         LoanProfileScreen(
             onBackPressed = navController::popBackStackSafely,
-            onDetail = { item, loanId ->
-                when (item) {
-                    LoanProfileActionItem.RepaymentSchedule ->
-                        navController.navigate(LoanScheduleRoute(loanId))
-                    LoanProfileActionItem.Transactions ->
-                        navController.navigate(LoanTransactionsRoute(loanId))
-                    // The ONE charge module, scoped to this loan — list, add, edit, delete.
-                    LoanProfileActionItem.Charges ->
-                        navController.navigateToCharges(ChargeResource.LOAN, loanId)
-                    LoanProfileActionItem.Reschedules ->
-                        navController.navigate(LoanReschedulesRoute(loanId))
-                    // The GENERIC document list, which is entity-agnostic and already ported —
-                    // the original passed `Constants.ENTITY_TYPE_LOANS` to the same screen.
-                    LoanProfileActionItem.Documents ->
-                        navController.navigateToDocumentList(Constants.ENTITY_TYPE_LOANS, loanId)
-                    // The original's `navigateToNotes(loanId)` — the generic note module, owner `loans`.
-                    LoanProfileActionItem.Notes ->
-                        navController.navigateToNotes(Constants.ENTITY_TYPE_LOANS, loanId)
-                    // Unreachable: only the items in `PORTED_DETAILS` are drawn as rows.
-                    else -> Unit
-                }
-            },
+            onDetail = navController::navigateToProfileDetail,
             // Only the rows whose destination exists are drawn. The other eleven arrive with the
             // rest of S4; until then they are ABSENT rather than tappable-and-dead.
             availableDetails = PORTED_DETAILS,
-            onPrimaryAction = { action, loanId ->
-                when (action) {
-                    LoanPrimaryAction.Approve -> navController.navigate(LoanApprovalRoute(loanId))
-                    LoanPrimaryAction.Repayment -> navController.navigate(LoanRepaymentRoute(loanId))
-                    LoanPrimaryAction.Transfer -> navController.navigate(LoanTransferRoute(loanId))
-                }
-            },
+            onPrimaryAction = navController::navigateToProfilePrimaryAction,
             availableActions = PORTED_ACTIONS,
             // The account-details screen is the rest of S4; the card is not clickable until then.
             onAccountDetails = null,
@@ -254,36 +227,71 @@ fun NavGraphBuilder.loanDestinations(navController: NavController) {
     composableWithPushTransitions<LoanSummaryRoute> {
         LoanSummaryScreen(
             onBackPressed = navController::popBackStackSafely,
-            onMenuItem = { item, loanId ->
-                when (item) {
-                    LoanSummaryMenuItem.Transactions ->
-                        navController.navigate(LoanTransactionsRoute(loanId))
-                    LoanSummaryMenuItem.RepaymentSchedule ->
-                        navController.navigate(LoanScheduleRoute(loanId))
-                    LoanSummaryMenuItem.Charges ->
-                        navController.navigateToCharges(ChargeResource.LOAN, loanId)
-                    LoanSummaryMenuItem.Documents ->
-                        navController.navigateToDocumentList(Constants.ENTITY_TYPE_LOANS, loanId)
-                    // The loan's datatables — the original's "More Loan Info" (`DATA_TABLE_NAME_LOANS`).
-                    LoanSummaryMenuItem.MoreInfo ->
-                        navController.navigateToDataTableList(Constants.DATA_TABLE_NAME_LOANS, loanId)
-                }
-            },
+            onMenuItem = navController::navigateToSummaryMenuItem,
             availableMenuItems = SUMMARY_MENU_ITEMS,
-            onAction = { action, loanId ->
-                when (action) {
-                    LoanSummaryAct.Approve -> navController.navigate(LoanApprovalRoute(loanId))
-                    LoanSummaryAct.MakeRepayment -> navController.navigate(LoanRepaymentRoute(loanId))
-                    LoanSummaryAct.Disburse -> navController.navigate(LoanDisbursementRoute(loanId))
-                    // Live here for the first time: in the original the SUMMARY's Transfer
-                    // dispatched `NavigateToLoanTransfer`, whose handler was an empty `{ }` on
-                    // both the ViewModel and the screen side — a drawn, enabled, dead button. The
-                    // PROFILE's Transfer worked. Same action, two screens, one of them broken.
-                    LoanSummaryAct.Transfer -> navController.navigate(LoanTransferRoute(loanId))
-                }
-            },
+            onAction = navController::navigateToSummaryAction,
             availableActions = SUMMARY_ACTIONS,
         )
+    }
+}
+
+private fun NavController.navigateToProfileDetail(item: LoanProfileActionItem, loanId: Int) {
+    when (item) {
+        LoanProfileActionItem.RepaymentSchedule ->
+            navigate(LoanScheduleRoute(loanId))
+        LoanProfileActionItem.Transactions ->
+            navigate(LoanTransactionsRoute(loanId))
+        // The ONE charge module, scoped to this loan — list, add, edit, delete.
+        LoanProfileActionItem.Charges ->
+            navigateToCharges(ChargeResource.LOAN, loanId)
+        LoanProfileActionItem.Reschedules ->
+            navigate(LoanReschedulesRoute(loanId))
+        // The GENERIC document list, which is entity-agnostic and already ported —
+        // the original passed `Constants.ENTITY_TYPE_LOANS` to the same screen.
+        LoanProfileActionItem.Documents ->
+            navigateToDocumentList(Constants.ENTITY_TYPE_LOANS, loanId)
+        // The original's `navigateToNotes(loanId)` — the generic note module, owner `loans`.
+        LoanProfileActionItem.Notes ->
+            navigateToNotes(Constants.ENTITY_TYPE_LOANS, loanId)
+        // Unreachable: only the items in `PORTED_DETAILS` are drawn as rows.
+        else -> Unit
+    }
+}
+
+private fun NavController.navigateToProfilePrimaryAction(action: LoanPrimaryAction, loanId: Int) {
+    when (action) {
+        LoanPrimaryAction.Approve -> navigate(LoanApprovalRoute(loanId))
+        LoanPrimaryAction.Repayment -> navigate(LoanRepaymentRoute(loanId))
+        LoanPrimaryAction.Transfer -> navigate(LoanTransferRoute(loanId))
+    }
+}
+
+private fun NavController.navigateToSummaryMenuItem(item: LoanSummaryMenuItem, loanId: Int) {
+    when (item) {
+        LoanSummaryMenuItem.Transactions ->
+            navigate(LoanTransactionsRoute(loanId))
+        LoanSummaryMenuItem.RepaymentSchedule ->
+            navigate(LoanScheduleRoute(loanId))
+        LoanSummaryMenuItem.Charges ->
+            navigateToCharges(ChargeResource.LOAN, loanId)
+        LoanSummaryMenuItem.Documents ->
+            navigateToDocumentList(Constants.ENTITY_TYPE_LOANS, loanId)
+        // The loan's datatables — the original's "More Loan Info" (`DATA_TABLE_NAME_LOANS`).
+        LoanSummaryMenuItem.MoreInfo ->
+            navigateToDataTableList(Constants.DATA_TABLE_NAME_LOANS, loanId)
+    }
+}
+
+private fun NavController.navigateToSummaryAction(action: LoanSummaryAct, loanId: Int) {
+    when (action) {
+        LoanSummaryAct.Approve -> navigate(LoanApprovalRoute(loanId))
+        LoanSummaryAct.MakeRepayment -> navigate(LoanRepaymentRoute(loanId))
+        LoanSummaryAct.Disburse -> navigate(LoanDisbursementRoute(loanId))
+        // Live here for the first time: in the original the SUMMARY's Transfer
+        // dispatched `NavigateToLoanTransfer`, whose handler was an empty `{ }` on
+        // both the ViewModel and the screen side — a drawn, enabled, dead button. The
+        // PROFILE's Transfer worked. Same action, two screens, one of them broken.
+        LoanSummaryAct.Transfer -> navigate(LoanTransferRoute(loanId))
     }
 }
 

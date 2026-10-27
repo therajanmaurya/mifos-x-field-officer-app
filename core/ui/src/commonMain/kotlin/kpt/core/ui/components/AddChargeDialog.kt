@@ -50,9 +50,7 @@ fun AddChargeBottomSheet(
     title: String,
     confirmText: String,
     dismissText: String,
-    showDatePicker: Boolean = false,
     selectedChargeName: String,
-    selectedDate: String? = null,
     chargeAmount: String,
     chargeType: String,
     chargeCollectedOn: String,
@@ -62,11 +60,15 @@ fun AddChargeBottomSheet(
     onChargeSelected: (Int, String) -> Unit,
     onDatePick: (Boolean) -> Unit,
     onDateChange: (Long) -> Unit,
-    amountError: String? = null,
     onAmountChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    showDatePicker: Boolean = false,
+    selectedDate: String? = null,
+    amountError: String? = null,
 ) {
     AppBottomSheet(
         onDismiss = onDismiss,
+        modifier = modifier,
         content = {
             val datePickerState = rememberDatePickerState(
                 initialSelectedDateMillis = Clock.System.now().toEpochMilliseconds(),

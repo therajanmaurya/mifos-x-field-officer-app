@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.center.create
 
@@ -24,7 +24,13 @@ internal fun CreateCenterScreenPreview() {
     KptTheme {
         CreateCenterContent(
             // i18n:skip — preview fixture
-            state = CreateCenterState(name = "North Market", officeId = 1, officeName = "Head Office", active = true, activationDateMillis = 1_792_756_800_000L),
+            state = CreateCenterState(
+                name = "North Market",
+                officeId = 1,
+                officeName = "Head Office",
+                active = true,
+                activationDateMillis = 1_792_756_800_000L,
+            ),
             offices = offices,
             onAction = {},
         )
@@ -38,7 +44,12 @@ internal fun CreateCenterScreenErrorsPreview() {
     KptTheme {
         CreateCenterContent(
             // i18n:skip — preview fixture
-            state = CreateCenterState(name = "Ab", nameError = CenterNameError.TOO_SHORT, officeMissing = true, activationDateMillis = 1_792_756_800_000L),
+            state = CreateCenterState(
+                name = "Ab",
+                nameError = CenterNameError.TOO_SHORT,
+                officeMissing = true,
+                activationDateMillis = 1_792_756_800_000L,
+            ),
             offices = offices,
             onAction = {},
         )

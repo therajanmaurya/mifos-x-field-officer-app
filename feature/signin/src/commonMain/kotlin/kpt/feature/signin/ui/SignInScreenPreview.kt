@@ -38,7 +38,12 @@ internal fun SignInContentRejectedPreview() {
     KptTheme {
         SignInContent(
             // i18n:skip — preview fixture
-            state = previewState.copy(username = "mifos", password = "wrong", error = SignInError.Rejected, failedAttempts = 2),
+            state = previewState.copy(
+                username = "mifos",
+                password = "wrong",
+                error = SignInError.Rejected,
+                failedAttempts = 2,
+            ),
             onAction = {},
             onUpdateServerConfig = {},
         )
@@ -50,7 +55,12 @@ internal fun SignInContentRejectedPreview() {
 internal fun SignInContentLockedOutPreview() {
     KptTheme {
         SignInContent(
-            state = previewState.copy(username = "mifos", isLockedOut = true, failedAttempts = 5, error = SignInError.LockedOut),
+            state = previewState.copy(
+                username = "mifos",
+                isLockedOut = true,
+                failedAttempts = 5,
+                error = SignInError.LockedOut,
+            ),
             onAction = {},
             onUpdateServerConfig = {},
         )

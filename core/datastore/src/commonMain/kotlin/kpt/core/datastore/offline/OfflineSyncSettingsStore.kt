@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.datastore.offline
 
@@ -49,8 +49,9 @@ class SettingsOfflineSyncSettingsStore(private val plainSettings: Settings) : Of
     private fun read(): RefreshSettings {
         val default = RefreshSettings()
         val interval = plainSettings.getInt(OFFLINE_INTERVAL_KEY, default.intervalHours)
+        val storedMode = plainSettings.getStringOrNull(OFFLINE_MODE_KEY)
         return RefreshSettings(
-            mode = RefreshMode.entries.firstOrNull { it.name == plainSettings.getStringOrNull(OFFLINE_MODE_KEY) } ?: default.mode,
+            mode = RefreshMode.entries.firstOrNull { it.name == storedMode } ?: default.mode,
             intervalHours = interval.takeIf { it in RefreshSettings.INTERVALS } ?: default.intervalHours,
             wifiOnly = plainSettings.getBoolean(OFFLINE_WIFI_KEY, default.wifiOnly),
             chargingOnly = plainSettings.getBoolean(OFFLINE_CHARGING_KEY, default.chargingOnly),

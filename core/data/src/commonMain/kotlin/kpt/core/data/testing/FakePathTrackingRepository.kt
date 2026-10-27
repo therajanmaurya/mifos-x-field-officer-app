@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.testing
 
@@ -23,5 +23,8 @@ class FakePathTrackingRepository(paths: List<UserLocation> = emptyList()) : Path
     val paths = MutableStateFlow<ScreenState<List<UserLocation>>>(ScreenState.Content(paths))
     val requested = mutableListOf<Int>()
 
-    override fun userPathsStream(userId: Int, scope: CoroutineScope) = screenDataStreamForTesting(paths).also { requested += userId }
+    override fun userPathsStream(
+        userId: Int,
+        scope: CoroutineScope,
+    ) = screenDataStreamForTesting(paths).also { requested += userId }
 }

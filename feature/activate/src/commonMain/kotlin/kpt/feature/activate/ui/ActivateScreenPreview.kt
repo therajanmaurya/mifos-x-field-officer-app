@@ -26,7 +26,12 @@ private const val PREVIEW_DATE_MILLIS = 1_760_000_000_000L
 @Composable
 internal fun ActivateContentPreview() {
     KptTheme {
-        ActivateContent(state = ActivateState(id = 42, type = ActivateType.Client), onAction = {}, onBackPressed = {}, initialDateMillis = PREVIEW_DATE_MILLIS)
+        ActivateContent(
+            state = ActivateState(id = 42, type = ActivateType.Client),
+            onAction = {},
+            onBackPressed = {},
+            initialDateMillis = PREVIEW_DATE_MILLIS,
+        )
     }
 }
 

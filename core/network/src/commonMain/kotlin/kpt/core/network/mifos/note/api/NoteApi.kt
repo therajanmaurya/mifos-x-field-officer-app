@@ -19,9 +19,9 @@ import de.jensklingenberg.ktorfit.http.Path
 import kpt.core.base.network.annotation.ApiBinding
 import kpt.core.model.objects.note.CreateNoteResponseDto
 import kpt.core.model.objects.note.DeleteNoteResponseDto
-import kpt.core.network.mifos.note.dto.NoteDto
 import kpt.core.model.objects.note.NoteRequestDto
 import kpt.core.model.objects.note.UpdateNoteResponseDto
+import kpt.core.network.mifos.note.dto.NoteDto
 
 @ApiBinding("mifos")
 interface NoteApi {

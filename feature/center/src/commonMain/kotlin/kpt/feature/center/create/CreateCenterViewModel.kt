@@ -5,13 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.center.create
 
 import androidx.lifecycle.viewModelScope
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -34,6 +32,8 @@ import kpt.core.model.draft.CreateForm
 import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.office.Office
 import kpt.core.model.utils.ApiDateFormatter
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * Ported from `6b66e8a43:feature/center/createCenter/CreateNewCenterViewModel.kt` + the form state its
@@ -67,8 +67,12 @@ internal class CreateCenterViewModel(
 
     /** A create that did not land is kept here — resumable on this form, listed in Sync & Drafts. */
     private val draft = FormDraftSlot(
-        drafts, viewModelScope, CreateForm.CENTER.key, ownerId = null,
-        CreateCenterState.serializer(), CenterPayload.serializer(),
+        drafts,
+        viewModelScope,
+        CreateForm.CENTER.key,
+        ownerId = null,
+        CreateCenterState.serializer(),
+        CenterPayload.serializer(),
     )
 
     val offeredDraft: StateFlow<SavedFormDraft?> = draft.offered
@@ -78,14 +82,13 @@ internal class CreateCenterViewModel(
 
     override fun handleAction(action: CreateCenterAction) {
         when (action) {
-            is CreateCenterAction.NameChanged -> mutableStateFlow.value = state.copy(name = action.value, nameError = null)
-            is CreateCenterAction.OfficeSelected -> mutableStateFlow.value =
-                state.copy(officeId = action.id, officeName = action.name, officeMissing = false)
-            is CreateCenterAction.ActiveToggled -> mutableStateFlow.value = state.copy(active = action.active)
-            CreateCenterAction.OpenDatePicker -> mutableStateFlow.value = state.copy(datePickerOpen = true)
-            CreateCenterAction.CloseDatePicker -> mutableStateFlow.value = state.copy(datePickerOpen = false)
-            is CreateCenterAction.DatePicked ->
-                mutableStateFlow.value = state.copy(activationDateMillis = action.millis, datePickerOpen = false)
+            is CreateCenterAction.NameChanged,
+            is CreateCenterAction.OfficeSelected,
+            is CreateCenterAction.ActiveToggled,
+            CreateCenterAction.OpenDatePicker,
+            CreateCenterAction.CloseDatePicker,
+            is CreateCenterAction.DatePicked,
+            -> mutableStateFlow.value = reduceField(action)
             CreateCenterAction.Submit -> submit()
             CreateCenterAction.DismissDialog -> {
                 val created = state.dialog == CreateCenterState.Dialog.Created
@@ -101,6 +104,17 @@ internal class CreateCenterViewModel(
                 mutableStateFlow.value = state.copy(draftSaved = true)
             }
         }
+    }
+
+    private fun reduceField(action: CreateCenterAction): CreateCenterState = when (action) {
+        is CreateCenterAction.NameChanged -> state.copy(name = action.value, nameError = null)
+        is CreateCenterAction.OfficeSelected ->
+            state.copy(officeId = action.id, officeName = action.name, officeMissing = false)
+        is CreateCenterAction.ActiveToggled -> state.copy(active = action.active)
+        CreateCenterAction.OpenDatePicker -> state.copy(datePickerOpen = true)
+        CreateCenterAction.CloseDatePicker -> state.copy(datePickerOpen = false)
+        is CreateCenterAction.DatePicked -> state.copy(activationDateMillis = action.millis, datePickerOpen = false)
+        else -> state
     }
 
     private fun submit() {
@@ -129,7 +143,11 @@ internal class CreateCenterViewModel(
             val dialog = when (result) {
                 is MutationResult.Applied -> CreateCenterState.Dialog.Created
                 is MutationResult.Blocked ->
-                    if (result.reason == BlockReason.OFFLINE) CreateCenterState.Dialog.Offline else CreateCenterState.Dialog.Failed(null)
+                    if (result.reason == BlockReason.OFFLINE) {
+                        CreateCenterState.Dialog.Offline
+                    } else {
+                        CreateCenterState.Dialog.Failed(null)
+                    }
                 is MutationResult.Failed -> CreateCenterState.Dialog.Failed(result.cause.serverErrorMessage())
                 is MutationResult.Conflicted -> CreateCenterState.Dialog.Failed(null)
             }

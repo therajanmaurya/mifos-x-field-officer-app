@@ -33,6 +33,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun AppLoadingDialog(
     visibilityState: LoadingDialogState,
+    modifier: Modifier = Modifier,
 ) {
     when (visibilityState) {
         is LoadingDialogState.Hidden -> Unit
@@ -49,7 +50,7 @@ fun AppLoadingDialog(
                     colors = CardDefaults.cardColors(
                         containerColor = KptTheme.colorScheme.surfaceContainerHigh,
                     ),
-                    modifier = Modifier
+                    modifier = modifier
                         .semantics {
                             testTag = "AlertPopup"
                         }

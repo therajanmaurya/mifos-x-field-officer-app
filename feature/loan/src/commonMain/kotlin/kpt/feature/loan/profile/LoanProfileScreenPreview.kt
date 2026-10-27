@@ -45,7 +45,6 @@ internal fun LoanProfileContentPreview() {
             loan = ScreenState.Content(previewLoan),
             status = ScreenState.Content(LoanProfileStatus.ACTIVE),
             onAction = {},
-            onBackPressed = {},
             availableDetails = listOf(
                 LoanProfileActionItem.RepaymentSchedule,
                 LoanProfileActionItem.Transactions,
@@ -66,7 +65,6 @@ internal fun LoanProfileContentPendingApprovalPreview() {
             loan = ScreenState.Content(previewLoan),
             status = ScreenState.Content(LoanProfileStatus.PENDING),
             onAction = {},
-            onBackPressed = {},
             availableActions = setOf(LoanPrimaryAction.Approve),
         )
     }

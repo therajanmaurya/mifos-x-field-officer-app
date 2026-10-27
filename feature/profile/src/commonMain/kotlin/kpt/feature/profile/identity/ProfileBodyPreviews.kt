@@ -35,7 +35,13 @@ private val irving = ProfileUiState(
 @Composable
 private fun Render(state: ProfileUiState) = KptTheme(darkTheme = false) {
     Surface(color = KptBaseTheme.colorScheme.background) {
-        ProfileBodyContent(state = state.copy(password = null), onAction = {}, onBack = {}, onServerSettings = {}, onSignOut = {})
+        ProfileBodyContent(
+            state = state.copy(password = null),
+            onAction = {},
+            onBack = {},
+            onServerSettings = {},
+            onSignOut = {},
+        )
     }
 }
 
@@ -43,11 +49,18 @@ private fun Render(state: ProfileUiState) = KptTheme(darkTheme = false) {
 internal fun ProfileContentPreview() = Render(irving)
 
 @Preview @Composable
-internal fun ProfileLoadingPreview() = Render(irving.copy(fullName = null, email = null, roles = emptyList(), initials = "F", name = NameState.Loading))
+internal fun ProfileLoadingPreview() = Render(
+    irving.copy(fullName = null, email = null, roles = emptyList(), initials = "F", name = NameState.Loading),
+)
 
 @Preview @Composable
 internal fun ProfileErrorPreview() = Render(
-    irving.copy(fullName = null, email = null, initials = "F", name = NameState.Failed("Server error (500). Try again.")),
+    irving.copy(
+        fullName = null,
+        email = null,
+        initials = "F",
+        name = NameState.Failed("Server error (500). Try again."),
+    ),
 )
 
 @Preview @Composable
@@ -55,7 +68,16 @@ internal fun ProfileOfflinePreview() = Render(irving.copy(online = false))
 
 @Preview @Composable
 internal fun ProfileStaffLinkedPreview() = Render(
-    irving.copy(fullName = "Mariana Ortega", initials = "MO", username = "mortega", email = null, officeName = "Morelia Norte", hasStaffLink = true, staffName = "Mariana Ortega", isLoanOfficer = true),
+    irving.copy(
+        fullName = "Mariana Ortega",
+        initials = "MO",
+        username = "mortega",
+        email = null,
+        officeName = "Morelia Norte",
+        hasStaffLink = true,
+        staffName = "Mariana Ortega",
+        isLoanOfficer = true,
+    ),
 )
 
 @Preview @Composable
@@ -73,7 +95,9 @@ internal fun ProfilePasswordRefusedPreview() = KptTheme(darkTheme = false) {
                 new = "abc",
                 repeat = "abc",
                 error = PasswordError.Server(
-                    "Password must be 12 to 50 characters long, containing at least one uppercase letter, one lowercase letter, one numeric digit, and one special character, with no spaces or consecutive repeating characters",
+                    "Password must be 12 to 50 characters long, containing at least one uppercase letter, " +
+                        "one lowercase letter, one numeric digit, and one special character, " +
+                        "with no spaces or consecutive repeating characters",
                 ),
             ),
             onAction = {},

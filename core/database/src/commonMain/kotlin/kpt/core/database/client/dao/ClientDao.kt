@@ -14,32 +14,23 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import androidx.room3.Update
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kpt.core.base.database.annotation.DbDao
 import kpt.core.database.client.entity.ClientAccounts
-import kpt.core.database.client.entity.ClientAddressEntity
 import kpt.core.database.client.entity.ClientDateEntity
 import kpt.core.database.client.entity.ClientEntity
-import kpt.core.database.client.entity.ClientIdentifierEntity
-import kpt.core.database.client.entity.ClientPayloadEntity
 import kpt.core.database.client.entity.ClientsTemplateEntity
-import kpt.core.database.client.entity.InterestTypeEntity
-import kpt.core.database.client.entity.OfficeOptionsEntity
-import kpt.core.database.client.entity.OptionsEntity
-import kpt.core.database.client.entity.SavingProductOptionsEntity
-import kpt.core.database.client.entity.StaffOptionsEntity
-import kpt.core.database.datatable.entity.ColumnHeader
-import kpt.core.database.datatable.entity.ColumnValue
-import kpt.core.database.datatable.entity.DataTableEntity
-import kpt.core.database.datatable.entity.DataTablePayload
 import kpt.core.database.loan.entity.LoanAccountEntity
 import kpt.core.database.savings.entity.SavingsAccountEntity
 
 @DbDao
 @Dao
-interface ClientDao {
+interface ClientDao :
+    ClientTemplateOptionsDao,
+    ClientDataTableDao,
+    ClientPayloadDao,
+    ClientAddressIdentifierDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = ClientEntity::class)
     suspend fun insertClient(client: ClientEntity)
 
@@ -72,163 +63,10 @@ interface ClientDao {
     @Query("SELECT * FROM SavingsAccount WHERE clientId = :clientId")
     fun getSavingsAccountsByClientId(clientId: Long): Flow<List<SavingsAccountEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = ClientsTemplateEntity::class)
-    suspend fun insertClientsTemplate(clientsTemplate: ClientsTemplateEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = OfficeOptionsEntity::class)
-    suspend fun insertOfficeOptions(officeOptions: List<OfficeOptionsEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = StaffOptionsEntity::class)
-    suspend fun insertStaffOptions(staffOptions: List<StaffOptionsEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = SavingProductOptionsEntity::class)
-    suspend fun insertSavingProductOptions(savingProductOptions: List<SavingProductOptionsEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = OptionsEntity::class)
-    suspend fun insertOption(options: OptionsEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = InterestTypeEntity::class)
-    suspend fun insertInterestTypes(interestTypes: List<InterestTypeEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = ColumnHeader::class)
-    suspend fun insertColumnHeader(columnHeader: ColumnHeader)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = ColumnValue::class)
-    suspend fun insertColumnValue(columnValue: ColumnValue)
-
-    @Query("DELETE FROM DataTable")
-    suspend fun deleteDataTables()
-
-    @Query("DELETE FROM ColumnHeader")
-    suspend fun deleteColumnHeaders()
-
-    @Query("DELETE FROM ColumnValue")
-    suspend fun deleteColumnValues()
-
-    @Query("SELECT * FROM ClientsTemplate LIMIT 1")
-    suspend fun getClientsTemplate(): ClientsTemplateEntity
-
-    @Query("SELECT * FROM ClientTemplateOfficeOptions")
-    fun getOfficeOptions(): Flow<List<OfficeOptionsEntity>>
-
-    @Query("SELECT * FROM ClientTemplateStaffOptions")
-    fun getStaffOptions(): Flow<List<StaffOptionsEntity>>
-
-    @Query("SELECT * FROM ClientTemplateSavingProductsOptions")
-    fun getSavingProductOptions(): Flow<List<SavingProductOptionsEntity>>
-
-    @Query("SELECT * FROM ClientTemplateOptions WHERE optionType = :optionType")
-    fun getOptions(optionType: String): Flow<List<OptionsEntity>>
-
-    @Query("SELECT * FROM ClientTemplateInterest")
-    fun getAllInterestType(): Flow<List<InterestTypeEntity>>
-
-    @Query("SELECT * FROM DataTable where applicationTableName = :tableName")
-    fun getDatatableByTableName(tableName: String): Flow<List<DataTableEntity>>
-
-    @Query("SELECT * FROM ColumnHeader WHERE registeredTableName = :tableName")
-    fun getColumnHeadersByTableName(tableName: String): Flow<List<ColumnHeader>>
-
-    @Query("SELECT * FROM ColumnValue WHERE registeredTableName = :tableName")
-    fun getColumnValuesByTableName(tableName: String): Flow<List<ColumnValue>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = ClientPayloadEntity::class)
-    suspend fun insertClientPayload(clientPayload: ClientPayloadEntity)
-
-    @Insert(entity = DataTablePayload::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertDataTablePayload(dataTablePayloads: DataTablePayload)
-
-    @Insert(entity = DataTableEntity::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertDataTable(dataTable: DataTableEntity)
-
-    @Query("SELECT * FROM ClientPayload")
-    fun getAllClientPayload(): Flow<List<ClientPayloadEntity>>
-
-    @Query("SELECT * FROM DataTablePayload WHERE clientCreationTime = :clientCreationTime")
-    fun getDataTablePayloadByCreationTime(clientCreationTime: Long): Flow<List<DataTablePayload>>
-
-    @Query("DELETE FROM ClientPayload WHERE id = :id")
-    suspend fun deleteClientPayloadById(id: Int)
-
-    @Query("DELETE FROM DataTablePayload WHERE clientCreationTime = :clientCreationTime")
-    suspend fun deleteDataTablePayloadByCreationTime(clientCreationTime: Long)
-
-    @Update(entity = ClientPayloadEntity::class, onConflict = OnConflictStrategy.NONE)
-    suspend fun updateDatabaseClientPayload(clientPayload: ClientPayloadEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = ClientAddressEntity::class)
-    suspend fun insertAddress(address: ClientAddressEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = ClientAddressEntity::class)
-    suspend fun insertAddresses(addresses: List<ClientAddressEntity>)
-
-    @Query("SELECT * FROM ClientAddress WHERE clientID = :clientId")
-    fun getAddressesByClientId(clientId: Int): Flow<List<ClientAddressEntity>>
-
-    @Query("SELECT * FROM ClientAddress WHERE addressId = :addressId LIMIT 1")
-    fun getAddressById(addressId: Int): Flow<ClientAddressEntity?>
-
-    @Query("DELETE FROM ClientAddress WHERE clientID = :clientId")
-    suspend fun deleteAddressesByClientId(clientId: Int)
-
-    @Query(
-        """
-    SELECT * FROM ClientAddress 
-    WHERE addressLine1 LIKE :query ESCAPE '\'
-       OR addressLine2 LIKE :query ESCAPE '\'
-       OR addressLine3 LIKE :query ESCAPE '\'
-       OR city LIKE :query ESCAPE '\'
-       OR stateName LIKE :query ESCAPE '\'
-       OR countryName LIKE :query ESCAPE '\'
-       OR postalCode LIKE :query ESCAPE '\'
-    ORDER BY city
-    LIMIT 50
-    """,
-    )
-    fun searchAddressesByQuery(query: String): Flow<List<ClientAddressEntity>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = ClientIdentifierEntity::class)
-    suspend fun insertIdentifiers(identifiers: List<ClientIdentifierEntity>)
-
-    @Query("SELECT * FROM ClientIdentifier WHERE clientId = :clientId")
-    fun getIdentifiersByClientId(clientId: Int): Flow<List<ClientIdentifierEntity>>
-
-    @Query("DELETE FROM ClientIdentifier WHERE clientId = :clientId")
-    suspend fun deleteIdentifiersByClientId(clientId: Int)
-
-    @Query(
-        """
-    SELECT * FROM ClientIdentifier 
-    WHERE CAST(id AS TEXT) LIKE :query ESCAPE '\'
-       OR documentKey LIKE :query ESCAPE '\'
-       OR description LIKE :query ESCAPE '\'
-       OR documentTypeName LIKE :query ESCAPE '\'
-    ORDER BY documentKey
-    LIMIT 50
-    """,
-    )
-    fun searchIdentifiersByQuery(query: String): Flow<List<ClientIdentifierEntity>>
-
     companion object {
         const val GENDER_OPTIONS = "genderOptions"
         const val CLIENT_TYPE_OPTIONS = "clientTypeOptions"
         const val CLIENT_CLASSIFICATION_OPTIONS = "clientClassificationOptions"
-    }
-
-    /**
-     * Replace every identifier belonging to the touched clients.
-     *
-     * Was `ClientDaoHelper.insertIdentifiers`, which hand-rolled a backup/restore around the
-     * delete+insert to fake atomicity — reading every row back, then re-inserting it from memory if
-     * the write threw. `@Transaction` is that guarantee for free, and a real rollback rather than a
-     * best-effort one (the hand-rolled restore could itself throw, which it only logged).
-     */
-    @Transaction
-    suspend fun replaceIdentifiersForClients(identifiers: List<ClientIdentifierEntity>) {
-        val valid = identifiers.filter { it.clientId != null }
-        if (valid.isEmpty()) return
-        valid.mapNotNull { it.clientId }.distinct().forEach { deleteIdentifiersByClientId(it) }
-        insertIdentifiers(valid)
     }
 
     /** Persist a client, deriving its split date columns. Was `ClientDaoHelper.saveClient`. */
@@ -297,39 +135,6 @@ interface ClientDao {
             insertOption(it.copy(optionType = CLIENT_CLASSIFICATION_OPTIONS))
         }
         clientsTemplate.clientLegalFormOptions?.let { insertInterestTypes(it) }
-
-        clientsTemplate.dataTables?.let { dataTables ->
-            deleteDataTables()
-            deleteColumnHeaders()
-            deleteColumnValues()
-            dataTables.forEach { dataTable ->
-                insertDataTable(dataTable)
-                dataTable.columnHeaderData.forEach { header ->
-                    insertColumnHeader(header.copy(registeredTableName = dataTable.applicationTableName))
-                    header.columnValues.forEach { value ->
-                        insertColumnValue(value.copy(registeredTableName = dataTable.registeredTableName))
-                    }
-                }
-            }
-        }
+        clientsTemplate.dataTables?.let { replaceDataTables(it) }
     }
-
-    /**
-     * Drop an offline client payload together with the datatable rows queued alongside it.
-     * Was `ClientDaoHelper.deleteAndUpdatePayloads` — now atomic, so a half-deleted payload cannot
-     * be replayed on the next sync.
-     */
-    @Transaction
-    suspend fun deleteClientPayloadWithData(id: Int, clientCreationTime: Long) {
-        deleteClientPayloadById(id)
-        deleteDataTablePayloadByCreationTime(clientCreationTime)
-    }
-
-    /** One queued offline client, for the write store's source of truth. */
-    @Query("SELECT * FROM ClientPayload WHERE id = :id LIMIT 1")
-    fun observeClientPayload(id: Int): Flow<ClientPayloadEntity?>
-
-    /** The logout purge for the offline client queue — a capture must not outlive its officer. */
-    @Query("DELETE FROM ClientPayload")
-    suspend fun deleteAllClientPayloads()
 }

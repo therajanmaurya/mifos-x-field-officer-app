@@ -26,9 +26,13 @@ internal fun DocumentUploadContentPreview() {
     KptTheme {
         DocumentUploadContent(
             // i18n:skip — preview fixtures
-            state = DocumentUploadState(entityType = "groups", entityId = 11, name = "Meeting minutes", description = "October"),
+            state = DocumentUploadState(
+                entityType = "groups",
+                entityId = 11,
+                name = "Meeting minutes",
+                description = "October",
+            ),
             onAction = {},
-            onBackPressed = {},
         )
     }
 }
@@ -39,9 +43,14 @@ internal fun DocumentUploadContentValidationPreview() {
     // Submit pressed with nothing chosen: every required field flags itself.
     KptTheme {
         DocumentUploadContent(
-            state = DocumentUploadState(entityType = "groups", entityId = 11, nameError = true, descriptionError = true, fileError = true),
+            state = DocumentUploadState(
+                entityType = "groups",
+                entityId = 11,
+                nameError = true,
+                descriptionError = true,
+                fileError = true,
+            ),
             onAction = {},
-            onBackPressed = {},
         )
     }
 }

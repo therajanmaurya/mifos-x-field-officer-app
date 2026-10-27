@@ -38,6 +38,9 @@
 :feature:home
 :feature:loan
 :feature:note
+:feature:notification
+:feature:offlinesync
+:feature:pathtracking
 :feature:profile
 :feature:report
 :feature:savings

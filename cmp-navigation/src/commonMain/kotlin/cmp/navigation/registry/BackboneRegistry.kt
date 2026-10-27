@@ -179,19 +179,23 @@ private fun NavController.navigateHome(target: HomeNavigation) = when (target) {
     HomeNavigation.Settings -> navigateToSettings()
     HomeNavigation.Profile -> navigateToProfile()
     is HomeNavigation.Center -> navigateToCenterDetail(target.centerId)
-    is HomeNavigation.Recent -> when (target.kind) {
-        RecentKind.CLIENT -> navigateToClientProfile(target.id.toInt())
-        RecentKind.GROUP -> navigateToGroupsDetail(target.id.toInt())
-        RecentKind.CENTER -> navigateToCenterDetail(target.id.toInt())
-        RecentKind.LOAN -> navigateToLoanProfile(target.id.toInt())
-    }
-    is HomeNavigation.Quick -> when (target.action) {
-        QuickAction.NEW_CLIENT -> navigateToCreateNewClient()
-        QuickAction.NEW_GROUP -> navigateToCreateGroup()
-        QuickAction.NEW_CENTER -> navigateToCreateCenter()
-        QuickAction.COLLECTION_SHEET -> navigateToIndividualCollectionSheet()
-        QuickAction.RUN_REPORTS -> navigateToReports()
-        QuickAction.SEARCH -> navigateToSearch()
-        QuickAction.PATH_TRACKER -> navigateToPathTracking()
-    }
+    is HomeNavigation.Recent -> navigateToRecent(target)
+    is HomeNavigation.Quick -> navigateToQuickAction(target.action)
+}
+
+private fun NavController.navigateToRecent(target: HomeNavigation.Recent) = when (target.kind) {
+    RecentKind.CLIENT -> navigateToClientProfile(target.id.toInt())
+    RecentKind.GROUP -> navigateToGroupsDetail(target.id.toInt())
+    RecentKind.CENTER -> navigateToCenterDetail(target.id.toInt())
+    RecentKind.LOAN -> navigateToLoanProfile(target.id.toInt())
+}
+
+private fun NavController.navigateToQuickAction(action: QuickAction) = when (action) {
+    QuickAction.NEW_CLIENT -> navigateToCreateNewClient()
+    QuickAction.NEW_GROUP -> navigateToCreateGroup()
+    QuickAction.NEW_CENTER -> navigateToCreateCenter()
+    QuickAction.COLLECTION_SHEET -> navigateToIndividualCollectionSheet()
+    QuickAction.RUN_REPORTS -> navigateToReports()
+    QuickAction.SEARCH -> navigateToSearch()
+    QuickAction.PATH_TRACKER -> navigateToPathTracking()
 }

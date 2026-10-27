@@ -9,31 +9,21 @@
  */
 package kpt.core.store.group
 
-import kpt.core.model.group.GroupAccounts as GroupAccountsModel
-import kpt.core.model.group.GroupWithAssociations as GroupWithAssociationsModel
-import kpt.core.model.group.Group
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
-import kpt.core.database.group.entity.GroupAccounts
-import kpt.core.database.group.entity.GroupEntity
-import kpt.core.database.group.entity.GroupWithAssociations
+import kpt.core.model.group.Group
 import kpt.core.network.mifos.group.api.GroupApi
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys
 import org.mobilenativefoundation.store.store5.Store
+import kpt.core.model.group.GroupAccounts as GroupAccountsModel
+import kpt.core.model.group.GroupWithAssociations as GroupWithAssociationsModel
 
 /**
  * Keyed reads for group with no table of their own — cached through the shared read cache so the
  * last-known answer still renders with no signal.
  */
-
-/** Addresses one `getAllGroupsInOffice` read. */
-data class GetAllGroupsInOfficeKey(
-    val officeId: Int,
-    val params: Map<String, String>,
-)
 
 @StoreProvider(id = "groupGetGroupWithAssociations", ttl = "12h")
 @CacheKey(fn = "forKey", key = "groupGetGroupWithAssociations:{key}", params = ["key:String"])

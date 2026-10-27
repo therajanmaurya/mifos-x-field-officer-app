@@ -60,8 +60,9 @@ private val URL_PARTS = Regex("^(https?://)([^/:]+)(?::(\\d+))?(/.*)?$")
  * original's Instance URL dialog took exactly these two. Null when [url] is not an http(s) URL.
  */
 fun serverConfigOf(url: String, tenant: String): ServerConfig? {
-    val (protocol, host, port, path) = URL_PARTS.find(url.trim())?.destructured ?: return null
-    val apiPath = path.trim('/')
+    val parts = URL_PARTS.find(url.trim())?.destructured ?: return null
+    val (protocol, host, port) = parts
+    val apiPath = parts.component4().trim('/')
     return ServerConfig(
         protocol = protocol,
         endPoint = host,

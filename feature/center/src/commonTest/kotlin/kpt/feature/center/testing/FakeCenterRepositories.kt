@@ -11,10 +11,6 @@
 
 package kpt.feature.center.testing
 
-import kpt.core.model.objects.groups.CenterInfo
-import kpt.core.model.center.CenterWithAssociations
-import kpt.core.model.group.GroupWithAssociations
-import kpt.core.model.group.GroupAccounts
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,8 +20,12 @@ import kpt.core.base.store.screen.screenDataStreamForTesting
 import kpt.core.data.center.CenterRepository
 import kpt.core.data.group.GroupRepository
 import kpt.core.model.center.Center
+import kpt.core.model.center.CenterWithAssociations
 import kpt.core.model.group.Group
+import kpt.core.model.group.GroupAccounts
+import kpt.core.model.group.GroupWithAssociations
 import kpt.core.model.objects.databaseobjects.CollectionSheet
+import kpt.core.model.objects.groups.CenterInfo
 import kpt.core.model.shared.Payload
 
 /**
@@ -54,7 +54,10 @@ internal class FakeCenterRepository(
     val meetingState = MutableStateFlow<ScreenState<CenterWithAssociations>>(ScreenState.Loading)
     val summaryState = MutableStateFlow<ScreenState<List<CenterInfo>>>(ScreenState.Loading)
 
-    override fun centerWithMeetingStream(centerId: Int, scope: CoroutineScope): ScreenDataStream<CenterWithAssociations> =
+    override fun centerWithMeetingStream(
+        centerId: Int,
+        scope: CoroutineScope,
+    ): ScreenDataStream<CenterWithAssociations> =
         screenDataStreamForTesting(meetingState)
 
     override fun centerSummaryStream(centerId: Int, scope: CoroutineScope): ScreenDataStream<List<CenterInfo>> =

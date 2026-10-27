@@ -56,14 +56,22 @@ internal class DataTableCommandRepositoryImpl(
             dataTableApi.deleteDatatableEntry(datatable = datatable, apptableId = apptableId, datatableId = it)
         }
 
-    override suspend fun createEntryInDataTable(dataTableName: String, entityId: Int, requestPayload: Map<String, String>) =
+    override suspend fun createEntryInDataTable(
+        dataTableName: String,
+        entityId: Int,
+        requestPayload: Map<String, String>,
+    ) =
         command(payload = requestPayload, ingest = { rowsStore.fresh(DataTableDataKey(dataTableName, entityId)) }) {
             dataTableApi.createEntryInDataTable(dataTableName = dataTableName, entityId = entityId, requestPayload = it)
         }
 
     override suspend fun deleteEntryOfDataTableManyToMany(dataTableName: String, entityId: Int, dataTableRowId: Int) =
         command(payload = dataTableRowId, ingest = { rowsStore.fresh(DataTableDataKey(dataTableName, entityId)) }) {
-            dataTableApi.deleteEntryOfDataTableManyToMany(dataTableName = dataTableName, entityId = entityId, dataTableRowId = it)
+            dataTableApi.deleteEntryOfDataTableManyToMany(
+                dataTableName = dataTableName,
+                entityId = entityId,
+                dataTableRowId = it,
+            )
         }
 
     // `m_staff_path_tracking` is a datatable too: its rows are read back through `pathStore`.

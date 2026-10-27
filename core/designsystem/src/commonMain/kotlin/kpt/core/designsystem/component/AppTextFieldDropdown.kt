@@ -39,17 +39,17 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTextFieldDropdown(
-    enabled: Boolean = true,
     value: String,
-    // Only an EDITABLE field (`readOnly = false`) ever calls this; a read-only dropdown changes only
-    // through [onOptionSelected]. Required, it made every read-only caller pass a do-nothing `{}`
-    // (40 of them, each a dead-clickable finding), so it is optional.
-    onValueChanged: (String) -> Unit = {},
     onOptionSelected: (Int, String) -> Unit,
     options: List<String>,
     modifier: Modifier = Modifier
         .clip(DesignToken.shapes.medium)
         .fillMaxWidth(),
+    enabled: Boolean = true,
+    // Only an EDITABLE field (`readOnly = false`) ever calls this; a read-only dropdown changes only
+    // through [onOptionSelected]. Required, it made every read-only caller pass a do-nothing `{}`
+    // (40 of them, each a dead-clickable finding), so it is optional.
+    onValueChanged: (String) -> Unit = {},
     label: String? = null,
     readOnly: Boolean = true,
     errorMessage: String? = null,

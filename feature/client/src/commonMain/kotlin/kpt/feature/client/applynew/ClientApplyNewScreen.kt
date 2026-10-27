@@ -34,11 +34,11 @@ import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.effects.EventsEffect
 import kpt.core.base.ui.screen.ScreenContent
-import kpt.core.model.client.Client
 import kpt.core.designsystem.component.AppScaffold
 import kpt.core.designsystem.component.AppSweetError
 import kpt.core.designsystem.icon.AppIcons
 import kpt.core.designsystem.theme.AppTypography
+import kpt.core.model.client.Client
 import kpt.feature.client.generated.resources.Res
 import kpt.feature.client.generated.resources.feature_client_apply_new_fixed
 import kpt.feature.client.generated.resources.feature_client_apply_new_fixed_subtitle

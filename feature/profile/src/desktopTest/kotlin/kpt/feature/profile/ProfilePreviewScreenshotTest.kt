@@ -33,14 +33,20 @@ class ProfilePreviewScreenshotTest {
         // An empty scan would capture nothing and pass — previews must be internal or public.
         assertTrue(previews.isNotEmpty(), "no @Preview found — previews must be internal or public, never private")
         val duplicates = previews.map { it.methodName }.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
-        assertTrue(duplicates.isEmpty(), "Preview names must be unique — goldens are keyed by name. Duplicated: $duplicates")
+        assertTrue(
+            duplicates.isEmpty(),
+            "Preview names must be unique — goldens are keyed by name. Duplicated: $duplicates",
+        )
 
         previews.forEach { preview ->
             runDesktopComposeUiTest(width = PHONE_WIDTH, height = PHONE_TALL) {
                 setContent { preview() }
                 val roots = onAllNodes(isRoot())
                 for (i in 0 until roots.fetchSemanticsNodes().size) {
-                    roots[i].captureRoboImage("src/desktopTest/resources/screenshots/profile/${preview.methodName}${if (i == 0) "" else "-$i"}.png")
+                    val suffix = if (i == 0) "" else "-$i"
+                    roots[i].captureRoboImage(
+                        "src/desktopTest/resources/screenshots/profile/${preview.methodName}$suffix.png",
+                    )
                 }
             }
         }

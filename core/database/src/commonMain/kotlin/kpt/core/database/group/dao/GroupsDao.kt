@@ -14,14 +14,12 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import androidx.room3.Update
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kpt.core.base.database.annotation.DbDao
 import kpt.core.database.group.entity.GroupAccounts
 import kpt.core.database.group.entity.GroupDateEntity
 import kpt.core.database.group.entity.GroupEntity
-import kpt.core.database.group.entity.GroupPayloadEntity
 import kpt.core.database.loan.entity.LoanAccountEntity
 import kpt.core.database.savings.entity.SavingsAccountEntity
 
@@ -30,8 +28,8 @@ import kpt.core.database.savings.entity.SavingsAccountEntity
  */
 @DbDao
 @Dao
-interface GroupsDao {
-
+interface GroupsDao :
+    GroupPayloadDao {
     @Insert(entity = GroupEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGroup(group: GroupEntity)
 
@@ -40,15 +38,6 @@ interface GroupsDao {
 
     @Insert(entity = SavingsAccountEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSavingsAccount(savingsAccount: SavingsAccountEntity)
-
-    @Insert(entity = GroupPayloadEntity::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertGroupPayload(groupPayload: GroupPayloadEntity)
-
-    @Update(entity = GroupPayloadEntity::class, onConflict = OnConflictStrategy.NONE)
-    suspend fun updateGroupPayload(payload: GroupPayloadEntity)
-
-    @Query("DELETE FROM GroupPayload where id = :groupId")
-    suspend fun deleteGroupPayloadById(groupId: Int)
 
     @Query("SELECT * FROM GroupTable")
     fun getAllGroups(): Flow<List<GroupEntity>>
@@ -61,9 +50,6 @@ interface GroupsDao {
 
     @Query("SELECT * FROM LoanAccountEntity WHERE groupId = :groupId")
     fun getLoanAccountsByGroupId(groupId: Int): Flow<List<LoanAccountEntity>>
-
-    @Query("SELECT * FROM GroupPayload")
-    fun getAllGroupPayloads(): Flow<List<GroupPayloadEntity>>
 
     @Query("SELECT * FROM SavingsAccount WHERE groupId = :groupId")
     fun getSavingsAccountsByGroupId(groupId: Int): Flow<List<SavingsAccountEntity>>
@@ -108,10 +94,6 @@ interface GroupsDao {
         groupAccounts.savingsAccounts.forEach { insertSavingsAccount(it.copy(groupId = owner)) }
     }
 
-    /** One queued offline group, for the write store's source of truth. */
-    @Query("SELECT * FROM GroupPayload WHERE id = :id LIMIT 1")
-    fun observeGroupPayload(id: Int): Flow<GroupPayloadEntity?>
-
     /**
      * One group row, nullable — [getGroupById] declares a non-null row and so cannot say "absent",
      * which a write store's reader has to.
@@ -125,8 +107,4 @@ interface GroupsDao {
     /** What the `groups` store's `deleteAll` runs at logout — the rows must not outlive the session. */
     @Query("DELETE FROM GroupTable")
     suspend fun deleteAllGroups()
-
-    /** The logout purge for the offline group queue. */
-    @Query("DELETE FROM GroupPayload")
-    suspend fun deleteAllGroupPayloads()
 }

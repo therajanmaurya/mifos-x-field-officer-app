@@ -73,7 +73,8 @@ class ChargeListViewModelTest {
         val vm = viewModel(repository = repository)
 
         vm.charges.test {
-            val row = (awaitItem().let { if (it is ScreenState.Loading) awaitItem() else it } as ScreenState.Content).data.single()
+            val first = awaitItem()
+            val row = ((if (first is ScreenState.Loading) awaitItem() else first) as ScreenState.Content).data.single()
             assertEquals(5, row.id)
             assertEquals("—", row.definitionId)
             assertEquals("—", row.outstanding)
@@ -166,7 +167,11 @@ class ChargeListViewModelTest {
         testScheduler.advanceUntilIdle()
         assertEquals(ChargeWriteError.Offline, offline.stateFlow.value.writeError)
 
-        val failed = viewModel(commands = FakeChargeCommandRepository { MutationResult.Failed(IllegalStateException("x"), rolledBack = false) })
+        val failed = viewModel(
+            commands = FakeChargeCommandRepository {
+                MutationResult.Failed(IllegalStateException("x"), rolledBack = false)
+            },
+        )
         failed.trySendAction(ChargeListAction.OnDeleteCharge(5))
         failed.trySendAction(ChargeListAction.ConfirmDelete)
         testScheduler.advanceUntilIdle()
@@ -179,7 +184,11 @@ class ChargeListViewModelTest {
         // Device 2026-10-23: deleting a charge on an ACTIVE loan is refused by a domain rule.
         val body = "Client request(DELETE x) invalid: 403. Text: \"{\"errors\":[{\"defaultUserMessage\":" +
             "\"This charge cannot be deleted as the loan is not pending approval\"}]}\""
-        val vm = viewModel(commands = FakeChargeCommandRepository { MutationResult.Failed(IllegalStateException(body), rolledBack = false) })
+        val vm = viewModel(
+            commands = FakeChargeCommandRepository {
+                MutationResult.Failed(IllegalStateException(body), rolledBack = false)
+            },
+        )
         vm.trySendAction(ChargeListAction.OnDeleteCharge(5))
         vm.trySendAction(ChargeListAction.ConfirmDelete)
         testScheduler.advanceUntilIdle()

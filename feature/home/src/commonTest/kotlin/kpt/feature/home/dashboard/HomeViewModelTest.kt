@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 @file:OptIn(kpt.core.data.testing.ExperimentalDataTestingApi::class)
 
@@ -30,8 +30,8 @@ import kpt.core.data.testing.FakeServerConfigRepository
 import kpt.core.data.testing.FakeSessionRepository
 import kpt.core.model.collectionsheet.IndividualCollectionSheet
 import kpt.core.model.dashboard.DashboardLoan
-import kpt.core.model.dashboard.DueTodayLoan
 import kpt.core.model.dashboard.DashboardUser
+import kpt.core.model.dashboard.DueTodayLoan
 import kpt.core.model.objects.users.User
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -46,6 +46,7 @@ class HomeViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
     @BeforeTest fun setUp() = Dispatchers.setMain(dispatcher)
+
     @AfterTest fun tearDown() = Dispatchers.resetMain()
 
     private val fieldOfficer = listOf(

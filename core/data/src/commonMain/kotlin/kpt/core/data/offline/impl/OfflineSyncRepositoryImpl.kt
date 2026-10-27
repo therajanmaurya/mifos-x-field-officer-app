@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.offline.impl
 
@@ -20,11 +20,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kpt.core.data.offline.OfflineSyncRepository
+import kpt.core.data.offline.OfflineSyncScheduler
 import kpt.core.database.offline.dao.OfflineSyncDao
 import kpt.core.database.offline.entity.OfflineRecordEntity
 import kpt.core.database.offline.entity.SyncJobEntity
-import kpt.core.data.offline.OfflineSyncRepository
-import kpt.core.data.offline.OfflineSyncScheduler
 import kpt.core.datastore.offline.OfflineSyncSettingsStore
 import kpt.core.datastore.prefs.ProjectPreferencesRepository
 import kpt.core.model.offline.DownloadFailure
@@ -78,7 +78,14 @@ internal class OfflineSyncRepositoryImpl(
 
     override suspend fun syncNow() {
         val user = userId
-        dao.records(user).filter { it.chosen }.forEach { dao.setStatus(user, it.kind, it.id, RecordSyncStatus.WAITING.name) }
+        dao.records(user).filter { it.chosen }.forEach {
+            dao.setStatus(
+                user,
+                it.kind,
+                it.id,
+                RecordSyncStatus.WAITING.name,
+            )
+        }
         scheduler.runNow()
     }
 
@@ -120,7 +127,14 @@ internal class OfflineSyncRepositoryImpl(
         // re-runs the work after a kill). Close it and put its records back in the queue.
         stopRunningJob(user)
         if (refreshAll) {
-            dao.records(user).filter { it.chosen }.forEach { dao.setStatus(user, it.kind, it.id, RecordSyncStatus.WAITING.name) }
+            dao.records(user).filter { it.chosen }.forEach {
+                dao.setStatus(
+                    user,
+                    it.kind,
+                    it.id,
+                    RecordSyncStatus.WAITING.name,
+                )
+            }
         }
         while (true) {
             val pending = dao.records(user).filter { it.chosen && it.status == RecordSyncStatus.WAITING.name }
@@ -183,7 +197,12 @@ internal class OfflineSyncRepositoryImpl(
         val row = record.toEntity(user)
         dao.upsertRecord(
             if (existing?.chosen == true) {
-                row.copy(chosen = true, parentKind = existing.parentKind, parentId = existing.parentId, parentName = existing.parentName)
+                row.copy(
+                    chosen = true,
+                    parentKind = existing.parentKind,
+                    parentId = existing.parentId,
+                    parentName = existing.parentName,
+                )
             } else {
                 row
             },
@@ -191,7 +210,15 @@ internal class OfflineSyncRepositoryImpl(
     }
 
     private suspend fun stopRunningJob(user: Long) {
-        dao.runningJob(user)?.let { dao.updateJob(it.copy(status = SyncJobStatus.CANCELLED.name, currentLabel = null, finishedAtMs = nowMs())) }
+        dao.runningJob(user)?.let {
+            dao.updateJob(
+                it.copy(
+                    status = SyncJobStatus.CANCELLED.name,
+                    currentLabel = null,
+                    finishedAtMs = nowMs(),
+                ),
+            )
+        }
         dao.moveStatus(user, RecordSyncStatus.SYNCING.name, RecordSyncStatus.WAITING.name)
     }
 
@@ -211,7 +238,9 @@ private fun OfflineRecordEntity.toModel(): OfflineRecord? {
     val kind = RecordKind.entries.firstOrNull { it.name == kind } ?: return null
     return OfflineRecord(
         kind = kind, id = id, name = name,
-        parentKind = RecordKind.entries.firstOrNull { it.name == parentKind }, parentId = parentId, parentName = parentName,
+        parentKind = RecordKind.entries.firstOrNull { it.name == parentKind },
+        parentId = parentId,
+        parentName = parentName,
         chosen = chosen, groups = groups, clients = clients, loans = loans, savings = savings, documents = documents,
         status = RecordSyncStatus.entries.firstOrNull { it.name == status } ?: RecordSyncStatus.WAITING,
         refreshedAtMs = refreshedAtMs, failedCount = failedCount,
@@ -222,7 +251,10 @@ private fun SyncJobEntity.toModel(): SyncJob? {
     val status = SyncJobStatus.entries.firstOrNull { it.name == status } ?: return null
     return SyncJob(
         id = id, status = status, targets = targets.decodeTargets(), done = done, total = total, reads = reads,
-        currentLabel = currentLabel, failures = failures.decodeFailures(), startedAtMs = startedAtMs, finishedAtMs = finishedAtMs,
+        currentLabel = currentLabel,
+        failures = failures.decodeFailures(),
+        startedAtMs = startedAtMs,
+        finishedAtMs = finishedAtMs,
     )
 }
 
@@ -230,7 +262,8 @@ private fun SyncJobEntity.toModel(): SyncJob? {
 // to spaces first, so a field can never split a row.
 private fun String.flat() = replace('\t', ' ').replace('\n', ' ')
 
-internal fun List<SyncTarget>.encodeTargets(): String = joinToString("\n") { "${it.kind.name}\t${it.id}\t${it.name.flat()}" }
+internal fun List<SyncTarget>.encodeTargets(): String =
+    joinToString("\n") { "${it.kind.name}\t${it.id}\t${it.name.flat()}" }
 
 internal fun String.decodeTargets(): List<SyncTarget> = lineSequence().mapNotNull { line ->
     val parts = line.split('\t', limit = 3)
@@ -239,7 +272,8 @@ internal fun String.decodeTargets(): List<SyncTarget> = lineSequence().mapNotNul
     SyncTarget(kind, id, parts.getOrNull(2).orEmpty())
 }.toList()
 
-internal fun List<DownloadFailure>.encodeFailures(): String = joinToString("\n") { "${it.item.flat()}\t${it.reason?.flat().orEmpty()}" }
+internal fun List<DownloadFailure>.encodeFailures(): String =
+    joinToString("\n") { "${it.item.flat()}\t${it.reason?.flat().orEmpty()}" }
 
 internal fun String.decodeFailures(): List<DownloadFailure> = lineSequence().filter { it.isNotBlank() }.map { line ->
     val parts = line.split('\t', limit = 2)

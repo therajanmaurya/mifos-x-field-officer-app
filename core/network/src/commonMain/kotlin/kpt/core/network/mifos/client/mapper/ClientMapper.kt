@@ -9,8 +9,8 @@
  */
 package kpt.core.network.mifos.client.mapper
 
-import kpt.core.model.client.ClientClassification
 import kpt.core.model.client.Client
+import kpt.core.model.client.ClientClassification
 import kpt.core.model.client.ClientGender
 import kpt.core.model.client.ClientStatus
 import kpt.core.model.client.ClientType

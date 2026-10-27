@@ -12,12 +12,12 @@ package kpt.feature.settings
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
-import kotlin.test.assertEquals
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
 import kpt.core.designsystem.theme.KptTheme
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 /**
  * Compose Multiplatform UI test for the fork's [SettingsScreenContent] (was the template's `SettingsDemoBody` seam

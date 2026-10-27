@@ -31,8 +31,16 @@ private const val PREVIEW_DATE_MILLIS = 1_760_000_000_000L
 internal fun LoanApprovalContentPreview() {
     KptTheme {
         LoanApprovalContent(
-            state = LoanApprovalState(loanId = 7, approvedAmount = "25000", approvedOn = PREVIEW_DATE_MILLIS, disbursementOn = PREVIEW_DATE_MILLIS, prefilled = true),
-            prefill = ScreenState.Content(LoanApprovalPrefill(approvedAmount = 25_000.0, expectedDisbursementOn = listOf(2025, 10, 15))),
+            state = LoanApprovalState(
+                loanId = 7,
+                approvedAmount = "25000",
+                approvedOn = PREVIEW_DATE_MILLIS,
+                disbursementOn = PREVIEW_DATE_MILLIS,
+                prefilled = true,
+            ),
+            prefill = ScreenState.Content(
+                LoanApprovalPrefill(approvedAmount = 25_000.0, expectedDisbursementOn = listOf(2025, 10, 15)),
+            ),
             onAction = {},
         )
     }
@@ -43,7 +51,12 @@ internal fun LoanApprovalContentPreview() {
 internal fun LoanApprovalContentAmountErrorPreview() {
     KptTheme {
         LoanApprovalContent(
-            state = LoanApprovalState(loanId = 7, approvedAmount = "", approvedOn = PREVIEW_DATE_MILLIS, amountError = true),
+            state = LoanApprovalState(
+                loanId = 7,
+                approvedAmount = "",
+                approvedOn = PREVIEW_DATE_MILLIS,
+                amountError = true,
+            ),
             prefill = ScreenState.Content(LoanApprovalPrefill(approvedAmount = null, expectedDisbursementOn = null)),
             onAction = {},
         )

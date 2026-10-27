@@ -63,31 +63,37 @@ actual class PermissionRequester actual constructor(private val context: AppCont
 
     actual suspend fun request(permissions: List<Permission>): PermissionResult {
         val manifestPermissions = permissions.flatMap { it.manifestPermissions() }.distinct()
-        if (manifestPermissions.isEmpty()) return PermissionResult.Granted
-        if (isGranted(permissions)) return PermissionResult.Granted
-
         // No activity means no way to show the system dialog. Denied (not DeniedPermanently) —
         // this is a host problem the caller may retry from a real activity, not a user decision.
-        val host = activity ?: return PermissionResult.Denied
+        val host = activity
 
-        return suspendCancellableCoroutine { continuation ->
-            // The callback needs to unregister the very launcher `register` is about to return, so it
-            // captures a nullable var that is filled in immediately below. Everything AFTER the
-            // registration uses the non-null `registered` val instead — a `?.` there would be
-            // reading as if the launcher might be absent when it provably is not.
-            var pending: ActivityResultLauncher<Array<String>>? = null
-            val registered = host.activityResultRegistry.register(
-                "kpt-permission-${registrationCounter++}",
-                ActivityResultContracts.RequestMultiplePermissions(),
-            ) { results ->
-                pending?.unregister()
-                continuation.resume(classify(host, manifestPermissions, results))
-            }
-            pending = registered
-
-            continuation.invokeOnCancellation { registered.unregister() }
-            registered.launch(manifestPermissions.toTypedArray())
+        return when {
+            manifestPermissions.isEmpty() || isGranted(permissions) -> PermissionResult.Granted
+            host == null -> PermissionResult.Denied
+            else -> requestFromUser(host, manifestPermissions)
         }
+    }
+
+    private suspend fun requestFromUser(
+        host: ComponentActivity,
+        manifestPermissions: List<String>,
+    ): PermissionResult = suspendCancellableCoroutine { continuation ->
+        // The callback needs to unregister the very launcher `register` is about to return, so it
+        // captures a nullable var that is filled in immediately below. Everything AFTER the
+        // registration uses the non-null `registered` val instead — a `?.` there would be
+        // reading as if the launcher might be absent when it provably is not.
+        var pending: ActivityResultLauncher<Array<String>>? = null
+        val registered = host.activityResultRegistry.register(
+            "kpt-permission-${registrationCounter++}",
+            ActivityResultContracts.RequestMultiplePermissions(),
+        ) { results ->
+            pending?.unregister()
+            continuation.resume(classify(host, manifestPermissions, results))
+        }
+        pending = registered
+
+        continuation.invokeOnCancellation { registered.unregister() }
+        registered.launch(manifestPermissions.toTypedArray())
     }
 
     actual fun openAppSettings() {

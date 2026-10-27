@@ -9,14 +9,6 @@
  */
 package kpt.feature.settings.serverconfig
 
-import kpt.core.base.store.screen.ScreenState
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -25,6 +17,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kpt.core.base.store.screen.ScreenState
 import kpt.core.data.testing.ExperimentalDataTestingApi
 import kpt.core.data.testing.FakeAuthCommandRepository
 import kpt.core.data.testing.FakeServerConfigRepository
@@ -32,6 +25,13 @@ import kpt.core.data.testing.FakeSessionRepository
 import kpt.core.domain.validation.ValidationFailure
 import kpt.core.model.objects.users.User
 import kpt.core.model.utils.ServerConfig
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * Locks the server-config editor's validation and save behaviour.
@@ -159,7 +159,9 @@ class ServerConfigViewModelTest {
      */
     @Test
     fun submitRepublishesFailuresEvenWhenNoFieldWasEdited() = runTest(dispatcher) {
-        val model = newModel(FakeServerConfigRepository(initial = FakeServerConfigRepository.TEST_DEFAULT.copy(port = "0")))
+        val model = newModel(
+            FakeServerConfigRepository(initial = FakeServerConfigRepository.TEST_DEFAULT.copy(port = "0")),
+        )
         assertEquals(emptyMap(), model.form.value.failures, "nothing validated yet")
 
         model.actionChannel.trySend(ServerConfigAction.Submit)
@@ -293,7 +295,11 @@ class ServerConfigViewModelTest {
         val model = newModel(prefs)
         assertEquals(ScreenState.Loading, model.instances.value)
         assertEquals(emptyList(), model.form.value.instances, "no instances to pick yet")
-        assertEquals(FakeServerConfigRepository.TEST_DEFAULT, model.form.value.config, "the fields still show the server")
+        assertEquals(
+            FakeServerConfigRepository.TEST_DEFAULT,
+            model.form.value.config,
+            "the fields still show the server",
+        )
 
         prefs.instancesState.value = ScreenState.Content(FakeServerConfigRepository.TEST_INSTANCES)
         runCurrent()

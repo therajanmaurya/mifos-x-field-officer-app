@@ -12,8 +12,6 @@ package kpt.feature.savings.recurring
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -38,6 +36,8 @@ import kpt.core.model.recurringdeposit.RecurringDepositAccountTemplate
 import kpt.core.model.recurringdeposit.RecurringDepositApplicationInput
 import kpt.core.model.recurringdeposit.RecurringDepositChargeInput
 import kpt.core.model.utils.ApiDateFormatter
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * The new recurring-deposit application — ported from
@@ -96,8 +96,12 @@ internal class RecurringDepositViewModel(
 
     /** This client's application that did not land — resumable here, listed in Sync & Drafts. */
     private val formDraft = FormDraftSlot(
-        drafts, viewModelScope, CreateForm.RECURRING_DEPOSIT.key, ownerId = state.clientId.toLong(),
-        RecurringDepositState.serializer(), RecurringDepositApplicationInput.serializer(),
+        drafts,
+        viewModelScope,
+        CreateForm.RECURRING_DEPOSIT.key,
+        ownerId = state.clientId.toLong(),
+        RecurringDepositState.serializer(),
+        RecurringDepositApplicationInput.serializer(),
     )
 
     val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
@@ -126,6 +130,36 @@ internal class RecurringDepositViewModel(
 
     override fun handleAction(action: RecurringDepositAction) {
         when (action) {
+            RecurringDepositAction.ResumeDraft,
+            RecurringDepositAction.DiscardDraft,
+            RecurringDepositAction.SaveDraft,
+            -> handleDraftAction(action)
+
+            RecurringDepositAction.NavigateBack -> sendEvent(RecurringDepositEvent.NavigateBack)
+            RecurringDepositAction.Done -> sendEvent(RecurringDepositEvent.Done)
+            RecurringDepositAction.OnRetry -> stream.retry()
+            RecurringDepositAction.CloseDialog ->
+                mutableStateFlow.value = state.copy(dialogState = null)
+
+            is RecurringDepositAction.OnOptionSelected,
+            is RecurringDepositAction.OnNumberChanged,
+            is RecurringDepositAction.OnExternalIdChanged,
+            is RecurringDepositAction.OnToggled,
+            is RecurringDepositAction.OnDateChanged,
+            RecurringDepositAction.OpenDatePicker,
+            RecurringDepositAction.CloseDatePicker,
+            is RecurringDepositAction.OnChargeAdded,
+            is RecurringDepositAction.OnChargeRemoved,
+            -> handleFormEdit(action)
+
+            RecurringDepositAction.OnNext -> advance()
+            RecurringDepositAction.OnBack -> retreat()
+            RecurringDepositAction.OnSubmit -> submit()
+        }
+    }
+
+    private fun handleDraftAction(action: RecurringDepositAction) {
+        when (action) {
             RecurringDepositAction.ResumeDraft -> formDraft.resume()?.let { mutableStateFlow.value = it }
             RecurringDepositAction.DiscardDraft -> formDraft.discard()
             RecurringDepositAction.SaveDraft -> lastInput?.let { input ->
@@ -133,12 +167,12 @@ internal class RecurringDepositViewModel(
                 keepDraft(input, failure = failed?.msg ?: "Not accepted by the server.")
                 mutableStateFlow.value = state.copy(dialogState = failed?.copy(draftSaved = true))
             }
-            RecurringDepositAction.NavigateBack -> sendEvent(RecurringDepositEvent.NavigateBack)
-            RecurringDepositAction.Done -> sendEvent(RecurringDepositEvent.Done)
-            RecurringDepositAction.OnRetry -> stream.retry()
-            RecurringDepositAction.CloseDialog ->
-                mutableStateFlow.value = state.copy(dialogState = null)
+            else -> Unit
+        }
+    }
 
+    private fun handleFormEdit(action: RecurringDepositAction) {
+        when (action) {
             is RecurringDepositAction.OnOptionSelected -> mutableStateFlow.value = state.copy(
                 selections = state.selections + (action.field to action.option),
                 errors = state.errors - action.field,
@@ -171,9 +205,7 @@ internal class RecurringDepositViewModel(
                 mutableStateFlow.value =
                     state.copy(charges = state.charges.filterIndexed { i, _ -> i != action.index })
 
-            RecurringDepositAction.OnNext -> advance()
-            RecurringDepositAction.OnBack -> retreat()
-            RecurringDepositAction.OnSubmit -> submit()
+            else -> Unit
         }
     }
 
@@ -203,12 +235,14 @@ internal class RecurringDepositViewModel(
                 errors = missing,
                 step = RecurringStep.entries.first { it.missing(state).isNotEmpty() },
             )
-            return
+        } else {
+            // A VALUE, not an index into a list that may have changed — the read that used to be
+            // `productOptions?.get(-1)`.
+            state.selectionId(RecurringField.PRODUCT)?.let(::sendApplication)
         }
+    }
 
-        // A VALUE, not an index into a list that may have changed — the read that used to be
-        // `productOptions?.get(-1)`.
-        val productId = state.selectionId(RecurringField.PRODUCT) ?: return
+    private fun sendApplication(productId: Int) {
         mutableStateFlow.value = state.copy(isSubmitting = true, dialogState = null)
 
         viewModelScope.launch {
@@ -461,6 +495,7 @@ internal enum class RecurringStep {
 
 internal sealed interface RecurringDialog {
     data object Created : RecurringDialog
+
     /** [draftSaved] = kept (offline automatically, or "Save as draft"), in Sync & Drafts. */
     data class Failed(val offline: Boolean, val msg: String?, val draftSaved: Boolean = false) : RecurringDialog
 }

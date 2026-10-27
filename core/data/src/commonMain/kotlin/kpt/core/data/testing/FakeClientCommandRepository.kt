@@ -9,12 +9,15 @@
  */
 package kpt.core.data.testing
 
-import kpt.core.model.objects.noncoreobjects.DocumentUpload
 import kotlinx.coroutines.CompletableDeferred
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.model.client.Client
 import kpt.core.model.client.ClientPayload
+import kpt.core.model.client.PostClientAddressRequest
+import kpt.core.model.client.PostClientAddressResponse
+import kpt.core.model.client.PostClientsClientIdRequest
+import kpt.core.model.client.PostClientsClientIdResponse
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.clients.AssignStaffRequest
 import kpt.core.model.objects.clients.ClientAddressRequest
@@ -22,13 +25,10 @@ import kpt.core.model.objects.clients.ClientCloseRequest
 import kpt.core.model.objects.clients.CollateralPayload
 import kpt.core.model.objects.clients.ProposeTransferRequest
 import kpt.core.model.objects.clients.UpdateSavingsAccountRequest
+import kpt.core.model.objects.noncoreobjects.DocumentUpload
 import kpt.core.model.objects.noncoreobjects.IdentifierPayload
 import kpt.core.model.shared.GenericResponse
 import kpt.core.model.shared.PinpointLocationActionResponse
-import kpt.core.model.client.PostClientAddressRequest
-import kpt.core.model.client.PostClientAddressResponse
-import kpt.core.model.client.PostClientsClientIdRequest
-import kpt.core.model.client.PostClientsClientIdResponse
 
 /**
  * Test double for [ClientCommandRepository], owned by the module that owns the CONTRACT.
@@ -98,7 +98,11 @@ class FakeClientCommandRepository(
         return result()
     }
 
-    override suspend fun activate1(clientId: Long, postClientsClientIdRequest: PostClientsClientIdRequest, command: String?): MutationResult<PostClientsClientIdResponse> =
+    override suspend fun activate1(
+        clientId: Long,
+        postClientsClientIdRequest: PostClientsClientIdRequest,
+        command: String?,
+    ): MutationResult<PostClientsClientIdResponse> =
         error("activate1 is not faked — add it when a test needs it")
 
     /** Client ids whose photo was uploaded, in order, and the image each upload carried. */
@@ -139,25 +143,42 @@ class FakeClientCommandRepository(
         return clientResult()
     }
 
-    override suspend fun addClientPinpointLocation(clientId: Int, clientAddressRequest: ClientAddressRequest?): MutationResult<PinpointLocationActionResponse> =
+    override suspend fun addClientPinpointLocation(
+        clientId: Int,
+        clientAddressRequest: ClientAddressRequest?,
+    ): MutationResult<PinpointLocationActionResponse> =
         error("addClientPinpointLocation is not faked — add it when a test needs it")
 
-    override suspend fun deleteClientPinpointLocation(apptableId: Int, datatableId: Int): MutationResult<PinpointLocationActionResponse> =
+    override suspend fun deleteClientPinpointLocation(
+        apptableId: Int,
+        datatableId: Int,
+    ): MutationResult<PinpointLocationActionResponse> =
         error("deleteClientPinpointLocation is not faked — add it when a test needs it")
 
-    override suspend fun updateClientPinpointLocation(apptableId: Int, datatableId: Int, address: ClientAddressRequest?): MutationResult<PinpointLocationActionResponse> =
+    override suspend fun updateClientPinpointLocation(
+        apptableId: Int,
+        datatableId: Int,
+        address: ClientAddressRequest?,
+    ): MutationResult<PinpointLocationActionResponse> =
         error("updateClientPinpointLocation is not faked — add it when a test needs it")
 
     /** (clientId, payload) per activation — the shared activate screen's client branch. */
     val activatedClients: MutableList<Pair<Int, ActivatePayload?>> = mutableListOf()
 
-    override suspend fun activateClient(clientId: Int, clientActivate: ActivatePayload?): MutationResult<GenericResponse> {
+    override suspend fun activateClient(
+        clientId: Int,
+        clientActivate: ActivatePayload?,
+    ): MutationResult<GenericResponse> {
         activatedClients += clientId to clientActivate
         gate?.await()
         return result()
     }
 
-    override suspend fun createClientAddress(clientId: Int, addressTypeId: Int, addressPayload: PostClientAddressRequest): MutationResult<PostClientAddressResponse> =
+    override suspend fun createClientAddress(
+        clientId: Int,
+        addressTypeId: Int,
+        addressPayload: PostClientAddressRequest,
+    ): MutationResult<PostClientAddressResponse> =
         error("createClientAddress is not faked — add it when a test needs it")
 
     /** (clientId, staffId) per assign — a test asserts HOW MANY were sent, not just that one was. */
@@ -190,7 +211,10 @@ class FakeClientCommandRepository(
     /** (clientId, payload) per default-savings update. */
     val updatedSavingsAccounts: MutableList<Pair<Int, UpdateSavingsAccountRequest>> = mutableListOf()
 
-    override suspend fun updateSavingsAccount(clientId: Int, payload: UpdateSavingsAccountRequest): MutationResult<Unit> {
+    override suspend fun updateSavingsAccount(
+        clientId: Int,
+        payload: UpdateSavingsAccountRequest,
+    ): MutationResult<Unit> {
         updatedSavingsAccounts += clientId to payload
         gate?.await()
         return unitResult()
@@ -217,12 +241,19 @@ class FakeClientCommandRepository(
     /** (clientId, payload) per identifier create. */
     val createdIdentifiers: MutableList<Pair<Long, IdentifierPayload>> = mutableListOf()
 
-    override suspend fun createClientIdentifier(clientId: Long, identifierPayload: IdentifierPayload): MutationResult<Unit> {
+    override suspend fun createClientIdentifier(
+        clientId: Long,
+        identifierPayload: IdentifierPayload,
+    ): MutationResult<Unit> {
         createdIdentifiers += clientId to identifierPayload
         gate?.await()
         return unitResult()
     }
 
-    override suspend fun updateClientIdentifier(clientId: Long, identifierId: Long, identifierPayload: IdentifierPayload): MutationResult<GenericResponse> =
+    override suspend fun updateClientIdentifier(
+        clientId: Long,
+        identifierId: Long,
+        identifierPayload: IdentifierPayload,
+    ): MutationResult<GenericResponse> =
         error("updateClientIdentifier is not faked — add it when a test needs it")
 }

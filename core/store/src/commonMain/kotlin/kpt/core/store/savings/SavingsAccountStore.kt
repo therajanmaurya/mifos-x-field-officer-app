@@ -9,30 +9,18 @@
  */
 package kpt.core.store.savings
 
-import kpt.core.store.mapping.toEntity
 import kotlinx.coroutines.flow.map
-import kpt.core.model.savings.SavingsAccountWithAssociations
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
 import kpt.core.database.savings.dao.SavingsDao
-import kpt.core.database.savings.entity.SavingsAccountWithAssociationsEntity
+import kpt.core.model.savings.SavingsAccountWithAssociations
 import kpt.core.network.mifos.savings.api.SavingsAccountApi
+import kpt.core.store.mapping.toEntity
+import kpt.core.store.mapping.toModel
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.Store
-
-/**
- * `savingsAccountType` is a path segment on Fineract ("savingsaccounts" / "recurringdepositaccounts"
- * / ...), so the same numeric id means different accounts under different types — it belongs in the
- * key, not as a caller-side constant.
- */
-data class SavingsAccountKey(
-    val savingsAccountType: String,
-    val savingsAccountId: Int,
-    val associations: String? = "transactions",
-)
 
 @StoreProvider(id = "savingsAccounts", ttl = "15m")
 @CacheKey(
@@ -56,7 +44,9 @@ fun provideSavingsAccountStore(
         }
     },
     sourceOfTruth = SourceOfTruth.of(
-        reader = { key: SavingsAccountKey -> dao.getSavingsAccountWithAssociations(key.savingsAccountId).map { it?.toModel() } },
+        reader = { key: SavingsAccountKey ->
+            dao.getSavingsAccountWithAssociations(key.savingsAccountId).map { it?.toModel() }
+        },
         writer = { _: SavingsAccountKey, account: SavingsAccountWithAssociations ->
             dao.insertSavingsAccountWithAssociations(account.toEntity())
         },

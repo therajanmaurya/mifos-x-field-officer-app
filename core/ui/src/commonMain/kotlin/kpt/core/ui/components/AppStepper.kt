@@ -37,11 +37,6 @@ import kpt.core.designsystem.theme.AppTypography
 import kpt.core.designsystem.theme.DesignToken
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-data class Step(
-    val name: String,
-    val content: @Composable () -> Unit,
-)
-
 @Composable
 fun AppStepper(
     steps: List<Step>,
@@ -78,7 +73,7 @@ fun AppStepper(
                 contentPadding = PaddingValues(horizontal = DesignToken.padding.small),
             ) {
                 steps.forEachIndexed { index, step ->
-                    repeat(2) { it ->
+                    repeat(2) {
                         item {
                             if (it == 0) {
                                 Column(

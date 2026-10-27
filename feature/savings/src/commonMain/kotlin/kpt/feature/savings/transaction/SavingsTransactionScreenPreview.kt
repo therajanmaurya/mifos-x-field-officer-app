@@ -25,7 +25,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 private const val PREVIEW_DATE_MILLIS = 1_760_000_000_000L
 
 // i18n:skip — preview fixtures below
-private val previewPaymentTypes = listOf(PaymentTypeOption(id = 1, name = "Cash"), PaymentTypeOption(id = 2, name = "Bank transfer"))
+private val previewPaymentTypes = listOf(
+    PaymentTypeOption(id = 1, name = "Cash"),
+    PaymentTypeOption(id = 2, name = "Bank transfer"),
+)
 
 @Preview
 @Composable
@@ -51,7 +54,13 @@ internal fun SavingsTransactionContentDepositPreview() {
 internal fun SavingsTransactionContentTemplateFailedPreview() {
     KptTheme {
         SavingsTransactionContent(
-            state = SavingsTransactionState(accountType = "savingsaccounts", accountId = 9, kind = TransactionKind.WITHDRAWAL, date = PREVIEW_DATE_MILLIS, templateFailed = true),
+            state = SavingsTransactionState(
+                accountType = "savingsaccounts",
+                accountId = 9,
+                kind = TransactionKind.WITHDRAWAL,
+                date = PREVIEW_DATE_MILLIS,
+                templateFailed = true,
+            ),
             onAction = {},
         )
     }

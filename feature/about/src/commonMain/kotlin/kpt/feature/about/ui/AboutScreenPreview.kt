@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.about.ui
 
@@ -39,7 +39,17 @@ internal fun AboutScreenPreview() {
 internal fun AboutScreenMinimalPreview() {
     KptTheme {
         AboutContent(
-            state = AboutState.of(previewConfig.copy(orgEmail = "", websiteUrl = "", sourceUrl = "", licenseUrl = "", communityUrl = "", productUrl = ""), year = 2026),
+            state = AboutState.of(
+                previewConfig.copy(
+                    orgEmail = "",
+                    websiteUrl = "",
+                    sourceUrl = "",
+                    licenseUrl = "",
+                    communityUrl = "",
+                    productUrl = "",
+                ),
+                year = 2026,
+            ),
             onAction = {},
         )
     }

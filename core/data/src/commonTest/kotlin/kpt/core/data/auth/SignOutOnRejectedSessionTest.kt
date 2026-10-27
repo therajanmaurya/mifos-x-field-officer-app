@@ -5,12 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.auth
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -20,13 +18,17 @@ import kpt.core.data.auth.impl.SignOutOnRejectedSession
 import kpt.core.model.auth.PostAuthenticationRequest
 import kpt.core.model.auth.PostAuthenticationResponse
 import kpt.core.model.objects.users.User
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SignOutOnRejectedSessionTest {
 
     private class RecordingAuth(private val user: () -> User, private val clear: () -> Unit) : AuthCommandRepository {
         val signOuts = mutableListOf<Boolean>()
-        override suspend fun authenticate(postAuthenticationRequest: PostAuthenticationRequest): MutationResult<PostAuthenticationResponse> =
+        override suspend fun authenticate(
+            postAuthenticationRequest: PostAuthenticationRequest,
+        ): MutationResult<PostAuthenticationResponse> =
             MutationResult.Failed(IllegalStateException(), rolledBack = false)
         override suspend fun resumeStoredSession() = MutationResult.Applied(Unit, synced = true)
         override suspend fun signOut(clearLocalData: Boolean): MutationResult<Unit> {
@@ -35,7 +37,10 @@ class SignOutOnRejectedSessionTest {
             return MutationResult.Applied(Unit, synced = true)
         }
 
-        override suspend fun changePassword(newPassword: String, repeatPassword: String): MutationResult<Unit> = error("not used here")
+        override suspend fun changePassword(
+            newPassword: String,
+            repeatPassword: String,
+        ): MutationResult<Unit> = error("not used here")
     }
 
     private fun TestScope.handler(signedIn: Boolean): Pair<SignOutOnRejectedSession, RecordingAuth> {

@@ -33,13 +33,16 @@ internal class OfflineQueueRepositoryImpl(
     @FromStore(AppStoreIds.PendingClientPayloads) private val pendingClients: Store<Unit, List<ClientPayload>>,
     @FromStore(AppStoreIds.PendingCenterPayloads) private val pendingCenters: Store<Unit, List<CenterPayload>>,
     @FromStore(AppStoreIds.PendingGroupPayloads) private val pendingGroups: Store<Unit, List<GroupPayload>>,
-    @FromStore(AppStoreIds.PendingLoanRepayments) private val pendingLoanRepayments: Store<Unit, List<LoanRepaymentRequest>>,
-    @FromStore(AppStoreIds.PendingSavingsTransactions) private val pendingSavings: Store<Unit, List<SavingsAccountTransactionRequest>>,
+    @FromStore(AppStoreIds.PendingLoanRepayments)
+    private val pendingLoanRepayments: Store<Unit, List<LoanRepaymentRequest>>,
+    @FromStore(AppStoreIds.PendingSavingsTransactions)
+    private val pendingSavings: Store<Unit, List<SavingsAccountTransactionRequest>>,
     @FromStore(AppStoreIds.ClientPayloadQueue) private val clientQueue: MutableStore<Int, ClientPayload>,
     @FromStore(AppStoreIds.CenterPayloadQueue) private val centerQueue: MutableStore<Int, CenterPayload>,
     @FromStore(AppStoreIds.GroupPayloadQueue) private val groupQueue: MutableStore<Int, GroupPayload>,
     @FromStore(AppStoreIds.LoanRepaymentQueue) private val loanRepaymentQueue: MutableStore<Int, LoanRepaymentRequest>,
-    @FromStore(AppStoreIds.SavingsTransactionQueue) private val savingsQueue: MutableStore<Int, SavingsAccountTransactionRequest>,
+    @FromStore(AppStoreIds.SavingsTransactionQueue)
+    private val savingsQueue: MutableStore<Int, SavingsAccountTransactionRequest>,
     private val gateway: MutationGateway,
 ) : OfflineQueueRepository {
 

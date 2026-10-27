@@ -16,10 +16,10 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import kpt.core.base.store.screen.ScreenState
-import kpt.core.model.savings.SavingProductsTemplate
 import kpt.core.designsystem.theme.KptTheme
 import kpt.core.model.objects.commonfiles.InterestType
 import kpt.core.model.objects.template.client.ChargeOptions
+import kpt.core.model.savings.SavingProductsTemplate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

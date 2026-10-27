@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.model.dashboard
 
@@ -52,7 +52,13 @@ class DashboardCalculationsTest {
         assertFalse(user("READ_REPORT").canRunReports())
     }
 
-    private fun loan(officer: Long?, by: String?, outstanding: Double = 0.0, overdue: Double = 0.0, code: String = "MXN") =
+    private fun loan(
+        officer: Long?,
+        by: String?,
+        outstanding: Double = 0.0,
+        overdue: Double = 0.0,
+        code: String = "MXN",
+    ) =
         DashboardLoan(
             id = 1,
             accountNo = "1",
@@ -95,6 +101,14 @@ class DashboardCalculationsTest {
 
     @Test
     fun parIsNullWithNothingOutstanding() {
-        assertNull(CurrencyTotals("MXN", "$", outstanding = 0.0, overdue = 0.0, principalOutstanding = 0.0, principalOverdue = 0.0).par)
+        val totals = CurrencyTotals(
+            "MXN",
+            "$",
+            outstanding = 0.0,
+            overdue = 0.0,
+            principalOutstanding = 0.0,
+            principalOverdue = 0.0,
+        )
+        assertNull(totals.par)
     }
 }

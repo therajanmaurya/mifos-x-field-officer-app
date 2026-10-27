@@ -26,14 +26,21 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 private const val PREVIEW_DATE_MILLIS = 1_760_000_000_000L
 
 // i18n:skip — preview fixtures below
-private val previewProducts = listOf(LoanProductOption(id = 1, name = "Group Business Loan"), LoanProductOption(id = 2, name = "Seasonal Loan"))
+private val previewProducts = listOf(
+    LoanProductOption(id = 1, name = "Group Business Loan"),
+    LoanProductOption(id = 2, name = "Seasonal Loan"),
+)
 
 @Preview
 @Composable
 internal fun GroupLoanApplicationContentPreview() {
     KptTheme {
         GroupLoanApplicationContent(
-            state = GroupLoanApplicationState(groupId = 11, submittedOn = PREVIEW_DATE_MILLIS, expectedDisbursement = PREVIEW_DATE_MILLIS),
+            state = GroupLoanApplicationState(
+                groupId = 11,
+                submittedOn = PREVIEW_DATE_MILLIS,
+                expectedDisbursement = PREVIEW_DATE_MILLIS,
+            ),
             products = ScreenState.Content(previewProducts),
             onAction = {},
         )

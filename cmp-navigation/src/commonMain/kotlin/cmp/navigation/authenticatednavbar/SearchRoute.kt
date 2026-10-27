@@ -105,7 +105,8 @@ internal fun NavController.navigateToCreate(type: FabType) {
  * only layer allowed to know about more than one feature.
  *
  * All five types have a destination (`CENTER` since 2026-10-25). `SearchBody` asks the same
- * question before drawing the tap, so a row that reaches this function always has somewhere to go. Comparison is case-insensitive: the value comes
+ * question before drawing the tap, so a row that reaches this function always has somewhere to go.
+ * Comparison is case-insensitive: the value comes
  * off the wire, not out of an enum.
  */
 internal fun NavController.navigateToSearchResult(entity: SearchedEntity) {

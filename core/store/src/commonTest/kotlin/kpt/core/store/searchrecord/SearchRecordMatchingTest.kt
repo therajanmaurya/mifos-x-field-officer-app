@@ -41,8 +41,22 @@ class SearchRecordMatchingTest {
         fetchedAtMs = 0,
     )
 
-    private val home = ClientAddressEntity(clientID = 1, addressId = 5, addressType = "Home", addressLine1 = "12 Lake Road", city = "Dhaka", countryName = "Bangladesh")
-    private val office = ClientAddressEntity(clientID = 2, addressId = 6, addressType = "Office", addressLine1 = "4 Mill Lane", city = "Sylhet", postalCode = "3100")
+    private val home = ClientAddressEntity(
+        clientID = 1,
+        addressId = 5,
+        addressType = "Home",
+        addressLine1 = "12 Lake Road",
+        city = "Dhaka",
+        countryName = "Bangladesh",
+    )
+    private val office = ClientAddressEntity(
+        clientID = 2,
+        addressId = 6,
+        addressType = "Office",
+        addressLine1 = "4 Mill Lane",
+        city = "Sylhet",
+        postalCode = "3100",
+    )
 
     @Test
     fun anAddressMatchesOnAnyOfItsFieldsCaseInsensitively() {
@@ -57,15 +71,25 @@ class SearchRecordMatchingTest {
     fun anAddressResultCarriesWhatTheScreenAndNavigationNeed() {
         val r = searchAddresses(listOf(addressRow(1, home)), "lake").single()
         assertEquals("Home", r.name)
-        assertEquals("12 Lake Road, Dhaka, Bangladesh", r.description)  // blank state skipped
-        assertEquals("1", r.metadata[Constants.CLIENT_ID])             // where a tap goes
+        assertEquals("12 Lake Road, Dhaka, Bangladesh", r.description) // blank state skipped
+        assertEquals("1", r.metadata[Constants.CLIENT_ID]) // where a tap goes
         assertEquals("12 Lake Road", r.metadata[Constants.ADDRESS_LINE_1])
     }
 
     @Test
     fun identifiersMatchSortByDocumentKeyAndTakeTheOwnerFromTheRowKey() {
-        val passport = Identifier(id = 9, documentKey = "P-200", documentType = DocumentType(name = "Passport"), status = "Active")
-        val idCard = Identifier(id = 3, documentKey = "A-100", documentType = DocumentType(name = "National ID"), description = "passport scan")
+        val passport = Identifier(
+            id = 9,
+            documentKey = "P-200",
+            documentType = DocumentType(name = "Passport"),
+            status = "Active",
+        )
+        val idCard = Identifier(
+            id = 3,
+            documentKey = "A-100",
+            documentType = DocumentType(name = "National ID"),
+            description = "passport scan",
+        )
         val rows = listOf(identifierRow(7, passport, idCard))
 
         val found = searchIdentifiers(rows, "passport")
@@ -78,7 +102,11 @@ class SearchRecordMatchingTest {
 
     @Test
     fun aRowThatNoLongerDecodesIsSkippedNotFatal() {
-        val broken = ApiResponseCacheEntity(cacheKey = "clientGetClientAddresses:3", payload = "{not json", fetchedAtMs = 0)
+        val broken = ApiResponseCacheEntity(
+            cacheKey = "clientGetClientAddresses:3",
+            payload = "{not json",
+            fetchedAtMs = 0,
+        )
         assertEquals(listOf(5), searchAddresses(listOf(broken, addressRow(1, home)), "dhaka").map { it.id })
     }
 }

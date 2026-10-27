@@ -25,12 +25,12 @@ import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.common.utils.Constants
 import kpt.core.common.utils.FileKitUtil
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.data.client.ClientRepository
 import kpt.core.data.document.DocumentCommandRepository
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.objects.noncoreobjects.IdentifierPayload
 import kpt.core.model.objects.noncoreobjects.IdentifierTemplate
 import kpt.core.ui.util.documentUpload
@@ -329,6 +329,7 @@ internal sealed interface ClientAddIdentifierAction {
     data object DismissError : ClientAddIdentifierAction
     data class UpdateDocumentType(val id: Int, val label: String) : ClientAddIdentifierAction
     data class UpdateDocumentKey(val value: String) : ClientAddIdentifierAction
+
     /** [value] is one of [IdentifierStatus.values] — the wire value, not the displayed label. */
     data class UpdateStatus(val value: String) : ClientAddIdentifierAction
     data class UpdateDescription(val value: String) : ClientAddIdentifierAction

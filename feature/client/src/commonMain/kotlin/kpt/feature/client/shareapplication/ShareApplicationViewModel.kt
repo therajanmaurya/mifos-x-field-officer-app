@@ -91,8 +91,12 @@ internal class ShareApplicationViewModel(
 
     /** This client's application that did not land — resumable here, listed in Sync & Drafts. */
     private val formDraft = FormDraftSlot(
-        drafts, viewModelScope, CreateForm.SHARE.key, ownerId = state.clientId.toLong(),
-        ShareApplicationState.serializer(), ShareAccountPayload.serializer(),
+        drafts,
+        viewModelScope,
+        CreateForm.SHARE.key,
+        ownerId = state.clientId.toLong(),
+        ShareApplicationState.serializer(),
+        ShareAccountPayload.serializer(),
     )
 
     val offeredDraft: StateFlow<SavedFormDraft?> = formDraft.offered
@@ -129,6 +133,17 @@ internal class ShareApplicationViewModel(
             ShareApplicationAction.NextStep -> moveTo(state.step.next())
             ShareApplicationAction.PreviousStep -> moveTo(state.step.previous())
 
+            ShareApplicationAction.Submit -> submit()
+
+            ShareApplicationAction.DismissError ->
+                mutableStateFlow.value = state.copy(error = null, serverMessage = null)
+
+            else -> updateField(action)
+        }
+    }
+
+    private fun updateField(action: ShareApplicationAction) {
+        when (action) {
             is ShareApplicationAction.UpdateProduct ->
                 mutableStateFlow.value =
                     state.copy(product = action.option, productError = false)
@@ -165,10 +180,7 @@ internal class ShareApplicationViewModel(
             is ShareApplicationAction.UpdateDividendAllowed ->
                 mutableStateFlow.value = state.copy(isDividendAllowed = action.value)
 
-            ShareApplicationAction.Submit -> submit()
-
-            ShareApplicationAction.DismissError ->
-                mutableStateFlow.value = state.copy(error = null, serverMessage = null)
+            else -> Unit
         }
     }
 

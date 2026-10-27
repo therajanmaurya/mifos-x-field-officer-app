@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.checkerinbox.ui
 
@@ -31,11 +31,21 @@ private val previewTasks = listOf(
 
 // i18n:skip — preview fixtures
 private val previewReschedules = listOf(
-    RescheduleLoansTask(4, 77, "Asha Rahman", "000000077", listOf(2026, 11, 5), rescheduleReasonCodeValue = RescheduleReasonCodeValue(21, "Crop failure")),
+    RescheduleLoansTask(
+        4,
+        77,
+        "Asha Rahman",
+        "000000077",
+        listOf(2026, 11, 5),
+        rescheduleReasonCodeValue = RescheduleReasonCodeValue(21, "Crop failure"),
+    ),
     RescheduleLoansTask(5, 78, "Bimal Das", "000000078", listOf(2026, 12, 1)),
 )
 
-private val previewTemplate = CheckerInboxSearchTemplate(actionNames = listOf("CREATE", "APPROVE"), entityNames = listOf("CLIENT", "LOAN"))
+private val previewTemplate = CheckerInboxSearchTemplate(
+    actionNames = listOf("CREATE", "APPROVE"),
+    entityNames = listOf("CLIENT", "LOAN"),
+)
 
 @Composable
 private fun Inbox(state: CheckerInboxState, tasks: List<CheckerTask> = previewTasks, total: Int = previewTasks.size) {
@@ -77,7 +87,12 @@ internal fun CheckerInboxOutcomePreview() = Inbox(
     CheckerInboxState(
         selected = setOf(40),
         // i18n:skip — preview fixture
-        outcome = DecisionOutcome(Decision.APPROVE, done = 2, failures = listOf(DecisionFailure("#40 APPROVE LOAN", "Maker cannot check own task")), offline = false),
+        outcome = DecisionOutcome(
+            Decision.APPROVE,
+            done = 2,
+            failures = listOf(DecisionFailure("#40 APPROVE LOAN", "Maker cannot check own task")),
+            offline = false,
+        ),
     ),
     // The two approved tasks have left the inbox; the failed one stays, selected for a retry.
     tasks = previewTasks.filter { it.id == 40 },

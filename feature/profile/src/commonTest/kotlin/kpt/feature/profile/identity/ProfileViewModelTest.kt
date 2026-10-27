@@ -69,7 +69,13 @@ class ProfileViewModelTest {
         override val appScope: CoroutineScope = CoroutineScope(Dispatchers.Unconfined)
     }
 
-    private val session = User(username = "fieldofficer", userId = 32, isAuthenticated = true, officeId = 1, officeName = "CENTRAL")
+    private val session = User(
+        username = "fieldofficer",
+        userId = 32,
+        isAuthenticated = true,
+        officeId = 1,
+        officeName = "CENTRAL",
+    )
 
     private val irving = DashboardUser(
         id = 32,
@@ -84,7 +90,8 @@ class ProfileViewModelTest {
     private val dashboard = FakeDashboardRepository(user = irving)
     private val staffList = MutableStateFlow<ScreenState<List<Staff>>>(ScreenState.Content(emptyList()))
     private val staff = object : StaffRepository {
-        override fun staffStream(officeId: Int, scope: CoroutineScope): ScreenDataStream<List<Staff>> = screenDataStreamForTesting(staffList)
+        override fun staffStream(officeId: Int, scope: CoroutineScope): ScreenDataStream<List<Staff>> =
+            screenDataStreamForTesting(staffList)
     }
     private val network = FakeNetworkMonitor()
     private val auth = FakeAuthCommandRepository()
@@ -154,7 +161,9 @@ class ProfileViewModelTest {
     @Test
     fun aStaffLinkedLoanOfficerIsMarkedSo() = runTest {
         dashboard.user.value = ScreenState.Content(irving.copy(staffId = 5, staffName = "Irving Zepeda"))
-        staffList.value = ScreenState.Content(listOf(Staff(id = 4, isLoanOfficer = false), Staff(id = 5, isLoanOfficer = true)))
+        staffList.value = ScreenState.Content(
+            listOf(Staff(id = 4, isLoanOfficer = false), Staff(id = 5, isLoanOfficer = true)),
+        )
         val p = viewModel().profile.value
         assertTrue(p.hasStaffLink)
         assertEquals(true, p.isLoanOfficer)

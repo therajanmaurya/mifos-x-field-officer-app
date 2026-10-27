@@ -47,10 +47,10 @@ fun AppStatusDialog(
     successMessage: String,
     failureTitle: String,
     failureMessage: String,
+    modifier: Modifier = Modifier,
     showButton: Boolean = true,
     showAsDialog: Boolean = false,
     onDismissRequest: () -> Unit = {},
-    modifier: Modifier = Modifier,
     /** A second, quieter action under the button — e.g. "Save as draft" on a failed create. */
     secondaryBtnText: String? = null,
     onSecondary: (() -> Unit)? = null,

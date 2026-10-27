@@ -14,6 +14,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kpt.core.base.store.screen.ScreenState
@@ -27,8 +29,6 @@ import kpt.core.model.offline.DownloadProgress
 import kpt.core.model.offline.RecordKind
 import kpt.core.model.offline.SyncTarget
 import kpt.core.model.offline.toDownloadProgress
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
 import kotlin.time.Clock
 
 /**
@@ -92,7 +92,9 @@ internal class CenterListViewModel(
      */
     private fun downloadSelected() {
         val rows = (screenState.value as? ScreenState.Content)?.data.orEmpty()
-        val targets = rows.mapNotNull { c -> c.id?.takeIf { it in state.selected }?.let { SyncTarget(RecordKind.CENTRE, it, c.name ?: "#$it") } }
+        val targets = rows.mapNotNull { c ->
+            c.id?.takeIf { it in state.selected }?.let { SyncTarget(RecordKind.CENTRE, it, c.name ?: "#$it") }
+        }
         if (targets.isEmpty() || watch?.isActive == true) return
         mutableStateFlow.value = state.copy(selected = emptySet(), download = DownloadProgress(total = targets.size))
         val requestedAt = nowMs()
@@ -124,19 +126,14 @@ internal class CenterListViewModel(
                 mutableStateFlow.value = state.copy(filtersVisible = !state.filtersVisible)
 
             // In selection mode a tap toggles the row, as in the original; otherwise it opens it.
-            is CenterListAction.CenterClicked ->
-                if (state.selected.isNotEmpty()) {
-                    handleAction(CenterListAction.SelectionToggled(action.centerId))
-                } else {
-                    sendEvent(CenterListEvent.OpenCenter(action.centerId))
-                }
+            is CenterListAction.CenterClicked -> onCenterClicked(action.centerId)
 
             CenterListAction.CreateCenterClicked -> sendEvent(CenterListEvent.CreateCenter)
 
             CenterListAction.Retry -> onRetry()
 
-            is CenterListAction.SelectionToggled -> mutableStateFlow.value =
-                state.copy(selected = if (action.centerId in state.selected) state.selected - action.centerId else state.selected + action.centerId)
+            is CenterListAction.SelectionToggled ->
+                mutableStateFlow.value = state.copy(selected = state.selected.toggle(action.centerId))
             CenterListAction.SelectionCleared -> mutableStateFlow.value = state.copy(selected = emptySet())
             CenterListAction.DownloadSelected -> downloadSelected()
             CenterListAction.DownloadCancelled -> {
@@ -148,6 +145,14 @@ internal class CenterListViewModel(
                 watch?.cancel()
                 mutableStateFlow.value = state.copy(download = null)
             }
+        }
+    }
+
+    private fun onCenterClicked(centerId: Int) {
+        if (state.selected.isNotEmpty()) {
+            handleAction(CenterListAction.SelectionToggled(centerId))
+        } else {
+            sendEvent(CenterListEvent.OpenCenter(centerId))
         }
     }
 

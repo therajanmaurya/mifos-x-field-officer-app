@@ -35,8 +35,8 @@ import kpt.core.ui.generated.resources.core_ui_no_data
 import kpt.core.ui.generated.resources.core_ui_no_internet
 import kpt.core.ui.generated.resources.core_ui_retry
 import kpt.core.ui.generated.resources.core_ui_something_went_wrong
-import kpt.core.ui.util.DevicePreview
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppErrorComponent(
@@ -168,7 +168,7 @@ fun EmptyDataComponentWithModifiedMessageAndIcon(
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun NoInternetPreview() {
     AppTheme {
@@ -176,7 +176,7 @@ private fun NoInternetPreview() {
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun EmptyDataPreview() {
     AppTheme {
@@ -184,7 +184,7 @@ private fun EmptyDataPreview() {
     }
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun EmptyDataComponentWithModifiedMessageAndIconPreview(
     modifier: Modifier = Modifier,

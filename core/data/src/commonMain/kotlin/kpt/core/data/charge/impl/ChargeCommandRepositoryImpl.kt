@@ -76,7 +76,12 @@ internal class ChargeCommandRepositoryImpl(
     ) = online(
         payload = payload,
         endpoint = {
-            chargeApi.updateCharge(resourceType = resource.path, resourceId = resourceId, chargeId = chargeId, payload = it)
+            chargeApi.updateCharge(
+                resourceType = resource.path,
+                resourceId = resourceId,
+                chargeId = chargeId,
+                payload = it,
+            )
         },
     ) { ingest(resource, resourceId) }
 
@@ -90,7 +95,11 @@ internal class ChargeCommandRepositoryImpl(
         endpoint: suspend (P) -> R,
         localApply: suspend () -> Unit,
     ): MutationResult<R> = gateway.command(
-        CommandSpec(payload = payload, endpoint = endpoint, localApply = { result -> if (result != null) localApply() }),
+        CommandSpec(
+            payload = payload,
+            endpoint = endpoint,
+            localApply = { result -> if (result != null) localApply() },
+        ),
         policy = MutationPolicy.OnlineRequired,
     )
 
@@ -105,7 +114,10 @@ internal class ChargeCommandRepositoryImpl(
         } catch (cancellation: CancellationException) {
             throw cancellation
         } catch (e: Exception) {
-            Logger.w(tag = TAG, throwable = e) { "server accepted the charge; ingesting ${resource.path}/$resourceId failed" }
+            Logger.w(
+                tag = TAG,
+                throwable = e,
+            ) { "server accepted the charge; ingesting ${resource.path}/$resourceId failed" }
         }
     }
 

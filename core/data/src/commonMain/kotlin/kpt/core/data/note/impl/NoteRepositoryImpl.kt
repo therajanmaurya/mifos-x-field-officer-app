@@ -33,7 +33,11 @@ internal class NoteRepositoryImpl(
     // until something HAS been fetched, so on a clean install nothing ever loads. Room is still
     // served first, so the offline-first behaviour is unchanged. The ttl stays the declared
     // freshness bound — it drives the "updated N ago" indicator, never whether cache is served.
-    override fun notesStream(resourceType: String, resourceId: Long, scope: CoroutineScope): ScreenDataStream<List<Note>> =
+    override fun notesStream(
+        resourceType: String,
+        resourceId: Long,
+        scope: CoroutineScope,
+    ): ScreenDataStream<List<Note>> =
         store.asScreenStream(
             key = NoteKey(resourceType, resourceId),
             cacheKey = AppCacheKeys.Notes.forOwner(resourceType, resourceId),

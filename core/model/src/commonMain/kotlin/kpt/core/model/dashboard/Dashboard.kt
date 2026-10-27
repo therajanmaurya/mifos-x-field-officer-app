@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.model.dashboard
 
@@ -57,7 +57,12 @@ data class DashboardLoan(
 
 /** One savings account's balance, for the portfolio total. */
 @Serializable
-data class DashboardSavings(val fieldOfficerId: Long?, val balance: Double, val currencyCode: String, val currencySymbol: String)
+data class DashboardSavings(
+    val fieldOfficerId: Long?,
+    val balance: Double,
+    val currencyCode: String,
+    val currencySymbol: String,
+)
 
 /** Money sums for one currency — never mixed across currencies. */
 data class CurrencyTotals(
@@ -90,7 +95,11 @@ data class DueTodayLoan(
 
 /** Loans that belong to [scope]: by loan officer when staff-linked, else by who submitted them. */
 fun List<DashboardLoan>.ownedBy(scope: DashboardScope): List<DashboardLoan> =
-    if (scope.staffId != null) filter { it.loanOfficerId == scope.staffId } else filter { it.submittedByUsername == scope.username }
+    if (scope.staffId != null) {
+        filter { it.loanOfficerId == scope.staffId }
+    } else {
+        filter { it.submittedByUsername == scope.username }
+    }
 
 /**
  * Computed from the active-loan list, not from a stretchy report: the Portfolio at Risk / Active

@@ -40,11 +40,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun AppSweetError(
     message: String,
-    isShowLoadMsg: Boolean = true,
     modifier: Modifier = Modifier
         .fillMaxSize()
         .padding(DesignToken.padding.dp18)
         .semantics { contentDescription = "AppSweetError" },
+    isShowLoadMsg: Boolean = true,
     isRetryEnabled: Boolean = true,
     buttonText: String = stringResource(Res.string.core_designsystem_try_again),
     onclick: () -> Unit = {},
@@ -73,7 +73,10 @@ fun AppSweetError(
                 contentPadding = PaddingValues(),
             ) {
                 Text(
-                    modifier = Modifier.padding(start = DesignToken.spacing.largeIncreased, end = DesignToken.spacing.largeIncreased),
+                    modifier = Modifier.padding(
+                        start = DesignToken.spacing.largeIncreased,
+                        end = DesignToken.spacing.largeIncreased,
+                    ),
                     text = buttonText,
                     style = KptTheme.typography.labelLarge,
                 )

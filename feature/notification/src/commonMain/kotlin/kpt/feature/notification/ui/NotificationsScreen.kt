@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.notification.ui
 
@@ -87,7 +87,8 @@ internal fun NotificationsScreen(
         when (event) {
             NotificationsEvent.NavigateBack -> onNavigateBack()
             is NotificationsEvent.Open -> onOpen(event.notification)
-            NotificationsEvent.MarkAllReadFailed -> snackbar.showSnackbar(getString(Res.string.feature_notification_mark_all_read_failed))
+            NotificationsEvent.MarkAllReadFailed ->
+                snackbar.showSnackbar(getString(Res.string.feature_notification_mark_all_read_failed))
         }
     }
     NotificationsScreenContent(
@@ -206,7 +207,13 @@ private fun NotificationRow(notification: AppNotification, onOpen: (AppNotificat
     }
     val modifier = Modifier.fillMaxWidth().testTag(NotificationsTestTags.ROW)
     if (notification.opensRecord) {
-        Card(onClick = { onOpen(notification) }, modifier = modifier, shape = KptTheme.shapes.medium, colors = colors, elevation = elevation) { body() }
+        Card(
+            onClick = { onOpen(notification) },
+            modifier = modifier,
+            shape = KptTheme.shapes.medium,
+            colors = colors,
+            elevation = elevation,
+        ) { body() }
     } else {
         Card(modifier = modifier, shape = KptTheme.shapes.medium, colors = colors, elevation = elevation) { body() }
     }
@@ -220,10 +227,23 @@ private fun EmptyNotifications() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(sp.sm, Alignment.CenterVertically),
     ) {
-        Box(Modifier.size(EMPTY_BOX).background(KptTheme.colorScheme.primaryContainer, CircleShape), contentAlignment = Alignment.Center) {
-            Icon(AppIcons.Notifications, contentDescription = null, tint = KptTheme.colorScheme.primary, modifier = Modifier.size(sp.lg + sp.xs))
+        Box(
+            Modifier.size(EMPTY_BOX).background(KptTheme.colorScheme.primaryContainer, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                AppIcons.Notifications,
+                contentDescription = null,
+                tint = KptTheme.colorScheme.primary,
+                modifier = Modifier.size(sp.lg + sp.xs),
+            )
         }
-        Text(stringResource(Res.string.feature_notification_empty_title), style = KptTheme.typography.titleMedium, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        Text(
+            stringResource(Res.string.feature_notification_empty_title),
+            style = KptTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
         Text(
             stringResource(Res.string.feature_notification_empty_body),
             style = KptTheme.typography.bodyMedium,
@@ -250,27 +270,30 @@ private fun AppNotification.style(): RowStyle {
 
 @Composable
 private fun AppNotification.recordLabel(): String? {
-    val id = objectId ?: return null
+    val id = objectId
     val label = when (target) {
         NotificationTarget.LOAN -> Res.string.feature_notification_object_loan
         NotificationTarget.CLIENT -> Res.string.feature_notification_object_client
         NotificationTarget.GROUP -> Res.string.feature_notification_object_group
         NotificationTarget.CENTER -> Res.string.feature_notification_object_center
         NotificationTarget.SAVINGS -> Res.string.feature_notification_object_savings
-        null -> return null
+        null -> null
     }
-    return stringResource(label, id.toString())
+    return if (id == null || label == null) null else stringResource(label, id.toString())
 }
 
 /** "Just now" / "12m ago" / "3h ago" / "Yesterday" / "6d ago" from the server's ISO local date-time. */
 @Composable
 private fun ago(createdAt: String): String? {
-    val at = runCatching { LocalDateTime.parse(createdAt).toInstant(TimeZone.currentSystemDefault()) }.getOrNull() ?: return null
+    val at = runCatching {
+        LocalDateTime.parse(createdAt).toInstant(TimeZone.currentSystemDefault())
+    }.getOrNull() ?: return null
     val minutes = ((Clock.System.now() - at).inWholeMinutes).coerceAtLeast(0)
     return when {
         minutes < 1 -> stringResource(Res.string.feature_notification_time_just_now)
         minutes < MINUTES_PER_HOUR -> stringResource(Res.string.feature_notification_time_minutes_ago, minutes.toInt())
-        minutes < MINUTES_PER_DAY -> stringResource(Res.string.feature_notification_time_hours_ago, (minutes / MINUTES_PER_HOUR).toInt())
+        minutes < MINUTES_PER_DAY ->
+            stringResource(Res.string.feature_notification_time_hours_ago, (minutes / MINUTES_PER_HOUR).toInt())
         minutes < 2 * MINUTES_PER_DAY -> stringResource(Res.string.feature_notification_time_yesterday)
         else -> stringResource(Res.string.feature_notification_time_days_ago, (minutes / MINUTES_PER_DAY).toInt())
     }

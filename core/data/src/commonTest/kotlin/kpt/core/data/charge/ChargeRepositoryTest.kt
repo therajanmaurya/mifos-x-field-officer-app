@@ -9,7 +9,6 @@
  */
 package kpt.core.data.charge
 
-import kpt.core.model.charge.Charges
 import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -20,6 +19,7 @@ import kpt.core.data.charge.impl.ChargeCommandRepositoryImpl
 import kpt.core.data.charge.impl.ChargeRepositoryImpl
 import kpt.core.data.infra.OkHttpResponse
 import kpt.core.data.infra.testMutationGateway
+import kpt.core.model.charge.Charges
 import kpt.core.model.objects.charge.ChargeResource
 import kpt.core.model.objects.clients.Page
 import kpt.core.model.objects.payloads.ChargesPayload
@@ -77,11 +77,14 @@ class ChargeRepositoryTest {
         sourceOfTruth = SourceOfTruth.of(
             // An empty table is an empty list, never null (NullReaderStreamTest).
             reader = { key: ChargeKey ->
-                table.map { all -> all.filter { it.resourceType == key.resourceType && it.resourceId == key.resourceId } }
+                table.map { all ->
+                    all.filter { it.resourceType == key.resourceType && it.resourceId == key.resourceId }
+                }
             },
             // ChargeDao.replaceCharges: the owner's rows become the fetch, stamped with the owner.
             writer = { key: ChargeKey, fetched: List<Charges> ->
-                table.value = table.value.filterNot { it.resourceType == key.resourceType && it.resourceId == key.resourceId } +
+                table.value = table.value
+                    .filterNot { it.resourceType == key.resourceType && it.resourceId == key.resourceId } +
                     fetched.map { it.copy(resourceType = key.resourceType, resourceId = key.resourceId) }
             },
         ),
@@ -114,12 +117,21 @@ class ChargeRepositoryTest {
     private var sent = 0
 
     private val api = object : ChargeApi {
-        override suspend fun createCharges(resourceType: String, resourceId: Int, chargesPayload: ChargesPayload): HttpResponse {
+        override suspend fun createCharges(
+            resourceType: String,
+            resourceId: Int,
+            chargesPayload: ChargesPayload,
+        ): HttpResponse {
             sent++
             val key = ChargeKey(resourceType, resourceId)
             // Fineract names the row from the charge DEFINITION, not from the request.
             server[key] = server[key].orEmpty() +
-                Charges(id = nextId++, chargeId = chargesPayload.chargeId, name = "late fee", amount = chargesPayload.amount?.toDouble())
+                Charges(
+                    id = nextId++,
+                    chargeId = chargesPayload.chargeId,
+                    name = "late fee",
+                    amount = chargesPayload.amount?.toDouble(),
+                )
             return OkHttpResponse
         }
 
@@ -129,20 +141,40 @@ class ChargeRepositoryTest {
             server[key] = server[key].orEmpty().filterNot { it.id == chargeId }
         }
 
-        override suspend fun updateCharge(resourceType: String, resourceId: Int, chargeId: Int, payload: ChargesPayload) {
+        override suspend fun updateCharge(
+            resourceType: String,
+            resourceId: Int,
+            chargeId: Int,
+            payload: ChargesPayload,
+        ) {
             sent++
             val key = ChargeKey(resourceType, resourceId)
             // Fineract recomputes the row — outstanding follows the new amount.
             server[key] = server.getValue(key).map {
-                if (it.id == chargeId) it.copy(amount = payload.amount?.toDouble(), amountOutstanding = payload.amount?.toDouble()) else it
+                if (it.id == chargeId) {
+                    it.copy(
+                        amount = payload.amount?.toDouble(),
+                        amountOutstanding = payload.amount?.toDouble(),
+                    )
+                } else {
+                    it
+                }
             }
         }
 
         override suspend fun listAllCharges(): HttpResponse = unused()
         override suspend fun getChargeTemplate(resourceType: String, resourceId: Int): ChargeTemplate = unused()
-        override suspend fun getListOfPagingCharges(resourceType: String, resourceId: Int, offset: Int, limit: Int): Page<Charges> = unused()
+        override suspend fun getListOfPagingCharges(
+            resourceType: String,
+            resourceId: Int,
+            offset: Int,
+            limit: Int,
+        ): Page<Charges> = unused()
         override suspend fun getListOfClientCharges(resourceType: String, resourceId: Int): Page<Charges> = unused()
-        override suspend fun getListOfOtherAccountCharge(resourceType: String, resourceId: Int): List<Charges> = unused()
+        override suspend fun getListOfOtherAccountCharge(
+            resourceType: String,
+            resourceId: Int,
+        ): List<Charges> = unused()
         override suspend fun getCharge(resourceType: String, resourceId: Int, chargeId: Int): Charges = unused()
 
         private fun unused(): Nothing = error("not exercised; reads go through the stores")

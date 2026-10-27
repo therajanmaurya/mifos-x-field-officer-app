@@ -16,11 +16,11 @@ import kotlinx.coroutines.launch
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.common.utils.DateHelper
 import kpt.core.data.charge.ChargeCommandRepository
 import kpt.core.data.charge.ChargeRepository
 import kpt.core.model.objects.charge.ChargeResource
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.objects.payloads.ChargesPayload
 import kpt.core.model.objects.template.client.ChargeOptions
 import kpt.feature.charge.ui.CHARGE_ID_KEY
@@ -140,18 +140,17 @@ internal class ChargeFormViewModel(
     private fun submit() {
         if (state.isSubmitting) return
         val charge = state.selectedCharge
-        if (charge == null) {
-            mutableStateFlow.value = state.copy(chargeError = true)
-            return
-        }
         // Validated at SUBMIT, not only while typing: the original checked the amount as a side
         // effect of a keystroke, so an untouched prefilled value went out unvalidated.
         val amount = state.amount.trim()
-        if ((amount.toDoubleOrNull() ?: 0.0) <= 0.0) {
-            mutableStateFlow.value = state.copy(amountError = true)
-            return
+        when {
+            charge == null -> mutableStateFlow.value = state.copy(chargeError = true)
+            (amount.toDoubleOrNull() ?: 0.0) <= 0.0 -> mutableStateFlow.value = state.copy(amountError = true)
+            else -> send(charge, amount)
         }
+    }
 
+    private fun send(charge: ChargeType, amount: String) {
         mutableStateFlow.value = state.copy(isSubmitting = true, chargeError = false, dialogState = null)
 
         // `getDateAsStringFromLong` emits "dd MMMM yyyy" and `SHORT_MONTH` declares the same — the
@@ -165,7 +164,12 @@ internal class ChargeFormViewModel(
                     state.resource,
                     state.resourceId,
                     editingId,
-                    ChargesPayload(amount = amount, dueDate = dueDate, locale = LOCALE, dateFormat = DateHelper.SHORT_MONTH),
+                    ChargesPayload(
+                        amount = amount,
+                        dueDate = dueDate,
+                        locale = LOCALE,
+                        dateFormat = DateHelper.SHORT_MONTH,
+                    ),
                 )
             } else {
                 commands.createCharge(
@@ -240,14 +244,20 @@ internal fun ChargeOptions.toChargeType(resource: ChargeResource): ChargeType? {
         ChargeResource.CLIENT, ChargeResource.SAVINGS -> time != null && time !in NEEDS_UNCOLLECTED_INPUT
     }
     if (!selectable) return null
-    return ChargeType(
-        id = id ?: return null,
-        name = name ?: return null,
-        amount = amount ?: return null,
-        time = chargeTimeType?.value.orEmpty(),
-        calculation = chargeCalculationType?.value.orEmpty(),
-        needsDueDate = time == SPECIFIED_DUE_DATE,
-    )
+    return id?.let { chargeId ->
+        name?.let { chargeName ->
+            amount?.let { chargeAmount ->
+                ChargeType(
+                    id = chargeId,
+                    name = chargeName,
+                    amount = chargeAmount,
+                    time = chargeTimeType?.value.orEmpty(),
+                    calculation = chargeCalculationType?.value.orEmpty(),
+                    needsDueDate = time == SPECIFIED_DUE_DATE,
+                )
+            }
+        }
+    }
 }
 
 /** "150.0" -> "150" — a prefilled whole amount should not read as a decimal the officer typed. */

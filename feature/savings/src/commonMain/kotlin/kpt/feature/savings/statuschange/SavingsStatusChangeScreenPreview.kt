@@ -31,7 +31,12 @@ internal fun SavingsStatusChangeContentApprovePreview() {
     // APPROVE carries a note; ACTIVATE does not (`hasNote`) — both are previewed for that reason.
     KptTheme {
         SavingsStatusChangeContent(
-            state = SavingsStatusChangeState(accountId = 9, change = SavingsStatusChange.APPROVE, date = PREVIEW_DATE_MILLIS, note = "Documents verified"),
+            state = SavingsStatusChangeState(
+                accountId = 9,
+                change = SavingsStatusChange.APPROVE,
+                date = PREVIEW_DATE_MILLIS,
+                note = "Documents verified",
+            ),
             onAction = {},
         )
     }
@@ -42,7 +47,11 @@ internal fun SavingsStatusChangeContentApprovePreview() {
 internal fun SavingsStatusChangeContentActivatePreview() {
     KptTheme {
         SavingsStatusChangeContent(
-            state = SavingsStatusChangeState(accountId = 9, change = SavingsStatusChange.ACTIVATE, date = PREVIEW_DATE_MILLIS),
+            state = SavingsStatusChangeState(
+                accountId = 9,
+                change = SavingsStatusChange.ACTIVATE,
+                date = PREVIEW_DATE_MILLIS,
+            ),
             onAction = {},
         )
     }

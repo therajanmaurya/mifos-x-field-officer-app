@@ -114,7 +114,9 @@ internal fun ChargeFormContent(
     modifier: Modifier = Modifier,
 ) {
     AppScaffold(
-        title = stringResource(if (state.isEdit) Res.string.feature_charge_edit_charge else Res.string.feature_charge_add_charge),
+        title = stringResource(
+            if (state.isEdit) Res.string.feature_charge_edit_charge else Res.string.feature_charge_add_charge,
+        ),
         onBackPressed = { onAction(ChargeFormAction.NavigateBack) },
         modifier = modifier.testTag(TestTags.ChargeForm.SCREEN),
     ) { padding ->
@@ -157,20 +159,33 @@ private fun StatusDialog(
     onAction: (ChargeFormAction) -> Unit,
 ) {
     val failed = dialog as? ChargeFormState.DialogState.Failed
+    val closeAction = if (failed == null) ChargeFormAction.NavigateBack else ChargeFormAction.CloseDialog
     AppStatusDialog(
         status = if (failed == null) ResultStatus.SUCCESS else ResultStatus.FAILURE,
         btnText = stringResource(Res.string.feature_charge_dialog_continue),
         // Success goes back to the list, which already shows the change; failure keeps the form.
-        onConfirm = { onAction(if (failed == null) ChargeFormAction.NavigateBack else ChargeFormAction.CloseDialog) },
-        onDismissRequest = { onAction(if (failed == null) ChargeFormAction.NavigateBack else ChargeFormAction.CloseDialog) },
+        onConfirm = { onAction(closeAction) },
+        onDismissRequest = { onAction(closeAction) },
         successTitle = stringResource(
-            if (isEdit) Res.string.feature_charge_updated_success_title else Res.string.feature_charge_created_success_title,
+            if (isEdit) {
+                Res.string.feature_charge_updated_success_title
+            } else {
+                Res.string.feature_charge_created_success_title
+            },
         ),
         successMessage = stringResource(
-            if (isEdit) Res.string.feature_charge_updated_success_message else Res.string.feature_charge_created_success_message,
+            if (isEdit) {
+                Res.string.feature_charge_updated_success_message
+            } else {
+                Res.string.feature_charge_created_success_message
+            },
         ),
         failureTitle = stringResource(
-            if (isEdit) Res.string.feature_charge_updated_failure_title else Res.string.feature_charge_created_failure_title,
+            if (isEdit) {
+                Res.string.feature_charge_updated_failure_title
+            } else {
+                Res.string.feature_charge_created_failure_title
+            },
         ),
         failureMessage = when {
             failed == null -> ""
@@ -291,7 +306,11 @@ private fun ChargeForm(
                 .heightIn(DesignToken.spacing.dp44)
                 .testTag(TestTags.ChargeForm.SUBMIT),
         ) {
-            Text(text = stringResource(if (state.isEdit) Res.string.feature_charge_update else Res.string.feature_charge_add))
+            Text(
+                text = stringResource(
+                    if (state.isEdit) Res.string.feature_charge_update else Res.string.feature_charge_add,
+                ),
+            )
         }
 
         Spacer(Modifier.height(KptTheme.spacing.md))

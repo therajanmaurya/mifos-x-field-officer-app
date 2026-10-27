@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.data.testing
 
@@ -23,7 +23,9 @@ class FakeAuthCommandRepository : AuthCommandRepository {
     /** What [signOut] returns — set a `Failed` to model a purge that could not complete. */
     var signOutResult: MutationResult<Unit> = MutationResult.Applied(Unit, synced = true)
 
-    override suspend fun authenticate(postAuthenticationRequest: PostAuthenticationRequest): MutationResult<PostAuthenticationResponse> =
+    override suspend fun authenticate(
+        postAuthenticationRequest: PostAuthenticationRequest,
+    ): MutationResult<PostAuthenticationResponse> =
         MutationResult.Failed(IllegalStateException("not scripted"), rolledBack = false)
 
     override suspend fun resumeStoredSession(): MutationResult<Unit> = MutationResult.Applied(Unit, synced = true)

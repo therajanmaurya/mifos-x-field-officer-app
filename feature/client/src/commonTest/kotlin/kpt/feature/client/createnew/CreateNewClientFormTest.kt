@@ -237,7 +237,11 @@ class CreateNewClientFormTest {
         val table = kpt.core.model.datatable.DataTable(
             registeredTableName = "client_extra",
             columnHeaderData = listOf(
-                kpt.core.model.datatable.ColumnHeader(dataTableColumnName = "household_size", columnDisplayType = "INTEGER", columnNullable = false),
+                kpt.core.model.datatable.ColumnHeader(
+                    dataTableColumnName = "household_size",
+                    columnDisplayType = "INTEGER",
+                    columnNullable = false,
+                ),
             ),
         )
         val withTable = form.copy(dataTables = listOf(table))

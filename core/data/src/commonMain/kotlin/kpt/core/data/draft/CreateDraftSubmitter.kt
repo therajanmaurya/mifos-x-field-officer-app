@@ -51,7 +51,19 @@ class CreateDraftSubmitter(
 ) {
     suspend fun submit(draft: FormDraft) {
         val owner = draft.ownerId?.toInt()
-        val result: MutationResult<*> = when (CreateForm.fromKey(draft.form) ?: error("unknown draft form ${draft.form}")) {
+        val result = send(draft, owner)
+        when (result) {
+            is MutationResult.Applied -> Unit
+            is MutationResult.Failed -> throw IllegalStateException(
+                result.cause.serverErrorMessage() ?: result.cause.message,
+                result.cause,
+            )
+            else -> error("draft ${draft.form} not sent: $result")
+        }
+    }
+
+    private suspend fun send(draft: FormDraft, owner: Int?): MutationResult<*> =
+        when (CreateForm.fromKey(draft.form) ?: error("unknown draft form ${draft.form}")) {
             CreateForm.CLIENT -> clients.createClient(draft.payloadAs(ClientPayload.serializer()))
             CreateForm.GROUP -> groups.createGroup(draft.payloadAs(GroupPayload.serializer()))
             CreateForm.CENTER -> centers.createCenter(draft.payloadAs(CenterPayload.serializer()))
@@ -60,18 +72,19 @@ class CreateDraftSubmitter(
             CreateForm.SAVINGS -> savings.createSavingsAccount(draft.payloadAs(SavingsApplicationInput.serializer()))
             CreateForm.ADDRESS -> draft.payloadAs(AddressDraftPayload.serializer())
                 .let { clients.createClientAddress(it.clientId, it.addressTypeId, it.request) }
-            CreateForm.FIXED_DEPOSIT -> savings.createFixedDepositAccount(draft.payloadAs(FixedDepositPayload.serializer()))
+            CreateForm.FIXED_DEPOSIT ->
+                savings.createFixedDepositAccount(draft.payloadAs(FixedDepositPayload.serializer()))
             CreateForm.RECURRING_DEPOSIT ->
                 recurring.createRecurringDepositAccount(draft.payloadAs(RecurringDepositApplicationInput.serializer()))
             CreateForm.SHARE -> savings.createShareAccount(draft.payloadAs(ShareAccountPayload.serializer()))
-            CreateForm.COLLATERAL -> clients.createCollateral(requireNotNull(owner), draft.payloadAs(CollateralPayload.serializer()))
-            CreateForm.DEFAULT_ACCOUNT ->
-                clients.updateSavingsAccount(requireNotNull(owner), draft.payloadAs(UpdateSavingsAccountRequest.serializer()))
+            CreateForm.COLLATERAL, CreateForm.DEFAULT_ACCOUNT -> sendClientOwned(draft, requireNotNull(owner))
         }
-        when (result) {
-            is MutationResult.Applied -> Unit
-            is MutationResult.Failed -> throw IllegalStateException(result.cause.serverErrorMessage() ?: result.cause.message, result.cause)
-            else -> throw IllegalStateException("draft ${draft.form} not sent: $result")
+
+    /** The two forms that write under an existing client. */
+    private suspend fun sendClientOwned(draft: FormDraft, clientId: Int): MutationResult<*> =
+        if (CreateForm.fromKey(draft.form) == CreateForm.COLLATERAL) {
+            clients.createCollateral(clientId, draft.payloadAs(CollateralPayload.serializer()))
+        } else {
+            clients.updateSavingsAccount(clientId, draft.payloadAs(UpdateSavingsAccountRequest.serializer()))
         }
-    }
 }

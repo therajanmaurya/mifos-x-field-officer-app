@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.store.report
 
@@ -30,10 +30,34 @@ class ReportParameterMappingTest {
         columnHeaders = headers,
         data = listOf(
             DataRow(listOf("OfficeIdSelectOne", "officeId", "Office", "select", "number", "0", "Y", null, null)),
-            DataRow(listOf("loanOfficerIdSelectAll", "loanOfficerId", "Loan Officer", "select", "number", "0", null, "Y", "OfficeIdSelectOne")),
+            DataRow(
+                listOf(
+                    "loanOfficerIdSelectAll",
+                    "loanOfficerId",
+                    "Loan Officer",
+                    "select",
+                    "number",
+                    "0",
+                    null,
+                    "Y",
+                    "OfficeIdSelectOne",
+                ),
+            ),
             DataRow(listOf("startDateSelect", "startDate", "startDate", "date", "date", "today", null, null, null)),
             DataRow(listOf("endDateSelect", "endDate", "endDate", "date", "date", "today", null, null, null)),
-            DataRow(listOf("obligDateTypeSelect", "obligDateType", "obligDateType", "none", "number", "1", null, null, null)),
+            DataRow(
+                listOf(
+                    "obligDateTypeSelect",
+                    "obligDateType",
+                    "obligDateType",
+                    "none",
+                    "number",
+                    "1",
+                    null,
+                    null,
+                    null,
+                ),
+            ),
         ),
     )
 
@@ -41,7 +65,13 @@ class ReportParameterMappingTest {
     fun everyParameterIsReadIncludingTheDatesTheOriginalDropped() {
         val parameters = response.toReportParameters()
         assertEquals(
-            listOf(ReportParameterType.SELECT, ReportParameterType.SELECT, ReportParameterType.DATE, ReportParameterType.DATE, ReportParameterType.HIDDEN),
+            listOf(
+                ReportParameterType.SELECT,
+                ReportParameterType.SELECT,
+                ReportParameterType.DATE,
+                ReportParameterType.DATE,
+                ReportParameterType.HIDDEN,
+            ),
             parameters.map { it.displayType },
         )
         assertEquals("R_startDate", parameters[2].queryKey)

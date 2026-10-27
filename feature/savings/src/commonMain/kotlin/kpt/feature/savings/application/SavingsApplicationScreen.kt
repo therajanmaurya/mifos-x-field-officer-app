@@ -28,13 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.submit.draft.SavedFormDraft
 import kpt.core.base.ui.effects.EventsEffect
-import kpt.core.base.ui.generated.resources.Res as BaseRes
 import kpt.core.base.ui.generated.resources.draft_save
 import kpt.core.base.ui.generated.resources.draft_saved
 import kpt.core.base.ui.generated.resources.draft_saved_offline
@@ -72,6 +69,9 @@ import kpt.feature.savings.generated.resources.feature_savings_submit
 import kpt.feature.savings.generated.resources.feature_savings_succeeded
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kpt.core.base.ui.generated.resources.Res as BaseRes
 
 /**
  * The new savings application wizard — ported from
@@ -188,6 +188,14 @@ internal fun SavingsApplicationContent(
         ApplicationDatePicker(state, onAction)
     }
 
+    ApplicationStatusDialog(state, onAction)
+}
+
+@Composable
+private fun ApplicationStatusDialog(
+    state: SavingsApplicationState,
+    onAction: (SavingsApplicationAction) -> Unit,
+) {
     when (val dialog = state.dialogState) {
         null -> Unit
         ApplicationDialog.Created -> AppStatusDialog(

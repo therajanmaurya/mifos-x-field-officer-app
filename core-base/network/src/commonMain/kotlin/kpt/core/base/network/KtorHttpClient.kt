@@ -33,6 +33,12 @@ import kotlinx.serialization.json.Json
 import kpt.core.base.security.CertificatePinConfig
 import co.touchlab.kermit.Logger.Companion as KermitLogger
 
+/**
+ * Creates a Ktor [HttpClient] on the target's own engine (OkHttp, Darwin, JS fetch, CIO).
+ *
+ * [config] is applied on top of the engine defaults, so shared setup — JSON, logging, auth,
+ * certificate pinning — is declared once in common code and the engine choice stays per platform.
+ */
 expect fun httpClient(config: HttpClientConfig<*>.() -> Unit): HttpClient
 
 /**
@@ -65,6 +71,28 @@ data class AuthProviders(
 )
 
 /**
+ * The three Ktor timeouts for [setupDefaultHttpClient], grouped for the same reason
+ * [AuthProviders] is: the builder is capped at 20 parameters by detekt's `LongParameterList`, and
+ * adding `connectTimeout` as a 21st flat parameter crossed it. Grouping is the fix the limit is
+ * asking for — raising the threshold would hide the next one.
+ *
+ * All three are milliseconds, and all three matter independently:
+ *
+ * @param request Whole-request-lifecycle budget. Covers connect + send + server think-time +
+ *   receive, so it must be the largest of the three or it masks the other two.
+ * @param socket Idle gap between bytes once a connection is established. Catches a server that
+ *   accepted the connection and then stopped sending.
+ * @param connect Budget to ESTABLISH the connection. Without a bound here a stalled TCP/TLS
+ *   handshake surfaces as a long spinner rather than an error the offline-first layer can retry —
+ *   the default is deliberately well under [request] so a dead host fails fast.
+ */
+data class HttpTimeouts(
+    val request: Long = 60_000L,
+    val socket: Long = 60_000L,
+    val connect: Long = 20_000L,
+)
+
+/**
  * Provides a default [HttpClientConfig] setup for use with a Ktor-based HTTP client.
  *
  * This function simplifies client configuration by handling common concerns such as:
@@ -87,11 +115,8 @@ data class AuthProviders(
  *        needs: the client is a singleton built at Koin start, long before anyone signs in, so a
  *        value captured in [defaultHeaders] can never become a post-login token. The lambda is
  *        invoked inside `defaultRequest`, which runs per call.
- * @param requestTimeout Timeout in milliseconds for entire request lifecycle.
- * @param socketTimeout Timeout in milliseconds for socket-level communication.
- * @param connectTimeout Timeout in milliseconds to ESTABLISH a connection. Without a bound here a
- *   stalled handshake surfaces as a long spinner rather than an error the offline-first layer can
- *   retry — see the install(HttpTimeout) block.
+ * @param timeouts Request / socket / connect budgets, grouped (see [HttpTimeouts]). Defaults bound
+ *   connect well under request so a stalled handshake fails fast instead of hanging a spinner.
  * @param httpLogger A logger used for HTTP logging (defaults to `Logger.DEFAULT`).
  * @param httpLogLevel Level of HTTP logging (e.g. `LogLevel.ALL`).
  * @param loggableHosts A list of hostnames for which HTTP logging is enabled.
@@ -124,9 +149,7 @@ fun setupDefaultHttpClient(
     authRequiredUrl: List<String> = emptyList(),
     defaultHeaders: Map<String, String> = emptyMap(),
     dynamicHeaders: () -> Map<String, String> = { emptyMap() },
-    requestTimeout: Long = 60_000L,
-    socketTimeout: Long = 60_000L,
-    connectTimeout: Long = 20_000L,
+    timeouts: HttpTimeouts = HttpTimeouts(),
     httpLogger: Logger = Logger.DEFAULT,
     httpLogLevel: LogLevel = if (isReleaseBuild) LogLevel.HEADERS else LogLevel.ALL,
     loggableHosts: List<String> = emptyList(),
@@ -158,23 +181,23 @@ fun setupDefaultHttpClient(
     //   list read  -> the error object does not match `List<T>`, so it either throws a confusing
     //                 JsonConvertException ("Expected start of the array '[', but had '{'") or,
     //                 when the shapes happen to be compatible, yields an EMPTY LIST.
-    //   write      -> the DTO's fields are all nullable with defaults, so it parses "fine" and
-    //                 `MutationGateway.command` returns MutationResult.Applied — a FAILED WRITE
+    //   write      -> a DTO whose fields are nullable-with-defaults parses "fine", so
+    //                 `MutationGateway.command` returns MutationResult.Applied -- a FAILED WRITE
     //                 REPORTED AS SUCCESS.
     //
     // MEASURED on device 2026-10-20 (mifos-x-field-officer-app, live Fineract): a 401 on
-    // POST /clients/3/notes returned `Applied`; the screen navigated back as though the note had
-    // been saved, and the note did not exist on the server. The paired list read rendered "No Item
-    // Found" rather than "signed out". A field officer is told the opposite of the truth in both
-    // directions, which is the worst possible failure mode for a write.
+    // POST /clients/3/notes returned `Applied`; the screen navigated back as though the note were
+    // saved, and the note did not exist on the server. The paired list read rendered "No Item Found"
+    // rather than "signed out". The user is told the opposite of the truth in both directions, which
+    // is the worst failure mode available to a write.
     //
-    // With expectSuccess the 4xx/5xx raises ClientRequestException / ServerResponseException, which
-    // already have correct destinations on both paths: `DefaultMutationGateway.command` catches
-    // Throwable into MutationResult.Failed, and the read path surfaces ScreenState.Error (or
-    // Unauthenticated, which `ScreenState` already models and could never be reached before).
+    // With expectSuccess the 4xx/5xx raises ClientRequestException / ServerResponseException, and
+    // both paths already have correct destinations: `DefaultMutationGateway.command` catches
+    // Throwable into MutationResult.Failed, and the read path surfaces ScreenState.Error -- or
+    // Unauthenticated, which `ScreenState` already models and which could never be reached before.
     //
-    // This is opt-OUT per client, not a global policy: an endpoint that genuinely encodes outcomes
-    // in non-2xx bodies sets `expectSuccess = false` on its own client and handles them explicitly.
+    // Opt-OUT per client, not a global policy: an endpoint that genuinely encodes outcomes in
+    // non-2xx bodies sets `expectSuccess = false` on its own client and handles them explicitly.
     expectSuccess = true
 
     val refreshMutex = Mutex()
@@ -245,22 +268,22 @@ fun setupDefaultHttpClient(
 
     // A CONNECT bound, not only request + socket.
     //
-    // Without it a call that never completes its TCP/TLS handshake is governed only by the 60s
-    // request timeout, which a user reads as an indefinite spinner rather than a failure. Measured
-    // on mifos-x-field-officer-app 2026-10-20: an authenticated write took 45-85s and the paired
-    // read never settled — the screen sat on "Refreshing…" for minutes with no error and no retry.
+    // Without one, a call that never completes its TCP/TLS handshake is governed only by the 60s
+    // request timeout — which a user reads as an indefinite spinner rather than a failure, and which
+    // an offline-first layer cannot turn into a retry.
     //
-    // `mobile-wallet` hit this first and worked around it per-client, with the diagnosis written
-    // out in its own NetworkModule: "The corebase default sets request+socket to 60s but no
-    // connectTimeout; a shorter connect bound + request timeout surfaces a stalled call as an
-    // Error/Retry the offline-first layer handles, instead of a long spinner." Fixing the DEFAULT
-    // here is what stops the next fork re-deriving that workaround.
+    // `mifos-pay` hit this first and worked around it per-client, with the diagnosis written out in
+    // its own NetworkModule: "The corebase default sets request+socket to 60s but no connectTimeout;
+    // a shorter connect bound + request timeout surfaces a stalled call as an Error/Retry the
+    // offline-first layer handles, instead of a long spinner." That workaround covered only its three
+    // hand-wired clients; every client built through this factory still missed it, which is how
+    // `mifos-x-field-officer-app` met the same stall on device in 2026-10.
     //
-    // 20s matches the value wallet settled on. Overridable per client for a slow endpoint.
+    // 20s is the value that workaround settled on. Overridable per client for a slow endpoint.
     install(HttpTimeout) {
-        requestTimeoutMillis = requestTimeout
-        socketTimeoutMillis = socketTimeout
-        connectTimeoutMillis = connectTimeout
+        requestTimeoutMillis = timeouts.request
+        socketTimeoutMillis = timeouts.socket
+        connectTimeoutMillis = timeouts.connect
     }
 
     install(Logging) {

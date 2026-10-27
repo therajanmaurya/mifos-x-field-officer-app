@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.home.dashboard
 
@@ -60,7 +60,9 @@ class HomeDashboardScreenUiTest {
             KptTheme {
                 HomeDashboardScreenContent(
                     state(collections = ScreenState.Content(HomeCard.Collections(clientsDue = due, loansDue = due, dueByCurrency = listOf(Money(900.0, "MXN", "$"))))),
-                    onRetry = {}, onRefresh = {}, onNavigate = {},
+                    onRetry = {},
+                    onRefresh = {},
+                    onNavigate = {},
                 )
             }
         }

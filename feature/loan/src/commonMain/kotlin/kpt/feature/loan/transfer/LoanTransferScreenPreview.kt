@@ -26,9 +26,20 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // i18n:skip — preview fixtures below
 private val previewOffice = OfficeOption(id = 1, name = "Head Office")
-private val previewClient = ClientOption(id = 4, displayName = "Nusrat Jahan Chowdhury", officeId = 1, officeName = "Head Office")
+private val previewClient = ClientOption(
+    id = 4,
+    displayName = "Nusrat Jahan Chowdhury",
+    officeId = 1,
+    officeName = "Head Office",
+)
 private val previewAccountType = AccountTypeOption(id = 2, code = "accountType.savings", value = "Savings Account")
-private val previewAccount = AccountOption(id = 9, accountNo = "000000009", clientId = 4, clientName = "Nusrat Jahan Chowdhury", productName = "Voluntary Savings")
+private val previewAccount = AccountOption(
+    id = 9,
+    accountNo = "000000009",
+    clientId = 4,
+    clientName = "Nusrat Jahan Chowdhury",
+    productName = "Voluntary Savings",
+)
 
 @Preview
 @Composable
@@ -37,7 +48,8 @@ internal fun LoanTransferContentPreview() {
         LoanTransferContent(
             state = LoanTransferState(
                 fromLoanId = 7, fromClientId = 1, fromOfficeId = 1, fromAccountNumber = "000000007", currency = "BDT",
-                office = previewOffice, client = previewClient, accountType = previewAccountType, account = previewAccount,
+                office = previewOffice, client = previewClient, accountType = previewAccountType,
+                account = previewAccount,
                 amount = "1000", description = "Overpayment refund",
                 offices = listOf(previewOffice), clients = listOf(previewClient),
                 accountTypes = listOf(previewAccountType), accounts = listOf(previewAccount),
@@ -51,6 +63,9 @@ internal fun LoanTransferContentPreview() {
 @Composable
 internal fun LoanTransferContentTemplateLoadingPreview() {
     KptTheme {
-        LoanTransferContent(state = LoanTransferState(fromLoanId = 7, fromAccountNumber = "000000007", isLoadingTemplate = true), onAction = {})
+        LoanTransferContent(
+            state = LoanTransferState(fromLoanId = 7, fromAccountNumber = "000000007", isLoadingTemplate = true),
+            onAction = {},
+        )
     }
 }

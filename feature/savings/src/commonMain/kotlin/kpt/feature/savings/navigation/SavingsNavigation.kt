@@ -146,7 +146,9 @@ fun NavGraphBuilder.savingsDestination(navController: NavController) {
             // which deposit accounts share (they are savings accounts underneath in Fineract).
             onCharges = { accountId -> navController.navigateToCharges(ChargeResource.SAVINGS, accountId) },
             // The account's datatables — the original's "More savings account info".
-            onMoreInfo = { accountId -> navController.navigateToDataTableList(Constants.DATA_TABLE_NAME_SAVINGS, accountId) },
+            onMoreInfo = { accountId ->
+                navController.navigateToDataTableList(Constants.DATA_TABLE_NAME_SAVINGS, accountId)
+            },
             onApprove = navController::navigateToSavingsApproval,
             onActivate = navController::navigateToSavingsActivation,
             onTransaction = { accountType, accountId, kind ->

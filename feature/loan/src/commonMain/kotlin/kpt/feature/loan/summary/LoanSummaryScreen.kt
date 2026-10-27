@@ -491,7 +491,7 @@ private fun SummaryMenu(
 }
 
 @Composable
-private fun InfoCard(titleText: String, infoText: String, modifier: Modifier) {
+private fun InfoCard(titleText: String, infoText: String, modifier: Modifier = Modifier) {
     AppCard(modifier = modifier) {
         Column(modifier = Modifier.padding(KptTheme.spacing.md)) {
             Text(

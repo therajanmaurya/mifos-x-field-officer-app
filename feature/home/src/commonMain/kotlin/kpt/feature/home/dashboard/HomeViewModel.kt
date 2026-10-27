@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.home.dashboard
 
@@ -24,6 +24,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonPrimitive
 import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.combineContent
@@ -42,24 +48,17 @@ import kpt.core.data.session.SessionRepository
 import kpt.core.model.center.Center
 import kpt.core.model.center.CenterWithAssociations
 import kpt.core.model.collectionsheet.IndividualCollectionSheet
-import kpt.core.model.objects.collectionsheets.LoanCollectionSheet
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.intOrNull
-import kotlinx.serialization.json.jsonPrimitive
 import kpt.core.model.collectionsheet.RequestCollectionSheetPayload
+import kpt.core.model.dashboard.DashboardLoan
 import kpt.core.model.dashboard.DashboardScope
 import kpt.core.model.dashboard.DashboardUser
+import kpt.core.model.dashboard.DueTodayLoan
 import kpt.core.model.dashboard.LoanPortfolio
 import kpt.core.model.dashboard.can
 import kpt.core.model.dashboard.canAnyChecker
-import kpt.core.model.dashboard.canRunReports
-import kpt.core.model.dashboard.DashboardLoan
-import kpt.core.model.dashboard.DueTodayLoan
 import kpt.core.model.dashboard.ownedBy
 import kpt.core.model.dashboard.portfolioOf
+import kpt.core.model.objects.collectionsheets.LoanCollectionSheet
 import kpt.core.model.objects.users.User
 import kpt.core.model.utils.matching
 
@@ -250,7 +249,7 @@ class HomeViewModel(
                             HomeCard.Meetings(
                                 rows.filterIsInstance<CenterWithAssociations>()
                                     .filter { c -> c.collectionMeetingCalendar.nextTenRecurringDates.any { it == today } }
-                                    .map { c -> MeetingToday(centerId = c.id ?: 0, name = c.name.orEmpty(), groups = c.groupMembers.size, time = c.collectionMeetingCalendar.meetingTime.toMeetingTime()) }
+                                    .map { c -> MeetingToday(centerId = c.id ?: 0, name = c.name.orEmpty(), groups = c.groupMembers.size, time = c.collectionMeetingCalendar.meetingTime.toMeetingTime()) },
                             )
                         }
                     }

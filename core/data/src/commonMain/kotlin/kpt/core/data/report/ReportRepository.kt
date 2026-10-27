@@ -9,13 +9,12 @@
  */
 package kpt.core.data.report
 
-import kpt.core.model.objects.runreport.FullParameterListResponse
-import kpt.core.model.report.ReportOption
-import kpt.core.model.report.ReportParameter
-
 import kotlinx.coroutines.CoroutineScope
 import kpt.core.base.store.screen.ScreenDataStream
+import kpt.core.model.objects.runreport.FullParameterListResponse
 import kpt.core.model.objects.runreport.client.ClientReportTypeItem
+import kpt.core.model.report.ReportOption
+import kpt.core.model.report.ReportParameter
 
 interface ReportRepository {
     /** The runnable report catalogue. */

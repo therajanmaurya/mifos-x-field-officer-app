@@ -38,7 +38,8 @@ import org.mobilenativefoundation.store.store5.Store
 internal class LoanRepositoryImpl(
     @FromStore(AppStoreIds.Loans) private val store: Store<Int, LoanWithAssociations>,
     @FromStore(AppStoreIds.LoanTemplates) private val templateStore: Store<LoanTemplateKey, LoanTemplate>,
-    @FromStore(AppStoreIds.LoanRepaymentTemplates) private val repaymentTemplateStore: Store<Int, LoanRepaymentTemplate>,
+    @FromStore(AppStoreIds.LoanRepaymentTemplates)
+    private val repaymentTemplateStore: Store<Int, LoanRepaymentTemplate>,
     @FromStore(AppStoreIds.LoanDisburseTemplates) private val disburseTemplateStore: Store<Int, LoanDisburseTemplate>,
     @FromStore(AppStoreIds.LoanGetAccountTransferTemplate)
     private val transferTemplateStore: Store<GetAccountTransferTemplateKey, AccountTransferTemplate>,

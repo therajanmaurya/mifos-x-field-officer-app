@@ -25,8 +25,8 @@ import kpt.core.designsystem.theme.AppTheme
 import kpt.core.designsystem.theme.DesignToken
 import kpt.core.ui.generated.resources.Res
 import kpt.core.ui.generated.resources.profile
-import kpt.core.ui.util.DevicePreview
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppUserImage(
@@ -67,7 +67,7 @@ fun AppUserImage(
     )
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun AppUserImagePreview(
     modifier: Modifier = Modifier,

@@ -189,7 +189,6 @@ internal fun ClientDepositAccountsContent(
             // Drawn from the UNFILTERED total, so searching everything away never removes the
             // control that clears the search.
             hasAnyAccount = totalCount > 0,
-            canAddAccount = canAddAccount,
             onAction = onAction,
         )
 
@@ -272,32 +271,8 @@ private fun DepositAccountList(
                     } else {
                         notAvailable
                     },
-                menuList = buildList {
-                    if (canViewAccount) add(Actions.ViewAccount())
-                    // Approve is offered only for an account actually awaiting approval — the
-                    // originals' rule — and only when the destination is wired.
-                    if (canApproveAccount && account.status?.submittedAndPendingApproval == true) {
-                        add(Actions.ApproveAccount())
-                    }
-                },
-                onActionClicked = { chosen ->
-                    when (chosen) {
-                        is Actions.ViewAccount -> onAction(
-                            ClientDepositAccountsAction.ViewAccount(
-                                accountId = accountId,
-                                // The row's OWN endpoint, so the summary addresses the right
-                                // Fineract collection.
-                                accountEndpoint = account.depositType?.serverType?.endpoint
-                                    ?: kind.serverType.endpoint,
-                            ),
-                        )
-                        // The ACCOUNT id. The originals passed the CLIENT id here — see the
-                        // ViewModel KDoc for why that is a wrong-target write, not a rename.
-                        is Actions.ApproveAccount ->
-                            onAction(ClientDepositAccountsAction.ApproveAccount(accountId))
-                        else -> Unit
-                    }
-                },
+                menuList = accountMenu(account, canViewAccount, canApproveAccount),
+                onActionClicked = { chosen -> onAccountAction(chosen, account, kind, onAction) },
                 isExpanded = expandedId == accountId,
                 onExpandToggle = { expandedId = if (expandedId == accountId) -1 else accountId },
             )
@@ -306,12 +281,45 @@ private fun DepositAccountList(
     }
 }
 
+private fun accountMenu(account: SavingsAccount, canViewAccount: Boolean, canApproveAccount: Boolean) = buildList {
+    if (canViewAccount) add(Actions.ViewAccount())
+    // Approve is offered only for an account actually awaiting approval — the
+    // originals' rule — and only when the destination is wired.
+    if (canApproveAccount && account.status?.submittedAndPendingApproval == true) {
+        add(Actions.ApproveAccount())
+    }
+}
+
+private fun onAccountAction(
+    chosen: Actions,
+    account: SavingsAccount,
+    kind: DepositAccountKind,
+    onAction: (ClientDepositAccountsAction) -> Unit,
+) {
+    val accountId = account.id ?: 0
+    when (chosen) {
+        is Actions.ViewAccount -> onAction(
+            ClientDepositAccountsAction.ViewAccount(
+                accountId = accountId,
+                // The row's OWN endpoint, so the summary addresses the right
+                // Fineract collection.
+                accountEndpoint = account.depositType?.serverType?.endpoint
+                    ?: kind.serverType.endpoint,
+            ),
+        )
+        // The ACCOUNT id. The originals passed the CLIENT id here — see the
+        // ViewModel KDoc for why that is a wrong-target write, not a rename.
+        is Actions.ApproveAccount ->
+            onAction(ClientDepositAccountsAction.ApproveAccount(accountId))
+        else -> Unit
+    }
+}
+
 @Composable
 private fun AccountsHeader(
     title: String,
     totalItem: String,
     hasAnyAccount: Boolean,
-    canAddAccount: Boolean,
     onAction: (ClientDepositAccountsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {

@@ -24,8 +24,25 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // i18n:skip — preview fixtures
 private val previewDocuments = listOf(
-    Document(id = 1, parentEntityType = "groups", parentEntityId = 11, name = "Meeting minutes", fileName = "minutes-oct.pdf", size = 182_000, type = "application/pdf"),
-    Document(id = 2, parentEntityType = "groups", parentEntityId = 11, name = "Group photo", fileName = "group.jpg", size = 940_000, type = "image/jpeg", description = "Taken at the October meeting"),
+    Document(
+        id = 1,
+        parentEntityType = "groups",
+        parentEntityId = 11,
+        name = "Meeting minutes",
+        fileName = "minutes-oct.pdf",
+        size = 182_000,
+        type = "application/pdf",
+    ),
+    Document(
+        id = 2,
+        parentEntityType = "groups",
+        parentEntityId = 11,
+        name = "Group photo",
+        fileName = "group.jpg",
+        size = 940_000,
+        type = "image/jpeg",
+        description = "Taken at the October meeting",
+    ),
 )
 
 @Preview

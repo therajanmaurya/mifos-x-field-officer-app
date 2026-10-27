@@ -84,7 +84,14 @@ class CenterGroupDaoTest {
         val dao = database.collectionSheetDao
         // Every insert used to throw here — `MeetingFallCalendar` had no serializer, so the converter
         // could not encode even an empty list and the roster store never persisted a row.
-        dao.upsertAll(listOf(CenterDetailEntity(staffId = 1, meetingFallCenters = listOf(MeetingFallCalendar(id = 3, name = "North")))))
+        dao.upsertAll(
+            listOf(
+                CenterDetailEntity(
+                    staffId = 1,
+                    meetingFallCenters = listOf(MeetingFallCalendar(id = 3, name = "North")),
+                ),
+            ),
+        )
 
         assertEquals(listOf("North"), dao.getForStaff(1)?.meetingFallCenters?.map { it.name })
     }

@@ -56,7 +56,6 @@ class LoanScheduleScreenUiTest {
                 LoanScheduleContent(
                     schedule = ScreenState.Content(table),
                     onAction = {},
-                    onBackPressed = {},
                 )
             }
         }
@@ -79,7 +78,6 @@ class LoanScheduleScreenUiTest {
                 LoanScheduleContent(
                     schedule = ScreenState.Content(table),
                     onAction = {},
-                    onBackPressed = {},
                 )
             }
         }
@@ -96,7 +94,6 @@ class LoanScheduleScreenUiTest {
                 LoanScheduleContent(
                     schedule = ScreenState.Loading,
                     onAction = {},
-                    onBackPressed = {},
                 )
             }
         }

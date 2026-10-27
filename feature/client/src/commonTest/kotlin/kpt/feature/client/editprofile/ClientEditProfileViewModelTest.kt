@@ -19,12 +19,13 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kpt.core.model.objects.noncoreobjects.DocumentUpload
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.data.testing.FakeClientCommandRepository
 import kpt.core.data.testing.FakeClientRepository
+import kpt.core.model.objects.noncoreobjects.DocumentUpload
+import kpt.feature.client.imageCodecAvailable
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -119,6 +120,7 @@ class ClientEditProfileViewModelTest {
 
     @Test
     fun theStoredPhotoIsDecodedIntoState() = runTest(dispatcher) {
+        if (!imageCodecAvailable()) return@runTest
         // A real 1x1 PNG, because `imageToByteArray` also runs the image codec: arbitrary bytes
         // base64-decode fine and then come back EMPTY. Same trap the profile port's test records.
         val vm = viewModel(FakeClientRepository(image = "data:image/png;base64,$ONE_PIXEL_PNG"))
@@ -130,6 +132,7 @@ class ClientEditProfileViewModelTest {
 
     @Test
     fun deleteSendsTheClientIdAndClearsThePhoto() = runTest(dispatcher) {
+        if (!imageCodecAvailable()) return@runTest
         val commands = ImageCommands()
         val vm = viewModel(
             repo = FakeClientRepository(image = "data:image/png;base64,$ONE_PIXEL_PNG"),
@@ -166,6 +169,7 @@ class ClientEditProfileViewModelTest {
 
     @Test
     fun aFailedDeleteReportsFailedAndLeavesTheScreen() = runTest(dispatcher) {
+        if (!imageCodecAvailable()) return@runTest
         val vm = viewModel(
             repo = FakeClientRepository(image = "data:image/png;base64,$ONE_PIXEL_PNG"),
             commands = ImageCommands(MutationResult.Failed(RuntimeException("boom"), rolledBack = false)),

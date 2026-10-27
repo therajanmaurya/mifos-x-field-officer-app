@@ -26,12 +26,12 @@ import kpt.core.data.center.CenterCommandRepository
 import kpt.core.data.group.GroupCommandRepository
 import kpt.core.data.testing.FakeClientCommandRepository
 import kpt.core.model.center.CenterPayload
+import kpt.core.model.center.PostCentersCenterIdRequest
+import kpt.core.model.collectionsheet.payload.CollectionSheetPayload
 import kpt.core.model.group.GroupPayload
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.shared.GenericResponse
 import kpt.core.model.utils.ApiDateFormatter
-import kpt.core.model.center.PostCentersCenterIdRequest
-import kpt.core.model.collectionsheet.payload.CollectionSheetPayload
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -157,10 +157,18 @@ class ActivateViewModelTest {
     fun aRejectionCarriesTheServersReason() = runTest(dispatcher) {
         // A 403 for an officer without ACTIVATE_CLIENT, as the gateway sent it (device, 2026-10-26).
         val forbidden = RuntimeException(
-            """Client request(POST https://x/clients/3?command=activate) invalid: 403 Forbidden. Text: "{"developerMessage":"x","httpStatusCode":"403","defaultUserMessage":"Insufficient privileges to perform this action.","userMessageGlobalisationCode":"error.msg.not.authorized","errors":[]}"""",
+            """Client request(POST https://x/clients/3?command=activate) invalid: 403 Forbidden. """ +
+                """Text: "{"developerMessage":"x","httpStatusCode":"403",""" +
+                """"defaultUserMessage":"Insufficient privileges to perform this action.",""" +
+                """"userMessageGlobalisationCode":"error.msg.not.authorized","errors":[]}"""",
         )
         val rejecting = FakeGroupCommands { MutationResult.Failed(cause = forbidden, rolledBack = false) }
-        val vm = ActivateViewModel(clients, centers, rejecting, SavedStateHandle(mapOf("id" to 7, "type" to Constants.ACTIVATE_GROUP)))
+        val vm = ActivateViewModel(
+            clients,
+            centers,
+            rejecting,
+            SavedStateHandle(mapOf("id" to 7, "type" to Constants.ACTIVATE_GROUP)),
+        )
 
         vm.actionChannel.trySend(ActivateAction.Submit(payload()))
         testScheduler.advanceUntilIdle()

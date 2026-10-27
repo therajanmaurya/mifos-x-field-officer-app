@@ -51,11 +51,19 @@ val ProjectRepositoryModule = module {
     single<ServerConfigSource> {
         val networkConfigs = get<NetworkConfigRepository>()
         ServerConfigSource {
-            networkConfigs.configs.map { requireNotNull(networkConfigs.mainConfig()) { "app-profile marks no main access point" }.toServerConfig() }
+            networkConfigs.configs.map {
+                requireNotNull(networkConfigs.mainConfig()) { "app-profile marks no main access point" }
+                    .toServerConfig()
+            }
         }
     }
     single<SessionSource> { SessionSource { get<ProjectPreferencesRepository>().fineractUser } }
-    single<kpt.core.data.recent.RecentRecordsRepository> { kpt.core.data.recent.RecentRecordsRepositoryImpl(get(), get()) }
+    single<kpt.core.data.recent.RecentRecordsRepository> {
+        kpt.core.data.recent.RecentRecordsRepositoryImpl(
+            get(),
+            get(),
+        )
+    }
 
     // Settings → Offline sync. Wired by hand rather than `@RepositoryBinding` because the engine takes
     // its 28 stores grouped by owner (EntityStores / SharedStores / AccountStores) — each `get` below

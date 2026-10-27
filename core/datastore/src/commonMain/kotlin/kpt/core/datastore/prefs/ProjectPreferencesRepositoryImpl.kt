@@ -11,15 +11,15 @@ package kpt.core.datastore.prefs
 
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
-import kpt.core.base.datastore.infra.getJsonOrNull
-import kpt.core.base.datastore.infra.putJson
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kpt.core.base.common.manager.DispatcherManager
+import kpt.core.base.datastore.infra.getJsonOrNull
+import kpt.core.base.datastore.infra.putJson
 import kpt.core.model.objects.users.User
 
 /**

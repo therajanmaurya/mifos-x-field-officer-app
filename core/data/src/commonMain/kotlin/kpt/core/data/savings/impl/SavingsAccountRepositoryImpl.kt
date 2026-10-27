@@ -17,11 +17,11 @@ import kpt.core.base.store.screen.ScreenDataStream
 import kpt.core.base.store.screen.asScreenStream
 import kpt.core.data.savings.SavingsAccountRepository
 import kpt.core.data.util.freshOrCached
+import kpt.core.model.objects.organisations.ProductSavings
+import kpt.core.model.savings.FixedDepositTemplate
 import kpt.core.model.savings.SavingProductsTemplate
 import kpt.core.model.savings.SavingsAccountTransactionTemplate
 import kpt.core.model.savings.SavingsAccountWithAssociations
-import kpt.core.model.objects.organisations.ProductSavings
-import kpt.core.model.savings.FixedDepositTemplate
 import kpt.core.model.savings.ShareTemplate
 import kpt.core.store.config.AppCacheKeys
 import kpt.core.store.config.AppStoreIds

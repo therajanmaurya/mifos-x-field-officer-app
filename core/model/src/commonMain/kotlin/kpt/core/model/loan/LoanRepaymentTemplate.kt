@@ -10,13 +10,12 @@
 package kpt.core.model.loan
 
 import kotlinx.serialization.Serializable
-import kpt.core.model.loan.LoanType
 import kpt.core.model.payment.PaymentTypeOption
 import kpt.core.model.savings.SavingAccountCurrency
 
 /**
  * GENERATED twin — what every layer above `core/store` sees of `core/database`'s `LoanRepaymentTemplateEntity`.
- * Same field names as the row; `core/store/mapping/EntityModelMappers.kt` converts between them.
+ * Same field names as the row; the `core/store/mapping/` mappers convert between them.
  */
 @Serializable
 data class LoanRepaymentTemplate(

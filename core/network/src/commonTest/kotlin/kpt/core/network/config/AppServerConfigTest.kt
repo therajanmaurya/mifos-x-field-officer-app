@@ -5,12 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.core.network.config
 
-import kpt.core.base.network.NetworkConfig
 import kpt.core.base.network.AccessPointKind
+import kpt.core.base.network.NetworkConfig
 import kpt.core.model.utils.ServerConfig
 import kpt.core.model.utils.baseUrl
 import kpt.core.model.utils.getInstanceUrl
@@ -70,7 +70,10 @@ class AppServerConfigTest {
             config("http://localhost:8080/fineract-provider/api/v1/", "default").toServerConfig(),
         )
         // No explicit port → the scheme's; no path → "/"; no tenant header → blank (the screen flags it).
-        assertEquals(ServerConfig("https://", "h.example", "/", "443", ""), config("https://h.example").toServerConfig())
+        assertEquals(
+            ServerConfig("https://", "h.example", "/", "443", ""),
+            config("https://h.example").toServerConfig(),
+        )
         assertEquals("80", config("http://h.example/").toServerConfig().port)
     }
 

@@ -16,15 +16,15 @@ import kpt.core.base.store.mutation.CommandSpec
 import kpt.core.base.store.mutation.MutationGateway
 import kpt.core.base.store.mutation.MutationPolicy
 import kpt.core.data.collectionsheet.CollectionSheetCommandRepository
+import kpt.core.model.collectionsheet.CollectionSheetPayload
 import kpt.core.model.collectionsheet.CollectionSheetResponse
 import kpt.core.model.collectionsheet.IndividualCollectionSheet
-import kpt.core.model.collectionsheet.CollectionSheetPayload
+import kpt.core.model.collectionsheet.IndividualCollectionSheetPayload
 import kpt.core.model.collectionsheet.ProductiveCollectionSheetPayload
+import kpt.core.model.collectionsheet.RequestCollectionSheetPayload
 import kpt.core.model.objects.collectionsheets.CollectionSheetRequestPayload
 import kpt.core.model.utils.DateConstants
 import kpt.core.network.mifos.collectionsheet.api.CollectionSheetApi
-import kpt.core.model.collectionsheet.IndividualCollectionSheetPayload
-import kpt.core.model.collectionsheet.RequestCollectionSheetPayload
 import kpt.core.store.collectionsheet.GeneratedSheetKey
 import kpt.core.store.config.AppStoreIds
 import org.mobilenativefoundation.store.core5.ExperimentalStoreApi
@@ -76,7 +76,15 @@ internal class CollectionSheetCommandRepositoryImpl(
                     if (response != null && payload != null) {
                         record(
                             productiveStore,
-                            GeneratedSheetKey(centerId, sheetRequest(payload.calendarId, payload.dateFormat, payload.locale, payload.transactionDate)),
+                            GeneratedSheetKey(
+                                centerId,
+                                sheetRequest(
+                                    payload.calendarId,
+                                    payload.dateFormat,
+                                    payload.locale,
+                                    payload.transactionDate,
+                                ),
+                            ),
                         )
                     }
                 },
@@ -93,7 +101,15 @@ internal class CollectionSheetCommandRepositoryImpl(
                     if (response != null && payload != null) {
                         record(
                             groupStore,
-                            GeneratedSheetKey(groupId, sheetRequest(payload.calendarId, payload.dateFormat, payload.locale, payload.transactionDate)),
+                            GeneratedSheetKey(
+                                groupId,
+                                sheetRequest(
+                                    payload.calendarId,
+                                    payload.dateFormat,
+                                    payload.locale,
+                                    payload.transactionDate,
+                                ),
+                            ),
                         )
                     }
                 },

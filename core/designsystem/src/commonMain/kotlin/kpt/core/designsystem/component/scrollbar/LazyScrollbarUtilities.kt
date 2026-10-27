@@ -33,24 +33,24 @@ internal inline fun <LazyState : ScrollableState, LazyStateItem> LazyState.inter
     crossinline nextItemOnMainAxis: LazyState.(LazyStateItem) -> LazyStateItem?,
     crossinline itemIndex: (LazyStateItem) -> Int,
 ): Float {
-    if (visibleItems.isEmpty()) return 0f
+    val firstItem = visibleItems.firstOrNull()
+    val firstItemIndex = firstItem?.let { itemIndex(it) } ?: 0
+    // A negative index or a zero size both make the interpolation undefined (NaN).
+    val firstItemSize = if (firstItem == null || firstItemIndex < 0) 0 else itemSize(firstItem)
 
-    val firstItem = visibleItems.first()
-    val firstItemIndex = itemIndex(firstItem)
-
-    if (firstItemIndex < 0) return Float.NaN
-
-    val firstItemSize = itemSize(firstItem)
-    if (firstItemSize == 0) return Float.NaN
-
-    val itemOffset = offset(firstItem).toFloat()
-    val offsetPercentage = abs(itemOffset) / firstItemSize
-
-    val nextItem = nextItemOnMainAxis(firstItem) ?: return firstItemIndex + offsetPercentage
-
-    val nextItemIndex = itemIndex(nextItem)
-
-    return firstItemIndex + ((nextItemIndex - firstItemIndex) * offsetPercentage)
+    return when {
+        firstItem == null -> 0f
+        firstItemSize == 0 -> Float.NaN
+        else -> {
+            val offsetPercentage = abs(offset(firstItem).toFloat()) / firstItemSize
+            val nextItem = nextItemOnMainAxis(firstItem)
+            if (nextItem == null) {
+                firstItemIndex + offsetPercentage
+            } else {
+                firstItemIndex + ((itemIndex(nextItem) - firstItemIndex) * offsetPercentage)
+            }
+        }
+    }
 }
 
 /**

@@ -48,8 +48,8 @@ import kpt.core.model.savings.SavingsAccount
  * the group's clients — the original's "Group clients" overflow entry, here as the same kind of card
  * because the members are already in hand. Collapsed by default, as the original was.
  *
- * Status dot: the original's palette, as the app's status tokens (`AppColors.loan*Status`) — active / approved-awaiting-disbursal /
- * pending approval / in arrears / anything else.
+ * Status dot: the original's palette, as the app's status tokens (`AppColors.loan*Status`) — active /
+ * approved-awaiting-disbursal / pending approval / in arrears / anything else.
  */
 @Composable
 internal fun ExpandableSection(
@@ -108,7 +108,9 @@ internal fun SavingsAccountRow(account: SavingsAccount, onClick: ((Int, String) 
             else -> colors.outline
         },
         // The deposit type picks the endpoint (savings vs recurring) — the original passed it too.
-        onClick = onClick?.let { open -> account.id?.let { id -> account.depositType?.let { type -> { open(id, type.endpoint) } } } },
+        onClick = onClick?.let { open ->
+            account.id?.let { id -> account.depositType?.let { type -> { open(id, type.endpoint) } } }
+        },
     )
 }
 
@@ -136,8 +138,18 @@ private fun AccountRow(title: String, subtitle: String, dot: Color, onClick: (()
         Canvas(modifier = Modifier.size(10.dp)) { drawCircle(dot) }
         Column(modifier = Modifier.weight(1f)) {
             Text(text = title, style = MaterialTheme.typography.bodyLarge)
-            Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
-        if (onClick != null) Icon(KptIcons.ArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (onClick != null) {
+            Icon(
+                KptIcons.ArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }

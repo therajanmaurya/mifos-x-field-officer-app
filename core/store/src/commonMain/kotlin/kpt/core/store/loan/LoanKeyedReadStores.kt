@@ -9,11 +9,9 @@
  */
 package kpt.core.store.loan
 
-import kpt.core.model.loan.LoanTransactionTemplate as LoanTransactionTemplateModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
-import kpt.core.database.loan.entity.LoanTransactionTemplate
 import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleResponse
 import kpt.core.model.objects.account.loan.transfer.AccountTransferTemplate
 import kpt.core.model.objects.template.loan.GroupLoanTemplate
@@ -26,6 +24,7 @@ import kpt.core.network.mifos.loan.dto.LoanWithAssociationsDto
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys
 import org.mobilenativefoundation.store.store5.Store
+import kpt.core.model.loan.LoanTransactionTemplate as LoanTransactionTemplateModel
 
 /**
  * Keyed reads for loan with no table of their own — cached through the shared read cache so the
@@ -146,8 +145,32 @@ fun provideGetAccountTransferTemplateStore(
     cache: ApiResponseCacheDao,
 ): Store<GetAccountTransferTemplateKey, AccountTransferTemplate> = cachedRead(
     dao = cache,
-    keyOf = { key -> AppCacheKeys.LoanGetAccountTransferTemplate.forKey("${key.fromClientId}:${key.fromAccountType}:${key.fromAccountId}:${key.fromOfficeId}:${key.toOfficeId}:${key.toClientId}:${key.toAccountType}:${key.toAccountId}") },
-    fetch = { key -> loanApi.getAccountTransferTemplate(fromClientId = key.fromClientId, fromAccountType = key.fromAccountType, fromAccountId = key.fromAccountId, fromOfficeId = key.fromOfficeId, toOfficeId = key.toOfficeId, toClientId = key.toClientId, toAccountType = key.toAccountType, toAccountId = key.toAccountId) },
+    keyOf = { key ->
+        AppCacheKeys.LoanGetAccountTransferTemplate.forKey(
+            listOf(
+                key.fromClientId,
+                key.fromAccountType,
+                key.fromAccountId,
+                key.fromOfficeId,
+                key.toOfficeId,
+                key.toClientId,
+                key.toAccountType,
+                key.toAccountId,
+            ).joinToString(":"),
+        )
+    },
+    fetch = { key ->
+        loanApi.getAccountTransferTemplate(
+            fromClientId = key.fromClientId,
+            fromAccountType = key.fromAccountType,
+            fromAccountId = key.fromAccountId,
+            fromOfficeId = key.fromOfficeId,
+            toOfficeId = key.toOfficeId,
+            toClientId = key.toClientId,
+            toAccountType = key.toAccountType,
+            toAccountId = key.toAccountId,
+        )
+    },
 )
 
 @StoreProvider(id = "loanGetLoanReschedules", ttl = "12h")

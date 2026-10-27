@@ -67,7 +67,9 @@ class AppDatabaseTest {
         // charges sharing an id coexist (a plain AutoMigration recreate).
         // 17: added `server_instances` (the server picker's instance list) — an additive AutoMigration.
         // 18: `Note.resourceType` (default 'clients') — notes for any owner. Additive AutoMigration.
-        assertEquals(18, AppDatabase.VERSION)
+        // 19: added `recent_records` (Home's recently opened). Additive AutoMigration.
+        // 20: added `offline_records` + `sync_jobs` (Offline sync). Additive AutoMigration.
+        assertEquals(20, AppDatabase.VERSION)
     }
 
     @Test

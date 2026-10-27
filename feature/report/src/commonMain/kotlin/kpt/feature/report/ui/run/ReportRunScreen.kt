@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.report.ui.run
 
@@ -60,7 +60,6 @@ import kpt.core.model.report.ReportOption
 import kpt.core.model.report.ReportParameter
 import kpt.core.model.report.ReportParameterType
 import kpt.core.ui.components.AppEmptyCard
-import kpt.feature.report.ui.saveReportCsv
 import kpt.feature.report.generated.resources.Res
 import kpt.feature.report.generated.resources.feature_report_all_option
 import kpt.feature.report.generated.resources.feature_report_back_to_parameters
@@ -76,6 +75,7 @@ import kpt.feature.report.generated.resources.feature_report_rows
 import kpt.feature.report.generated.resources.feature_report_run_report
 import kpt.feature.report.generated.resources.feature_report_select
 import kpt.feature.report.generated.resources.feature_report_unable_to_export
+import kpt.feature.report.ui.saveReportCsv
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -142,7 +142,10 @@ internal fun ReportRunContent(
         snackbarHostState = snackbarHostState,
         actions = {
             if (result != null) {
-                TextButton(onClick = { onAction(ReportRunAction.Export) }, modifier = Modifier.testTag(ReportRunTestTags.EXPORT)) {
+                TextButton(
+                    onClick = { onAction(ReportRunAction.Export) },
+                    modifier = Modifier.testTag(ReportRunTestTags.EXPORT),
+                ) {
                     Text(stringResource(Res.string.feature_report_export_csv))
                 }
             }
@@ -164,7 +167,9 @@ internal fun ReportRunContent(
         AlertDialog(
             onDismissRequest = { onAction(ReportRunAction.DismissFailure) },
             confirmButton = {
-                TextButton(onClick = { onAction(ReportRunAction.DismissFailure) }) { Text(stringResource(Res.string.feature_report_ok)) }
+                TextButton(onClick = { onAction(ReportRunAction.DismissFailure) }) {
+                    Text(stringResource(Res.string.feature_report_ok))
+                }
             },
             text = {
                 val generic = stringResource(Res.string.feature_report_failed)
@@ -190,7 +195,11 @@ private fun ParameterForm(
         val visible = params.filter { it.displayType != ReportParameterType.HIDDEN }
         if (visible.isEmpty()) Text(stringResource(Res.string.feature_report_no_parameters))
         for (parameter in visible) {
-            val error = if (parameter.name in state.missing) stringResource(Res.string.feature_report_required) else null
+            val error = if (parameter.name in state.missing) {
+                stringResource(Res.string.feature_report_required)
+            } else {
+                null
+            }
             val value = effectiveValue(parameter, state.values)
             val tag = Modifier.fillMaxWidth().testTag(ReportRunTestTags.parameter(parameter.name))
             when (parameter.displayType) {
@@ -202,7 +211,9 @@ private fun ParameterForm(
                     AppTextFieldDropdown(
                         value = choices.firstOrNull { it.id == value }?.label.orEmpty(),
                         onOptionSelected = { index, _ ->
-                            choices.getOrNull(index)?.let { onAction(ReportRunAction.ValueChanged(parameter.name, it.id)) }
+                            choices.getOrNull(index)?.let {
+                                onAction(ReportRunAction.ValueChanged(parameter.name, it.id))
+                            }
                         },
                         options = choices.map { it.label },
                         label = parameter.label,
@@ -248,19 +259,36 @@ private fun ParameterForm(
  * later value in that column up a row — misattributing amounts to the wrong client.
  */
 @Composable
-private fun ResultTable(result: FullParameterListResponse, onBack: () -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = KptTheme.spacing.md), verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = stringResource(Res.string.feature_report_rows, result.data.size),
-            style = KptTheme.typography.labelLarge,
-            modifier = Modifier.weight(1f),
-        )
-        TextButton(onClick = onBack) { Text(stringResource(Res.string.feature_report_back_to_parameters)) }
+private fun ResultTable(
+    result: FullParameterListResponse,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = KptTheme.spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(Res.string.feature_report_rows, result.data.size),
+                style = KptTheme.typography.labelLarge,
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = onBack) { Text(stringResource(Res.string.feature_report_back_to_parameters)) }
+        }
+        if (result.data.isEmpty()) {
+            AppEmptyCard(
+                msg = stringResource(Res.string.feature_report_no_rows),
+                modifier = Modifier.padding(KptTheme.spacing.md),
+            )
+        } else {
+            ResultRows(result)
+        }
     }
-    if (result.data.isEmpty()) {
-        AppEmptyCard(msg = stringResource(Res.string.feature_report_no_rows), modifier = Modifier.padding(KptTheme.spacing.md))
-        return
-    }
+}
+
+@Composable
+private fun ResultRows(result: FullParameterListResponse) {
     val scroll = rememberScrollState()
     Column(Modifier.fillMaxSize().horizontalScroll(scroll).testTag(ReportRunTestTags.TABLE)) {
         Row(Modifier.background(KptTheme.colorScheme.surfaceContainerHigh)) {
@@ -268,7 +296,12 @@ private fun ResultTable(result: FullParameterListResponse, onBack: () -> Unit) {
         }
         LazyColumn {
             itemsIndexed(result.data) { index, dataRow ->
-                Row(Modifier.background(if (index % 2 == 0) KptTheme.colorScheme.surface else KptTheme.colorScheme.surfaceContainerLow)) {
+                val rowColor = if (index % 2 == 0) {
+                    KptTheme.colorScheme.surface
+                } else {
+                    KptTheme.colorScheme.surfaceContainerLow
+                }
+                Row(Modifier.background(rowColor)) {
                     result.columnHeaders.indices.forEach { Cell(dataRow.row.getOrNull(it).orEmpty()) }
                 }
                 HorizontalDivider(color = KptTheme.colorScheme.outlineVariant)
@@ -294,7 +327,9 @@ private fun Cell(text: String, bold: Boolean = false) {
 private fun DateDialog(parameter: String, value: String?, onAction: (ReportRunAction) -> Unit) {
     // The picker speaks UTC-midnight millis; the value is an ISO date. Convert both ways in UTC so a
     // device west of Greenwich does not pick the day before.
-    val initial = value?.let { runCatching { LocalDate.parse(it).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds() }.getOrNull() }
+    val initial = value?.let {
+        runCatching { LocalDate.parse(it).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds() }.getOrNull()
+    }
     val picker = rememberDatePickerState(initialSelectedDateMillis = initial)
     DatePickerDialog(
         onDismissRequest = { onAction(ReportRunAction.CloseDatePicker) },
@@ -308,7 +343,9 @@ private fun DateDialog(parameter: String, value: String?, onAction: (ReportRunAc
             }) { Text(stringResource(Res.string.feature_report_select)) }
         },
         dismissButton = {
-            TextButton(onClick = { onAction(ReportRunAction.CloseDatePicker) }) { Text(stringResource(Res.string.feature_report_cancel)) }
+            TextButton(onClick = { onAction(ReportRunAction.CloseDatePicker) }) {
+                Text(stringResource(Res.string.feature_report_cancel))
+            }
         },
     ) { DatePicker(state = picker) }
 }

@@ -16,12 +16,12 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runComposeUiTest
-import kotlin.test.Test
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.designsystem.theme.KptTheme
 import kpt.core.model.objects.account.loan.loanWithAssociations.LoanStatus
 import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
 import kpt.feature.loan.profile.components.LoanProfileActionItem
+import kotlin.test.Test
 
 /**
  * The RENDERED proof of "absent, never inert" on this screen — the rule the whole port turns on,
@@ -43,7 +43,6 @@ class LoanProfileScreenUiTest {
                     loan = loan,
                     status = ScreenState.Content(LoanProfileStatus.ACTIVE),
                     onAction = {},
-                    onBackPressed = {},
                     availableDetails = listOf(
                         LoanProfileActionItem.RepaymentSchedule,
                         LoanProfileActionItem.Transactions,
@@ -74,7 +73,6 @@ class LoanProfileScreenUiTest {
                     loan = loan,
                     status = ScreenState.Content(LoanProfileStatus.ACTIVE),
                     onAction = {},
-                    onBackPressed = {},
                 )
             }
         }
@@ -92,7 +90,6 @@ class LoanProfileScreenUiTest {
                     // PENDING → Approve, which landed in S4b.
                     status = ScreenState.Content(LoanProfileStatus.PENDING),
                     onAction = {},
-                    onBackPressed = {},
                     availableActions = setOf(LoanPrimaryAction.Approve),
                 )
             }
@@ -110,7 +107,6 @@ class LoanProfileScreenUiTest {
                     // ACTIVE → Make Repayment, which has not landed.
                     status = ScreenState.Content(LoanProfileStatus.ACTIVE),
                     onAction = {},
-                    onBackPressed = {},
                     availableActions = setOf(LoanPrimaryAction.Approve),
                 )
             }
@@ -130,7 +126,6 @@ class LoanProfileScreenUiTest {
                     loan = loan,
                     status = ScreenState.Content(LoanProfileStatus.OVERPAID),
                     onAction = {},
-                    onBackPressed = {},
                 )
             }
         }
@@ -151,7 +146,6 @@ class LoanProfileScreenUiTest {
                     // draw, because the client name and the balances are already known.
                     status = ScreenState.Loading,
                     onAction = {},
-                    onBackPressed = {},
                 )
             }
         }
@@ -163,14 +157,17 @@ class LoanProfileScreenUiTest {
     @Test
     fun anApprovedLoanNamesTheServersStatusRatherThanUnknown() = runComposeUiTest {
         // Approved / waiting-for-disbursal derives to UNKNOWN; the chip shows what the server calls it.
-        val approved = LoanWithAssociations(id = 7, clientName = "Asha", status = LoanStatus(value = "Approved", waitingForDisbursal = true))
+        val approved = LoanWithAssociations(
+            id = 7,
+            clientName = "Asha",
+            status = LoanStatus(value = "Approved", waitingForDisbursal = true),
+        )
         setContent {
             KptTheme {
                 LoanProfileContent(
                     loan = ScreenState.Content(approved),
                     status = ScreenState.Content(approved.status.toProfileStatus()),
                     onAction = {},
-                    onBackPressed = {},
                 )
             }
         }

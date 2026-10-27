@@ -21,11 +21,11 @@ import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.mapContent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.data.client.ClientRepository
 import kpt.core.model.client.StaffOption
 import kpt.core.model.objects.clients.AssignStaffRequest
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.ui.components.ResultStatus
 
 /**

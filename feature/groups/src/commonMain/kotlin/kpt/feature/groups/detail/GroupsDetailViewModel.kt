@@ -9,28 +9,27 @@
  */
 package kpt.feature.groups.detail
 
-import kpt.core.model.recent.RecentRecord
-import kpt.core.model.recent.RecentKind
-import kpt.core.data.recent.RecentRecordsRepository
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.filterIsInstance
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.store.screen.emptyIfContent
 import kpt.core.base.store.screen.mapContent
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.data.group.GroupCommandRepository
 import kpt.core.data.group.GroupRepository
+import kpt.core.data.recent.RecentRecordsRepository
 import kpt.core.model.client.Client
 import kpt.core.model.group.Group
 import kpt.core.model.group.GroupAccounts
+import kpt.core.model.recent.RecentKind
+import kpt.core.model.recent.RecentRecord
 
 /**
  * Group detail — ported from `6b66e8a43:feature/groups/groupDetails/GroupDetailsViewModel.kt`.
@@ -56,7 +55,6 @@ import kpt.core.model.group.GroupAccounts
  */
 internal class GroupsDetailViewModel(
     repository: GroupRepository,
-    private val commands: GroupCommandRepository,
     savedStateHandle: SavedStateHandle,
     private val recents: RecentRecordsRepository,
 ) : BaseViewModel<Unit, GroupsDetailEvent, GroupsDetailAction>(Unit) {
@@ -85,7 +83,11 @@ internal class GroupsDetailViewModel(
     init {
         // Home's "Recently opened": record this visit once, when the record first loads.
         group.filterIsInstance<ScreenState.Content<Group>>().take(1)
-            .onEach { content -> content.data.let { recents.record(RecentRecord(RecentKind.GROUP, (it.id ?: groupId).toLong(), it.name.orEmpty(), it.accountNo)) } }
+            .onEach { content ->
+                val g = content.data
+                val id = (g.id ?: groupId).toLong()
+                recents.record(RecentRecord(RecentKind.GROUP, id, g.name.orEmpty(), g.accountNo))
+            }
             .launchIn(viewModelScope)
     }
 

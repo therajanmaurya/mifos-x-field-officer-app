@@ -5,13 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.collectionsheet.ui.details
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -33,7 +32,6 @@ import kpt.core.model.objects.account.loan.PaymentTypeOptions
 import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.shared.BulkRepaymentTransactions
 import kpt.core.model.utils.ApiDateFormatter
-import kpt.feature.collectionsheet.navigation.CollectionSheetDetailsRoute
 
 /**
  * Ported from `6b66e8a43:feature/collectionSheet/.../IndividualCollectionSheetDetailsViewModel.kt`
@@ -68,15 +66,15 @@ internal class CollectionSheetDetailsViewModel(
     CollectionSheetDetailsState(),
 ) {
 
-    private val request: RequestCollectionSheetPayload = savedStateHandle.toRoute<CollectionSheetDetailsRoute>().let {
-        RequestCollectionSheetPayload(
-            dateFormat = ApiDateFormatter.DATE_FORMAT,
-            locale = ApiDateFormatter.LOCALE,
-            officeId = it.officeId,
-            staffId = it.staffId,
-            transactionDate = it.transactionDate,
-        )
-    }
+    // Keys are CollectionSheetDetailsRoute's property names; read directly (not toRoute) so the
+    // Android host tests, whose Bundle is a stub, see the same arguments as the device.
+    private val request = RequestCollectionSheetPayload(
+        dateFormat = ApiDateFormatter.DATE_FORMAT,
+        locale = ApiDateFormatter.LOCALE,
+        officeId = requireNotNull(savedStateHandle.get<Int>("officeId")),
+        staffId = savedStateHandle.get<Int>("staffId"),
+        transactionDate = requireNotNull(savedStateHandle.get<String>("transactionDate")),
+    )
 
     private val stream = repository.individualCollectionSheetStream(request, viewModelScope)
 
@@ -94,7 +92,9 @@ internal class CollectionSheetDetailsViewModel(
         when (action) {
             is CollectionSheetDetailsAction.EditPayment -> openEditor(action.loanId)
             is CollectionSheetDetailsAction.EditorChanged ->
-                mutableStateFlow.value = state.copy(editor = state.editor?.let(action.change)?.copy(amountError = false))
+                mutableStateFlow.value = state.copy(
+                    editor = state.editor?.let(action.change)?.copy(amountError = false),
+                )
             CollectionSheetDetailsAction.SaveEditor -> saveEditor()
             CollectionSheetDetailsAction.CloseEditor -> mutableStateFlow.value = state.copy(editor = null)
             CollectionSheetDetailsAction.Submit -> submit()
@@ -202,7 +202,10 @@ internal fun IndividualCollectionSheet.toView(
                 accountNo = loan.accountId.orEmpty(),
                 totalDue = loan.totalDue,
                 chargesDue = loan.chargesDue,
-                collect = draft ?: BulkRepaymentTransactions(loanId = loan.loanId, transactionAmount = loan.totalDue + loan.chargesDue),
+                collect = draft ?: BulkRepaymentTransactions(
+                    loanId = loan.loanId,
+                    transactionAmount = loan.totalDue + loan.chargesDue,
+                ),
                 edited = draft != null,
             )
         }

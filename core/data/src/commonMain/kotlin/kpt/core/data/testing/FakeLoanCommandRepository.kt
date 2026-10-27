@@ -12,9 +12,13 @@ package kpt.core.data.testing
 import kotlinx.coroutines.CompletableDeferred
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.data.loan.LoanCommandRepository
+import kpt.core.model.loan.AssignLoanOfficerRequestDto
+import kpt.core.model.loan.GuarantorRequestDto
 import kpt.core.model.loan.Loan
+import kpt.core.model.loan.LoanChargeOffRequestDto
 import kpt.core.model.loan.LoanRepaymentRequest
 import kpt.core.model.loan.LoanRepaymentResponse
+import kpt.core.model.loan.RejectLoanRequestDto
 import kpt.core.model.objects.account.loan.LoanApplicationInput
 import kpt.core.model.objects.account.loan.LoanApproval
 import kpt.core.model.objects.account.loan.RepaymentSchedule
@@ -25,10 +29,6 @@ import kpt.core.model.objects.account.loan.reschedules.LoanRescheduleRequest
 import kpt.core.model.objects.account.loan.transfer.AccountTransferRequest
 import kpt.core.model.objects.payloads.GroupLoanPayload
 import kpt.core.model.shared.GenericResponse
-import kpt.core.model.loan.AssignLoanOfficerRequestDto
-import kpt.core.model.loan.GuarantorRequestDto
-import kpt.core.model.loan.LoanChargeOffRequestDto
-import kpt.core.model.loan.RejectLoanRequestDto
 
 /**
  * Test double for [LoanCommandRepository] — the loan-side twin of [FakeClientCommandRepository],

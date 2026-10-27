@@ -39,9 +39,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.screen.DefaultErrorContent
 import kpt.core.base.ui.screen.RefreshableScreenContent
-import kpt.core.model.client.Client
 import kpt.core.designsystem.component.AppOutlinedTextField
 import kpt.core.designsystem.icon.AppIcons
+import kpt.core.model.client.Client
 import kpt.feature.client.generated.resources.Res
 import kpt.feature.client.generated.resources.feature_client_create
 import kpt.feature.client.generated.resources.feature_client_filter_clear

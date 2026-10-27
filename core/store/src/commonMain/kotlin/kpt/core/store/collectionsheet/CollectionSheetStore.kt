@@ -9,33 +9,20 @@
  */
 package kpt.core.store.collectionsheet
 
-import kpt.core.store.mapping.toEntity
-import kpt.core.model.collectionsheet.CenterDetail as CenterDetailModel
-import kpt.core.store.mapping.toModel
 import kotlinx.coroutines.flow.map
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
 import kpt.core.database.collectionsheet.dao.CollectionSheetDao
-import kpt.core.database.collectionsheet.entity.CenterDetail
 import kpt.core.database.collectionsheet.mapper.toDomain
 import kpt.core.database.collectionsheet.mapper.toEntity
 import kpt.core.network.mifos.collectionsheet.api.CollectionSheetApi
+import kpt.core.store.mapping.toEntity
+import kpt.core.store.mapping.toModel
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.Store
-
-/**
- * The full query is the key: a centre sheet is only meaningful for one (office, staff, meeting
- * date) triple, so date or staff changing must re-fetch rather than serve the previous sheet.
- */
-data class CollectionSheetKey(
-    val officeId: Int,
-    val staffId: Int,
-    val meetingDate: String,
-    val dateFormat: String = "dd MMMM yyyy",
-    val locale: String = "en",
-)
+import kpt.core.model.collectionsheet.CenterDetail as CenterDetailModel
 
 @StoreProvider(id = "collectionSheetCenters", ttl = "5m")
 @CacheKey(

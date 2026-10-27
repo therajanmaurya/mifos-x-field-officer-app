@@ -139,43 +139,23 @@ fun AppOutlinedTextField(
     placeholder: String? = null,
     readOnly: Boolean = false,
     enabled: Boolean = true,
-    message: String? = null,
-    isPasswordVisible: Boolean = false,
-    errorTextTag: String = label.plus("Error"),
+    passwordToggle: AppPasswordToggle = AppPasswordToggle(),
     keyboardType: KeyboardType = KeyboardType.Text,
-    textStyle: TextStyle = LocalTextStyle.current,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     /**
-     * Soft-keyboard auto-capitalisation.
-     *
-     * This overload hardcoded [KeyboardCapitalization.Words], so EVERY field built from it
-     * capitalised the first letter of each word — including credential fields. Fineract usernames
-     * are case-sensitive, so a field officer typing `fieldofficer` on a real device got
-     * `Fieldofficer` from the IME and a "Login failed. Check your credentials" they could do nothing
-     * about. It never showed up in testing because `adb shell input text` bypasses the IME entirely.
-     *
-     * The default stays `Words` so no existing caller changes behaviour; credential fields pass
-     * [KeyboardCapitalization.None].
+     * Soft-keyboard options. An unspecified [KeyboardOptions.capitalization] resolves to
+     * [KeyboardCapitalization.Words]; credential fields (case-sensitive usernames) pass
+     * [KeyboardCapitalization.None] explicitly.
      */
-    capitalization: KeyboardCapitalization = KeyboardCapitalization.Words,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    isPasswordToggleDisplayed: Boolean = keyboardType == KeyboardType.Password,
-    clearIcon: ImageVector = Icons.Default.Clear,
     showClearIcon: Boolean = false,
     onClickClearIcon: () -> Unit = {},
-    onPasswordToggleClick: (Boolean) -> Unit = {},
     trailingIcon: @Composable (() -> Unit)? = null,
-    prefix: @Composable (() -> Unit)? = null,
-    suffix: @Composable (() -> Unit)? = null,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    shape: Shape = OutlinedTextFieldDefaults.shape,
-    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = KptTheme.colorScheme.secondaryContainer,
-        unfocusedBorderColor = KptTheme.colorScheme.secondaryContainer,
-    ),
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
+    val errorTextTag = label.plus("Error")
+    val isPasswordToggleDisplayed = passwordToggle.isDisplayed ?: (keyboardType == KeyboardType.Password)
 
     OutlinedTextField(
         value = value,
@@ -185,7 +165,7 @@ fun AppOutlinedTextField(
             .fillMaxWidth(),
         enabled = enabled,
         readOnly = readOnly,
-        textStyle = textStyle,
+        textStyle = LocalTextStyle.current,
         label = {
             Text(
                 text = label,
@@ -204,13 +184,13 @@ fun AppOutlinedTextField(
         trailingIcon = @Composable {
             if (isPasswordToggleDisplayed) {
                 PasswordToggleIcon(
-                    isPasswordVisible = isPasswordVisible,
-                    onPasswordToggleClick = onPasswordToggleClick,
+                    isPasswordVisible = passwordToggle.isVisible,
+                    onPasswordToggleClick = passwordToggle.onClick,
                 )
             } else if (showClearIcon && isFocused) {
                 ClearIconButton(
                     showClearIcon = true,
-                    clearIcon = clearIcon,
+                    clearIcon = Icons.Default.Clear,
                     onClickClearIcon = onClickClearIcon,
                 )
             } else {
@@ -220,20 +200,11 @@ fun AppOutlinedTextField(
         placeholder = {
             placeholder?.let { Text(it) }
         },
-        prefix = prefix,
-        suffix = suffix,
         supportingText = {
             if (errorText != null && isError) {
                 Text(
                     modifier = Modifier.testTag(errorTextTag),
                     text = errorText,
-                    style = KptTheme.typography.labelSmall,
-                    color = KptTheme.colorScheme.error,
-                )
-            } else if (message != null) {
-                Text(
-                    modifier = Modifier.testTag(errorTextTag),
-                    text = message,
                     style = KptTheme.typography.labelSmall,
                     color = KptTheme.colorScheme.error,
                 )
@@ -249,7 +220,7 @@ fun AppOutlinedTextField(
         // password — ALSO silently unmasked the field, printing the password in clear text at the
         // moment the user is being told it is wrong. Caught on device 2026-10-03; no unit test saw
         // it, because the characters were correct and only the rendering was not.
-        visualTransformation = if (!isPasswordVisible && keyboardType == KeyboardType.Password) {
+        visualTransformation = if (!passwordToggle.isVisible && keyboardType == KeyboardType.Password) {
             PasswordVisualTransformation()
         } else {
             VisualTransformation.None
@@ -260,14 +231,18 @@ fun AppOutlinedTextField(
         // `ImeAction.Search` + `onSearch` got the keyboard's default key and its action never ran.
         // Measured on device 2026-10-24: Home search could only be run by tapping a scope chip.
         keyboardOptions = keyboardOptions.copy(
-            capitalization = capitalization,
+            capitalization = keyboardOptions.capitalization.takeUnless { it == KeyboardCapitalization.Unspecified }
+                ?: KeyboardCapitalization.Words,
             keyboardType = keyboardType,
         ),
         keyboardActions = keyboardActions,
         maxLines = maxLines,
         interactionSource = interactionSource,
-        shape = shape,
-        colors = colors,
+        shape = OutlinedTextFieldDefaults.shape,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = KptTheme.colorScheme.secondaryContainer,
+            unfocusedBorderColor = KptTheme.colorScheme.secondaryContainer,
+        ),
     )
 }
 
@@ -391,11 +366,11 @@ private fun ClearIconButton(
 
 @Composable
 fun AppDatePickerTextField(
-    enabled: Boolean = true,
     value: String,
     modifier: Modifier = Modifier
         .fillMaxWidth()
         .clip(DesignToken.shapes.medium),
+    enabled: Boolean = true,
     label: String? = null,
     errorMessage: String? = null,
     openDatePicker: () -> Unit,
@@ -521,6 +496,16 @@ fun AppOutlinedTextField(
     )
 }
 
+/**
+ * Password visibility toggle state. [isDisplayed] left null shows the toggle for password fields
+ * ([KeyboardType.Password]) only.
+ */
+data class AppPasswordToggle(
+    val isVisible: Boolean = false,
+    val onClick: (Boolean) -> Unit = {},
+    val isDisplayed: Boolean? = null,
+)
+
 data class AppTextFieldConfig(
     val enabled: Boolean = true,
     val showClearIcon: Boolean = true,
@@ -565,8 +550,10 @@ private fun AppOutlinedTextField_PasswordPreview() {
             onValueChange = { text = it },
             label = "Password",
             keyboardType = KeyboardType.Password,
-            isPasswordVisible = passwordVisible,
-            onPasswordToggleClick = { passwordVisible = it },
+            passwordToggle = AppPasswordToggle(
+                isVisible = passwordVisible,
+                onClick = { passwordVisible = it },
+            ),
             showClearIcon = true,
             onClickClearIcon = { text = "" },
         )

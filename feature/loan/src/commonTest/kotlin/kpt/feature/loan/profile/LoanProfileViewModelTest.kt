@@ -11,7 +11,6 @@
 
 package kpt.feature.loan.profile
 
-import kpt.core.data.testing.FakeRecentRecordsRepository
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.data.testing.FakeLoanRepository
+import kpt.core.data.testing.FakeRecentRecordsRepository
 import kpt.core.model.objects.account.loan.loanWithAssociations.LoanStatus
 import kpt.core.model.objects.account.loan.loanWithAssociations.LoanWithAssociations
 import kpt.feature.loan.profile.components.LoanProfileActionItem

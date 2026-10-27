@@ -127,8 +127,20 @@ internal fun DetailsPage(
         // The rest of the page exists only once a product's template has landed.
         val template = state.template ?: return@Column
 
-        DateField(LoanDate.SUBMITTED_ON, Res.string.feature_loan_submission_date, state, onAction, NewLoanApplicationTestTags.SUBMITTED_ON)
-        DateField(LoanDate.EXPECTED_DISBURSEMENT, Res.string.feature_loan_disbursed_date, state, onAction, NewLoanApplicationTestTags.DISBURSEMENT_DATE)
+        DateField(
+            LoanDate.SUBMITTED_ON,
+            Res.string.feature_loan_submission_date,
+            state,
+            onAction,
+            NewLoanApplicationTestTags.SUBMITTED_ON,
+        )
+        DateField(
+            LoanDate.EXPECTED_DISBURSEMENT,
+            Res.string.feature_loan_disbursed_date,
+            state,
+            onAction,
+            NewLoanApplicationTestTags.DISBURSEMENT_DATE,
+        )
 
         FieldGap()
         AppOutlinedTextField(
@@ -141,10 +153,34 @@ internal fun DetailsPage(
 
         // Each drawn only when the tenant configures options for it — the original's
         // `template.xOptions?.let { }`, kept. An unconfigured field is absent, not an empty list.
-        Dropdown(LoanField.LOAN_PURPOSE, Res.string.feature_loan_purpose, template.loanPurposeOptions.options { it.id to it.name }, state, onAction)
-        Dropdown(LoanField.LOAN_OFFICER, Res.string.feature_loan_officer, template.loanOfficerOptions.options { it.id to it.displayName }, state, onAction)
-        Dropdown(LoanField.FUND, Res.string.feature_loan_fund, template.fundOptions.options { it.id to it.name }, state, onAction)
-        Dropdown(LoanField.LINK_SAVINGS, Res.string.feature_loan_link_savings, template.accountLinkingOptions.options { it.id to it.accountNo }, state, onAction)
+        Dropdown(
+            LoanField.LOAN_PURPOSE,
+            Res.string.feature_loan_purpose,
+            template.loanPurposeOptions.options { it.id to it.name },
+            state,
+            onAction,
+        )
+        Dropdown(
+            LoanField.LOAN_OFFICER,
+            Res.string.feature_loan_officer,
+            template.loanOfficerOptions.options { it.id to it.displayName },
+            state,
+            onAction,
+        )
+        Dropdown(
+            LoanField.FUND,
+            Res.string.feature_loan_fund,
+            template.fundOptions.options { it.id to it.name },
+            state,
+            onAction,
+        )
+        Dropdown(
+            LoanField.LINK_SAVINGS,
+            Res.string.feature_loan_link_savings,
+            template.accountLinkingOptions.options { it.id to it.accountNo },
+            state,
+            onAction,
+        )
 
         FieldGap()
     }
@@ -165,23 +201,71 @@ internal fun TermsPage(
 
         // Its OWN dropdown. The original fed the repaymentFrequencyType PAYLOAD field from the
         // loan TERM's dropdown, so a weekly repayment on a monthly term was unexpressible.
-        Dropdown(LoanField.REPAYMENT_FREQUENCY_TYPE, Res.string.feature_loan_repayment_frequency, template.repaymentFrequencyTypeOptions.options { it.id to it.value }, state, onAction)
-        Dropdown(LoanField.TERM_FREQUENCY_TYPE, Res.string.feature_loan_term, template.termFrequencyTypeOptions.options { it.id to it.value }, state, onAction)
+        Dropdown(
+            LoanField.REPAYMENT_FREQUENCY_TYPE,
+            Res.string.feature_loan_repayment_frequency,
+            template.repaymentFrequencyTypeOptions.options { it.id to it.value },
+            state,
+            onAction,
+        )
+        Dropdown(
+            LoanField.TERM_FREQUENCY_TYPE,
+            Res.string.feature_loan_term,
+            template.termFrequencyTypeOptions.options { it.id to it.value },
+            state,
+            onAction,
+        )
 
         // Each from its own control. The original filled BOTH payload fields from the day-of-week
         // dropdown, so the nth-day field received a day-of-week value.
-        Dropdown(LoanField.REPAYMENT_DAY_OF_WEEK, Res.string.feature_loan_repayment_day_of_week, template.repaymentFrequencyDaysOfWeekTypeOptions.options { it.id to it.value }, state, onAction)
-        Dropdown(LoanField.REPAYMENT_NTH_DAY, Res.string.feature_loan_repayment_nth_day, template.repaymentFrequencyNthDayTypeOptions.options { it.id to it.value }, state, onAction)
+        Dropdown(
+            LoanField.REPAYMENT_DAY_OF_WEEK,
+            Res.string.feature_loan_repayment_day_of_week,
+            template.repaymentFrequencyDaysOfWeekTypeOptions.options { it.id to it.value },
+            state,
+            onAction,
+        )
+        Dropdown(
+            LoanField.REPAYMENT_NTH_DAY,
+            Res.string.feature_loan_repayment_nth_day,
+            template.repaymentFrequencyNthDayTypeOptions.options { it.id to it.value },
+            state,
+            onAction,
+        )
 
         NumberField(LoanField.NOMINAL_INTEREST, Res.string.feature_loan_nominal, state, onAction)
-        Dropdown(LoanField.NOMINAL_FREQUENCY, Res.string.feature_loan_nominal_frequency, template.interestRateFrequencyTypeOptions.options { it.id to it.value }, state, onAction)
-        Dropdown(LoanField.INTEREST_METHOD, Res.string.feature_loan_interest_type_method, template.interestTypeOptions.options { it.id to it.value }, state, onAction)
-        Dropdown(LoanField.AMORTIZATION, Res.string.feature_loan_amortization, template.amortizationTypeOptions.options { it.id to it.value }, state, onAction)
+        Dropdown(
+            LoanField.NOMINAL_FREQUENCY,
+            Res.string.feature_loan_nominal_frequency,
+            template.interestRateFrequencyTypeOptions.options { it.id to it.value },
+            state,
+            onAction,
+        )
+        Dropdown(
+            LoanField.INTEREST_METHOD,
+            Res.string.feature_loan_interest_type_method,
+            template.interestTypeOptions.options { it.id to it.value },
+            state,
+            onAction,
+        )
+        Dropdown(
+            LoanField.AMORTIZATION,
+            Res.string.feature_loan_amortization,
+            template.amortizationTypeOptions.options { it.id to it.value },
+            state,
+            onAction,
+        )
 
         FieldGap()
         Toggle(LoanToggle.EQUAL_AMORTIZATION, Res.string.feature_loan_equal_amortization, state, onAction)
 
-        Dropdown(LoanField.INTEREST_CALCULATION_PERIOD, Res.string.feature_loan_interest_calculation_period, template.interestCalculationPeriodTypeOptions.options { it.id to it.value }, state, onAction)
+        Dropdown(
+            LoanField.INTEREST_CALCULATION_PERIOD,
+            Res.string.feature_loan_interest_calculation_period,
+            template.interestCalculationPeriodTypeOptions.options { it.id to it.value },
+            state,
+            onAction,
+        )
 
         FieldGap()
         Toggle(LoanToggle.INTEREST_PARTIAL_PERIOD, Res.string.feature_loan_partial_period_interest, state, onAction)

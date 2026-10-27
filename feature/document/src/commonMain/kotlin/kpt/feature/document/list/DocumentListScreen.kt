@@ -10,6 +10,7 @@
 package kpt.feature.document.list
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -110,81 +111,83 @@ internal fun DocumentListContent(
     modifier: Modifier = Modifier,
     canUpload: Boolean = true,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val notice = state.notice
-    val noticeText = notice?.let { stringResource(it.messageRes()) }
+    Box(modifier = modifier) {
+        val snackbarHostState = remember { SnackbarHostState() }
+        val notice = state.notice
+        val noticeText = notice?.let { stringResource(it.messageRes()) }
 
-    // One snackbar per notice, and the notice CLEARS — the original used two booleans that were
-    // set true and never reset, so each message could fire only once per screen visit.
-    LaunchedEffect(notice) {
-        if (noticeText != null) {
-            snackbarHostState.showSnackbar(noticeText)
-            onAction(DocumentListAction.DismissNotice)
-        }
-    }
-
-    AppScaffold(
-        title = stringResource(Res.string.feature_document_title),
-        onBackPressed = onBackPressed,
-        snackbarHostState = snackbarHostState,
-        modifier = modifier.testTag(DocumentListTestTags.SCREEN),
-        // The ONLY upload affordance used to be the "Update document" option inside an existing
-        // row's dialog — so a list with no documents had no way to add one, on every entity that
-        // reaches this screen. Found on device 2026-10-23 on a group's Documents screen: an empty
-        // list with a back arrow and nothing else, while `onUpload` was wired the whole time.
-        // Gated on the same `canUpload` as that dialog option, so where the destination is
-        // unported the FAB is ABSENT rather than inert (§6a adaptation 3).
-        floatingActionButtonContent = if (canUpload) {
-            FloatingActionButtonContent(
-                onClick = { onAction(DocumentListAction.UploadClicked) },
-                contentColor = KptTheme.colorScheme.onPrimaryContainer,
-                content = {
-                    Icon(
-                        imageVector = AppIcons.Add,
-                        contentDescription = stringResource(Res.string.feature_document_upload_document),
-                    )
-                },
-            )
-        } else {
-            null
-        },
-    ) { padding ->
-        ScreenContent(
-            state = documents,
-            onRetry = { onAction(DocumentListAction.Refresh) },
-            modifier = Modifier.fillMaxSize().padding(padding).testTag(DocumentListTestTags.LIST),
-        ) { list, _ ->
-            if (list.isEmpty()) {
-                AppEmptyUi(
-                    text = stringResource(Res.string.feature_document_no_document),
-                    modifier = Modifier.testTag(DocumentListTestTags.EMPTY),
-                )
-                return@ScreenContent
+        // One snackbar per notice, and the notice CLEARS — the original used two booleans that were
+        // set true and never reset, so each message could fire only once per screen visit.
+        LaunchedEffect(notice) {
+            if (noticeText != null) {
+                snackbarHostState.showSnackbar(noticeText)
+                onAction(DocumentListAction.DismissNotice)
             }
+        }
 
-            Column {
-                HeaderRow()
-                LazyColumn {
-                    items(list, key = { it.id }) { document ->
-                        DocumentRow(
-                            document = document,
-                            onClick = { onAction(DocumentListAction.ShowOptions(document.id)) },
+        AppScaffold(
+            title = stringResource(Res.string.feature_document_title),
+            onBackPressed = onBackPressed,
+            snackbarHostState = snackbarHostState,
+            modifier = Modifier.testTag(DocumentListTestTags.SCREEN),
+            // The ONLY upload affordance used to be the "Update document" option inside an existing
+            // row's dialog — so a list with no documents had no way to add one, on every entity that
+            // reaches this screen. Found on device 2026-10-23 on a group's Documents screen: an empty
+            // list with a back arrow and nothing else, while `onUpload` was wired the whole time.
+            // Gated on the same `canUpload` as that dialog option, so where the destination is
+            // unported the FAB is ABSENT rather than inert (§6a adaptation 3).
+            floatingActionButtonContent = if (canUpload) {
+                FloatingActionButtonContent(
+                    onClick = { onAction(DocumentListAction.UploadClicked) },
+                    contentColor = KptTheme.colorScheme.onPrimaryContainer,
+                    content = {
+                        Icon(
+                            imageVector = AppIcons.Add,
+                            contentDescription = stringResource(Res.string.feature_document_upload_document),
                         )
+                    },
+                )
+            } else {
+                null
+            },
+        ) { padding ->
+            ScreenContent(
+                state = documents,
+                onRetry = { onAction(DocumentListAction.Refresh) },
+                modifier = Modifier.fillMaxSize().padding(padding).testTag(DocumentListTestTags.LIST),
+            ) { list, _ ->
+                if (list.isEmpty()) {
+                    AppEmptyUi(
+                        text = stringResource(Res.string.feature_document_no_document),
+                        modifier = Modifier.testTag(DocumentListTestTags.EMPTY),
+                    )
+                    return@ScreenContent
+                }
+
+                Column {
+                    HeaderRow()
+                    LazyColumn {
+                        items(list, key = { it.id }) { document ->
+                            DocumentRow(
+                                document = document,
+                                onClick = { onAction(DocumentListAction.ShowOptions(document.id)) },
+                            )
+                        }
                     }
                 }
             }
         }
-    }
 
-    // Unused by the current callers but kept: the snackbar host above renders inside the scaffold.
-    SnackbarHost(snackbarHostState, modifier = Modifier.testTag(DocumentListTestTags.SNACKBAR))
+        // Unused by the current callers but kept: the snackbar host above renders inside the scaffold.
+        SnackbarHost(snackbarHostState, modifier = Modifier.testTag(DocumentListTestTags.SNACKBAR))
 
-    state.selectedDocumentId?.let { documentId ->
-        OptionsDialog(
-            documentId = documentId,
-            canUpload = canUpload,
-            onAction = onAction,
-        )
+        state.selectedDocumentId?.let { documentId ->
+            OptionsDialog(
+                documentId = documentId,
+                canUpload = canUpload,
+                onAction = onAction,
+            )
+        }
     }
 }
 

@@ -11,16 +11,15 @@ package kpt.core.store.group
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kpt.core.store.offline.keepingDownloadedFlag
-import kpt.core.model.group.Group
-import kpt.core.store.mapping.toEntity
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
 import kpt.core.database.group.dao.GroupsDao
-import kpt.core.database.group.entity.GroupEntity
+import kpt.core.model.group.Group
 import kpt.core.network.mifos.group.api.GroupApi
+import kpt.core.store.mapping.toEntity
+import kpt.core.store.mapping.toModel
+import kpt.core.store.offline.keepingDownloadedFlag
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.MutableStore
 import org.mobilenativefoundation.store.store5.SourceOfTruth

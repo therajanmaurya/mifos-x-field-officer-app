@@ -16,10 +16,10 @@ import kotlinx.coroutines.launch
 import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.savings.SavingsCommandRepository
 import kpt.core.model.objects.account.saving.SavingsActivationInput
 import kpt.core.model.objects.account.saving.SavingsApprovalInput
+import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.model.utils.ApiDateFormatter
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime

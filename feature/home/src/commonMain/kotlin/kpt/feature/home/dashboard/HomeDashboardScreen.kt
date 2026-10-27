@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.home.dashboard
 
@@ -30,22 +30,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.FactCheck
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.DomainAdd
-import androidx.compose.material.icons.outlined.GroupAdd
 import androidx.compose.material.icons.outlined.CellTower
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.Domain
+import androidx.compose.material.icons.outlined.DomainAdd
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.EventRepeat
-import androidx.compose.material.icons.outlined.Group
+import androidx.compose.material.icons.outlined.GroupAdd
 import androidx.compose.material.icons.outlined.HowToReg
 import androidx.compose.material.icons.outlined.MeetingRoom
 import androidx.compose.material.icons.outlined.PendingActions
@@ -105,11 +103,11 @@ import kpt.core.base.ui.dashboard.toDashboardProgressState
 import kpt.core.common.utils.CurrencyFormatter
 import kpt.core.data.dashboard.DashboardRepository
 import kpt.core.designsystem.icon.AppIcons
-import kpt.core.store.config.rememberAppErrorMessageFor
 import kpt.core.designsystem.theme.AccentColors
 import kpt.core.designsystem.theme.finance
 import kpt.core.model.recent.RecentKind
 import kpt.core.model.recent.RecentRecord
+import kpt.core.store.config.rememberAppErrorMessageFor
 import kpt.core.ui.util.exposeTestTagsAsResourceIds
 import kpt.feature.home.generated.resources.Res
 import kpt.feature.home.generated.resources.feature_home_dashboard_card_cached
@@ -131,15 +129,15 @@ import kpt.feature.home.generated.resources.feature_home_dashboard_collections_r
 import kpt.feature.home.generated.resources.feature_home_dashboard_collections_summary
 import kpt.feature.home.generated.resources.feature_home_dashboard_collections_title
 import kpt.feature.home.generated.resources.feature_home_dashboard_error_body
-import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_forbidden
-import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_not_found
-import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_rejected
-import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_server
-import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_offline
-import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_timeout
-import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_signed_out
 import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_busy
 import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_failed
+import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_forbidden
+import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_not_found
+import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_offline
+import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_rejected
+import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_server
+import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_signed_out
+import kpt.feature.home.generated.resources.feature_home_dashboard_error_kind_timeout
 import kpt.feature.home.generated.resources.feature_home_dashboard_error_title
 import kpt.feature.home.generated.resources.feature_home_dashboard_greeting_afternoon
 import kpt.feature.home.generated.resources.feature_home_dashboard_greeting_evening
@@ -158,15 +156,14 @@ import kpt.feature.home.generated.resources.feature_home_dashboard_offline_enabl
 import kpt.feature.home.generated.resources.feature_home_dashboard_offline_label
 import kpt.feature.home.generated.resources.feature_home_dashboard_portfolio_title
 import kpt.feature.home.generated.resources.feature_home_dashboard_portfolio_total_outstanding
+import kpt.feature.home.generated.resources.feature_home_dashboard_profile
 import kpt.feature.home.generated.resources.feature_home_dashboard_qa_collection_sheet
 import kpt.feature.home.generated.resources.feature_home_dashboard_qa_new_center
 import kpt.feature.home.generated.resources.feature_home_dashboard_qa_new_client
 import kpt.feature.home.generated.resources.feature_home_dashboard_qa_new_group
+import kpt.feature.home.generated.resources.feature_home_dashboard_qa_path_tracker
 import kpt.feature.home.generated.resources.feature_home_dashboard_qa_run_reports
 import kpt.feature.home.generated.resources.feature_home_dashboard_qa_search
-import kpt.feature.home.generated.resources.feature_home_dashboard_qa_path_tracker
-import kpt.feature.home.generated.resources.feature_home_dashboard_settings
-import kpt.feature.home.generated.resources.feature_home_dashboard_profile
 import kpt.feature.home.generated.resources.feature_home_dashboard_queue_approval
 import kpt.feature.home.generated.resources.feature_home_dashboard_queue_checker
 import kpt.feature.home.generated.resources.feature_home_dashboard_queue_disbursal
@@ -186,6 +183,7 @@ import kpt.feature.home.generated.resources.feature_home_dashboard_recent_kind_l
 import kpt.feature.home.generated.resources.feature_home_dashboard_recent_title
 import kpt.feature.home.generated.resources.feature_home_dashboard_retry
 import kpt.feature.home.generated.resources.feature_home_dashboard_retry_sync
+import kpt.feature.home.generated.resources.feature_home_dashboard_settings
 import kpt.feature.home.generated.resources.feature_home_dashboard_summary_active_clients
 import kpt.feature.home.generated.resources.feature_home_dashboard_summary_active_loans
 import kpt.feature.home.generated.resources.feature_home_dashboard_summary_collected
@@ -336,12 +334,21 @@ private fun ContentState(
 
 /** "Mon 26 Oct 2026" — English names, as every date in the app is today (DateHelper). */
 private val headerDate = LocalDate.Format {
-    dayOfWeek(DayOfWeekNames.ENGLISH_ABBREVIATED); char(' '); day(); char(' ')
-    monthName(MonthNames.ENGLISH_ABBREVIATED); char(' '); year()
+    dayOfWeek(DayOfWeekNames.ENGLISH_ABBREVIATED)
+    char(' ')
+    day()
+    char(' ')
+    monthName(MonthNames.ENGLISH_ABBREVIATED)
+    char(' ')
+    year()
 }
 
 /** "Oct 26" — the meetings header. */
-private val shortDate = LocalDate.Format { monthName(MonthNames.ENGLISH_ABBREVIATED); char(' '); day() }
+private val shortDate = LocalDate.Format {
+    monthName(MonthNames.ENGLISH_ABBREVIATED)
+    char(' ')
+    day()
+}
 
 private fun String.headerDate(): String = runCatching { headerDate.format(LocalDate.parse(this)) }.getOrDefault(this)
 private fun String.shortDate(): String = runCatching { shortDate.format(LocalDate.parse(this)) }.getOrDefault(this)
@@ -535,16 +542,18 @@ private fun Section(
         }
         // 03: "Couldn't load this card · ⟳ Retry" under the title — its own full-width row, so a long
         // trailing link can never squeeze it (it wrapped one letter per line on a large-font phone).
-        if (failed) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(1.5f.tw), modifier = Modifier.padding(top = 0.5f.tw)) {
-            Text(stringResource(Res.string.feature_home_dashboard_card_error), style = KptTheme.typography.labelMedium, fontWeight = FontWeight.Medium, color = MaterialTheme.finance.moneyNegative)
-            Text(META_DOT, style = KptTheme.typography.labelMedium, color = c.onSurfaceVariant)
-            Row(
-                modifier = Modifier.heightIn(min = 8.tw).clip(KptTheme.shapes.extraSmall).clickable(role = Role.Button, onClick = onRetry).padding(horizontal = 1.tw),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(0.5f.tw),
-            ) {
-                Icon(AppIcons.Refresh, contentDescription = null, tint = c.primary, modifier = Modifier.size(3.5f.tw))
-                Text(stringResource(Res.string.feature_home_dashboard_retry), style = KptTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = c.primary)
+        if (failed) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(1.5f.tw), modifier = Modifier.padding(top = 0.5f.tw)) {
+                Text(stringResource(Res.string.feature_home_dashboard_card_error), style = KptTheme.typography.labelMedium, fontWeight = FontWeight.Medium, color = MaterialTheme.finance.moneyNegative)
+                Text(META_DOT, style = KptTheme.typography.labelMedium, color = c.onSurfaceVariant)
+                Row(
+                    modifier = Modifier.heightIn(min = 8.tw).clip(KptTheme.shapes.extraSmall).clickable(role = Role.Button, onClick = onRetry).padding(horizontal = 1.tw),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(0.5f.tw),
+                ) {
+                    Icon(AppIcons.Refresh, contentDescription = null, tint = c.primary, modifier = Modifier.size(3.5f.tw))
+                    Text(stringResource(Res.string.feature_home_dashboard_retry), style = KptTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = c.primary)
+                }
             }
         }
         if (failedOverCache) CardError(onRetry, error = content?.freshnessSignal?.lastError, cachedAt = content?.fetchedAt)
@@ -621,7 +630,10 @@ private fun CollectionsBody(data: HomeCard.Collections) = Column(verticalArrange
                 Text(
                     buildAnnotatedString {
                         val at = text.indexOf(n)
-                        if (at < 0) { append(text); return@buildAnnotatedString }
+                        if (at < 0) {
+                            append(text)
+                            return@buildAnnotatedString
+                        }
                         withStyle(SpanStyle(fontSize = KptTheme.typography.labelMedium.fontSize, fontWeight = FontWeight.Normal, color = unit)) { append(text.substring(0, at)) }
                         append(n)
                         withStyle(SpanStyle(fontSize = KptTheme.typography.labelMedium.fontSize, fontWeight = FontWeight.Normal, color = unit)) { append(text.substring(at + n.length)) }

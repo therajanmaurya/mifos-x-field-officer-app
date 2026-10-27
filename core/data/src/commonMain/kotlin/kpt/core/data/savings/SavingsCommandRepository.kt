@@ -16,9 +16,9 @@ import kpt.core.model.objects.account.saving.SavingsActivationInput
 import kpt.core.model.objects.account.saving.SavingsApplicationInput
 import kpt.core.model.objects.account.saving.SavingsApprovalInput
 import kpt.core.model.objects.account.saving.SavingsTransactionInput
-import kpt.core.model.shared.GenericResponse
 import kpt.core.model.savings.FixedDepositPayload
 import kpt.core.model.savings.ShareAccountPayload
+import kpt.core.model.shared.GenericResponse
 
 /**
  * Every savings write, as an explicit outcome.

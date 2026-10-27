@@ -9,12 +9,10 @@
  */
 package kpt.core.store.staff
 
-import kpt.core.model.staff.Staff
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
-import kpt.core.database.staff.entity.StaffEntity
+import kpt.core.model.staff.Staff
 import kpt.core.network.mifos.staff.api.StaffApi
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys

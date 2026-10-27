@@ -11,7 +11,6 @@ package kpt.core.datastore.prefs
 
 import kotlinx.coroutines.flow.StateFlow
 import kpt.core.model.objects.users.User
-import kpt.core.model.utils.ServerConfig
 
 /**
  * The fork's preference surface: everything the framework has no concept of.

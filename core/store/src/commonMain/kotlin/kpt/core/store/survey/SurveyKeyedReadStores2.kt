@@ -9,12 +9,10 @@
  */
 package kpt.core.store.survey
 
-import kpt.core.model.survey.Survey
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.database.cache.dao.ApiResponseCacheDao
-import kpt.core.database.survey.entity.SurveyEntity
+import kpt.core.model.survey.Survey
 import kpt.core.network.mifos.survey.api.SurveyApi
 import kpt.core.store.cache.cachedRead
 import kpt.core.store.config.AppCacheKeys

@@ -23,13 +23,6 @@ import org.mobilenativefoundation.store.store5.Store
  * last-known answer still renders with no signal.
  */
 
-/** Addresses one `getCheckerTasksFromResourceId` read. */
-data class GetCheckerTasksFromResourceIdKey(
-    val actionName: String? = null,
-    val entityName: String? = null,
-    val resourceId: Int? = null,
-)
-
 @StoreProvider(id = "checkerinboxGetCheckerTasksFromResourceId", ttl = "12h")
 @CacheKey(fn = "forKey", key = "checkerinboxGetCheckerTasksFromResourceId:{key}", params = ["key:String"])
 fun provideGetCheckerTasksFromResourceIdStore(
@@ -37,6 +30,16 @@ fun provideGetCheckerTasksFromResourceIdStore(
     cache: ApiResponseCacheDao,
 ): Store<GetCheckerTasksFromResourceIdKey, List<CheckerTask>> = cachedRead(
     dao = cache,
-    keyOf = { key -> AppCacheKeys.CheckerinboxGetCheckerTasksFromResourceId.forKey("${key.actionName}:${key.entityName}:${key.resourceId}") },
-    fetch = { key -> checkerInboxApi.getCheckerTasksFromResourceId(actionName = key.actionName, entityName = key.entityName, resourceId = key.resourceId) },
+    keyOf = { key ->
+        AppCacheKeys.CheckerinboxGetCheckerTasksFromResourceId.forKey(
+            "${key.actionName}:${key.entityName}:${key.resourceId}",
+        )
+    },
+    fetch = { key ->
+        checkerInboxApi.getCheckerTasksFromResourceId(
+            actionName = key.actionName,
+            entityName = key.entityName,
+            resourceId = key.resourceId,
+        )
+    },
 )

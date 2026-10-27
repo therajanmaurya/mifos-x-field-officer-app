@@ -61,14 +61,16 @@ class SignInViewModel(
         // change while a login screen is open, and polling it would hit the platform API on every
         // recomposition.
         viewModelScope.launch {
-            session.sessionStream(viewModelScope).state.filterIsInstance<ScreenState.Content<User>>().collect { content ->
-                val user = content.data
-                val hasSession = !user.base64EncodedAuthenticationKey.isNullOrBlank()
-                mutableStateFlow.value = state.copy(
-                    hasStoredSession = hasSession,
-                    biometricAvailable = hasSession && runCatching { biometrics.isAvailable() }.getOrDefault(false),
-                )
-            }
+            session.sessionStream(viewModelScope).state
+                .filterIsInstance<ScreenState.Content<User>>()
+                .collect { content ->
+                    val user = content.data
+                    val hasSession = !user.base64EncodedAuthenticationKey.isNullOrBlank()
+                    mutableStateFlow.value = state.copy(
+                        hasStoredSession = hasSession,
+                        biometricAvailable = hasSession && runCatching { biometrics.isAvailable() }.getOrDefault(false),
+                    )
+                }
         }
 
         // The instance chip states WHERE this sign-in goes. Collected rather than read once: a user
@@ -80,7 +82,9 @@ class SignInViewModel(
             serverConfig.serverConfigStream(viewModelScope).state
                 .filterIsInstance<ScreenState.Content<ServerConfig>>()
                 .combine(
-                    serverConfig.instancesStream(viewModelScope).state.map { (it as? ScreenState.Content<List<ServerInstance>>)?.data.orEmpty() },
+                    serverConfig.instancesStream(viewModelScope).state.map {
+                        (it as? ScreenState.Content<List<ServerInstance>>)?.data.orEmpty()
+                    },
                 ) { content, instances -> content.data to instances.matching(content.data)?.demoAccounts.orEmpty() }
                 .collect { (config, demo) ->
                     mutableStateFlow.value = state.copy(
@@ -103,7 +107,11 @@ class SignInViewModel(
             SignInAction.Submit -> submit()
 
             is SignInAction.UseDemoAccount ->
-                mutableStateFlow.value = state.copy(username = action.account.username, password = action.account.password, error = null)
+                mutableStateFlow.value = state.copy(
+                    username = action.account.username,
+                    password = action.account.password,
+                    error = null,
+                )
 
             SignInAction.UnlockWithBiometrics -> unlockWithBiometrics()
         }
@@ -307,7 +315,15 @@ data class SignInState(
 }
 
 /** Distinct causes, because the officer's next step differs for each. */
-enum class SignInError { UsernameTooShort, PasswordTooShort, Rejected, Offline, Unreachable, LockedOut, BiometricFailed }
+enum class SignInError {
+    UsernameTooShort,
+    PasswordTooShort,
+    Rejected,
+    Offline,
+    Unreachable,
+    LockedOut,
+    BiometricFailed,
+}
 
 sealed interface SignInAction {
     data class UsernameChanged(val value: String) : SignInAction

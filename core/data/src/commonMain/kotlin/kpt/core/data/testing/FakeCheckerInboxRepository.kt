@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 @file:OptIn(kpt.core.base.store.screen.ExperimentalScreenDataStreamTestingApi::class)
 
@@ -20,7 +20,10 @@ import kpt.core.model.objects.checkerinboxtask.CheckerInboxSearchTemplate
 import kpt.core.model.objects.checkerinboxtask.CheckerTask
 import kpt.core.model.objects.checkerinboxtask.RescheduleLoansTask
 
-/** Scripted inbox. [tasks] and [reschedules] stream; [FakeCheckerInboxCommandRepository] removes decided tasks from [tasks]. */
+/**
+ * Scripted inbox. [tasks] and [reschedules] stream; [FakeCheckerInboxCommandRepository] removes decided
+ * tasks from [tasks].
+ */
 @ExperimentalDataTestingApi
 class FakeCheckerInboxRepository(
     tasks: List<CheckerTask> = emptyList(),

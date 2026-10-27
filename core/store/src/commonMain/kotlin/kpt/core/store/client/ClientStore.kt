@@ -10,15 +10,14 @@
 package kpt.core.store.client
 
 import kotlinx.coroutines.flow.map
-import kpt.core.model.client.Client
-import kpt.core.store.mapping.toEntity
-import kpt.core.store.mapping.toModel
 import kpt.core.base.store.annotation.CacheKey
 import kpt.core.base.store.annotation.StoreProvider
 import kpt.core.base.store.infra.StoreFactory
 import kpt.core.database.client.dao.ClientDao
-import kpt.core.database.client.entity.ClientEntity
+import kpt.core.model.client.Client
 import kpt.core.network.mifos.client.api.ClientApi
+import kpt.core.store.mapping.toEntity
+import kpt.core.store.mapping.toModel
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.MutableStore
 import org.mobilenativefoundation.store.store5.SourceOfTruth

@@ -11,6 +11,7 @@ package kpt.core.ui.components
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.theme.AppTypography
 import kpt.core.ui.util.TextUtil
@@ -18,9 +19,11 @@ import kpt.core.ui.util.TextUtil
 @Composable
 fun PrintTextUtil(
     item: TextUtil,
+    modifier: Modifier = Modifier,
 ) {
     Text(
         text = item.text,
+        modifier = modifier,
         color = item.color ?: KptTheme.colorScheme.onSurface,
         style = item.style ?: AppTypography.bodySmall,
     )

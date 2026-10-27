@@ -9,11 +9,6 @@
  */
 package kpt.core.data.center
 
-import kpt.core.store.report.GetCenterSummaryInfoKey
-import kpt.core.model.objects.groups.CenterInfo
-import kpt.core.model.client.ClientStatus
-import kpt.core.model.center.CenterPayload
-import kpt.core.model.center.Center
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kpt.core.base.store.mutation.MutationResult
@@ -23,19 +18,24 @@ import kpt.core.data.collectionsheet.keyedReadStore
 import kpt.core.data.collectionsheet.listReadStore
 import kpt.core.data.collectionsheet.localRowStore
 import kpt.core.data.infra.testMutationGateway
+import kpt.core.model.center.Center
 import kpt.core.model.center.CenterAccounts
+import kpt.core.model.center.CenterPayload
 import kpt.core.model.center.CenterWithAssociations
+import kpt.core.model.center.PostCentersCenterIdRequest
+import kpt.core.model.center.PostCentersCenterIdResponse
+import kpt.core.model.client.ClientStatus
+import kpt.core.model.collectionsheet.payload.CollectionSheetPayload
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.clients.Page
 import kpt.core.model.objects.databaseobjects.CollectionSheet
+import kpt.core.model.objects.groups.CenterInfo
 import kpt.core.model.objects.responses.SaveResponse
 import kpt.core.model.shared.GenericResponse
 import kpt.core.model.shared.Payload
 import kpt.core.network.mifos.center.api.CenterApi
-import kpt.core.model.center.PostCentersCenterIdRequest
-import kpt.core.model.center.PostCentersCenterIdResponse
-import kpt.core.model.collectionsheet.payload.CollectionSheetPayload
 import kpt.core.store.center.CenterCollectionSheetKey
+import kpt.core.store.report.GetCenterSummaryInfoKey
 import org.mobilenativefoundation.store.store5.impl.extensions.get
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -83,11 +83,16 @@ class CenterRepositoryTest {
             postCentersCenterIdRequest: PostCentersCenterIdRequest,
             command: String?,
         ): PostCentersCenterIdResponse {
-            records[centerId.toInt()] = records.getValue(centerId.toInt()).copy(status = ClientStatus(value = "Closed"), active = false)
+            records[centerId.toInt()] = records.getValue(centerId.toInt()).copy(
+                status = ClientStatus(value = "Closed"),
+                active = false,
+            )
             return PostCentersCenterIdResponse(resourceId = centerId)
         }
 
-        override suspend fun getCenterWithGroupMembersAndCollectionMeetingCalendar(centerId: Int): CenterWithAssociations {
+        override suspend fun getCenterWithGroupMembersAndCollectionMeetingCalendar(
+            centerId: Int,
+        ): CenterWithAssociations {
             check(online && !recordReadFails) { "offline" }
             return records.getValue(centerId)
         }
@@ -102,7 +107,10 @@ class CenterRepositoryTest {
             return CollectionSheet(dueDate = intArrayOf(sheetGeneration), groups = emptyList())
         }
 
-        override suspend fun saveCollectionSheet(centerId: Int, collectionSheetPayload: CollectionSheetPayload?): SaveResponse {
+        override suspend fun saveCollectionSheet(
+            centerId: Int,
+            collectionSheetPayload: CollectionSheetPayload?,
+        ): SaveResponse {
             sheetGeneration++
             return SaveResponse(resourceId = centerId)
         }
@@ -127,9 +135,18 @@ class CenterRepositoryTest {
         ) = error("not used")
 
         override suspend fun getCenterAccounts(centerId: Int): CenterAccounts = error("not used")
-        override suspend fun getAllCentersInOffice(officeId: Int, additionalParams: Map<String, String>) = error("not used")
+        override suspend fun getAllCentersInOffice(
+            officeId: Int,
+            additionalParams: Map<String, String>,
+        ) = error("not used")
         override suspend fun getAllGroupsForCenter(centerId: Int) = error("not used")
-        override suspend fun getCenterList(dateFormat: String?, locale: String?, meetingDate: String?, officeId: Int, staffId: Int) =
+        override suspend fun getCenterList(
+            dateFormat: String?,
+            locale: String?,
+            meetingDate: String?,
+            officeId: Int,
+            staffId: Int,
+        ) =
             error("not used")
     }
 
@@ -143,12 +160,16 @@ class CenterRepositoryTest {
 
     private val listStore = listReadStore(centerTable, { it.id!! }) { api.getCenters(true, 0, 100).pageItems }
     private val itemStore = localRowStore(centerTable)
-    private val recordStore = keyedReadStore(recordCache) { id: Int -> api.getCenterWithGroupMembersAndCollectionMeetingCalendar(id) }
+    private val recordStore = keyedReadStore(recordCache) { id: Int ->
+        api.getCenterWithGroupMembersAndCollectionMeetingCalendar(id)
+    }
     private val sheetStore = keyedReadStore(sheetCache) { key: CenterCollectionSheetKey ->
         api.getCollectionSheet(key.centerId, Payload())
     }
 
-    private val summaryStore = keyedReadStore(MutableStateFlow<Map<GetCenterSummaryInfoKey, List<CenterInfo>>>(emptyMap())) { _: GetCenterSummaryInfoKey ->
+    private val summaryStore = keyedReadStore(
+        MutableStateFlow<Map<GetCenterSummaryInfoKey, List<CenterInfo>>>(emptyMap()),
+    ) { _: GetCenterSummaryInfoKey ->
         emptyList<CenterInfo>()
     }
 

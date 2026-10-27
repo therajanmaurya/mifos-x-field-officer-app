@@ -20,11 +20,11 @@ import kpt.core.base.store.mutation.BlockReason
 import kpt.core.base.store.mutation.MutationResult
 import kpt.core.base.store.screen.ScreenState
 import kpt.core.base.ui.viewmodel.BaseViewModel
-import kpt.core.model.objects.error.serverErrorMessage
 import kpt.core.data.client.ClientCommandRepository
 import kpt.core.data.office.OfficeRepository
-import kpt.core.model.office.Office
 import kpt.core.model.objects.clients.ProposeTransferRequest
+import kpt.core.model.objects.error.serverErrorMessage
+import kpt.core.model.office.Office
 import kpt.core.model.utils.ApiDateFormatter
 import kpt.core.ui.components.ResultStatus
 import kotlin.time.Clock

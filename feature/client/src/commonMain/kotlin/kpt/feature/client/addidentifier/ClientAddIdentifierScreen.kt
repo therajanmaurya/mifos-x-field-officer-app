@@ -191,65 +191,67 @@ private fun IdentifierFields(
     template: IdentifierTemplate,
     onAction: (ClientAddIdentifierAction) -> Unit,
 ) {
-    val types = template.allowedDocumentTypes.orEmpty()
-    AppTextFieldDropdown(
-        value = state.documentTypeLabel,
-        // Resolved from the SAME list that supplied the label — never an index into another.
-        onOptionSelected = { index, label ->
-            types.getOrNull(index)?.id?.let { onAction(ClientAddIdentifierAction.UpdateDocumentType(it, label)) }
-        },
-        options = types.mapNotNull { it.name },
-        label = stringResource(Res.string.feature_client_addidentifier_document_type),
-        errorMessage = if (state.documentTypeError) {
-            stringResource(Res.string.feature_client_addidentifier_error_type_required)
-        } else {
-            null
-        },
-        // Locked once the identifier exists — the create write has already used these values.
-        enabled = !state.identifierCreated,
-        modifier = Modifier.fillMaxWidth().testTag(ClientAddIdentifierTestTags.DOCUMENT_TYPE),
-    )
+    Column {
+        val types = template.allowedDocumentTypes.orEmpty()
+        AppTextFieldDropdown(
+            value = state.documentTypeLabel,
+            // Resolved from the SAME list that supplied the label — never an index into another.
+            onOptionSelected = { index, label ->
+                types.getOrNull(index)?.id?.let { onAction(ClientAddIdentifierAction.UpdateDocumentType(it, label)) }
+            },
+            options = types.mapNotNull { it.name },
+            label = stringResource(Res.string.feature_client_addidentifier_document_type),
+            errorMessage = if (state.documentTypeError) {
+                stringResource(Res.string.feature_client_addidentifier_error_type_required)
+            } else {
+                null
+            },
+            // Locked once the identifier exists — the create write has already used these values.
+            enabled = !state.identifierCreated,
+            modifier = Modifier.fillMaxWidth().testTag(ClientAddIdentifierTestTags.DOCUMENT_TYPE),
+        )
 
-    AppOutlinedTextField(
-        value = state.documentKey,
-        onValueChange = { onAction(ClientAddIdentifierAction.UpdateDocumentKey(it)) },
-        label = stringResource(Res.string.feature_client_addidentifier_document_key),
-        isError = state.documentKeyError,
-        errorText = if (state.documentKeyError) {
-            stringResource(Res.string.feature_client_addidentifier_error_key_required)
-        } else {
-            null
-        },
-        enabled = !state.identifierCreated,
-        modifier = Modifier.fillMaxWidth().testTag(ClientAddIdentifierTestTags.DOCUMENT_KEY),
-    )
+        AppOutlinedTextField(
+            value = state.documentKey,
+            onValueChange = { onAction(ClientAddIdentifierAction.UpdateDocumentKey(it)) },
+            label = stringResource(Res.string.feature_client_addidentifier_document_key),
+            isError = state.documentKeyError,
+            errorText = if (state.documentKeyError) {
+                stringResource(Res.string.feature_client_addidentifier_error_key_required)
+            } else {
+                null
+            },
+            enabled = !state.identifierCreated,
+            modifier = Modifier.fillMaxWidth().testTag(ClientAddIdentifierTestTags.DOCUMENT_KEY),
+        )
 
-    // A dropdown, as in the original: the server accepts exactly these values, so a free-text
-    // field could only produce a rejected write.
-    val statusLabels = IdentifierStatus.values.map { identifierStatusLabel(it) }
-    AppTextFieldDropdown(
-        value = IdentifierStatus.values.indexOf(state.status).let { statusLabels.getOrNull(it) }.orEmpty(),
-        onOptionSelected = { index, _ ->
-            IdentifierStatus.values.getOrNull(index)?.let { onAction(ClientAddIdentifierAction.UpdateStatus(it)) }
-        },
-        options = statusLabels,
-        label = stringResource(Res.string.feature_client_addidentifier_status),
-        errorMessage = if (state.statusError) {
-            stringResource(Res.string.feature_client_addidentifier_error_status_required)
-        } else {
-            null
-        },
-        enabled = !state.identifierCreated,
-        modifier = Modifier.fillMaxWidth().testTag(ClientAddIdentifierTestTags.STATUS),
-    )
+        // A dropdown, as in the original: the server accepts exactly these values, so a free-text
+        // field could only produce a rejected write.
+        val statusLabels = IdentifierStatus.values.map { identifierStatusLabel(it) }
+        AppTextFieldDropdown(
+            value = IdentifierStatus.values.indexOf(state.status).let { statusLabels.getOrNull(it) }.orEmpty(),
+            onOptionSelected = { index, _ ->
+                IdentifierStatus.values.getOrNull(index)?.let { onAction(ClientAddIdentifierAction.UpdateStatus(it)) }
+            },
+            options = statusLabels,
+            label = stringResource(Res.string.feature_client_addidentifier_status),
+            errorMessage = if (state.statusError) {
+                stringResource(Res.string.feature_client_addidentifier_error_status_required)
+            } else {
+                null
+            },
+            enabled = !state.identifierCreated,
+            modifier = Modifier.fillMaxWidth().testTag(ClientAddIdentifierTestTags.STATUS),
+        )
 
-    AppOutlinedTextField(
-        value = state.description,
-        onValueChange = { onAction(ClientAddIdentifierAction.UpdateDescription(it)) },
-        label = stringResource(Res.string.feature_client_addidentifier_description),
-        enabled = !state.identifierCreated,
-        modifier = Modifier.fillMaxWidth(),
-    )
+        AppOutlinedTextField(
+            value = state.description,
+            onValueChange = { onAction(ClientAddIdentifierAction.UpdateDescription(it)) },
+            label = stringResource(Res.string.feature_client_addidentifier_description),
+            enabled = !state.identifierCreated,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
 }
 
 @Composable

@@ -197,52 +197,54 @@ private fun DetailsPage(
     template: FixedDepositTemplate,
     onAction: (FixedDepositApplicationAction) -> Unit,
 ) {
-    val products = template.productOptions.orEmpty()
-    // Required: say so when the tenant has none, rather than an empty picker and a bare
-    // "required" error the officer can do nothing about (gateway, 2026-10-26).
-    if (products.isEmpty()) {
-        Text(
-            text = stringResource(Res.string.feature_client_fdapp_no_products),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.fillMaxWidth().testTag(FixedDepositApplicationTestTags.NO_PRODUCTS),
+    Column {
+        val products = template.productOptions.orEmpty()
+        // Required: say so when the tenant has none, rather than an empty picker and a bare
+        // "required" error the officer can do nothing about (gateway, 2026-10-26).
+        if (products.isEmpty()) {
+            Text(
+                text = stringResource(Res.string.feature_client_fdapp_no_products),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.fillMaxWidth().testTag(FixedDepositApplicationTestTags.NO_PRODUCTS),
+            )
+        }
+        OptionDropdown(
+            value = state.product?.label.orEmpty(),
+            label = stringResource(Res.string.feature_client_fdapp_product),
+            labels = products.mapNotNull { it.name },
+            error = state.productError.errorOr(Res.string.feature_client_fdapp_error_product_required),
+            onSelected = { index, label ->
+                products.getOrNull(index)?.id?.let {
+                    onAction(FixedDepositApplicationAction.UpdateProduct(FixedDepositOption(it, label)))
+                }
+            },
+            tag = FixedDepositApplicationTestTags.PRODUCT,
+        )
+
+        val officers = template.fieldOfficerOptions.orEmpty()
+        OptionDropdown(
+            value = state.fieldOfficer?.label.orEmpty(),
+            label = stringResource(Res.string.feature_client_fdapp_field_officer),
+            labels = officers.mapNotNull { it.displayName },
+            error = null,
+            onSelected = { index, label ->
+                officers.getOrNull(index)?.id?.let {
+                    onAction(
+                        FixedDepositApplicationAction.UpdateFieldOfficer(FixedDepositOption(it, label)),
+                    )
+                }
+            },
+            tag = FixedDepositApplicationTestTags.FIELD_OFFICER,
+        )
+
+        AppOutlinedTextField(
+            value = state.externalId,
+            onValueChange = { onAction(FixedDepositApplicationAction.UpdateExternalId(it)) },
+            label = stringResource(Res.string.feature_client_fdapp_external_id),
+            modifier = Modifier.fillMaxWidth(),
         )
     }
-    OptionDropdown(
-        value = state.product?.label.orEmpty(),
-        label = stringResource(Res.string.feature_client_fdapp_product),
-        labels = products.mapNotNull { it.name },
-        error = state.productError.errorOr(Res.string.feature_client_fdapp_error_product_required),
-        onSelected = { index, label ->
-            products.getOrNull(index)?.id?.let {
-                onAction(FixedDepositApplicationAction.UpdateProduct(FixedDepositOption(it, label)))
-            }
-        },
-        tag = FixedDepositApplicationTestTags.PRODUCT,
-    )
-
-    val officers = template.fieldOfficerOptions.orEmpty()
-    OptionDropdown(
-        value = state.fieldOfficer?.label.orEmpty(),
-        label = stringResource(Res.string.feature_client_fdapp_field_officer),
-        labels = officers.mapNotNull { it.displayName },
-        error = null,
-        onSelected = { index, label ->
-            officers.getOrNull(index)?.id?.let {
-                onAction(
-                    FixedDepositApplicationAction.UpdateFieldOfficer(FixedDepositOption(it, label)),
-                )
-            }
-        },
-        tag = FixedDepositApplicationTestTags.FIELD_OFFICER,
-    )
-
-    AppOutlinedTextField(
-        value = state.externalId,
-        onValueChange = { onAction(FixedDepositApplicationAction.UpdateExternalId(it)) },
-        label = stringResource(Res.string.feature_client_fdapp_external_id),
-        modifier = Modifier.fillMaxWidth(),
-    )
 }
 
 @Composable
@@ -251,46 +253,48 @@ private fun TermsPage(
     template: FixedDepositTemplate,
     onAction: (FixedDepositApplicationAction) -> Unit,
 ) {
-    AppOutlinedTextField(
-        value = state.depositAmount,
-        onValueChange = { onAction(FixedDepositApplicationAction.UpdateDepositAmount(it)) },
-        label = stringResource(Res.string.feature_client_fdapp_deposit_amount),
-        isError = state.depositAmountError,
-        errorText = state.depositAmountError
-            .errorOr(Res.string.feature_client_fdapp_error_amount_required),
-        keyboardType = KeyboardType.Decimal,
-        modifier = Modifier.fillMaxWidth().testTag(FixedDepositApplicationTestTags.DEPOSIT_AMOUNT),
-    )
+    Column {
+        AppOutlinedTextField(
+            value = state.depositAmount,
+            onValueChange = { onAction(FixedDepositApplicationAction.UpdateDepositAmount(it)) },
+            label = stringResource(Res.string.feature_client_fdapp_deposit_amount),
+            isError = state.depositAmountError,
+            errorText = state.depositAmountError
+                .errorOr(Res.string.feature_client_fdapp_error_amount_required),
+            keyboardType = KeyboardType.Decimal,
+            modifier = Modifier.fillMaxWidth().testTag(FixedDepositApplicationTestTags.DEPOSIT_AMOUNT),
+        )
 
-    AppOutlinedTextField(
-        value = state.depositPeriod,
-        onValueChange = { onAction(FixedDepositApplicationAction.UpdateDepositPeriod(it)) },
-        label = stringResource(Res.string.feature_client_fdapp_deposit_period),
-        isError = state.depositPeriodError,
-        errorText = state.depositPeriodError
-            .errorOr(Res.string.feature_client_fdapp_error_period_required),
-        keyboardType = KeyboardType.Number,
-        modifier = Modifier.fillMaxWidth().testTag(FixedDepositApplicationTestTags.DEPOSIT_PERIOD),
-    )
+        AppOutlinedTextField(
+            value = state.depositPeriod,
+            onValueChange = { onAction(FixedDepositApplicationAction.UpdateDepositPeriod(it)) },
+            label = stringResource(Res.string.feature_client_fdapp_deposit_period),
+            isError = state.depositPeriodError,
+            errorText = state.depositPeriodError
+                .errorOr(Res.string.feature_client_fdapp_error_period_required),
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier.fillMaxWidth().testTag(FixedDepositApplicationTestTags.DEPOSIT_PERIOD),
+        )
 
-    val periods = template.periodFrequencyTypeOptions.orEmpty()
-    OptionDropdown(
-        value = state.depositPeriodType?.label.orEmpty(),
-        label = stringResource(Res.string.feature_client_fdapp_deposit_period_type),
-        labels = periods.mapNotNull { it.value },
-        error = state.depositPeriodTypeError
-            .errorOr(Res.string.feature_client_fdapp_error_period_type_required),
-        onSelected = { index, label ->
-            periods.getOrNull(index)?.id?.let {
-                onAction(
-                    FixedDepositApplicationAction.UpdateDepositPeriodType(
-                        FixedDepositOption(it, label),
-                    ),
-                )
-            }
-        },
-        tag = FixedDepositApplicationTestTags.DEPOSIT_PERIOD_TYPE,
-    )
+        val periods = template.periodFrequencyTypeOptions.orEmpty()
+        OptionDropdown(
+            value = state.depositPeriodType?.label.orEmpty(),
+            label = stringResource(Res.string.feature_client_fdapp_deposit_period_type),
+            labels = periods.mapNotNull { it.value },
+            error = state.depositPeriodTypeError
+                .errorOr(Res.string.feature_client_fdapp_error_period_type_required),
+            onSelected = { index, label ->
+                periods.getOrNull(index)?.id?.let {
+                    onAction(
+                        FixedDepositApplicationAction.UpdateDepositPeriodType(
+                            FixedDepositOption(it, label),
+                        ),
+                    )
+                }
+            },
+            tag = FixedDepositApplicationTestTags.DEPOSIT_PERIOD_TYPE,
+        )
+    }
 }
 
 @Composable
@@ -299,58 +303,60 @@ private fun SettingsPage(
     template: FixedDepositTemplate,
     onAction: (FixedDepositApplicationAction) -> Unit,
 ) {
-    AppOutlinedTextField(
-        value = state.lockInPeriod,
-        onValueChange = { onAction(FixedDepositApplicationAction.UpdateLockInPeriod(it)) },
-        label = stringResource(Res.string.feature_client_fdapp_lock_in_period),
-        keyboardType = KeyboardType.Number,
-        modifier = Modifier.fillMaxWidth(),
-    )
-
-    val lockTypes = template.periodFrequencyTypeOptions.orEmpty()
-    OptionDropdown(
-        value = state.lockInPeriodType?.label.orEmpty(),
-        label = stringResource(Res.string.feature_client_fdapp_deposit_period_type),
-        labels = lockTypes.mapNotNull { it.value },
-        error = null,
-        onSelected = { index, label ->
-            lockTypes.getOrNull(index)?.id?.let {
-                onAction(
-                    FixedDepositApplicationAction.UpdateLockInPeriodType(
-                        FixedDepositOption(it, label),
-                    ),
-                )
-            }
-        },
-        tag = FixedDepositApplicationTestTags.LOCK_IN_TYPE,
-    )
-
-    CheckboxRow(
-        checked = state.transferInterestToSavings,
-        label = stringResource(Res.string.feature_client_fdapp_transfer_interest),
-        onChange = {
-            onAction(FixedDepositApplicationAction.UpdateTransferInterestToSavings(it))
-        },
-        tag = FixedDepositApplicationTestTags.TRANSFER_INTEREST,
-    )
-
-    CheckboxRow(
-        checked = state.penalInterestApplicable,
-        label = stringResource(Res.string.feature_client_fdapp_penal_applicable),
-        onChange = { onAction(FixedDepositApplicationAction.UpdatePenalInterestApplicable(it)) },
-        tag = FixedDepositApplicationTestTags.PENAL_APPLICABLE,
-    )
-
-    // The rate is ABSENT until the penalty applies — a field whose value the payload would
-    // discard is a field that should not be asked for.
-    if (state.penalInterestApplicable) {
+    Column {
         AppOutlinedTextField(
-            value = state.penalInterest,
-            onValueChange = { onAction(FixedDepositApplicationAction.UpdatePenalInterest(it)) },
-            label = stringResource(Res.string.feature_client_fdapp_penal_interest),
-            keyboardType = KeyboardType.Decimal,
-            modifier = Modifier.fillMaxWidth().testTag(FixedDepositApplicationTestTags.PENAL_RATE),
+            value = state.lockInPeriod,
+            onValueChange = { onAction(FixedDepositApplicationAction.UpdateLockInPeriod(it)) },
+            label = stringResource(Res.string.feature_client_fdapp_lock_in_period),
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier.fillMaxWidth(),
         )
+
+        val lockTypes = template.periodFrequencyTypeOptions.orEmpty()
+        OptionDropdown(
+            value = state.lockInPeriodType?.label.orEmpty(),
+            label = stringResource(Res.string.feature_client_fdapp_deposit_period_type),
+            labels = lockTypes.mapNotNull { it.value },
+            error = null,
+            onSelected = { index, label ->
+                lockTypes.getOrNull(index)?.id?.let {
+                    onAction(
+                        FixedDepositApplicationAction.UpdateLockInPeriodType(
+                            FixedDepositOption(it, label),
+                        ),
+                    )
+                }
+            },
+            tag = FixedDepositApplicationTestTags.LOCK_IN_TYPE,
+        )
+
+        CheckboxRow(
+            checked = state.transferInterestToSavings,
+            label = stringResource(Res.string.feature_client_fdapp_transfer_interest),
+            onChange = {
+                onAction(FixedDepositApplicationAction.UpdateTransferInterestToSavings(it))
+            },
+            tag = FixedDepositApplicationTestTags.TRANSFER_INTEREST,
+        )
+
+        CheckboxRow(
+            checked = state.penalInterestApplicable,
+            label = stringResource(Res.string.feature_client_fdapp_penal_applicable),
+            onChange = { onAction(FixedDepositApplicationAction.UpdatePenalInterestApplicable(it)) },
+            tag = FixedDepositApplicationTestTags.PENAL_APPLICABLE,
+        )
+
+        // The rate is ABSENT until the penalty applies — a field whose value the payload would
+        // discard is a field that should not be asked for.
+        if (state.penalInterestApplicable) {
+            AppOutlinedTextField(
+                value = state.penalInterest,
+                onValueChange = { onAction(FixedDepositApplicationAction.UpdatePenalInterest(it)) },
+                label = stringResource(Res.string.feature_client_fdapp_penal_interest),
+                keyboardType = KeyboardType.Decimal,
+                modifier = Modifier.fillMaxWidth().testTag(FixedDepositApplicationTestTags.PENAL_RATE),
+            )
+        }
     }
 }
 
@@ -360,77 +366,79 @@ private fun InterestPage(
     template: FixedDepositTemplate,
     onAction: (FixedDepositApplicationAction) -> Unit,
 ) {
-    val compounding = template.interestCompoundingPeriodTypeOptions.orEmpty()
-    OptionDropdown(
-        value = state.interestCompoundingPeriod?.label.orEmpty(),
-        label = stringResource(Res.string.feature_client_fdapp_interest_compounding),
-        labels = compounding.mapNotNull { it.value },
-        error = null,
-        onSelected = { index, label ->
-            compounding.getOrNull(index)?.id?.let {
-                onAction(
-                    FixedDepositApplicationAction.UpdateInterestCompoundingPeriod(
-                        FixedDepositOption(it, label),
-                    ),
-                )
-            }
-        },
-        tag = FixedDepositApplicationTestTags.INTEREST_COMPOUNDING,
-    )
+    Column {
+        val compounding = template.interestCompoundingPeriodTypeOptions.orEmpty()
+        OptionDropdown(
+            value = state.interestCompoundingPeriod?.label.orEmpty(),
+            label = stringResource(Res.string.feature_client_fdapp_interest_compounding),
+            labels = compounding.mapNotNull { it.value },
+            error = null,
+            onSelected = { index, label ->
+                compounding.getOrNull(index)?.id?.let {
+                    onAction(
+                        FixedDepositApplicationAction.UpdateInterestCompoundingPeriod(
+                            FixedDepositOption(it, label),
+                        ),
+                    )
+                }
+            },
+            tag = FixedDepositApplicationTestTags.INTEREST_COMPOUNDING,
+        )
 
-    val posting = template.interestPostingPeriodTypeOptions.orEmpty()
-    OptionDropdown(
-        value = state.interestPostingPeriod?.label.orEmpty(),
-        label = stringResource(Res.string.feature_client_fdapp_interest_posting),
-        labels = posting.mapNotNull { it.value },
-        error = null,
-        onSelected = { index, label ->
-            posting.getOrNull(index)?.id?.let {
-                onAction(
-                    FixedDepositApplicationAction.UpdateInterestPostingPeriod(
-                        FixedDepositOption(it, label),
-                    ),
-                )
-            }
-        },
-        tag = FixedDepositApplicationTestTags.INTEREST_POSTING,
-    )
+        val posting = template.interestPostingPeriodTypeOptions.orEmpty()
+        OptionDropdown(
+            value = state.interestPostingPeriod?.label.orEmpty(),
+            label = stringResource(Res.string.feature_client_fdapp_interest_posting),
+            labels = posting.mapNotNull { it.value },
+            error = null,
+            onSelected = { index, label ->
+                posting.getOrNull(index)?.id?.let {
+                    onAction(
+                        FixedDepositApplicationAction.UpdateInterestPostingPeriod(
+                            FixedDepositOption(it, label),
+                        ),
+                    )
+                }
+            },
+            tag = FixedDepositApplicationTestTags.INTEREST_POSTING,
+        )
 
-    val calcType = template.interestCalculationTypeOptions.orEmpty()
-    OptionDropdown(
-        value = state.interestCalculationType?.label.orEmpty(),
-        label = stringResource(Res.string.feature_client_fdapp_interest_calculation_type),
-        labels = calcType.mapNotNull { it.value },
-        error = null,
-        onSelected = { index, label ->
-            calcType.getOrNull(index)?.id?.let {
-                onAction(
-                    FixedDepositApplicationAction.UpdateInterestCalculationType(
-                        FixedDepositOption(it, label),
-                    ),
-                )
-            }
-        },
-        tag = FixedDepositApplicationTestTags.INTEREST_CALC_TYPE,
-    )
+        val calcType = template.interestCalculationTypeOptions.orEmpty()
+        OptionDropdown(
+            value = state.interestCalculationType?.label.orEmpty(),
+            label = stringResource(Res.string.feature_client_fdapp_interest_calculation_type),
+            labels = calcType.mapNotNull { it.value },
+            error = null,
+            onSelected = { index, label ->
+                calcType.getOrNull(index)?.id?.let {
+                    onAction(
+                        FixedDepositApplicationAction.UpdateInterestCalculationType(
+                            FixedDepositOption(it, label),
+                        ),
+                    )
+                }
+            },
+            tag = FixedDepositApplicationTestTags.INTEREST_CALC_TYPE,
+        )
 
-    val daysInYear = template.interestCalculationDaysInYearTypeOptions.orEmpty()
-    OptionDropdown(
-        value = state.interestCalculationDaysInYear?.label.orEmpty(),
-        label = stringResource(Res.string.feature_client_fdapp_interest_days_in_year),
-        labels = daysInYear.mapNotNull { it.value },
-        error = null,
-        onSelected = { index, label ->
-            daysInYear.getOrNull(index)?.id?.let {
-                onAction(
-                    FixedDepositApplicationAction.UpdateInterestCalculationDaysInYear(
-                        FixedDepositOption(it, label),
-                    ),
-                )
-            }
-        },
-        tag = FixedDepositApplicationTestTags.INTEREST_DAYS_IN_YEAR,
-    )
+        val daysInYear = template.interestCalculationDaysInYearTypeOptions.orEmpty()
+        OptionDropdown(
+            value = state.interestCalculationDaysInYear?.label.orEmpty(),
+            label = stringResource(Res.string.feature_client_fdapp_interest_days_in_year),
+            labels = daysInYear.mapNotNull { it.value },
+            error = null,
+            onSelected = { index, label ->
+                daysInYear.getOrNull(index)?.id?.let {
+                    onAction(
+                        FixedDepositApplicationAction.UpdateInterestCalculationDaysInYear(
+                            FixedDepositOption(it, label),
+                        ),
+                    )
+                }
+            },
+            tag = FixedDepositApplicationTestTags.INTEREST_DAYS_IN_YEAR,
+        )
+    }
 }
 
 /** The product's charges, read-only — see the screen KDoc. */
@@ -448,13 +456,15 @@ private fun ChargesPage(template: FixedDepositTemplate) {
 /** What will be sent, read from the SAME state the payload is built from. */
 @Composable
 private fun PreviewPage(state: FixedDepositApplicationState) {
-    PreviewRow(stringResource(Res.string.feature_client_fdapp_product), state.product?.label.orEmpty())
-    PreviewRow(stringResource(Res.string.feature_client_fdapp_deposit_amount), state.depositAmount)
-    PreviewRow(stringResource(Res.string.feature_client_fdapp_deposit_period), state.depositPeriod)
-    PreviewRow(
-        stringResource(Res.string.feature_client_fdapp_deposit_period_type),
-        state.depositPeriodType?.label.orEmpty(),
-    )
+    Column {
+        PreviewRow(stringResource(Res.string.feature_client_fdapp_product), state.product?.label.orEmpty())
+        PreviewRow(stringResource(Res.string.feature_client_fdapp_deposit_amount), state.depositAmount)
+        PreviewRow(stringResource(Res.string.feature_client_fdapp_deposit_period), state.depositPeriod)
+        PreviewRow(
+            stringResource(Res.string.feature_client_fdapp_deposit_period_type),
+            state.depositPeriodType?.label.orEmpty(),
+        )
+    }
 }
 
 @Composable

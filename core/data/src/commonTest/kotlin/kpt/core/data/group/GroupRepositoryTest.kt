@@ -9,9 +9,6 @@
  */
 package kpt.core.data.group
 
-import kpt.core.model.client.ClientStatus
-import kpt.core.model.group.GroupPayload
-import kpt.core.model.group.Group
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Headers
@@ -28,7 +25,10 @@ import kpt.core.data.collectionsheet.listReadStore
 import kpt.core.data.collectionsheet.localRowStore
 import kpt.core.data.group.impl.GroupCommandRepositoryImpl
 import kpt.core.data.infra.testMutationGateway
+import kpt.core.model.client.ClientStatus
+import kpt.core.model.group.Group
 import kpt.core.model.group.GroupAccounts
+import kpt.core.model.group.GroupPayload
 import kpt.core.model.group.GroupWithAssociations
 import kpt.core.model.objects.clients.ActivatePayload
 import kpt.core.model.objects.clients.Page
@@ -142,7 +142,12 @@ class GroupRepositoryTest {
     fun activatingIngestsTheServersStatus() = runTest {
         commands().createGroup(newGroup)
 
-        assertIs<MutationResult.Applied<Unit>>(commands().activateGroup(20, ActivatePayload(activationDate = "01 October 2026")))
+        assertIs<MutationResult.Applied<Unit>>(
+            commands().activateGroup(
+                20,
+                ActivatePayload(activationDate = "01 October 2026"),
+            ),
+        )
 
         val row = groupTable.value.getValue(20)
         assertEquals(true, row.active)

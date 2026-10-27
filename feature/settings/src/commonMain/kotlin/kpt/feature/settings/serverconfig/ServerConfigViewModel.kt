@@ -97,7 +97,12 @@ class ServerConfigViewModel(
         instancesStream.state.stateIn(viewModelScope, SharingStarted.Eagerly, ScreenState.Loading)
 
     /** What the screen renders: the draft over the stored config, with the instances to pick from. */
-    val form: StateFlow<ServerConfigState> = combine(stateFlow, stored, instances, signedInUser) { ui, saved, list, user ->
+    val form: StateFlow<ServerConfigState> = combine(
+        stateFlow,
+        stored,
+        instances,
+        signedInUser,
+    ) { ui, saved, list, user ->
         ui.copy(
             config = ui.draft ?: saved ?: repository.defaultConfig,
             instances = (list as? ScreenState.Content<List<ServerInstance>>)?.data.orEmpty(),
@@ -133,21 +138,30 @@ class ServerConfigViewModel(
         mutableStateFlow.value = state.copy(confirmingSwitch = false)
         val saved = stored.value
         // Nothing loaded and nothing typed: the fields hold a placeholder, not the user's config.
-        val config = state.draft ?: saved ?: return
+        val config = state.draft ?: saved
+        if (config != null && isValid(config)) {
+            val switching = saved != null && saved != config
+            // A signed-in officer changing server loses the session (it belongs to the old server) —
+            // ask first. Signed out (from sign-in) there is nothing to lose: save directly.
+            if (switching && signedIn && !confirmed) {
+                mutableStateFlow.value = state.copy(confirmingSwitch = true)
+            } else {
+                save(config, switching)
+            }
+        }
+    }
+
+    private fun isValid(config: ServerConfig): Boolean {
         val failures = validate(config)
         if (failures.isNotEmpty()) {
             // Re-publish so a user who never touched a field still sees why submit refused.
             mutableStateFlow.value = state.copy(failures = failures)
             sendEvent(ServerConfigEvent.Invalid)
-            return
         }
-        val switching = saved != null && saved != config
-        // A signed-in officer changing server loses the session (it belongs to the old server) —
-        // ask first. Signed out (from sign-in) there is nothing to lose: save directly.
-        if (switching && signedIn && !confirmed) {
-            mutableStateFlow.value = state.copy(confirmingSwitch = true)
-            return
-        }
+        return failures.isEmpty()
+    }
+
+    private fun save(config: ServerConfig, switching: Boolean) {
         viewModelScope.launch {
             when (repository.updateServerConfig(config)) {
                 is MutationResult.Failed -> sendEvent(ServerConfigEvent.SaveFailed)
@@ -195,7 +209,10 @@ data class ServerConfigState(
     val instances: List<ServerInstance> = emptyList(),
     /** A signed-in officer asked to save a different server; the screen confirms the sign-out. */
     val confirmingSwitch: Boolean = false,
-    /** The server the current session is signed in to; null when nobody is signed in (sign-in's copy of this screen). */
+    /**
+     * The server the current session is signed in to; null when nobody is signed in (sign-in's copy of this
+     * screen).
+     */
     val live: ServerConfig? = null,
     val liveUsername: String? = null,
 ) {

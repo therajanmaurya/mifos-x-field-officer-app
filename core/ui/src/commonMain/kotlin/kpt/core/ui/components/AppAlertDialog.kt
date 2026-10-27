@@ -18,17 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import kpt.core.base.designsystem.theme.KptTheme
 import kpt.core.designsystem.theme.AppTheme
-import kpt.core.ui.util.DevicePreview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppAlertDialog(
-    dialogTitle: String? = null,
     dialogText: String,
-    dismissText: String? = "Cancel",
-    confirmationText: String = "Ok",
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     modifier: Modifier = Modifier,
+    dialogTitle: String? = null,
+    dismissText: String? = "Cancel",
+    confirmationText: String = "Ok",
     icon: ImageVector? = null,
 ) {
     AlertDialog(
@@ -56,7 +56,7 @@ fun AppAlertDialog(
     )
 }
 
-@DevicePreview
+@Preview
 @Composable
 private fun AppAlertDialogPreview(
     modifier: Modifier = Modifier,

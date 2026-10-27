@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
+ * See See https://github.com/openMF/kmp-project-template/blob/main/LICENSE
  */
 package kpt.feature.about.ui
 
@@ -74,11 +74,26 @@ class AboutViewModelTest {
 
     @Test
     fun anUnconfiguredValueDrawsNoRowAndANonGitHubSourceGetsNoGitHubRows() {
-        assertTrue(aboutLinks(mifos.copy(orgEmail = "", websiteUrl = "", sourceUrl = "", licenseUrl = "", communityUrl = "", productUrl = "")).isEmpty())
+        val bare = mifos.copy(
+            orgEmail = "",
+            websiteUrl = "",
+            sourceUrl = "",
+            licenseUrl = "",
+            communityUrl = "",
+            productUrl = "",
+        )
+        assertTrue(aboutLinks(bare).isEmpty())
+        val gitlabOnly = mifos.copy(
+            orgEmail = "",
+            websiteUrl = "",
+            communityUrl = "",
+            productUrl = "",
+            sourceUrl = "https://gitlab.com/mifos/app",
+        )
         // /graphs/contributors is a GitHub path — elsewhere it would 404. The license still shows.
         assertEquals(
             listOf(AboutLinkKind.SOURCE_CODE, AboutLinkKind.LICENSE),
-            aboutLinks(mifos.copy(orgEmail = "", websiteUrl = "", communityUrl = "", productUrl = "", sourceUrl = "https://gitlab.com/mifos/app")).map { it.kind },
+            aboutLinks(gitlabOnly).map { it.kind },
         )
     }
 
@@ -86,10 +101,14 @@ class AboutViewModelTest {
     fun tapsBecomeTheRightEvents() = runTest(dispatcher) {
         val vm = AboutViewModel(mifos)
         vm.eventFlow.test {
-            vm.trySendAction(AboutAction.LinkClicked(vm.stateFlow.value.links.first { it.kind == AboutLinkKind.LICENSE }))
+            vm.trySendAction(
+                AboutAction.LinkClicked(vm.stateFlow.value.links.first { it.kind == AboutLinkKind.LICENSE }),
+            )
             runCurrent()
             assertEquals(AboutEvent.OpenUrl("https://mozilla.org/MPL/2.0/"), awaitItem())
-            vm.trySendAction(AboutAction.LinkClicked(vm.stateFlow.value.links.first { it.kind == AboutLinkKind.COMMUNITY }))
+            vm.trySendAction(
+                AboutAction.LinkClicked(vm.stateFlow.value.links.first { it.kind == AboutLinkKind.COMMUNITY }),
+            )
             runCurrent()
             assertEquals(AboutEvent.OpenUrl("https://mifos.slack.com/"), awaitItem())
             vm.trySendAction(AboutAction.VersionClicked)
