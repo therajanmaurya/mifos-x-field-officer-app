@@ -229,6 +229,7 @@ org:
   last_name: Initiative
   phone: "+19078675309"
   copyright: "© 2026 Mifos Initiative. All rights reserved."   # desktop / Mac App Store packaging copyright (org.copyright)
+  secrets_namespace: mifos-x   # vault-alias prefix for org-shared secrets (`mifos-x-<suffix>`); per-app ones use projectName
   marketing_url: https://mifos.org
   privacy_url: https://raw.githubusercontent.com/openMF/kmp-project-template/main/legal/output/privacy-policy.md
   support_url: https://github.com/openMF/mifos-x-field-officer-app   # this app's repo — About (source/license/contributors) + store support link
